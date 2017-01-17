@@ -16,6 +16,7 @@ type Watcher struct {
 }
 
 func (watch *Watcher) Run() {
+	watch.Watcher.Dispatch = watch.Dispatch
 	watch.Storage = &stash.Storage{}
 	watch.Service()
 	watch.StatefulSet()
