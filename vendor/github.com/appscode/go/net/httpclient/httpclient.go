@@ -52,7 +52,7 @@ func New(client *http.Client, headers map[string]string, b backoff.BackOff) *Cli
 		b:         b,
 	}
 	if c.client == nil {
-		c.client = &http.Client{Timeout: time.Second * 10}
+		c.client = &http.Client{Timeout: time.Second * 5}
 	}
 	if c.headers == nil {
 		c.headers = make(map[string]string)

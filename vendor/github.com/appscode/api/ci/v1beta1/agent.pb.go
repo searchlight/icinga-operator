@@ -7,38 +7,15 @@ Package v1beta1 is a generated protocol buffer package.
 
 It is generated from these files:
 	agent.proto
-	build.proto
-	job.proto
-	master.proto
+	metadata.proto
 
 It has these top-level messages:
-	AgentListRequest
 	AgentListResponse
 	Agent
 	AgentCreateRequest
-	PortInfo
-	AgentDescribeRequest
-	AgentDescribeResponse
+	AgentCreateResponse
 	AgentDeleteRequest
-	AgentRestartRequest
-	AgentRestartResponse
-	BuildDescribeRequest
-	BuildDescribeResponse
-	BuildListRequest
-	BuildListResponse
-	Build
-	JobListRequest
-	JobListResponse
-	JobBuildRequest
-	JobDescribeRequest
-	JobDescribeResponse
-	JobHealth
-	JobDeleteRequest
-	JobCreateRequest
-	JobCopyRequest
-	Job
-	MasterCreateRequest
-	MasterDeleteRequest
+	ServerInfoResponse
 */
 package v1beta1
 
@@ -65,29 +42,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-type AgentListRequest struct {
-	// List of status to get the agent filterd on the status
-	// values in
-	//   PENDING
-	//   FAILED
-	//   ONLINE
-	//   OFFLINE
-	//   DELETED
-	Status []string `protobuf:"bytes,1,rep,name=status" json:"status,omitempty"`
-}
-
-func (m *AgentListRequest) Reset()                    { *m = AgentListRequest{} }
-func (m *AgentListRequest) String() string            { return proto.CompactTextString(m) }
-func (*AgentListRequest) ProtoMessage()               {}
-func (*AgentListRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
-
-func (m *AgentListRequest) GetStatus() []string {
-	if m != nil {
-		return m.Status
-	}
-	return nil
-}
-
 type AgentListResponse struct {
 	Status *appscode_dtypes.Status `protobuf:"bytes,1,opt,name=status" json:"status,omitempty"`
 	Agents []*Agent                `protobuf:"bytes,2,rep,name=agents" json:"agents,omitempty"`
@@ -96,7 +50,7 @@ type AgentListResponse struct {
 func (m *AgentListResponse) Reset()                    { *m = AgentListResponse{} }
 func (m *AgentListResponse) String() string            { return proto.CompactTextString(m) }
 func (*AgentListResponse) ProtoMessage()               {}
-func (*AgentListResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+func (*AgentListResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
 func (m *AgentListResponse) GetStatus() *appscode_dtypes.Status {
 	if m != nil {
@@ -113,18 +67,19 @@ func (m *AgentListResponse) GetAgents() []*Agent {
 }
 
 type Agent struct {
-	Name        string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	Status      string `protobuf:"bytes,2,opt,name=status" json:"status,omitempty"`
-	AgentStatus string `protobuf:"bytes,3,opt,name=agent_status,json=agentStatus" json:"agent_status,omitempty"`
-	IsRefreshed int32  `protobuf:"varint,4,opt,name=is_refreshed,json=isRefreshed" json:"is_refreshed,omitempty"`
-	CreatedAt   int64  `protobuf:"varint,5,opt,name=created_at,json=createdAt" json:"created_at,omitempty"`
-	UpdatedAt   int64  `protobuf:"varint,6,opt,name=updated_at,json=updatedAt" json:"updated_at,omitempty"`
+	Name       string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Role       string `protobuf:"bytes,2,opt,name=role" json:"role,omitempty"`
+	ExternalIp string `protobuf:"bytes,3,opt,name=external_ip,json=externalIp" json:"external_ip,omitempty"`
+	InternalIp string `protobuf:"bytes,4,opt,name=internal_ip,json=internalIp" json:"internal_ip,omitempty"`
+	IsDeleted  bool   `protobuf:"varint,5,opt,name=isDeleted" json:"isDeleted,omitempty"`
+	CreatedAt  int64  `protobuf:"varint,6,opt,name=created_at,json=createdAt" json:"created_at,omitempty"`
+	UpdatedAt  int64  `protobuf:"varint,7,opt,name=updated_at,json=updatedAt" json:"updated_at,omitempty"`
 }
 
 func (m *Agent) Reset()                    { *m = Agent{} }
 func (m *Agent) String() string            { return proto.CompactTextString(m) }
 func (*Agent) ProtoMessage()               {}
-func (*Agent) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
+func (*Agent) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
 func (m *Agent) GetName() string {
 	if m != nil {
@@ -133,25 +88,32 @@ func (m *Agent) GetName() string {
 	return ""
 }
 
-func (m *Agent) GetStatus() string {
+func (m *Agent) GetRole() string {
 	if m != nil {
-		return m.Status
+		return m.Role
 	}
 	return ""
 }
 
-func (m *Agent) GetAgentStatus() string {
+func (m *Agent) GetExternalIp() string {
 	if m != nil {
-		return m.AgentStatus
+		return m.ExternalIp
 	}
 	return ""
 }
 
-func (m *Agent) GetIsRefreshed() int32 {
+func (m *Agent) GetInternalIp() string {
 	if m != nil {
-		return m.IsRefreshed
+		return m.InternalIp
 	}
-	return 0
+	return ""
+}
+
+func (m *Agent) GetIsDeleted() bool {
+	if m != nil {
+		return m.IsDeleted
+	}
+	return false
 }
 
 func (m *Agent) GetCreatedAt() int64 {
@@ -169,68 +131,26 @@ func (m *Agent) GetUpdatedAt() int64 {
 }
 
 type AgentCreateRequest struct {
-	Sku               string      `protobuf:"bytes,1,opt,name=sku" json:"sku,omitempty"`
-	Executors         int32       `protobuf:"varint,2,opt,name=executors" json:"executors,omitempty"`
-	Labels            string      `protobuf:"bytes,3,opt,name=labels" json:"labels,omitempty"`
-	UserStartupScript string      `protobuf:"bytes,4,opt,name=user_startup_script,json=userStartupScript" json:"user_startup_script,omitempty"`
-	SaltbaseVersion   string      `protobuf:"bytes,5,opt,name=saltbase_version,json=saltbaseVersion" json:"saltbase_version,omitempty"`
-	CiStarterVersion  string      `protobuf:"bytes,6,opt,name=ci_starter_version,json=ciStarterVersion" json:"ci_starter_version,omitempty"`
-	Ports             []*PortInfo `protobuf:"bytes,7,rep,name=ports" json:"ports,omitempty"`
-	Role              string      `protobuf:"bytes,8,opt,name=role" json:"role,omitempty"`
+	Name            string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Role            string `protobuf:"bytes,2,opt,name=role" json:"role,omitempty"`
+	ExternalIp      string `protobuf:"bytes,3,opt,name=external_ip,json=externalIp" json:"external_ip,omitempty"`
+	InternalIp      string `protobuf:"bytes,4,opt,name=internal_ip,json=internalIp" json:"internal_ip,omitempty"`
+	SshUser         string `protobuf:"bytes,5,opt,name=ssh_user,json=sshUser" json:"ssh_user,omitempty"`
+	SshPort         int32  `protobuf:"varint,6,opt,name=ssh_port,json=sshPort" json:"ssh_port,omitempty"`
+	JenkinsJnlpPort int32  `protobuf:"varint,7,opt,name=jenkins_jnlp_port,json=jenkinsJnlpPort" json:"jenkins_jnlp_port,omitempty"`
+	GitSshPublicKey string `protobuf:"bytes,8,opt,name=git_ssh_public_key,json=gitSshPublicKey" json:"git_ssh_public_key,omitempty"`
 }
 
 func (m *AgentCreateRequest) Reset()                    { *m = AgentCreateRequest{} }
 func (m *AgentCreateRequest) String() string            { return proto.CompactTextString(m) }
 func (*AgentCreateRequest) ProtoMessage()               {}
-func (*AgentCreateRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+func (*AgentCreateRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
 
-func (m *AgentCreateRequest) GetSku() string {
+func (m *AgentCreateRequest) GetName() string {
 	if m != nil {
-		return m.Sku
+		return m.Name
 	}
 	return ""
-}
-
-func (m *AgentCreateRequest) GetExecutors() int32 {
-	if m != nil {
-		return m.Executors
-	}
-	return 0
-}
-
-func (m *AgentCreateRequest) GetLabels() string {
-	if m != nil {
-		return m.Labels
-	}
-	return ""
-}
-
-func (m *AgentCreateRequest) GetUserStartupScript() string {
-	if m != nil {
-		return m.UserStartupScript
-	}
-	return ""
-}
-
-func (m *AgentCreateRequest) GetSaltbaseVersion() string {
-	if m != nil {
-		return m.SaltbaseVersion
-	}
-	return ""
-}
-
-func (m *AgentCreateRequest) GetCiStarterVersion() string {
-	if m != nil {
-		return m.CiStarterVersion
-	}
-	return ""
-}
-
-func (m *AgentCreateRequest) GetPorts() []*PortInfo {
-	if m != nil {
-		return m.Ports
-	}
-	return nil
 }
 
 func (m *AgentCreateRequest) GetRole() string {
@@ -240,140 +160,144 @@ func (m *AgentCreateRequest) GetRole() string {
 	return ""
 }
 
-type PortInfo struct {
-	Protocol  string `protobuf:"bytes,1,opt,name=protocol" json:"protocol,omitempty"`
-	PortRange string `protobuf:"bytes,2,opt,name=port_range,json=portRange" json:"port_range,omitempty"`
-}
-
-func (m *PortInfo) Reset()                    { *m = PortInfo{} }
-func (m *PortInfo) String() string            { return proto.CompactTextString(m) }
-func (*PortInfo) ProtoMessage()               {}
-func (*PortInfo) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
-
-func (m *PortInfo) GetProtocol() string {
+func (m *AgentCreateRequest) GetExternalIp() string {
 	if m != nil {
-		return m.Protocol
+		return m.ExternalIp
 	}
 	return ""
 }
 
-func (m *PortInfo) GetPortRange() string {
+func (m *AgentCreateRequest) GetInternalIp() string {
 	if m != nil {
-		return m.PortRange
+		return m.InternalIp
 	}
 	return ""
 }
 
-type AgentDescribeRequest struct {
-	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-}
-
-func (m *AgentDescribeRequest) Reset()                    { *m = AgentDescribeRequest{} }
-func (m *AgentDescribeRequest) String() string            { return proto.CompactTextString(m) }
-func (*AgentDescribeRequest) ProtoMessage()               {}
-func (*AgentDescribeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
-
-func (m *AgentDescribeRequest) GetName() string {
+func (m *AgentCreateRequest) GetSshUser() string {
 	if m != nil {
-		return m.Name
+		return m.SshUser
 	}
 	return ""
 }
 
-type AgentDescribeResponse struct {
-	Status           *appscode_dtypes.Status `protobuf:"bytes,1,opt,name=status" json:"status,omitempty"`
-	Name             string                  `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
-	Executors        int64                   `protobuf:"varint,3,opt,name=executors" json:"executors,omitempty"`
-	AgentStatus      string                  `protobuf:"bytes,4,opt,name=agent_status,json=agentStatus" json:"agent_status,omitempty"`
-	AgentStatusCause string                  `protobuf:"bytes,5,opt,name=agent_status_cause,json=agentStatusCause" json:"agent_status_cause,omitempty"`
-	Label            string                  `protobuf:"bytes,6,opt,name=label" json:"label,omitempty"`
-	Provider         string                  `protobuf:"bytes,7,opt,name=provider" json:"provider,omitempty"`
-	Sku              string                  `protobuf:"bytes,8,opt,name=sku" json:"sku,omitempty"`
-	StartupScript    string                  `protobuf:"bytes,9,opt,name=startup_script,json=startupScript" json:"startup_script,omitempty"`
-	CreatedAt        int64                   `protobuf:"varint,10,opt,name=created_at,json=createdAt" json:"created_at,omitempty"`
-	UpdatedAt        int64                   `protobuf:"varint,11,opt,name=updated_at,json=updatedAt" json:"updated_at,omitempty"`
+func (m *AgentCreateRequest) GetSshPort() int32 {
+	if m != nil {
+		return m.SshPort
+	}
+	return 0
 }
 
-func (m *AgentDescribeResponse) Reset()                    { *m = AgentDescribeResponse{} }
-func (m *AgentDescribeResponse) String() string            { return proto.CompactTextString(m) }
-func (*AgentDescribeResponse) ProtoMessage()               {}
-func (*AgentDescribeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{6} }
+func (m *AgentCreateRequest) GetJenkinsJnlpPort() int32 {
+	if m != nil {
+		return m.JenkinsJnlpPort
+	}
+	return 0
+}
 
-func (m *AgentDescribeResponse) GetStatus() *appscode_dtypes.Status {
+func (m *AgentCreateRequest) GetGitSshPublicKey() string {
+	if m != nil {
+		return m.GitSshPublicKey
+	}
+	return ""
+}
+
+type AgentCreateResponse struct {
+	Status                 *appscode_dtypes.Status          `protobuf:"bytes,1,opt,name=status" json:"status,omitempty"`
+	Namespace              string                           `protobuf:"bytes,2,opt,name=namespace" json:"namespace,omitempty"`
+	SshAuthorizedPublicKey string                           `protobuf:"bytes,3,opt,name=ssh_authorized_public_key,json=sshAuthorizedPublicKey" json:"ssh_authorized_public_key,omitempty"`
+	GitHostname            string                           `protobuf:"bytes,4,opt,name=git_hostname,json=gitHostname" json:"git_hostname,omitempty"`
+	GitHostPublicKey       string                           `protobuf:"bytes,5,opt,name=git_host_public_key,json=gitHostPublicKey" json:"git_host_public_key,omitempty"`
+	GitUser                *AgentCreateResponse_ConduitUser `protobuf:"bytes,6,opt,name=git_user,json=gitUser" json:"git_user,omitempty"`
+}
+
+func (m *AgentCreateResponse) Reset()                    { *m = AgentCreateResponse{} }
+func (m *AgentCreateResponse) String() string            { return proto.CompactTextString(m) }
+func (*AgentCreateResponse) ProtoMessage()               {}
+func (*AgentCreateResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+
+func (m *AgentCreateResponse) GetStatus() *appscode_dtypes.Status {
 	if m != nil {
 		return m.Status
 	}
 	return nil
 }
 
-func (m *AgentDescribeResponse) GetName() string {
+func (m *AgentCreateResponse) GetNamespace() string {
 	if m != nil {
-		return m.Name
+		return m.Namespace
 	}
 	return ""
 }
 
-func (m *AgentDescribeResponse) GetExecutors() int64 {
+func (m *AgentCreateResponse) GetSshAuthorizedPublicKey() string {
 	if m != nil {
-		return m.Executors
-	}
-	return 0
-}
-
-func (m *AgentDescribeResponse) GetAgentStatus() string {
-	if m != nil {
-		return m.AgentStatus
+		return m.SshAuthorizedPublicKey
 	}
 	return ""
 }
 
-func (m *AgentDescribeResponse) GetAgentStatusCause() string {
+func (m *AgentCreateResponse) GetGitHostname() string {
 	if m != nil {
-		return m.AgentStatusCause
+		return m.GitHostname
 	}
 	return ""
 }
 
-func (m *AgentDescribeResponse) GetLabel() string {
+func (m *AgentCreateResponse) GetGitHostPublicKey() string {
 	if m != nil {
-		return m.Label
+		return m.GitHostPublicKey
 	}
 	return ""
 }
 
-func (m *AgentDescribeResponse) GetProvider() string {
+func (m *AgentCreateResponse) GetGitUser() *AgentCreateResponse_ConduitUser {
 	if m != nil {
-		return m.Provider
+		return m.GitUser
+	}
+	return nil
+}
+
+type AgentCreateResponse_ConduitUser struct {
+	Phid     string `protobuf:"bytes,1,opt,name=phid" json:"phid,omitempty"`
+	UserName string `protobuf:"bytes,2,opt,name=user_name,json=userName" json:"user_name,omitempty"`
+	Token    string `protobuf:"bytes,3,opt,name=token" json:"token,omitempty"`
+	Email    string `protobuf:"bytes,4,opt,name=email" json:"email,omitempty"`
+}
+
+func (m *AgentCreateResponse_ConduitUser) Reset()         { *m = AgentCreateResponse_ConduitUser{} }
+func (m *AgentCreateResponse_ConduitUser) String() string { return proto.CompactTextString(m) }
+func (*AgentCreateResponse_ConduitUser) ProtoMessage()    {}
+func (*AgentCreateResponse_ConduitUser) Descriptor() ([]byte, []int) {
+	return fileDescriptor0, []int{3, 0}
+}
+
+func (m *AgentCreateResponse_ConduitUser) GetPhid() string {
+	if m != nil {
+		return m.Phid
 	}
 	return ""
 }
 
-func (m *AgentDescribeResponse) GetSku() string {
+func (m *AgentCreateResponse_ConduitUser) GetUserName() string {
 	if m != nil {
-		return m.Sku
+		return m.UserName
 	}
 	return ""
 }
 
-func (m *AgentDescribeResponse) GetStartupScript() string {
+func (m *AgentCreateResponse_ConduitUser) GetToken() string {
 	if m != nil {
-		return m.StartupScript
+		return m.Token
 	}
 	return ""
 }
 
-func (m *AgentDescribeResponse) GetCreatedAt() int64 {
+func (m *AgentCreateResponse_ConduitUser) GetEmail() string {
 	if m != nil {
-		return m.CreatedAt
+		return m.Email
 	}
-	return 0
-}
-
-func (m *AgentDescribeResponse) GetUpdatedAt() int64 {
-	if m != nil {
-		return m.UpdatedAt
-	}
-	return 0
+	return ""
 }
 
 type AgentDeleteRequest struct {
@@ -383,7 +307,7 @@ type AgentDeleteRequest struct {
 func (m *AgentDeleteRequest) Reset()                    { *m = AgentDeleteRequest{} }
 func (m *AgentDeleteRequest) String() string            { return proto.CompactTextString(m) }
 func (*AgentDeleteRequest) ProtoMessage()               {}
-func (*AgentDeleteRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
+func (*AgentDeleteRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
 
 func (m *AgentDeleteRequest) GetName() string {
 	if m != nil {
@@ -392,49 +316,13 @@ func (m *AgentDeleteRequest) GetName() string {
 	return ""
 }
 
-type AgentRestartRequest struct {
-	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-}
-
-func (m *AgentRestartRequest) Reset()                    { *m = AgentRestartRequest{} }
-func (m *AgentRestartRequest) String() string            { return proto.CompactTextString(m) }
-func (*AgentRestartRequest) ProtoMessage()               {}
-func (*AgentRestartRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
-
-func (m *AgentRestartRequest) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-type AgentRestartResponse struct {
-	Status *appscode_dtypes.Status `protobuf:"bytes,1,opt,name=status" json:"status,omitempty"`
-}
-
-func (m *AgentRestartResponse) Reset()                    { *m = AgentRestartResponse{} }
-func (m *AgentRestartResponse) String() string            { return proto.CompactTextString(m) }
-func (*AgentRestartResponse) ProtoMessage()               {}
-func (*AgentRestartResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
-
-func (m *AgentRestartResponse) GetStatus() *appscode_dtypes.Status {
-	if m != nil {
-		return m.Status
-	}
-	return nil
-}
-
 func init() {
-	proto.RegisterType((*AgentListRequest)(nil), "appscode.ci.v1beta1.AgentListRequest")
 	proto.RegisterType((*AgentListResponse)(nil), "appscode.ci.v1beta1.AgentListResponse")
 	proto.RegisterType((*Agent)(nil), "appscode.ci.v1beta1.Agent")
 	proto.RegisterType((*AgentCreateRequest)(nil), "appscode.ci.v1beta1.AgentCreateRequest")
-	proto.RegisterType((*PortInfo)(nil), "appscode.ci.v1beta1.PortInfo")
-	proto.RegisterType((*AgentDescribeRequest)(nil), "appscode.ci.v1beta1.AgentDescribeRequest")
-	proto.RegisterType((*AgentDescribeResponse)(nil), "appscode.ci.v1beta1.AgentDescribeResponse")
+	proto.RegisterType((*AgentCreateResponse)(nil), "appscode.ci.v1beta1.AgentCreateResponse")
+	proto.RegisterType((*AgentCreateResponse_ConduitUser)(nil), "appscode.ci.v1beta1.AgentCreateResponse.ConduitUser")
 	proto.RegisterType((*AgentDeleteRequest)(nil), "appscode.ci.v1beta1.AgentDeleteRequest")
-	proto.RegisterType((*AgentRestartRequest)(nil), "appscode.ci.v1beta1.AgentRestartRequest")
-	proto.RegisterType((*AgentRestartResponse)(nil), "appscode.ci.v1beta1.AgentRestartResponse")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -448,11 +336,9 @@ const _ = grpc.SupportPackageIsVersion4
 // Client API for Agents service
 
 type AgentsClient interface {
-	List(ctx context.Context, in *AgentListRequest, opts ...grpc.CallOption) (*AgentListResponse, error)
-	Describe(ctx context.Context, in *AgentDescribeRequest, opts ...grpc.CallOption) (*AgentDescribeResponse, error)
-	Create(ctx context.Context, in *AgentCreateRequest, opts ...grpc.CallOption) (*appscode_dtypes.LongRunningResponse, error)
-	Delete(ctx context.Context, in *AgentDeleteRequest, opts ...grpc.CallOption) (*appscode_dtypes.LongRunningResponse, error)
-	Restart(ctx context.Context, in *AgentRestartRequest, opts ...grpc.CallOption) (*AgentRestartResponse, error)
+	List(ctx context.Context, in *appscode_dtypes.VoidRequest, opts ...grpc.CallOption) (*AgentListResponse, error)
+	Create(ctx context.Context, in *AgentCreateRequest, opts ...grpc.CallOption) (*AgentCreateResponse, error)
+	Delete(ctx context.Context, in *AgentDeleteRequest, opts ...grpc.CallOption) (*appscode_dtypes.VoidResponse, error)
 }
 
 type agentsClient struct {
@@ -463,7 +349,7 @@ func NewAgentsClient(cc *grpc.ClientConn) AgentsClient {
 	return &agentsClient{cc}
 }
 
-func (c *agentsClient) List(ctx context.Context, in *AgentListRequest, opts ...grpc.CallOption) (*AgentListResponse, error) {
+func (c *agentsClient) List(ctx context.Context, in *appscode_dtypes.VoidRequest, opts ...grpc.CallOption) (*AgentListResponse, error) {
 	out := new(AgentListResponse)
 	err := grpc.Invoke(ctx, "/appscode.ci.v1beta1.Agents/List", in, out, c.cc, opts...)
 	if err != nil {
@@ -472,17 +358,8 @@ func (c *agentsClient) List(ctx context.Context, in *AgentListRequest, opts ...g
 	return out, nil
 }
 
-func (c *agentsClient) Describe(ctx context.Context, in *AgentDescribeRequest, opts ...grpc.CallOption) (*AgentDescribeResponse, error) {
-	out := new(AgentDescribeResponse)
-	err := grpc.Invoke(ctx, "/appscode.ci.v1beta1.Agents/Describe", in, out, c.cc, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *agentsClient) Create(ctx context.Context, in *AgentCreateRequest, opts ...grpc.CallOption) (*appscode_dtypes.LongRunningResponse, error) {
-	out := new(appscode_dtypes.LongRunningResponse)
+func (c *agentsClient) Create(ctx context.Context, in *AgentCreateRequest, opts ...grpc.CallOption) (*AgentCreateResponse, error) {
+	out := new(AgentCreateResponse)
 	err := grpc.Invoke(ctx, "/appscode.ci.v1beta1.Agents/Create", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -490,18 +367,9 @@ func (c *agentsClient) Create(ctx context.Context, in *AgentCreateRequest, opts 
 	return out, nil
 }
 
-func (c *agentsClient) Delete(ctx context.Context, in *AgentDeleteRequest, opts ...grpc.CallOption) (*appscode_dtypes.LongRunningResponse, error) {
-	out := new(appscode_dtypes.LongRunningResponse)
+func (c *agentsClient) Delete(ctx context.Context, in *AgentDeleteRequest, opts ...grpc.CallOption) (*appscode_dtypes.VoidResponse, error) {
+	out := new(appscode_dtypes.VoidResponse)
 	err := grpc.Invoke(ctx, "/appscode.ci.v1beta1.Agents/Delete", in, out, c.cc, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *agentsClient) Restart(ctx context.Context, in *AgentRestartRequest, opts ...grpc.CallOption) (*AgentRestartResponse, error) {
-	out := new(AgentRestartResponse)
-	err := grpc.Invoke(ctx, "/appscode.ci.v1beta1.Agents/Restart", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -511,11 +379,9 @@ func (c *agentsClient) Restart(ctx context.Context, in *AgentRestartRequest, opt
 // Server API for Agents service
 
 type AgentsServer interface {
-	List(context.Context, *AgentListRequest) (*AgentListResponse, error)
-	Describe(context.Context, *AgentDescribeRequest) (*AgentDescribeResponse, error)
-	Create(context.Context, *AgentCreateRequest) (*appscode_dtypes.LongRunningResponse, error)
-	Delete(context.Context, *AgentDeleteRequest) (*appscode_dtypes.LongRunningResponse, error)
-	Restart(context.Context, *AgentRestartRequest) (*AgentRestartResponse, error)
+	List(context.Context, *appscode_dtypes.VoidRequest) (*AgentListResponse, error)
+	Create(context.Context, *AgentCreateRequest) (*AgentCreateResponse, error)
+	Delete(context.Context, *AgentDeleteRequest) (*appscode_dtypes.VoidResponse, error)
 }
 
 func RegisterAgentsServer(s *grpc.Server, srv AgentsServer) {
@@ -523,7 +389,7 @@ func RegisterAgentsServer(s *grpc.Server, srv AgentsServer) {
 }
 
 func _Agents_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AgentListRequest)
+	in := new(appscode_dtypes.VoidRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -535,25 +401,7 @@ func _Agents_List_Handler(srv interface{}, ctx context.Context, dec func(interfa
 		FullMethod: "/appscode.ci.v1beta1.Agents/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AgentsServer).List(ctx, req.(*AgentListRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Agents_Describe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AgentDescribeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AgentsServer).Describe(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/appscode.ci.v1beta1.Agents/Describe",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AgentsServer).Describe(ctx, req.(*AgentDescribeRequest))
+		return srv.(AgentsServer).List(ctx, req.(*appscode_dtypes.VoidRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -594,24 +442,6 @@ func _Agents_Delete_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Agents_Restart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AgentRestartRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AgentsServer).Restart(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/appscode.ci.v1beta1.Agents/Restart",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AgentsServer).Restart(ctx, req.(*AgentRestartRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 var _Agents_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "appscode.ci.v1beta1.Agents",
 	HandlerType: (*AgentsServer)(nil),
@@ -621,20 +451,12 @@ var _Agents_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Agents_List_Handler,
 		},
 		{
-			MethodName: "Describe",
-			Handler:    _Agents_Describe_Handler,
-		},
-		{
 			MethodName: "Create",
 			Handler:    _Agents_Create_Handler,
 		},
 		{
 			MethodName: "Delete",
 			Handler:    _Agents_Delete_Handler,
-		},
-		{
-			MethodName: "Restart",
-			Handler:    _Agents_Restart_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -644,58 +466,50 @@ var _Agents_serviceDesc = grpc.ServiceDesc{
 func init() { proto.RegisterFile("agent.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 841 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x9c, 0x56, 0xcd, 0x8e, 0xe3, 0x44,
-	0x10, 0x96, 0xf3, 0xe3, 0xc4, 0x15, 0x7e, 0xb2, 0x3d, 0x0b, 0x58, 0x66, 0x17, 0x82, 0xc5, 0xb0,
-	0x49, 0xb4, 0xb2, 0x35, 0x59, 0x40, 0x88, 0xdb, 0xec, 0x0e, 0x42, 0x48, 0x7b, 0x18, 0x39, 0x12,
-	0x07, 0x2e, 0x56, 0xc7, 0xe9, 0x0d, 0x16, 0x59, 0xb7, 0xe9, 0x6e, 0x8f, 0x06, 0x21, 0x2e, 0x23,
-	0x71, 0xe1, 0xc0, 0x85, 0x0b, 0x0f, 0xc0, 0x99, 0x1b, 0xe2, 0x41, 0x78, 0x05, 0x1e, 0x80, 0x03,
-	0x0f, 0xb0, 0xea, 0x1f, 0x3b, 0x76, 0x66, 0x92, 0x89, 0xe6, 0x12, 0x75, 0x57, 0x7d, 0xdd, 0xf5,
-	0x55, 0xd5, 0xd7, 0x15, 0xc3, 0x00, 0xaf, 0x48, 0x26, 0x82, 0x9c, 0x51, 0x41, 0xd1, 0x11, 0xce,
-	0x73, 0x9e, 0xd0, 0x25, 0x09, 0x92, 0x34, 0xb8, 0x38, 0x59, 0x10, 0x81, 0x4f, 0xbc, 0x07, 0x2b,
-	0x4a, 0x57, 0x6b, 0x12, 0xe2, 0x3c, 0x0d, 0x71, 0x96, 0x51, 0x81, 0x45, 0x4a, 0x33, 0xae, 0x8f,
-	0x78, 0xef, 0x95, 0x47, 0x76, 0xf8, 0xdf, 0x6f, 0xf8, 0x97, 0xe2, 0x87, 0x9c, 0xf0, 0x50, 0xfd,
-	0x6a, 0x80, 0x3f, 0x85, 0xe1, 0xa9, 0xa4, 0xf0, 0x3c, 0xe5, 0x22, 0x22, 0xdf, 0x17, 0x84, 0x0b,
-	0xf4, 0x36, 0xd8, 0x5c, 0x60, 0x51, 0x70, 0xd7, 0x1a, 0xb5, 0xc7, 0x4e, 0x64, 0x76, 0xfe, 0x25,
-	0xdc, 0xab, 0x61, 0x79, 0x4e, 0x33, 0x4e, 0x50, 0x58, 0x03, 0x5b, 0xe3, 0xc1, 0xec, 0x9d, 0xa0,
-	0xca, 0x42, 0x87, 0x0b, 0xe6, 0xca, 0x5d, 0xde, 0x82, 0x66, 0x60, 0xab, 0xa4, 0xb9, 0xdb, 0x1a,
-	0xb5, 0xc7, 0x83, 0x99, 0x17, 0xdc, 0x90, 0x76, 0xa0, 0x02, 0x45, 0x06, 0xe9, 0xff, 0x6d, 0x41,
-	0x57, 0x59, 0x10, 0x82, 0x4e, 0x86, 0x5f, 0x12, 0x15, 0xcc, 0x89, 0xd4, 0xba, 0xc6, 0xb7, 0xa5,
-	0xac, 0x65, 0xa4, 0x0f, 0xe0, 0x35, 0x75, 0x3e, 0x36, 0xde, 0xb6, 0xf2, 0xea, 0x92, 0xcf, 0x2b,
-	0x48, 0xca, 0x63, 0x46, 0x5e, 0x30, 0xc2, 0xbf, 0x25, 0x4b, 0xb7, 0x33, 0xb2, 0xc6, 0xdd, 0x68,
-	0x90, 0xf2, 0xa8, 0x34, 0xa1, 0x87, 0x00, 0x09, 0x23, 0x58, 0x90, 0x65, 0x8c, 0x85, 0xdb, 0x1d,
-	0x59, 0xe3, 0x76, 0xe4, 0x18, 0xcb, 0xa9, 0x90, 0xee, 0x22, 0x5f, 0x96, 0x6e, 0x5b, 0xbb, 0x8d,
-	0xe5, 0x54, 0xf8, 0x7f, 0xb6, 0x00, 0x29, 0xe6, 0xcf, 0xd4, 0x89, 0xb2, 0xc4, 0x43, 0x68, 0xf3,
-	0xef, 0x0a, 0x93, 0x85, 0x5c, 0xa2, 0x07, 0xe0, 0x90, 0x4b, 0x92, 0x14, 0x82, 0x32, 0x9d, 0x47,
-	0x37, 0xda, 0x18, 0x64, 0x8a, 0x6b, 0xbc, 0x20, 0xeb, 0x32, 0x09, 0xb3, 0x43, 0x01, 0x1c, 0x15,
-	0x9c, 0x30, 0x99, 0x21, 0x13, 0x45, 0x1e, 0xf3, 0x84, 0xa5, 0xb9, 0x50, 0x69, 0x38, 0xd1, 0x3d,
-	0xe9, 0x9a, 0x6b, 0xcf, 0x5c, 0x39, 0xd0, 0x04, 0x86, 0x1c, 0xaf, 0xc5, 0x02, 0x73, 0x12, 0x5f,
-	0x10, 0xc6, 0x53, 0x9a, 0xa9, 0x94, 0x9c, 0xe8, 0xcd, 0xd2, 0xfe, 0xb5, 0x36, 0xa3, 0xc7, 0x80,
-	0x92, 0x54, 0x5f, 0x4c, 0x58, 0x05, 0xb6, 0x15, 0x78, 0x98, 0xa4, 0x73, 0xed, 0x28, 0xd1, 0x4f,
-	0xa0, 0x9b, 0x53, 0x26, 0xb8, 0xdb, 0x53, 0x4d, 0x7d, 0x78, 0x63, 0x53, 0xcf, 0x29, 0x13, 0x5f,
-	0x65, 0x2f, 0x68, 0xa4, 0xb1, 0xb2, 0x99, 0x8c, 0xae, 0x89, 0xdb, 0xd7, 0xcd, 0x94, 0x6b, 0xff,
-	0x0b, 0xe8, 0x97, 0x30, 0xe4, 0x41, 0x5f, 0xa9, 0x34, 0xa1, 0x6b, 0x53, 0xaa, 0x6a, 0x2f, 0xeb,
-	0x2e, 0x2f, 0x89, 0x19, 0xce, 0x56, 0xc4, 0x34, 0xde, 0x91, 0x96, 0x48, 0x1a, 0xfc, 0x29, 0xdc,
-	0x57, 0x65, 0x3f, 0x23, 0xb2, 0x24, 0x8b, 0xaa, 0xf0, 0x37, 0xe8, 0xc7, 0xff, 0xbf, 0x05, 0x6f,
-	0x6d, 0x81, 0xef, 0x2a, 0xee, 0xf2, 0xfa, 0x56, 0x4d, 0x9e, 0x8d, 0xce, 0xb6, 0xb5, 0x40, 0x36,
-	0x9d, 0xdd, 0x16, 0x69, 0xe7, 0xba, 0x48, 0x1f, 0x03, 0xaa, 0x43, 0xe2, 0x04, 0x17, 0x9c, 0x98,
-	0xb6, 0x0d, 0x6b, 0xc0, 0x67, 0xd2, 0x8e, 0xee, 0x43, 0x57, 0x89, 0xc3, 0xb4, 0x4a, 0x6f, 0x4c,
-	0x29, 0x2f, 0xd2, 0x25, 0x61, 0x6e, 0xaf, 0x2a, 0xa5, 0xda, 0x97, 0x62, 0xec, 0x6f, 0xc4, 0x78,
-	0x0c, 0x6f, 0x6c, 0x29, 0xca, 0x51, 0xce, 0xd7, 0x79, 0x43, 0x4d, 0xcd, 0xa7, 0x01, 0xfb, 0x9f,
-	0xc6, 0x60, 0xfb, 0x69, 0x8c, 0xcd, 0xcb, 0x38, 0x23, 0x6b, 0x22, 0xf6, 0x36, 0x68, 0x02, 0x47,
-	0x7a, 0x1e, 0x10, 0x15, 0x7f, 0x1f, 0xf4, 0x4b, 0xd3, 0xf7, 0x0a, 0x7a, 0xc7, 0x4e, 0xce, 0xfe,
-	0xeb, 0x82, 0xad, 0x6e, 0xe2, 0xe8, 0x67, 0x0b, 0x3a, 0x72, 0xe6, 0xa1, 0xe3, 0xdd, 0xa3, 0xaa,
-	0x36, 0x3f, 0xbd, 0x8f, 0x6e, 0x83, 0x69, 0x4e, 0x7e, 0x70, 0xf5, 0x97, 0xdb, 0xea, 0x5b, 0x57,
-	0xff, 0xfc, 0xfb, 0x5b, 0xcb, 0x47, 0xa3, 0x30, 0x6e, 0x0c, 0xeb, 0x24, 0x0d, 0xcd, 0xd1, 0x50,
-	0x4f, 0x41, 0xf4, 0xbb, 0x05, 0xfd, 0x52, 0xa2, 0x68, 0xb2, 0x3b, 0xc8, 0x96, 0xe6, 0xbd, 0xe9,
-	0x21, 0x50, 0xc3, 0xe9, 0x93, 0x1a, 0xa7, 0x09, 0x7a, 0x74, 0x1b, 0xa7, 0xf0, 0x47, 0x59, 0xf5,
-	0x9f, 0xd0, 0x2f, 0x16, 0xd8, 0x7a, 0xc2, 0xa1, 0x47, 0xbb, 0xa3, 0x35, 0x66, 0xa0, 0xf7, 0xe1,
-	0xb5, 0x16, 0x3c, 0xa7, 0xd9, 0x2a, 0x2a, 0xb2, 0x2c, 0xcd, 0x56, 0x15, 0xa1, 0x93, 0x1a, 0xa1,
-	0x63, 0xff, 0xd6, 0x22, 0x7d, 0x6e, 0x4d, 0xd1, 0xaf, 0x16, 0xd8, 0x5a, 0x54, 0xfb, 0xc8, 0x34,
-	0x64, 0x77, 0x20, 0x99, 0x46, 0x75, 0xa6, 0x07, 0x57, 0xe7, 0x0f, 0x0b, 0x7a, 0x46, 0x90, 0x68,
-	0xbc, 0xe7, 0xef, 0xae, 0x21, 0x6f, 0x6f, 0x72, 0x00, 0xd2, 0xf0, 0x3a, 0xab, 0xf1, 0xfa, 0xcc,
-	0xff, 0xf4, 0x40, 0x5e, 0x21, 0x4e, 0xd4, 0xb7, 0x42, 0xc8, 0xc8, 0x82, 0x52, 0xf1, 0xf4, 0x63,
-	0x78, 0x37, 0xa1, 0x2f, 0x37, 0x51, 0x71, 0x9e, 0xd6, 0x22, 0x3f, 0x05, 0x15, 0xfa, 0x5c, 0x0e,
-	0xe0, 0x73, 0xeb, 0x9b, 0x9e, 0x31, 0x2f, 0x6c, 0x35, 0x92, 0x9f, 0xbc, 0x0a, 0x00, 0x00, 0xff,
-	0xff, 0x3c, 0x41, 0x47, 0xcf, 0xcb, 0x08, 0x00, 0x00,
+	// 718 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xbc, 0x55, 0xcf, 0x6e, 0xd3, 0x30,
+	0x1c, 0x56, 0xda, 0x35, 0x6d, 0x7f, 0x45, 0x1a, 0xf3, 0x10, 0x64, 0x5d, 0xc7, 0x4a, 0x24, 0x58,
+	0x19, 0x22, 0xd1, 0xca, 0x38, 0xc0, 0xad, 0x1b, 0x07, 0x06, 0x08, 0xaa, 0x4c, 0x70, 0xe0, 0x12,
+	0x79, 0x8d, 0xd5, 0x7a, 0xcb, 0x62, 0x13, 0xbb, 0x68, 0xe3, 0xcf, 0x65, 0x17, 0x4e, 0x70, 0xe1,
+	0x09, 0x78, 0x01, 0x6e, 0x3c, 0x06, 0x27, 0x5e, 0x81, 0x07, 0x41, 0xb6, 0x93, 0x35, 0x15, 0x74,
+	0x43, 0x1c, 0xb8, 0x44, 0xce, 0xf7, 0x7d, 0xb6, 0xbf, 0xdf, 0xf7, 0x73, 0x1c, 0x68, 0xe0, 0x21,
+	0x49, 0xa4, 0xc7, 0x53, 0x26, 0x19, 0x5a, 0xc4, 0x9c, 0x8b, 0x01, 0x8b, 0x88, 0x37, 0xa0, 0xde,
+	0xeb, 0x8d, 0x3d, 0x22, 0xf1, 0x46, 0xb3, 0x35, 0x64, 0x6c, 0x18, 0x13, 0x1f, 0x73, 0xea, 0xe3,
+	0x24, 0x61, 0x12, 0x4b, 0xca, 0x12, 0x61, 0xa6, 0x34, 0xaf, 0xe6, 0x53, 0x66, 0xf0, 0xab, 0x53,
+	0x7c, 0x24, 0x8f, 0x39, 0x11, 0xbe, 0x7e, 0x1a, 0x81, 0x7b, 0x04, 0x0b, 0x3d, 0x65, 0xe1, 0x09,
+	0x15, 0x32, 0x20, 0x82, 0xb3, 0x44, 0x10, 0xe4, 0x83, 0x2d, 0x24, 0x96, 0x63, 0xe1, 0x58, 0x6d,
+	0xab, 0xd3, 0xe8, 0x5e, 0xf1, 0x4e, 0x9d, 0x99, 0x25, 0xbc, 0x5d, 0x4d, 0x07, 0x99, 0x0c, 0x75,
+	0xc1, 0xd6, 0x85, 0x08, 0xa7, 0xd4, 0x2e, 0x77, 0x1a, 0xdd, 0xa6, 0xf7, 0x87, 0x52, 0x3c, 0xbd,
+	0x51, 0x90, 0x29, 0xdd, 0xef, 0x16, 0x54, 0x34, 0x82, 0x10, 0xcc, 0x25, 0xf8, 0x90, 0xe8, 0xcd,
+	0xea, 0x81, 0x1e, 0x2b, 0x2c, 0x65, 0x31, 0x71, 0x4a, 0x06, 0x53, 0x63, 0xb4, 0x0a, 0x0d, 0x72,
+	0x24, 0x49, 0x9a, 0xe0, 0x38, 0xa4, 0xdc, 0x29, 0x6b, 0x0a, 0x72, 0x68, 0x87, 0x2b, 0x01, 0x4d,
+	0x26, 0x82, 0x39, 0x23, 0xc8, 0xa1, 0x1d, 0x8e, 0x5a, 0x50, 0xa7, 0xe2, 0x01, 0x89, 0x89, 0x24,
+	0x91, 0x53, 0x69, 0x5b, 0x9d, 0x5a, 0x30, 0x01, 0xd0, 0x0a, 0xc0, 0x20, 0x25, 0x58, 0x92, 0x28,
+	0xc4, 0xd2, 0xb1, 0xdb, 0x56, 0xa7, 0x1c, 0xd4, 0x33, 0xa4, 0x27, 0x15, 0x3d, 0xe6, 0x51, 0x4e,
+	0x57, 0x0d, 0x9d, 0x21, 0x3d, 0xe9, 0x7e, 0x2c, 0x01, 0xd2, 0xf5, 0x6c, 0xeb, 0x19, 0x01, 0x79,
+	0x35, 0x26, 0xe2, 0x7f, 0x16, 0xb7, 0x04, 0x35, 0x21, 0x46, 0xe1, 0x58, 0x90, 0x54, 0xd7, 0x56,
+	0x0f, 0xaa, 0x42, 0x8c, 0x9e, 0x0b, 0x92, 0xe6, 0x14, 0x67, 0xa9, 0xa9, 0xab, 0xa2, 0xa9, 0x3e,
+	0x4b, 0x25, 0x5a, 0x87, 0x85, 0x7d, 0x92, 0x1c, 0xd0, 0x44, 0x84, 0xfb, 0x49, 0xcc, 0x8d, 0xa6,
+	0xaa, 0x35, 0xf3, 0x19, 0xf1, 0x28, 0x89, 0xb9, 0xd6, 0xde, 0x02, 0x34, 0xa4, 0x32, 0xd4, 0x4b,
+	0x8d, 0xf7, 0x62, 0x3a, 0x08, 0x0f, 0xc8, 0xb1, 0x53, 0xd3, 0x7b, 0xcd, 0x0f, 0xa9, 0xdc, 0x15,
+	0xa3, 0xbe, 0xc6, 0x1f, 0x93, 0x63, 0xf7, 0x6b, 0x19, 0x16, 0xa7, 0xf2, 0xf8, 0xd7, 0xc3, 0xd5,
+	0x82, 0xba, 0x4a, 0x4d, 0x70, 0x3c, 0xc8, 0x23, 0x9b, 0x00, 0xe8, 0x1e, 0x2c, 0x29, 0x3f, 0x78,
+	0x2c, 0x47, 0x2c, 0xa5, 0x6f, 0x48, 0x54, 0xb4, 0x66, 0x52, 0xbc, 0x2c, 0xc4, 0xa8, 0x77, 0xca,
+	0x9f, 0x3a, 0x44, 0xd7, 0xe0, 0x82, 0x2a, 0x67, 0xc4, 0x84, 0xd4, 0x2d, 0x32, 0x91, 0x36, 0x86,
+	0x54, 0x3e, 0xcc, 0x20, 0x74, 0x1b, 0x16, 0x73, 0x49, 0x71, 0x5d, 0x13, 0xef, 0xc5, 0x4c, 0x39,
+	0x59, 0xf1, 0x19, 0xd4, 0x94, 0x5c, 0xb7, 0xc0, 0xd6, 0xd5, 0x6d, 0xce, 0xfe, 0x12, 0xa6, 0x73,
+	0xf1, 0xb6, 0x59, 0x12, 0x8d, 0xa9, 0x54, 0xfd, 0x0a, 0xaa, 0x43, 0x33, 0x68, 0xee, 0x43, 0xa3,
+	0x80, 0xab, 0x83, 0xc3, 0x47, 0x34, 0xca, 0x0f, 0x93, 0x1a, 0xa3, 0x65, 0xa8, 0xab, 0xfd, 0x42,
+	0x5d, 0x82, 0x89, 0xa7, 0xa6, 0x80, 0xa7, 0xca, 0xff, 0x25, 0xa8, 0x48, 0x76, 0x40, 0x92, 0x2c,
+	0x09, 0xf3, 0xa2, 0x50, 0x72, 0x88, 0x69, 0x9c, 0x55, 0x6c, 0x5e, 0xdc, 0x4e, 0x76, 0x7e, 0xcd,
+	0xe7, 0x70, 0xc6, 0xf9, 0xed, 0x7e, 0x29, 0x83, 0xad, 0xa5, 0x02, 0xbd, 0x83, 0x39, 0x75, 0x75,
+	0xa0, 0xd6, 0x6f, 0x5d, 0x7c, 0xc1, 0x68, 0x94, 0x2d, 0xd2, 0xbc, 0x31, 0x3b, 0x85, 0xe2, 0xc5,
+	0xe3, 0x7a, 0x27, 0xdf, 0x9c, 0x52, 0xcd, 0x3a, 0xf9, 0xf1, 0xf3, 0x73, 0xc9, 0x45, 0x6d, 0x3f,
+	0x9c, 0xba, 0xbe, 0x06, 0xd4, 0xcf, 0xa6, 0xfa, 0xe6, 0x0e, 0x41, 0x9f, 0x2c, 0xb0, 0x4d, 0x8c,
+	0x68, 0xed, 0xfc, 0xa0, 0x8d, 0x97, 0xce, 0xdf, 0x76, 0xc4, 0xdd, 0x28, 0xb8, 0xb9, 0xee, 0x9e,
+	0xeb, 0xe6, 0xbe, 0xb5, 0x8e, 0x3e, 0x58, 0x60, 0x9b, 0xfc, 0xce, 0x32, 0x34, 0x95, 0x70, 0x73,
+	0x65, 0x46, 0x74, 0x99, 0x8b, 0xbb, 0x05, 0x17, 0x37, 0xd7, 0xd7, 0xce, 0x73, 0xe1, 0xbf, 0x55,
+	0x2d, 0x7a, 0xbf, 0xb5, 0x09, 0xcb, 0x03, 0x76, 0x38, 0x59, 0x1a, 0x73, 0x5a, 0xf0, 0xb1, 0x05,
+	0xda, 0x48, 0x5f, 0xfd, 0x03, 0xfa, 0xd6, 0xcb, 0x6a, 0x06, 0xef, 0xd9, 0xfa, 0xaf, 0x70, 0xe7,
+	0x57, 0x00, 0x00, 0x00, 0xff, 0xff, 0xd7, 0x2f, 0x6b, 0xbd, 0x98, 0x06, 0x00, 0x00,
 }
