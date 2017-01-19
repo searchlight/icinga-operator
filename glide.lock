@@ -1,5 +1,5 @@
 hash: e4b74732134c9a8a049c47376ebebec5530aef323faa81165e3d358a016c8008
-updated: 2017-01-16T23:40:05.139508848-08:00
+updated: 2017-01-19T03:06:50.725212162-08:00
 imports:
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
@@ -7,7 +7,7 @@ imports:
   - compute/metadata
   - internal
 - name: github.com/appscode/api
-  version: e1302c8775256010ac2a62d19fbf6a5becad06d5
+  version: cf671fb833a346e4ccb9cc8f26c31e3b514f18f5
   subpackages:
   - artifactory/v1beta1
   - auth/v1beta1
@@ -36,7 +36,7 @@ imports:
   subpackages:
   - h/log
 - name: github.com/appscode/go
-  version: bd66820592324c110fa2bdae558a7557b6f19a38
+  version: 10a1572c8fec8c70fe11a05cf6cf2d0034c3ea2a
   subpackages:
   - crypto/rand
   - env
@@ -193,7 +193,7 @@ imports:
 - name: github.com/google/gofuzz
   version: bbcb9da2d746f8bdbd6a936686a0a6067ada0ec5
 - name: github.com/grpc-ecosystem/grpc-gateway
-  version: 0df7af644065817a5e7f6dfdb4c52ddca56e3c92
+  version: 9e2ec49480d7da3e5cae8a52821467c790ca496d
   repo: git@github.com:appscode/grpc-gateway.git
   vcs: git
   subpackages:

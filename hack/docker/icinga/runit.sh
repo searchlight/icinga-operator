@@ -58,6 +58,7 @@ if [ -n "$ICINGA_WEB_ADMIN_PASSWORD" ]; then
 passhash=\$(openssl passwd -1 "$ICINGA_WEB_ADMIN_PASSWORD")
 psql -d $ICINGA_WEB_DB <<EOF
 INSERT INTO icingaweb_user (name, active, password_hash) VALUES ('admin', 1, '\$passhash');
+INSERT INTO icingaweb_group_membership (group_id, username) VALUES (1, 'admin');
 EOF
 EOL
 fi

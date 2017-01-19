@@ -2,8 +2,9 @@ package net
 
 import (
 	"bytes"
+	"errors"
 	"net"
-	"strings"
+	"regexp"
 )
 
 type IPRange struct {
@@ -30,6 +31,10 @@ func IsPrivateIP(ip net.IP) bool {
 	return false
 }
 
+var (
+	knownLocalBridges = regexp.MustCompile(`^(docker|cbr|cni)[0-9]+$`)
+)
+
 func routableIPs() []net.IP {
 	result := make([]net.IP, 0, 2)
 	ifaces, err := net.Interfaces()
@@ -43,7 +48,7 @@ func routableIPs() []net.IP {
 		if iface.Flags&net.FlagLoopback != 0 {
 			continue // loopback interface
 		}
-		if strings.HasPrefix(iface.Name, "docker") {
+		if knownLocalBridges.MatchString(iface.Name) {
 			continue
 		}
 		addrs, err := iface.Addrs()
@@ -69,6 +74,104 @@ func routableIPs() []net.IP {
 		}
 	}
 	return result
+}
+
+var (
+	InterfaceDownErr       = errors.New("Interface down")
+	LoopbackInterfaceErr   = errors.New("Loopback interface")
+	KnownLocalInterfaceErr = errors.New("Known local interface")
+	NotFoundErr            = errors.New("No IPV4 address found!")
+)
+
+/*
+NodeIP returns a IPv4 address for a given set of interface names. It always prefers a private IP over a public IP.
+If no interface name is given, all interfaces are checked.
+*/
+func NodeIP(interfaceName ...string) (string, net.IP, error) {
+	var err error
+	var ifaces []net.Interface
+
+	if len(interfaceName) == 0 {
+		ifaces, err = net.Interfaces()
+		if err != nil {
+			return "", nil, err
+		}
+	} else {
+		ifaces = make([]net.Interface, len(interfaceName))
+		for i, name := range interfaceName {
+			d, err := net.InterfaceByName(name)
+			if err != nil {
+				return name, nil, err
+			}
+			ifaces[i] = *d
+		}
+	}
+
+	type ipData struct {
+		ip    net.IP
+		iface string
+	}
+	internalIPs := make([]ipData, 0)
+	externalIPs := make([]ipData, 0)
+	for _, iface := range ifaces {
+		if iface.Flags&net.FlagUp == 0 {
+			if len(ifaces) == 1 {
+				return iface.Name, nil, InterfaceDownErr
+			} else {
+				continue
+			}
+		}
+		if iface.Flags&net.FlagLoopback != 0 {
+			if len(ifaces) == 1 {
+				return iface.Name, nil, LoopbackInterfaceErr
+			} else {
+				continue
+			}
+		}
+		if knownLocalBridges.MatchString(iface.Name) {
+			if len(ifaces) == 1 {
+				return iface.Name, nil, KnownLocalInterfaceErr
+			} else {
+				continue
+			}
+		}
+		addrs, err := iface.Addrs()
+		if err != nil {
+			if len(ifaces) == 1 {
+				return iface.Name, nil, err
+			} else {
+				continue
+			}
+		}
+		for _, addr := range addrs {
+			var ip net.IP
+			switch v := addr.(type) {
+			case *net.IPNet:
+				ip = v.IP
+			case *net.IPAddr:
+				ip = v.IP
+			}
+			if ip == nil || ip.IsLoopback() {
+				continue
+			}
+			ip = ip.To4()
+			if ip == nil {
+				continue // Not an ipv4 address
+			}
+			if IsPrivateIP(ip) {
+				internalIPs = append(internalIPs, ipData{ip: ip, iface: iface.Name})
+			} else {
+				externalIPs = append(externalIPs, ipData{ip: ip, iface: iface.Name})
+			}
+		}
+	}
+	if len(internalIPs) > 0 {
+		return internalIPs[0].iface, internalIPs[0].ip, nil
+	} else if len(externalIPs) > 0 {
+		return externalIPs[0].iface, externalIPs[0].ip, nil
+	} else {
+		return "", nil, NotFoundErr
+	}
 }
 
 func GetInternalIP() string {
