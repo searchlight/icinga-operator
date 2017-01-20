@@ -2,7 +2,7 @@
   "check_command": [
     {
       "description": "This is used to check Kubernetes components",
-      "examples": "hyperalert component_status",
+      "examples": "hyperalert check_component_status",
       "name": "component_status",
        "envs": [
          "onebox",
@@ -159,7 +159,7 @@
     },
     {
       "description": "This is used to check any API response parsing JSON using JQ queries",
-      "examples": "hyperalert json_path --url='https://api.appscode.com/health' --query='.status' --critical='.status != \"OK\"'",
+      "examples": "hyperalert check_json_path --url='https://api.appscode.com/health' --query='.status' --critical='.status != \"OK\"'",
       "name": "json_path",
       "envs": [
         "onebox",
@@ -244,13 +244,14 @@
       ],
       "states": [
         "OK",
+        "WARNING",
         "CRITICAL",
         "UNKNOWN"
       ]
     },
     {
       "description": "This is used to check total number of Kubernetes node",
-      "examples": "hyperalert node_count --count=3",
+      "examples": "hyperalert check_node_count --count=3",
       "name": "node_count",
       "envs": [
         "onebox",
@@ -283,7 +284,7 @@
     },
     {
       "description": "This is used to check Kubernetes Node status",
-      "examples": "hyperalert node_status --name=master.internal",
+      "examples": "hyperalert check_node_status --name=master.internal",
       "name": "node_status",
       "envs": [
         "onebox",
@@ -322,7 +323,7 @@
       },
       "vars": [
         {
-          "description": "Number of Kubernetes Node",
+          "description": "Number of expected Kubernetes Pod",
           "flag": {
             "short": "c",
             "long": "count"

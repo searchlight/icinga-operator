@@ -211,6 +211,7 @@ def gen_extpoints():
 def gen():
     gen_assets()
     gen_extpoints()
+    fmt()
 
 
 def build_cmd(name):
@@ -270,7 +271,6 @@ def install():
 
 def default():
     gen()
-    fmt()
     die(call('GO15VENDOREXPERIMENT=1 ' + libbuild.GOC + ' install ./cmd/...'))
 
 
