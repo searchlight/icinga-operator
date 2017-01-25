@@ -20,4 +20,4 @@ Submit the Third Party Resource configuration to the Kubernetes API server:
 kubectl create -f alert-third-party-resource.yaml
 ```
 
-At this point we can now create [Alert Objects](objects.md).
+At this point we can now create [Kubernetes Alert Objects](objects.md).

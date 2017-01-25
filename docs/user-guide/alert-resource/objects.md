@@ -2,7 +2,7 @@
 
 Alert objects are consumed by Searchlight Controller to create Icinga2 hosts, services and notifications.
 
-Before we can create an Alert object we must create the [Alert Third Party Resource](third-party-resource.md) in our Kubernetes cluster.
+Before we can create an Alert object, we must create the Third Party Resource [Alert](third-party-resource.md) in our Kubernetes cluster.
 
 
 ##### Alert Object
@@ -44,7 +44,7 @@ This object will do the followings:
 
 ### Alert Object Fields
 
-* apiVersion - The Kubernetes API version. See [Alert Third Party Resource](third-party-resource.md).
+* apiVersion - The Kubernetes API version. See Third Party Resource [Alert](third-party-resource.md).
 * kind - The Kubernetes object type.
 * metadata.name - The name of the Alert object.
 * metadata.namespace - The namespace of the Alert object

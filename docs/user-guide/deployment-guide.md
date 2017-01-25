@@ -12,7 +12,7 @@ This guide will walk you through deploying the Searchlight which includes Icinga
 
 #### Create the Third Party Resource
 
-The `Searchlight` is driven by [Kubernetes Alert Objects](alert-resource/objects.md). Alert is not a core Kubernetes kind, but can be enabled with the [Alert Third Party Resource](alert-resource/third-party-resource.md):
+The `Searchlight` is driven by [Kubernetes Alert Objects](alert-resource/objects.md). Alert is not a core Kubernetes kind, but can be enabled with the Third Party Resource [Alert](alert-resource/third-party-resource.md):
 
 #### Deploy Icinga2
 
