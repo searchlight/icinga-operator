@@ -2,7 +2,7 @@
 
 Alert objects are consumed by Searchlight Controller to create Icinga2 hosts, services and notifications.
 
-Before we can create an Alert object, we must create the Third Party Resource [Alert](third-party-resource.md) in our Kubernetes cluster.
+Before we can create an Alert object, we must create the `Third Party Resource` in our Kubernetes cluster.
 
 
 ##### Alert Object
@@ -44,7 +44,7 @@ This object will do the followings:
 
 ### Alert Object Fields
 
-* apiVersion - The Kubernetes API version. See Third Party Resource [Alert](third-party-resource.md).
+* apiVersion - The Kubernetes API version.
 * kind - The Kubernetes object type.
 * metadata.name - The name of the Alert object.
 * metadata.namespace - The namespace of the Alert object
@@ -76,15 +76,15 @@ This object will do the followings:
 
 We currently supports following CheckCommands:
 
-* [component_status](.../.../user-guide/check-command/component_status.md) - To check Kubernetes components.
-* [influx_query](.../.../user-guide/check-command/influx_query.md) - To check InfluxDB query result.
-* [json_path](.../.../user-guide/check-command/json_path.md) - To check any API response by parsing JSON using JQ queries.
-* [node_count](.../.../user-guide/check-command/node_count.md) - To check total number of Kubernetes node.
-* [node_status](.../.../user-guide/check-command/node_status.md) - To check Kubernetes Node status.
-* [pod_exists](.../.../user-guide/check-command/pod_exists.md) - To check Kubernetes pod existence.
-* [pod_status](.../.../user-guide/check-command/pod_status.md) - To check Kubernetes pod status.
-* [prometheus_metric](.../.../user-guide/check-command/prometheus_metric.md) - To check Prometheus query result.
-* [node_disk](.../.../user-guide/check-command/node_disk.md) - To check Node Disk stat.
-* [volume](.../.../user-guide/check-command/volume.md) - To check Pod volume stat.
-* [kube_event](.../.../user-guide/check-command/kube_event.md) - To check Kubernetes events for all Warning TYPE happened in last 'c' seconds.
-* [kube_exec](.../.../user-guide/check-command/kube_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
+* [component_status](check-command/component_status.md) - To check Kubernetes components.
+* [influx_query](check-command/influx_query.md) - To check InfluxDB query result.
+* [json_path](check-command/json_path.md) - To check any API response by parsing JSON using JQ queries.
+* [node_count](check-command/node_count.md) - To check total number of Kubernetes node.
+* [node_status](check-command/node_status.md) - To check Kubernetes Node status.
+* [pod_exists](check-command/pod_exists.md) - To check Kubernetes pod existence.
+* [pod_status](check-command/pod_status.md) - To check Kubernetes pod status.
+* [prometheus_metric](check-command/prometheus_metric.md) - To check Prometheus query result.
+* [node_disk](check-command/node_disk.md) - To check Node Disk stat.
+* [volume](check-command/volume.md) - To check Pod volume stat.
+* [kube_event](check-command/kube_event.md) - To check Kubernetes events for all Warning TYPE happened in last 'c' seconds.
+* [kube_exec](check-command/kube_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
