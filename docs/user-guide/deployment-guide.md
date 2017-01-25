@@ -36,7 +36,7 @@ Icinga2 is used as monitoring system which uses various plugins to check resourc
 See Icinga2 [Deployment Guide](icinga2/deployment.md).
 
 Run following command to deploy Icinga2
-```
+```sh
 curl https://raw.githubusercontent.com/appscode/searchlight/master/hack/deploy/icinga2/run.sh | bash
 ```
 
