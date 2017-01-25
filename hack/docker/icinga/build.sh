@@ -10,8 +10,6 @@ source "$LIB_ROOT/hack/libbuild/common/public_image.sh"
 
 GOPATH=$(go env GOPATH)
 IMG=icinga
-ICINGA_VER=2.4.8
-K8S_VER=1.5
 ICINGAWEB_VER=2.1.2
 
 DIST=$GOPATH/src/github.com/appscode/searchlight/dist
@@ -37,7 +35,6 @@ build() {
 	cd ..
 
 	rm -rf plugins; mkdir -p plugins
-	gsutil cp gs://appscode-dev/binaries/hello_icinga/$TAG/hello_icinga-linux-amd64 plugins/hello_icinga
 	gsutil cp gs://appscode-dev/binaries/hyperalert/$TAG/hyperalert-linux-amd64 plugins/hyperalert
 	chmod 755 plugins/*
 

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-icinga
+  namespace: default
+spec:
+  ports:
+  - name: web
+    port: 80
+    protocol: TCP
+    targetPort: tcp
+  - name: api
+    port: 5665
+    protocol: TCP
+    targetPort: api
+  selector:
+    run: k8s-icinga

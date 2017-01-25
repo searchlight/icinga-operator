@@ -1,0 +1,57 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: k8s-icinga
+  namespace: default
+  labels:
+    run: k8s-icinga
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: k8s-icinga
+  template:
+    metadata:
+      labels:
+        run: k8s-icinga
+    spec:
+      containers:
+      - image: appscode/icinga:1.5.0-k8s
+        name: icinga
+        ports:
+        - containerPort: 5665
+          name: api
+          protocol: TCP
+        - containerPort: 60006
+          name: tcp
+          protocol: TCP
+        volumeMounts:
+          - name: data-volume
+            mountPath: /var/pv
+          - name: script-volume
+            mountPath: /var/db-script
+          - mountPath: /srv/icinga2/secrets
+            name: k8s-icinga
+      - image: appscode/postgres:9.5-v3-db
+        name: ido
+        args:
+          - basic
+          - './setup-db.sh'
+        ports:
+          - containerPort: 5432
+            name: ido
+            protocol: TCP
+        volumeMounts:
+          - name: data-volume
+            mountPath: /var/pv
+          - name: script-volume
+            mountPath: /var/db-script
+      volumes:
+        - name: data-volume
+          emptyDir: {}
+        - name: script-volume
+          emptyDir: {}
+        - name: k8s-icinga
+          secret:
+            defaultMode: 420
+            secretName: k8s-icinga
