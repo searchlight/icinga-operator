@@ -43,20 +43,20 @@ We need to generate Icinga2 API certificates. See [here](certificate.md)
 Substitute ENV and deploy secret
 ```sh
 # Deploy Secret
-curl https://raw.githubusercontent.com/appscode/searchlight/master/hack/kubernetes/icinga2/secret.yaml |
+curl https://raw.githubusercontent.com/appscode/searchlight/master/hack/deploy/icinga2/secret.yaml |
 envsubst | kubectl apply -f -
 ```
 
 ###### Create Service
 ```sh
 # Create Service
-kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/master/hack/kubernetes/icinga2/service.yaml
+kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/master/hack/deploy/icinga2/service.yaml
 ```
 
 ###### Create Deployment
 ```sh
 # Create Deployment
-kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/master/hack/kubernetes/icinga2/deployment.yaml
+kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/master/hack/deploy/icinga2/deployment.yaml
 ```
 
 ### Login

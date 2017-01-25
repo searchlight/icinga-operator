@@ -46,5 +46,5 @@ Searchlight Controller is used to communicate with Icinga2 API. To set an alert,
  
 ```sh
 # Create Deployment
-kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/master/hack/kubernetes/searchlight/deployment.yaml
+kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/master/hack/deploy/searchlight/deployment.yaml
 ```
