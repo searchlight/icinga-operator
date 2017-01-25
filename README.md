@@ -7,11 +7,11 @@ It has a Controller to watch Kubernetes Objects. Alert objects are consumed by S
 Following resources are used in Searchlight
 
 | Resource               | Version   |
-| :---:                  | :---:     |
+| :---                   | :---      |
 | Icinga2                | 2.4.8     |
 | Icingaweb2             | 2.1.2     |
-| Postgres               | 9.5       |
 | Monitoring Plugins     | 2.1.2     |
+| Postgres               | 9.5       |
 | Searchlight Controller | 1.5.0     |
 
 ## Features
