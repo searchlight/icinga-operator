@@ -28,7 +28,7 @@ hyperalert check_pod_status --host='pod_status@default'
 # --host is provided by Icinga2
 ```
 ###### Output
-```
+```json
 CRITICAL: {
   "objects": [
     {
