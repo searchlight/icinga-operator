@@ -27,7 +27,7 @@ This is used to check Kubernetes pod existence.
 
 #### Example
 ###### Command
-```
+```sh
 hyperalert check_pod_exists --host='pod_exists@default' --count=7
 # --host is provided by Icinga2
 ```
@@ -37,8 +37,7 @@ OK: Found all pods
 ```
 
 ##### Configure Alert Object
-
-```
+```yaml
 # This will check if any pod exists in default namespace
 apiVersion: appscode.com/v1beta1
 kind: Alert

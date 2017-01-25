@@ -28,7 +28,7 @@ This is used to check Kubernetes exec command. Returns OK if exit code is zero, 
 
 #### Example
 ###### Command
-```
+```sh
 hyperalert check_kube_exec --host='monitoring-influxdb-0.12.2-n3lo2@kube-system' --argv="ls /var/influxdb/token.ini"
 # --host are provided by Icinga2
 ```
@@ -38,7 +38,7 @@ CRITICAL: Exit Code: 2
 ```
 
 ##### Configure Alert Object
-```
+```yaml
 apiVersion: appscode.com/v1beta1
 kind: Alert
 metadata:

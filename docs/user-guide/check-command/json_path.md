@@ -26,7 +26,7 @@ This is used to check any API response parsing JSON using JQ queries.
 
 #### Example
 ###### Command
-```
+```sh
 hyperalert check_json_path --url='https://api.appscode.com/health' --query='.status' --critical='.status!="OK"'
 ```
 ###### Output
@@ -36,7 +36,7 @@ OK: Response looks good
 
 ##### Configure Alert Object
 
-```
+```yaml
 apiVersion: appscode.com/v1beta1
 kind: Alert
 metadata:

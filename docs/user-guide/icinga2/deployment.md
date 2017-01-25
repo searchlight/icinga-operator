@@ -15,7 +15,7 @@ We need to create secret object for Icinga2. We Need following data for secret o
 
 
 Save the following contents to `secret.ini`:
-```
+```ini
 ICINGA_WEB_HOST=127.0.0.1
 ICINGA_WEB_PORT=5432
 ICINGA_WEB_DB=icingawebdb
@@ -33,7 +33,7 @@ ICINGA_SERVICE=k8s-icinga
 ```
 
 Encode Secret data and set `ICINGA_SECRET_ENV` to it
-```
+```sh
 set ICINGA_SECRET_ENV (base64 secret.ini -w 0)
 ```
 
@@ -41,20 +41,20 @@ set ICINGA_SECRET_ENV (base64 secret.ini -w 0)
 We need to generate Icinga2 API certificates. See [here](certificate.md)
 
 Substitute ENV and deploy secret
-```
+```sh
 # Deploy Secret
 curl https://raw.githubusercontent.com/appscode/searchlight/master/hack/kubernetes/icinga2/secret.yaml |
 envsubst | kubectl apply -f -
 ```
 
 ###### Create Service
-```
+```sh
 # Create Service
 kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/master/hack/kubernetes/icinga2/service.yaml
 ```
 
 ###### Create Deployment
-```
+```sh
 # Create Deployment
 kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/master/hack/kubernetes/icinga2/deployment.yaml
 ```

@@ -4,7 +4,7 @@
 
 Save the following contents to `alert-third-party-resource.yaml`:
 
-```
+```yaml
 apiVersion: extensions/v1beta1
 kind: ThirdPartyResource
 description: "Alert support for Kubernetes by appscode.com"
@@ -16,7 +16,7 @@ versions:
 
 Submit the Third Party Resource configuration to the Kubernetes API server:
 
-```
+```sh
 kubectl create -f alert-third-party-resource.yaml
 ```
 

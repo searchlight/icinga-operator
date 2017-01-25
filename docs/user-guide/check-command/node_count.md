@@ -20,7 +20,7 @@ This is used to check total number of Kubernetes node.
 
 #### Example
 ###### Command
-```
+```sh
 hyperalert check_node_count --count=3
 ```
 ###### Output
@@ -29,8 +29,7 @@ CRITICAL: Found 2 node(s) instead of 3
 ```
 
 ##### Configure Alert Object
-
-```
+```yaml
 apiVersion: appscode.com/v1beta1
 kind: Alert
 metadata:

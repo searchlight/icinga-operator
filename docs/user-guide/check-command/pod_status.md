@@ -23,7 +23,7 @@ This is used to check Kubernetes pod status.
 
 #### Example
 ###### Command
-```
+```sh
 hyperalert check_pod_status --host='pod_status@default'
 # --host is provided by Icinga2
 ```
@@ -47,8 +47,7 @@ CRITICAL: {
 ```
 
 ##### Configure Alert Object
-
-```
+```yaml
 # This will check all pod status in default namespace
 apiVersion: appscode.com/v1beta1
 kind: Alert

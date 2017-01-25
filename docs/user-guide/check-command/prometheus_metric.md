@@ -42,6 +42,5 @@ This is used to check Prometheus query result.
 ```
 
 ##### Configure Alert Object
-
 ```
 ```

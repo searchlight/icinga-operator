@@ -7,7 +7,7 @@ Before we can create an Alert object, we must create the Third Party Resource [A
 
 ##### Alert Object
 
-```
+```yaml
 apiVersion: appscode.com/v1beta1
 kind: Alert
 metadata:

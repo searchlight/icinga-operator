@@ -24,7 +24,7 @@ See Icinga2 [Deployment Guide](icinga2/deployment.md).
 
 Searchlight Controller is used to communicate with Icinga2 API. To set an alert, create [Kubernetes Alert Objects](alert-resource/objects.md) with relevant information. Controller will consume that alert object. 
  
-```
+```sh
 # Create Deployment
 kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/master/hack/kubernetes/searchlight/deployment.yaml
 ```

@@ -22,7 +22,7 @@ This is used to check Node Disk stat.
 
 #### Example
 ###### Command
-```
+```sh
 hyperalert check_volume --node_stat --host ip-172-20-0-9.ec2.internal@default
 # --node_stat and --host are provided by Icinga2
 ```
@@ -32,7 +32,7 @@ OK: (Disk & Inodes)
 ```
 
 ##### Configure Alert Object
-```
+```yaml
 apiVersion: appscode.com/v1beta1
 kind: Alert
 metadata:

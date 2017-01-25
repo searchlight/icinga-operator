@@ -16,7 +16,7 @@ This is used to check Kubernetes components.
 
 #### Example
 ###### Command
-```
+```sh
 hyperalert check_component_status
 ```
 ###### Output
@@ -26,7 +26,7 @@ OK: All components are healthy
 
 ##### Configure Alert Object
 
-```
+```yaml
 apiVersion: appscode.com/v1beta1
 kind: Alert
 metadata:

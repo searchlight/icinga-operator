@@ -17,7 +17,7 @@ This is used to check Kubernetes Node status.
 
 #### Example
 ###### Command
-```
+```sh
 hyperalert check_node_status --host=ip-172-20-0-9.ec2.internal@default
 # --host is provided by Icinga2
 ```
@@ -27,8 +27,7 @@ OK: Node is Ready
 ```
 
 ##### Configure Alert Object
-
-```
+```yaml
 # This alert will be set to all nodes individually
 apiVersion: appscode.com/v1beta1
 kind: Alert
