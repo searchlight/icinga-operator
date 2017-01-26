@@ -39,7 +39,7 @@ set ICINGA_SECRET_ENV (base64 secret.ini -w 0)
 
 We need to generate Icinga2 API certificates. See [here](certificate.md)
 
-And also we need to add some keys for notifier in Icinga2 Secret. We are currently supporting following notifiers.:
+And also we need to add some keys for notifier in Icinga2 Secret. We are currently supporting following notifiers:
 
 1. [Hipchat](../notifier/hipchat.md#set-environment-variables)
 2. [Mailgun](../notifier/mailgun.md#set-environment-variables)
