@@ -54,11 +54,11 @@ Run following command to test
 
 Following information will be collected from secret:
 
-1. ICINGA_SERVICE
+1. ICINGA_K8S_SERVICE
 2. ICINGA_API_USER
 3. ICINGA_API_PASSWORD
 
-`ICINGA_SERVICE` will be used to get `LoadBalancer.Ingress` if `E2E_ICINGA_URL` ENV is not set
+`ICINGA_K8S_SERVICE` will be used to get `LoadBalancer.Ingress` if `E2E_ICINGA_URL` ENV is not set
 
 #### __General Test__
 

@@ -9,17 +9,17 @@ read -r -d '' env_data <<EOF
 ICINGA_WEB_HOST=127.0.0.1
 ICINGA_WEB_PORT=5432
 ICINGA_WEB_DB=icingawebdb
-ICINGA_WEB_USER=$(cat /dev/urandom | base64 | tr -d "=+/" | dd bs=8 count=1 2> /dev/null)
+ICINGA_WEB_USER=icingaweb
 ICINGA_WEB_PASSWORD=$(cat /dev/urandom | base64 | tr -d "=+/" | dd bs=16 count=1 2> /dev/null)
 ICINGA_WEB_ADMIN_PASSWORD=$ICINGA_WEB_ADMIN_PASSWORD
 ICINGA_IDO_HOST=127.0.0.1
 ICINGA_IDO_PORT=5432
 ICINGA_IDO_DB=icingaidodb
-ICINGA_IDO_USER=$(cat /dev/urandom | base64 | tr -d "=+/" | dd bs=8 count=1 2> /dev/null)
+ICINGA_IDO_USER=icingaido
 ICINGA_IDO_PASSWORD=$(cat /dev/urandom | base64 | tr -d "=+/" | dd bs=16 count=1 2> /dev/null)
-ICINGA_API_USER=$(cat /dev/urandom | base64 | tr -d "=+/" | dd bs=8 count=1 2> /dev/null)
+ICINGA_API_USER=icingaapi
 ICINGA_API_PASSWORD=$(cat /dev/urandom | base64 | tr -d "=+/" | dd bs=16 count=1 2> /dev/null)
-ICINGA_SERVICE=k8s-icinga
+ICINGA_K8S_SERVICE=k8s-icinga
 EOF
 
 

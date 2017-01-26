@@ -15,7 +15,7 @@ import (
 const (
 	env string = ".env"
 
-	IcingaService string = "ICINGA_SERVICE"
+	IcingaService string = "ICINGA_K8S_SERVICE"
 	IcingaAPIUser string = "ICINGA_API_USER"
 	IcingaAPIPass string = "ICINGA_API_PASSWORD"
 )
