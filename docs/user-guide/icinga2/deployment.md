@@ -37,8 +37,16 @@ Encode Secret data and set `ICINGA_SECRET_ENV` to it
 set ICINGA_SECRET_ENV (base64 secret.ini -w 0)
 ```
 
-
 We need to generate Icinga2 API certificates. See [here](certificate.md)
+
+And also we need to add some keys for notifier in Icinga2 Secret. We are currently supporting following notifiers.:
+
+1. [Hipchat](../notifier/hipchat.md#set-environment-variables)
+2. [Mailgun](../notifier/mailgun.md#set-environment-variables)
+3. [SMTP](../notifier/smtp.md#set-environment-variables)
+4. [Twilio](../notifier/twilio.md#set-environment-variables)
+
+If we don't set keys for notifier, notifications will be ignored.
 
 Substitute ENV and deploy secret
 ```sh
@@ -55,14 +63,12 @@ kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/master/h
 
 ###### Create Deployment
 
-We need to configure notifier, if we want, by setting some `ENV` in deployment. We are currently supporting following notifiers. Set `ENV` for selected notifier in deployment.
+To use notifier we also need to set some `ENV` in deployment. Set `ENV` for selected notifier in deployment. See following links:
 
-1. [Hipchat](../notifier/hipchat.md)
-2. [Mailgun](../notifier/mailgun.md)
-3. [SMTP](../notifier/smtp.md)
-4. [Twilio](../notifier/twilio.md)
-
-Now we can create deployment. If we don't set notifier `ENV`, notifications will be ignored.
+1. [Hipchat](../notifier/hipchat.md#configure)
+2. [Mailgun](../notifier/mailgun.md#configure)
+3. [SMTP](../notifier/smtp.md#configure)
+4. [Twilio](../notifier/twilio.md#configure)
 
 ```sh
 # Create Deployment

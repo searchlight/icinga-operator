@@ -11,18 +11,18 @@ env:
   - name: NOTIFY_VIA
     valueFrom:
       secretKeyRef:
-        name: appscode-notifier
+        name: appscode-icinga
         key: notify_via
   - name: HIPCHAT_AUTH_TOKEN
     valueFrom:
       secretKeyRef:
-        name: appscode-notifier
-        key: auth_token
+        name: appscode-icinga
+        key: hipchat_auth_token
   - name: HIPCHAT_TO
     valueFrom:
       secretKeyRef:
-        name: appscode-notifier
-        key: to
+        name: appscode-icinga
+        key: hipchat_to
 ```
 
 ##### envconfig for `hipchat`
@@ -33,13 +33,11 @@ env:
 | HIPCHAT_TO          | Set hipchat room ID. For multiple rooms, set comma separated IDs. |
 
 
-These environment variables will be set using `appscode-notifier` Secret.
+These environment variables will be set using `appscode-icinga` Secret.
 
 > Set `NOTIFY_VIA` to `hipchat`
 
-#### Create Secret
-
-Create secret with following keys to use hipchat
+#### Set Environment Variables
 
 ##### Key `notify_via`
 Encode and set `NOTIFY_VIA` to it
@@ -47,21 +45,14 @@ Encode and set `NOTIFY_VIA` to it
 export NOTIFY_VIA=$(echo "hipchat" | base64  -w 0)
 ```
 
-##### Key `auth_token`
+##### Key `hipchat_auth_token`
 Encode and set `HIPCHAT_AUTH_TOKEN` to it
 ```sh
 export HIPCHAT_AUTH_TOKEN=$(echo <toke> | base64  -w 0)
 ```
 
-##### Key `to`
+##### Key `hipchat_to`
 Encode and set `HIPCHAT_TO` to it
 ```sh
 export HIPCHAT_TO=$(echo <hipchat room id> | base64  -w 0)
-```
-
-Substitute ENV and deploy secret
-```sh
-# Deploy Secret
-curl https://raw.githubusercontent.com/appscode/searchlight/master/hack/deploy/notifier/hipchat.yaml |
-envsubst | kubectl apply -f -
 ```

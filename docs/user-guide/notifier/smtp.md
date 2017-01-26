@@ -9,22 +9,41 @@ To set `smtp` as notifier, we need to set following environment variables in Ici
 ```yaml
 env:
   - name: NOTIFY_VIA
-    value: smtp
+    valueFrom:
+      secretKeyRef:
+        name: appscode-icinga
+        key: notify_via
   - name: SMTP_HOST
-    value: <SMTP server address>
+    valueFrom:
+      secretKeyRef:
+        name: appscode-icinga
+        key: smtp_host
   - name: SMTP_PORT
-    value: <SMTP server port>
+    valueFrom:
+      secretKeyRef:
+        name: appscode-icinga
+        key: smtp_port
   - name: SMTP_USERNAME
-    value: <username>
+    valueFrom:
+      secretKeyRef:
+        name: appscode-icinga
+        key: smtp_username
   - name: SMTP_PASSWORD
-    value: <password>
+    valueFrom:
+      secretKeyRef:
+        name: appscode-icinga
+        key: smtp_password
   - name: SMTP_FROM
-    value: <email address>
+    valueFrom:
+      secretKeyRef:
+        name: appscode-icinga
+        key: smtp_from
   - name: SMTP_TO
-    value: <email address>
+    valueFrom:
+      secretKeyRef:
+        name: appscode-icinga
+        key: smtp_to
 ```
-
-> Set `NOTIFY_VIA` to `smtp`
 
 ##### envconfig for `smtp`
 
@@ -37,3 +56,53 @@ env:
 | SMTP_PASSWORD             | Set password                                                                   |
 | SMTP_FROM                 | Set sender address for notification                                            |
 | SMTP_TO                   | Set receipent address. For multiple receipents, set comma separated addresses. |
+
+
+These environment variables will be set using `appscode-icinga` Secret.
+
+> Set `NOTIFY_VIA` to `smtp`
+
+#### Set Environment Variables
+
+##### Key `notify_via`
+Encode and set `NOTIFY_VIA` to it
+```sh
+export NOTIFY_VIA=$(echo "smtp" | base64  -w 0)
+```
+
+##### Key `smtp_host`
+Encode and set `SMTP_HOST` to it
+```sh
+export SMTP_HOST=$(echo <host> | base64  -w 0)
+```
+
+##### Key `smtp_port`
+Encode and set `SMTP_PORT` to it
+```sh
+export SMTP_PORT=$(echo <post> | base64  -w 0)
+```
+
+##### Key `smtp_username`
+Encode and set `SMTP_USERNAME` to it
+```sh
+export SMTP_USERNAME=$(echo <username> | base64  -w 0)
+```
+
+##### Key `smtp_password`
+Encode and set `SMTP_PASSWORD` to it
+```sh
+export SMTP_PASSWORD=$(echo <password> | base64  -w 0)
+```
+
+##### Key `smtp_from`
+Encode and set `SMTP_FROM` to it
+```sh
+export SMTP_FROM=$(echo <sender email addresses> | base64  -w 0)
+```
+
+
+##### Key `smtp_to`
+Encode and set `SMTP_TO` to it
+```sh
+export SMTP_TO=$(echo <recipient email addresses> | base64  -w 0)
+```
