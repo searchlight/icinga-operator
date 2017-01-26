@@ -17,14 +17,14 @@ openssl genrsa -out ca.key 2048
 ```sh
 openssl req -x509 -new -nodes -key ca.key -subj "/CN=${MASTER_IP}" -days 10000 -out ca.crt
 # Set ICINGA_CA_CERT env to it
-set ICINGA_CA_CERT (base64 ca.crt -w 0)
+export ICINGA_CA_CERT=$(base64 ca.crt -w 0)
 ```
 
 4. Generate a server.key with 2048bit
 ```sh
 openssl genrsa -out server.key 2048
 # Set ICINGA_SERVER_KEY env to it
-set ICINGA_SERVER_KEY (base64 server.key -w 0)
+export ICINGA_SERVER_KEY=$(base64 server.key -w 0)
 ```
 
 5. According to the server.key generate a server.csr:
@@ -36,7 +36,7 @@ openssl req -new -key server.key -subj "/CN=${MASTER_IP}" -out server.csr
 ```sh
 openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 10000
 # Set ICINGA_SERVER_CERT env to it
-set ICINGA_SERVER_CERT (base64 server.crt -w 0)
+export ICINGA_SERVER_CERT=$(base64 server.crt -w 0)
 ```
 
 ### easyrsa
@@ -66,11 +66,11 @@ cd easy-rsa-master/easyrsa3
 5. Set ENV to use in Secret
 ```sh
 # Set ICINGA_CA_CERT
-set ICINGA_CA_CERT (base64 pki/ca.crt -w 0)
+export ICINGA_CA_CERT=$(base64 pki/ca.crt -w 0)
 # Set ICINGA_SERVER_KEY
-set ICINGA_SERVER_KEY (base64 pki/private/kubernetes-master.key -w 0)
+export ICINGA_SERVER_KEY=$(base64 pki/private/kubernetes-master.key -w 0)
 # Set ICINGA_SERVER_CERT
-set ICINGA_SERVER_CERT (base64 pki/issued/kubernetes-master.crt -w 0)
+export ICINGA_SERVER_CERT=$(base64 pki/issued/kubernetes-master.crt -w 0)
 ```
 
 

@@ -37,13 +37,13 @@ pushd $certificate_dir
   openssl req -x509 -new -nodes -key ca.key -subj "/CN=${MASTER_IP}" -days 10000 -out ca.crt
 
   # Set ICINGA_CA_CERT env to it
-  export ICINGA_CA_CERT=(base64 ca.crt -w 0)
+  export ICINGA_CA_CERT=$(base64 ca.crt -w 0)
 
   #Generate a server.key with 2048bit
   openssl genrsa -out server.key 2048
 
   # Set ICINGA_SERVER_KEY env to it
-  export ICINGA_SERVER_KEY=(base64 server.key -w 0)
+  export ICINGA_SERVER_KEY=$(base64 server.key -w 0)
 
   # According to the server.key generate a server.csr
   openssl req -new -key server.key -subj "/CN=${MASTER_IP}" -out server.csr
@@ -52,7 +52,7 @@ pushd $certificate_dir
   openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 10000
 
   # Set ICINGA_SERVER_CERT env to it
-  export ICINGA_SERVER_CERT=(base64 server.crt -w 0)
+  export ICINGA_SERVER_CERT=$(base64 server.crt -w 0)
 
   rm -rf $certificate_dir
 popd

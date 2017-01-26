@@ -34,7 +34,7 @@ ICINGA_K8S_SERVICE=appscode-icinga.kube-system
 
 Encode Secret data and set `ICINGA_SECRET_ENV` to it
 ```sh
-set ICINGA_SECRET_ENV (base64 secret.ini -w 0)
+export ICINGA_SECRET_ENV=$(base64 secret.ini -w 0)
 ```
 
 We need to generate Icinga2 API certificates. See [here](certificate.md)
