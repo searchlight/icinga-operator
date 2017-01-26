@@ -40,7 +40,7 @@ Run following command to deploy Icinga2
 curl https://raw.githubusercontent.com/appscode/searchlight/master/hack/deploy/icinga2/run.sh | bash
 ```
 
-> Make sure you have set notifier to send notifications. Check [this]().
+> Make sure you have set notifier to send notifications. Check [this](icinga2/deployment.md#create-deployment).
 
 #### Deploy Searchlight Controller
 
