@@ -135,7 +135,8 @@ func (b *IcingaController) handlePod(e *events.Event) error {
 	if !(e.EventType.IsAdded() || e.EventType.IsDeleted()) {
 		return nil
 	}
-	if host.IsIcingaApp(e.MetaData.Labels) {
+	ancestors := b.getParentsForPod(e.RuntimeObj[0])
+	if host.IsIcingaApp(ancestors, e.MetaData.Namespace) {
 		if e.EventType.IsAdded() {
 			go b.handleIcingaPod()
 		}
