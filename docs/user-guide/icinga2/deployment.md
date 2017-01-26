@@ -63,7 +63,7 @@ kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/master/h
 
 ###### Create Deployment
 
-To use notifier we also need to set some `ENV` in deployment. Set `ENV` for selected notifier in deployment. See following links:
+To use notifier we need to set some environment variables. See following links to find out how to use different notifiers:
 
 1. [Hipchat](../notifier/hipchat.md#configure)
 2. [Mailgun](../notifier/mailgun.md#configure)
