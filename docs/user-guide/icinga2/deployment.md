@@ -29,7 +29,7 @@ ICINGA_IDO_USER=icingaido
 ICINGA_IDO_PASSWORD=12345678
 ICINGA_API_USER=icingaapi
 ICINGA_API_PASSWORD=12345678
-ICINGA_K8S_SERVICE=appscode-alert.kube-system
+ICINGA_K8S_SERVICE=appscode-icinga.kube-system
 ```
 
 Encode Secret data and set `ICINGA_SECRET_ENV` to it

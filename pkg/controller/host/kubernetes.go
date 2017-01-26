@@ -1,9 +1,13 @@
 package host
 
 import (
+	"os"
+
 	"github.com/appscode/errors"
 	aci "github.com/appscode/k8s-addons/api"
 	acs "github.com/appscode/k8s-addons/client/clientset"
+	"github.com/appscode/k8s-addons/pkg/events"
+	"github.com/appscode/searchlight/pkg/controller/types"
 	kapi "k8s.io/kubernetes/pkg/api"
 	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
 	"k8s.io/kubernetes/pkg/labels"
@@ -179,8 +183,6 @@ func GetAlert(acExtClient acs.AppsCodeExtensionInterface, namespace, name string
 const (
 	ObjectType = "alert.appscode.com/objectType"
 	ObjectName = "alert.appscode.com/objectName"
-	AppName    = "k8s-app"
-	AlertApp   = "appscode-alert"
 )
 
 func GetLabelSelector(objectType, objectName string) (labels.Selector, error) {
@@ -216,11 +218,6 @@ func (s labelMap) ObjectName() string {
 	return v
 }
 
-func (s labelMap) AppName() string {
-	v, _ := s[AppName]
-	return v
-}
-
 func GetObjectInfo(label map[string]string) (objectType string, objectName string) {
 	opts := labelMap(label)
 	objectType = opts.ObjectType()
@@ -247,7 +244,22 @@ func CheckAlertConfig(oldConfig, newConfig *aci.Alert) error {
 	return nil
 }
 
-func IsIcingaApp(labels map[string]string) bool {
-	opts := labelMap(labels)
-	return opts.AppName() == AlertApp
+func IsIcingaApp(ancestors []*types.Ancestors, namespace string) bool {
+	icingaServiceNamespace := os.Getenv("ICINGA_SERVICE_NAMESPACE")
+	if icingaServiceNamespace != namespace {
+		return false
+	}
+
+	icingaService := os.Getenv("ICINGA_SERVICE_NAME")
+
+	for _, ancestor := range ancestors {
+		if ancestor.Type == events.Service.String() {
+			for _, service := range ancestor.Names {
+				if service == icingaService {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
