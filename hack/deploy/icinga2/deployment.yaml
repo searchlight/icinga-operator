@@ -1,19 +1,19 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: k8s-icinga
-  namespace: default
+  name: appscode-alert
+  namespace: kube-system
   labels:
-    run: k8s-icinga
+    run: appscode-alert
 spec:
   replicas: 1
   selector:
     matchLabels:
-      run: k8s-icinga
+      run: appscode-alert
   template:
     metadata:
       labels:
-        run: k8s-icinga
+        run: appscode-alert
     spec:
       containers:
       - image: appscode/icinga:1.5.0-k8s
@@ -31,7 +31,7 @@ spec:
           - name: script-volume
             mountPath: /var/db-script
           - mountPath: /srv/icinga2/secrets
-            name: k8s-icinga
+            name: appscode-alert
       - image: appscode/postgres:9.5-v3-db
         name: ido
         args:
@@ -51,7 +51,7 @@ spec:
           emptyDir: {}
         - name: script-volume
           emptyDir: {}
-        - name: k8s-icinga
+        - name: appscode-alert
           secret:
             defaultMode: 420
-            secretName: k8s-icinga
+            secretName: appscode-alert

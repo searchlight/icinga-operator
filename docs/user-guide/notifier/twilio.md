@@ -1,6 +1,6 @@
 ### Notifier `twilio`
 
-This will send a notification sms using twilio`.
+This will send a notification sms using twilio.
 
 #### Configure
 
