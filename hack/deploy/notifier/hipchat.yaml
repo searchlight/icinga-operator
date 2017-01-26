@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: appscode-notifier
+  namespace: kube-system
+type: Opaque
+data:
+  notify_via: $NOTIFY_VIA
+  auth_token: $HIPCHAT_AUTH_TOKEN
+  to: $HIPCHAT_TO
