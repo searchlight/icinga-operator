@@ -40,6 +40,8 @@ Run following command to deploy Icinga2
 curl https://raw.githubusercontent.com/appscode/searchlight/master/hack/deploy/icinga2/run.sh | bash
 ```
 
+> Make sure you have set notifier to send notifications. Check [this]().
+
 #### Deploy Searchlight Controller
 
 Searchlight Controller is used to communicate with Icinga2 API. To set an alert, create [Kubernetes Alert Objects](alert-object.md) with relevant information. Controller will consume that alert object. 

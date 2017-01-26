@@ -21,10 +21,6 @@ spec:
   IcingaParam:
     CheckIntervalSec: 60
     AlertIntervalSec: 300
-  NotifierParams:
-  - Method: EMAIL
-    State: CRITICAL
-    UserUid: admin
   Vars:
     name: disk
     warning: 60.0

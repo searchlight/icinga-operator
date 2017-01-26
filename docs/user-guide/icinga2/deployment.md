@@ -54,6 +54,16 @@ kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/master/h
 ```
 
 ###### Create Deployment
+
+We need to configure notifier, if we want, by setting some `ENV` in deployment. We are currently supporting following notifiers. Set `ENV` for selected notifier in deployment.
+
+1. [Hipchat](../notifier/hipchat.md)
+2. [Mailgun](../notifier/mailgun.md)
+3. [SMTP](../notifier/smtp.md)
+4. [Twilio](../notifier/twilio.md)
+
+Now we can create deployment. If we don't set notifier `ENV`, notifications will be ignored.
+
 ```sh
 # Create Deployment
 kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/master/hack/deploy/icinga2/deployment.yaml
