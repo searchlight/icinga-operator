@@ -141,7 +141,7 @@ func (b *IcingaController) handlePod(e *events.Event) error {
 			go b.handleIcingaPod()
 		}
 	} else {
-		return b.handleRegularPod(e)
+		return b.handleRegularPod(e, ancestors)
 	}
 
 	return nil
@@ -196,10 +196,15 @@ func (b *IcingaController) handleIcingaPod() {
 	return
 }
 
-func (b *IcingaController) handleRegularPod(e *events.Event) error {
+func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.Ancestors) error {
 	namespace := e.MetaData.Namespace
-	ancestors := b.getParentsForPod(e.RuntimeObj[0])
 	icingaUp := false
+	ancestorItself := &types.Ancestors{
+		Type:  events.Pod.String(),
+		Names: []string{e.MetaData.Name},
+	}
+	ancestors = append(ancestors, ancestorItself)
+
 	for _, ancestor := range ancestors {
 		objectType := ancestor.Type
 		for _, objectName := range ancestor.Names {
@@ -221,7 +226,8 @@ func (b *IcingaController) handleRegularPod(e *events.Event) error {
 				}
 				icingaUp = true
 
-				if e.EventType.IsAdded() {
+				// If we do not want to set alert when pod is created with same name
+				if e.EventType.IsAdded() &&  objectType != events.Pod.String() {
 					// Waiting for POD IP to use as Icinga Host IP
 					then := time.Now()
 					for {
