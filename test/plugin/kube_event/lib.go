@@ -13,10 +13,12 @@ import (
 )
 
 func GetStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Duration) int {
-	var namespaceList *kapi.NamespaceList
-	namespaceList, err := kubeClient.Client.Core().Namespaces().List(
+	count := 0
+	field := fields.OneTermEqualSelector(kapi.EventTypeField, kapi.EventTypeWarning)
+	checkTime := time.Now().Add(-(checkInterval + clockSkew))
+	eventList, err := kubeClient.Client.Core().Events(kapi.NamespaceAll).List(
 		kapi.ListOptions{
-			LabelSelector: labels.Everything(),
+			FieldSelector: field,
 		},
 	)
 	if err != nil {
@@ -24,24 +26,9 @@ func GetStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clock
 		os.Exit(1)
 	}
 
-	count := 0
-	field := fields.OneTermEqualSelector(kapi.EventTypeField, kapi.EventTypeWarning)
-	checkTime := time.Now().Add(-(checkInterval + clockSkew))
-	for _, ns := range namespaceList.Items {
-		eventList, err := kubeClient.Client.Core().Events(ns.Name).List(
-			kapi.ListOptions{
-				FieldSelector: field,
-			},
-		)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-		for _, event := range eventList.Items {
-			if checkTime.Before(event.LastTimestamp.Time) {
-				count = count + 1
-			}
+	for _, event := range eventList.Items {
+		if checkTime.Before(event.LastTimestamp.Time) {
+			count = count + 1
 		}
 	}
 

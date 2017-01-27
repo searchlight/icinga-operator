@@ -163,36 +163,32 @@ func (b *IcingaController) handleIcingaPod() {
 		time.Sleep(time.Second * 30)
 	}
 
-	namespaces, _ := b.ctx.KubeClient.Core().Namespaces().List(kapi.ListOptions{LabelSelector: labels.Everything()})
 	icingaUp := false
-	for _, ns := range namespaces.Items {
-		alertList, err := b.ctx.AppsCodeExtensionClient.Alert(ns.Name).List(kapi.ListOptions{LabelSelector: labels.Everything()})
-		if err != nil {
-			log.Errorln(err)
+	alertList, err := b.ctx.AppsCodeExtensionClient.Alert(kapi.NamespaceAll).List(kapi.ListOptions{LabelSelector: labels.Everything()})
+	if err != nil {
+		log.Errorln(err)
+		return
+	}
+
+	for _, alert := range alertList.Items {
+		if !icingaUp && !b.checkIcingaAvailability() {
+			log.Debugln("Icinga is down...")
 			return
 		}
+		icingaUp = true
 
-		log.Debugln(fmt.Sprintf("Applying %v alert for namespace %s", len(alertList.Items), ns.Name))
+		fakeEvent := &events.Event{
+			ResourceType: events.Alert,
+			EventType:    events.Added,
+			RuntimeObj:   make([]interface{}, 0),
+		}
+		fakeEvent.RuntimeObj = append(fakeEvent.RuntimeObj, &alert)
 
-		for _, alert := range alertList.Items {
-			if !icingaUp && !b.checkIcingaAvailability() {
-				log.Debugln("Icinga is down...")
-				return
-			}
-			icingaUp = true
-
-			fakeEvent := &events.Event{
-				ResourceType: events.Alert,
-				EventType:    events.Added,
-				RuntimeObj:   make([]interface{}, 0),
-			}
-			fakeEvent.RuntimeObj = append(fakeEvent.RuntimeObj, &alert)
-
-			if err := b.handleAlert(fakeEvent); err != nil {
-				log.Debugln(err)
-			}
+		if err := b.handleAlert(fakeEvent); err != nil {
+			log.Debugln(err)
 		}
 	}
+
 	return
 }
 
@@ -301,56 +297,54 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 	requirements, _ := lb1.Requirements()
 	lb.Add(requirements...)
 
-	namespaces, _ := b.ctx.KubeClient.Core().Namespaces().List(kapi.ListOptions{LabelSelector: labels.Everything()})
 	icingaUp := false
-	for _, ns := range namespaces.Items {
-		alertList, err := b.ctx.AppsCodeExtensionClient.Alert(ns.Name).List(kapi.ListOptions{
-			LabelSelector: lb,
-		})
-		if err != nil {
-			return errors.New().WithCause(err).Internal()
+
+	alertList, err := b.ctx.AppsCodeExtensionClient.Alert(kapi.NamespaceAll).List(kapi.ListOptions{
+		LabelSelector: lb,
+	})
+	if err != nil {
+		return errors.New().WithCause(err).Internal()
+	}
+
+	for _, alert := range alertList.Items {
+		if !icingaUp && !b.checkIcingaAvailability() {
+			return errors.New("Icinga is down").External()
+		}
+		icingaUp = true
+
+		if command, found := b.ctx.IcingaData[alert.Spec.CheckCommand]; found {
+			if hostType, found := command.HostType[b.ctx.ObjectType]; found {
+				if hostType != host.HostTypeNode {
+					continue
+				}
+			}
 		}
 
-		for _, alert := range alertList.Items {
-			if !icingaUp && !b.checkIcingaAvailability() {
-				return errors.New("Icinga is down").External()
+		if e.EventType.IsAdded() {
+			b.ctx.Resource = &alert
+
+			additionalMessage := fmt.Sprintf(`node "%v"`, e.MetaData.Name)
+			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncIcingaObjects, additionalMessage)
+			b.parseAlertOptions()
+
+			if err := b.Create(e.MetaData.Name); err != nil {
+				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToSyncIcingaObjects, additionalMessage, err.Error())
+				return errors.New().WithCause(err).Internal()
 			}
-			icingaUp = true
+			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
 
-			if command, found := b.ctx.IcingaData[alert.Spec.CheckCommand]; found {
-				if hostType, found := command.HostType[b.ctx.ObjectType]; found {
-					if hostType != host.HostTypeNode {
-						continue
-					}
-				}
+		} else if e.EventType.IsDeleted() {
+			b.ctx.Resource = &alert
+
+			additionalMessage := fmt.Sprintf(`node "%v"`, e.MetaData.Name)
+			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncIcingaObjects, additionalMessage)
+			b.parseAlertOptions()
+
+			if err := b.Delete(e.MetaData.Name); err != nil {
+				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToSyncIcingaObjects, additionalMessage, err.Error())
+				return errors.New().WithCause(err).Internal()
 			}
-
-			if e.EventType.IsAdded() {
-				b.ctx.Resource = &alert
-
-				additionalMessage := fmt.Sprintf(`node "%v"`, e.MetaData.Name)
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncIcingaObjects, additionalMessage)
-				b.parseAlertOptions()
-
-				if err := b.Create(e.MetaData.Name); err != nil {
-					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToSyncIcingaObjects, additionalMessage, err.Error())
-					return errors.New().WithCause(err).Internal()
-				}
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
-
-			} else if e.EventType.IsDeleted() {
-				b.ctx.Resource = &alert
-
-				additionalMessage := fmt.Sprintf(`node "%v"`, e.MetaData.Name)
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncIcingaObjects, additionalMessage)
-				b.parseAlertOptions()
-
-				if err := b.Delete(e.MetaData.Name); err != nil {
-					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToSyncIcingaObjects, additionalMessage, err.Error())
-					return errors.New().WithCause(err).Internal()
-				}
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
-			}
+			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
 		}
 	}
 

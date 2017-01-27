@@ -12,7 +12,6 @@ import (
 	"github.com/spf13/cobra"
 	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/fields"
-	"k8s.io/kubernetes/pkg/labels"
 )
 
 type eventInfo struct {
@@ -36,9 +35,14 @@ func checkKubeEvent(req *request) {
 		os.Exit(3)
 	}
 
-	namespaceList, err := kubeClient.Client.Core().Namespaces().List(
+	eventInfoList := make([]*eventInfo, 0)
+	field := fields.OneTermEqualSelector(kapi.EventTypeField, kapi.EventTypeWarning)
+
+	checkTime := time.Now().Add(-(req.checkInterval + req.clockSkew))
+
+	eventList, err := kubeClient.Client.Core().Events(kapi.NamespaceAll).List(
 		kapi.ListOptions{
-			LabelSelector: labels.Everything(),
+			FieldSelector: field,
 		},
 	)
 	if err != nil {
@@ -46,34 +50,18 @@ func checkKubeEvent(req *request) {
 		os.Exit(3)
 	}
 
-	eventInfoList := make([]*eventInfo, 0)
-	field := fields.OneTermEqualSelector(kapi.EventTypeField, kapi.EventTypeWarning)
-
-	checkTime := time.Now().Add(-(req.checkInterval + req.clockSkew))
-	for _, ns := range namespaceList.Items {
-		eventList, err := kubeClient.Client.Core().Events(ns.Name).List(
-			kapi.ListOptions{
-				FieldSelector: field,
-			},
-		)
-		if err != nil {
-			fmt.Fprintln(os.Stdout, util.State[3], err)
-			os.Exit(3)
-		}
-
-		for _, event := range eventList.Items {
-			if checkTime.Before(event.LastTimestamp.Time) {
-				eventInfoList = append(eventInfoList,
-					&eventInfo{
-						Name:      event.InvolvedObject.Name,
-						Namespace: event.InvolvedObject.Namespace,
-						Kind:      event.InvolvedObject.Kind,
-						Count:     event.Count,
-						Reason:    event.Reason,
-						Message:   event.Message,
-					},
-				)
-			}
+	for _, event := range eventList.Items {
+		if checkTime.Before(event.LastTimestamp.Time) {
+			eventInfoList = append(eventInfoList,
+				&eventInfo{
+					Name:      event.InvolvedObject.Name,
+					Namespace: event.InvolvedObject.Namespace,
+					Kind:      event.InvolvedObject.Kind,
+					Count:     event.Count,
+					Reason:    event.Reason,
+					Message:   event.Message,
+				},
+			)
 		}
 	}
 

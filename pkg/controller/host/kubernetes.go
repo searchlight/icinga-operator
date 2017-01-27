@@ -161,15 +161,12 @@ func GetAlertList(acExtClient acs.AppsCodeExtensionInterface, kubeClient clients
 			alerts = append(alerts, alertList.Items...)
 		}
 	} else {
-		namespaces, _ := kubeClient.Core().Namespaces().List(kapi.ListOptions{LabelSelector: labels.Everything()})
-		for _, ns := range namespaces.Items {
-			alertList, err := acExtClient.Alert(ns.Name).List(kapi.ListOptions{LabelSelector: ls})
-			if err != nil {
-				return nil, errors.New().WithCause(err).Internal()
-			}
-			if len(alertList.Items) > 0 {
-				alerts = append(alerts, alertList.Items...)
-			}
+		alertList, err := acExtClient.Alert(kapi.NamespaceAll).List(kapi.ListOptions{LabelSelector: ls})
+		if err != nil {
+			return nil, errors.New().WithCause(err).Internal()
+		}
+		if len(alertList.Items) > 0 {
+			alerts = append(alerts, alertList.Items...)
 		}
 	}
 
