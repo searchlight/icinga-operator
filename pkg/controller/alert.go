@@ -226,8 +226,16 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 				}
 				icingaUp = true
 
+				if command, found := b.ctx.IcingaData[alert.Spec.CheckCommand]; found {
+					if hostType, found := command.HostType[b.ctx.ObjectType]; found {
+						if hostType != host.HostTypePod {
+							continue
+						}
+					}
+				}
+
 				// If we do not want to set alert when pod is created with same name
-				if e.EventType.IsAdded() &&  objectType != events.Pod.String() {
+				if e.EventType.IsAdded() && objectType != events.Pod.String() {
 					// Waiting for POD IP to use as Icinga Host IP
 					then := time.Now()
 					for {
@@ -308,6 +316,14 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 				return errors.New("Icinga is down").External()
 			}
 			icingaUp = true
+
+			if command, found := b.ctx.IcingaData[alert.Spec.CheckCommand]; found {
+				if hostType, found := command.HostType[b.ctx.ObjectType]; found {
+					if hostType != host.HostTypeNode {
+						continue
+					}
+				}
+			}
 
 			if e.EventType.IsAdded() {
 				b.ctx.Resource = &alert
