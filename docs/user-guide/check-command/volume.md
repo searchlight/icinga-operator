@@ -40,7 +40,8 @@ WARNING: Disk used more than 70%
 #### Required Hostfacts
 Before using this CheckCommand, you must need to run `hostfacts` service in each Kubernetes node.
 Volume stat of kubernetes pod is collected from `hostfacts` service.
-See Hostfacts [deployment guide](.../hostfacts/deployment.md)
+
+See Hostfacts [deployment guide](../hostfacts/deployment.md)
 
 
 ##### Configure Alert Object
