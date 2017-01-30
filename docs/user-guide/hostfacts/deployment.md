@@ -8,16 +8,19 @@ Write `hostfacts.service` file in __systemd directory__ in your kubernetes node.
 
 ##### systemd directory
 * Ubuntu
-```sh
-/lib/systemd/system
-```
+
+    ```sh
+    /lib/systemd/system
+    ```
 * RedHat
-```sh
-/usr/lib/systemd/system
-```
+
+    ```sh
+    /usr/lib/systemd/system
+    ```
 
 
 ##### `hostfacts.service`
+
 ```ini
 [Unit]
 Description=Provide host facts
@@ -34,30 +37,32 @@ WantedBy=multi-user.target
 If you want to set authentication in `hostfacts`, set one of the following
 
 * Basic Auth
-```sh
-# Use ENV
-# Add Environment in hostfacts.service under [Service] section
-Environment=HOSTFACTS_AUTH_USERNAME="<token>"
-Environment=HOSTFACTS_AUTH_PASSWORD="<password>"
-```
-You can pass flags instead of using environment variables
-```
-# Use Flags
-# Modify ExecStart in [Service] section
-ExecStart=/usr/bin/hostfacts --username="<username>" --password="<password>"
-```
+
+    ```sh
+    # Use ENV
+    # Add Environment in hostfacts.service under [Service] section
+    Environment=HOSTFACTS_AUTH_USERNAME="<token>"
+    Environment=HOSTFACTS_AUTH_PASSWORD="<password>"
+    ```
+    You can pass flags instead of using environment variables
+    ```
+    # Use Flags
+    # Modify ExecStart in [Service] section
+    ExecStart=/usr/bin/hostfacts --username="<username>" --password="<password>"
+    ```
 * Token
-```sh
-# Use ENV
-# Add Environment in hostfacts.service under [Service] section
-Environment=HOSTFACTS_AUTH_TOKEN="<token>"
-```
-You can pass flag instead of using environment variable
-```
-# Use Flags
-# Modify ExecStart in [Service] section
-ExecStart=/usr/bin/hostfacts --token="<toekn>"
-```
+
+    ```sh
+    # Use ENV
+    # Add Environment in hostfacts.service under [Service] section
+    Environment=HOSTFACTS_AUTH_TOKEN="<token>"
+    ```
+    You can pass flag instead of using environment variable
+    ```
+    # Use Flags
+    # Modify ExecStart in [Service] section
+    ExecStart=/usr/bin/hostfacts --token="<toekn>"
+    ```
 
 If you want to set SSL certificate, do following
 
@@ -77,6 +82,7 @@ You can ignore SSL when Kubernetes is running in private network like GCE, AWS.
 ### Add `hostfacts` binary
 
 Download `hostfacts` and add binary in `/usr/bin`
+
 ```sh
 curl -G  https://cdn.appscode.com/binaries/hostfacts/1.5.0/hostfacts-linux-amd64 -o /usr/bin/hostfacts
 
@@ -85,6 +91,7 @@ chmod +x /usr/bin/hostfacts
 ```
 
 ##### Start Service
+
 ```sh
 # Configure to be automatically started at boot time
 systemctl enable hostfacts
