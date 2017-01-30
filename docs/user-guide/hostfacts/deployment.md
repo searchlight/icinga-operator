@@ -7,11 +7,11 @@ This guide will walk you through how to deploy hostfacts service in kubernetes n
 Write `hostfacts.service` file in __systemd directory__ in your kubernetes node.
 
 ##### systemd directory
-###### Ubuntu
+* ###### Ubuntu
 ```sh
 /lib/systemd/system
 ```
-###### RedHat
+* ###### RedHat
 ```sh
 /usr/lib/systemd/system
 ```
@@ -32,24 +32,29 @@ WantedBy=multi-user.target
 ```
 
 If you want to set authentication in `hostfacts`, set one of the following
-###### Basic Auth
+
+* ###### Basic Auth
 ```sh
 # Use ENV
 # Add Environment in hostfacts.service under [Service] section
 Environment=HOSTFACTS_AUTH_USERNAME="<token>"
 Environment=HOSTFACTS_AUTH_PASSWORD="<password>"
-
-# You can also pass flags for basic auth.
+```
+You can pass flags instead of using environment variables
+```
+# Use Flags
 # Modify ExecStart in [Service] section
 ExecStart=/usr/bin/hostfacts --username="<username>" --password="<password>"
 ```
-###### Token
+* ###### Token
 ```sh
 # Use ENV
 # Add Environment in hostfacts.service under [Service] section
 Environment=HOSTFACTS_AUTH_TOKEN="<token>"
-
-# You can also pass flag for token.
+```
+You can pass flag instead of using environment variable
+```
+# Use Flags
 # Modify ExecStart in [Service] section
 ExecStart=/usr/bin/hostfacts --token="<toekn>"
 ```
@@ -73,7 +78,10 @@ You can ignore SSL when Kubernetes is running in private network like GCE, AWS.
 
 Download `hostfacts` and add binary in `/usr/bin`
 ```sh
-curl -G  https://storage.googleapis.com/appscode-dev/binaries/hostfacts/0.3.0/hostfacts-linux-amd64 -o /usr/bin/hostfacts
+curl -G  https://cdn.appscode.com/binaries/hostfacts/1.5.0/hostfacts-linux-amd64 -o /usr/bin/hostfacts
+
+# Change access permissions for hostfacts binary
+chmod +x /usr/bin/hostfacts
 ```
 
 ##### Start Service
