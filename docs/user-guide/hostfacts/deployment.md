@@ -39,7 +39,7 @@ export HOSTFACTS_AUTH_USERNAME="<username>"
 export HOSTFACTS_AUTH_PASSWORD="<password>"
 
 # You can also pass flags for basic auth.
-/usr/bin/hostfacts --username="<username>" --password="<password>
+/usr/bin/hostfacts --username="<username>" --password="<password>"
 ```
 ###### Token
 ```sh
