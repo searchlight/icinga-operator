@@ -54,6 +54,7 @@ If you want to set SSL certificate, do following
 
 1. Generate certificates and key. See process [here](.../icinga2/certificate.md).
 2. Use flags to pass file directory
+
     ```sh
     /usr/bin/hostfacts --caCertFile="<path to ca cert file>" --certFile="<path to server cert file>" --keyFile="<path to server key file>"
     ```
