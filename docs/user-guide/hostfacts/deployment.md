@@ -34,14 +34,14 @@ RestartSec=5
 WantedBy=multi-user.target
 ```
 
-If you want to set authentication in `hostfacts`, set one of the following
+Set one of the following if you want to set authentication in `hostfacts`
 
 * Basic Auth
 
     ```sh
     # Use ENV
     # Add Environment in hostfacts.service under [Service] section
-    Environment=HOSTFACTS_AUTH_USERNAME="<token>"
+    Environment=HOSTFACTS_AUTH_USERNAME="<username>"
     Environment=HOSTFACTS_AUTH_PASSWORD="<password>"
     ```
     You can pass flags instead of using environment variables
@@ -61,7 +61,7 @@ If you want to set authentication in `hostfacts`, set one of the following
     ```
     # Use Flags
     # Modify ExecStart in [Service] section
-    ExecStart=/usr/bin/hostfacts --token="<toekn>"
+    ExecStart=/usr/bin/hostfacts --token="<token>"
     ```
 
 If you want to set SSL certificate, do following
