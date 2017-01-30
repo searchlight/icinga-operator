@@ -35,19 +35,23 @@ If you want to set authentication in `hostfacts`, set one of the following
 ###### Basic Auth
 ```sh
 # Use ENV
-export HOSTFACTS_AUTH_USERNAME="<username>"
-export HOSTFACTS_AUTH_PASSWORD="<password>"
+# Add Environment in hostfacts.service under [Service] section
+Environment=HOSTFACTS_AUTH_USERNAME="<token>"
+Environment=HOSTFACTS_AUTH_PASSWORD="<password>"
 
 # You can also pass flags for basic auth.
-/usr/bin/hostfacts --username="<username>" --password="<password>"
+# Modify ExecStart in [Service] section
+ExecStart=/usr/bin/hostfacts --username="<username>" --password="<password>"
 ```
 ###### Token
 ```sh
 # Use ENV
-export HOSTFACTS_AUTH_TOKEN="<token>"
+# Add Environment in hostfacts.service under [Service] section
+Environment=HOSTFACTS_AUTH_TOKEN="<token>"
 
 # You can also pass flag for token.
-/usr/bin/hostfacts --token="<toekn>"
+# Modify ExecStart in [Service] section
+ExecStart=/usr/bin/hostfacts --token="<toekn>"
 ```
 
 If you want to set SSL certificate, do following
@@ -56,7 +60,8 @@ If you want to set SSL certificate, do following
 2. Use flags to pass file directory
 
     ```sh
-    /usr/bin/hostfacts --caCertFile="<path to ca cert file>" --certFile="<path to server cert file>" --keyFile="<path to server key file>"
+    # Modify ExecStart in [Service] section
+    ExecStart=/usr/bin/hostfacts --caCertFile="<path to ca cert file>" --certFile="<path to server cert file>" --keyFile="<path to server key file>"
     ```
 
 You can ignore SSL when Kubernetes is running in private network like GCE, AWS.
