@@ -52,7 +52,7 @@ export HOSTFACTS_AUTH_TOKEN="<token>"
 
 If you want to set SSL certificate, do following
 
-1. Generate certificates and key. See process [here](.../icinga2/certificate.md).
+1. Generate certificates and key. See process [here](../icinga2/certificate.md).
 2. Use flags to pass file directory
 
     ```sh
