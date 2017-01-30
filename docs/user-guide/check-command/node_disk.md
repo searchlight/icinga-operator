@@ -31,6 +31,12 @@ hyperalert check_volume --node_stat --host ip-172-20-0-9.ec2.internal@default
 OK: (Disk & Inodes)
 ```
 
+#### Required Hostfacts
+Before using this CheckCommand, you must need to run `hostfacts` service in each Kubernetes node.
+Node disk stat is collected from `hostfacts` service deployed in each node.
+See Hostfacts [deployment guide](.../hostfacts/deployment.md)
+
+
 ##### Configure Alert Object
 ```yaml
 apiVersion: appscode.com/v1beta1

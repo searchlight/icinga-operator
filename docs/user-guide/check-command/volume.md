@@ -37,6 +37,12 @@ hyperalert check_volume --host='monitoring-influxdb-0.12.2-n3lo2@kube-system' --
 WARNING: Disk used more than 70%
 ```
 
+#### Required Hostfacts
+Before using this CheckCommand, you must need to run `hostfacts` service in each Kubernetes node.
+Volume stat of kubernetes pod is collected from `hostfacts` service.
+See Hostfacts [deployment guide](.../hostfacts/deployment.md)
+
+
 ##### Configure Alert Object
 ```yaml
 apiVersion: appscode.com/v1beta1
