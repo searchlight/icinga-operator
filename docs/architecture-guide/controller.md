@@ -134,9 +134,10 @@ Controller detects following ResourceEventType:
     4. Controller will then delete related Icinga2 objects for this node.
 
 
-### Service
+### Resource `Service`
 <img src="workflow-services.png"> 
 * #### EventType `ADDED`
+
     ###### Icinga2 Service
     1. When Icinga2 service is created, Searchlight Controller detects it.
     2. Searchlight creates new IcingaClient with new service endpoint.
