@@ -5,7 +5,9 @@ This guide will walk you through the architectural design of Searchlight Control
 ## Searchlight Controller
 
 Searchlight Controller collects all information from a watcher.
-This Searchlight Watcher watches all Kubernetes objects. See details [here](watcher.md).
+This Watcher watches all Kubernetes objects.
+
+See details [here](watcher.md).
 
 Controller detects following ResourceEventType:
 
