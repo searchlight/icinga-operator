@@ -27,4 +27,3 @@ Keep in Mind:
 2. Watcher starts watching and caching all Kubernetes objects.
 3. Controller detects all objects of Kubernetes type Alert, Pod, Node and Service.
 4. And finally all alerts are reassigned.
-
