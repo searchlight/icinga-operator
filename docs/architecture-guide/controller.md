@@ -35,16 +35,16 @@ Controller detects following ResourceEventType:
 
     Three types of Icinga2 host:
 
-     1. ###### localhost
-        
+    1. ###### localhost
+     
         | Kubernetes Object                                                                                    | CheckCommand               | Icinga2 Host                            |
         | :---                                                                                                 | :---                       | :---                                    |
         | cluster                                                                                              | `<supported any>`          | `<check_command>@<namespace>`           |
         | deployments <br>  daemonsets <br> replicasets <br> petsets <br> replicationcontrollers <br> services | pod_exists <br> pod_status | `<objectType>|<objectName>@<namespace>` |
         Assigned Host IP: `127.0.0.1`
 
-     2. ###### node
-
+    2. ###### node
+     
         | Kubernetes Object  | CheckCommand      | Icinga2 Host               |
         | :---               | :---              | :---                       |
         | cluster <br> nodes | `<supported any>` | `<node_name>@<namespace>`  |
@@ -52,7 +52,7 @@ Controller detects following ResourceEventType:
         > Note: If Alert is set on cluster, Icinga2 host will be created for each node in that cluster.
 
     3. ###### pod
-
+    
         | Kubernetes Object                 | CheckCommand      | Icinga2 Host              |
         | :---                              | :---              | :---                      |
         | `< any except [cluster, nodes] >` | `<supported any>` | `<pod_name>@<namespace>`  
