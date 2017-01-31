@@ -4,12 +4,8 @@ This guide will walk you through the architectural design of Searchlight Control
 
 ## Searchlight Controller
 
-Searchlight Controller watches following Kubernetes objects:
-
-* [alerts](../user-guide/alert-object.md) (The Third Party Resource)
-* pods
-* nodes
-* services
+Searchlight Controller collects all information from a watcher.
+This Searchlight Watcher watches all Kubernetes objects. See details [here](watcher.md).
 
 Controller detects following ResourceEventType:
 
