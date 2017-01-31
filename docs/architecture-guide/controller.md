@@ -102,7 +102,7 @@ Controller detects following ResourceEventType:
     1. When Icinga2 pod is created, Searchlight Controller detects it.
     2. Controller gets all Alert objects and create Icinga2 objects for all of them in new Icinga2 pod.
 
-    > Note: Fake create event for each Alert object is invoked.
+        > Note: Fake create event for each Alert object is invoked.
 
     ###### Other Pod
     1. When pod is created, Searchlight Controller detects it.
