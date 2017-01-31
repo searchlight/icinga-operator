@@ -55,7 +55,7 @@ Controller detects following ResourceEventType:
     
         | Kubernetes Object                 | CheckCommand      | Icinga2 Host              |
         | :---                              | :---              | :---                      |
-        | `< any except [cluster, nodes] >` | `<supported any>` | `<pod_name>@<namespace>`  
+        | `< any except [cluster, nodes] >` | `<supported any>` | `<pod_name>@<namespace>`  |
         Assigned Host IP: `<pod_ip>`
         > Note: If Alert is set on kubernetes object, Icinga2 host will be created for each pod under that object.
 
