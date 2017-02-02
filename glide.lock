@@ -1,5 +1,5 @@
-hash: e4b74732134c9a8a049c47376ebebec5530aef323faa81165e3d358a016c8008
-updated: 2017-01-27T01:10:39.388247156-08:00
+hash: a65ecd466d6878ecb089764a6a2ca6a3fcbb44b4f57289b53f654ba798299903
+updated: 2017-02-02T09:50:06.066003063+06:00
 imports:
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
@@ -36,7 +36,7 @@ imports:
   subpackages:
   - h/log
 - name: github.com/appscode/go
-  version: 2b10f748f0201d9d077ef7dedaf39669c0029fc9
+  version: 7ba1c0a441c6c319a501e54db6e93deaff5fe0dd
   subpackages:
   - crypto/rand
   - env
@@ -55,11 +55,12 @@ imports:
   - smtp
   - twilio
 - name: github.com/appscode/k8s-addons
-  version: 8d1b3d70406095c62da705045f3ce3ed6c90469f
+  version: 911e98ca1147df0fce024ccd2ea1ce874da875a7
   subpackages:
   - api
   - api/install
   - client/clientset
+  - client/clientset/fake
   - pkg/dns
   - pkg/events
   - pkg/stash
@@ -439,21 +440,35 @@ imports:
   - pkg/auth/user
   - pkg/client/cache
   - pkg/client/clientset_generated/internalclientset
+  - pkg/client/clientset_generated/internalclientset/fake
   - pkg/client/clientset_generated/internalclientset/typed/apps/internalversion
+  - pkg/client/clientset_generated/internalclientset/typed/apps/internalversion/fake
   - pkg/client/clientset_generated/internalclientset/typed/authentication/internalversion
+  - pkg/client/clientset_generated/internalclientset/typed/authentication/internalversion/fake
   - pkg/client/clientset_generated/internalclientset/typed/authorization/internalversion
+  - pkg/client/clientset_generated/internalclientset/typed/authorization/internalversion/fake
   - pkg/client/clientset_generated/internalclientset/typed/autoscaling/internalversion
+  - pkg/client/clientset_generated/internalclientset/typed/autoscaling/internalversion/fake
   - pkg/client/clientset_generated/internalclientset/typed/batch/internalversion
+  - pkg/client/clientset_generated/internalclientset/typed/batch/internalversion/fake
   - pkg/client/clientset_generated/internalclientset/typed/certificates/internalversion
+  - pkg/client/clientset_generated/internalclientset/typed/certificates/internalversion/fake
   - pkg/client/clientset_generated/internalclientset/typed/core/internalversion
+  - pkg/client/clientset_generated/internalclientset/typed/core/internalversion/fake
   - pkg/client/clientset_generated/internalclientset/typed/extensions/internalversion
+  - pkg/client/clientset_generated/internalclientset/typed/extensions/internalversion/fake
   - pkg/client/clientset_generated/internalclientset/typed/policy/internalversion
+  - pkg/client/clientset_generated/internalclientset/typed/policy/internalversion/fake
   - pkg/client/clientset_generated/internalclientset/typed/rbac/internalversion
+  - pkg/client/clientset_generated/internalclientset/typed/rbac/internalversion/fake
   - pkg/client/clientset_generated/internalclientset/typed/storage/internalversion
+  - pkg/client/clientset_generated/internalclientset/typed/storage/internalversion/fake
   - pkg/client/metrics
   - pkg/client/restclient
+  - pkg/client/testing/core
   - pkg/client/transport
   - pkg/client/typed/discovery
+  - pkg/client/typed/discovery/fake
   - pkg/client/unversioned/auth
   - pkg/client/unversioned/clientcmd
   - pkg/client/unversioned/clientcmd/api

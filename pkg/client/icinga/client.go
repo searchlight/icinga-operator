@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	_ "github.com/appscode/k8s-addons/api/install"
+	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
 )
 
 type IcingaConfig struct {
@@ -47,7 +48,7 @@ type IcingaApiResponse struct {
 	ResponseBody []byte
 }
 
-func NewClient(icingaConfig *IcingaConfig) *IcingaClient {
+func newClient(icingaConfig *IcingaConfig) *IcingaClient {
 	c := &IcingaClient{
 		config: icingaConfig,
 	}
@@ -131,4 +132,13 @@ func (r *IcingaApiRequest) Params(param map[string]string) *IcingaApiRequest {
 	r.req.URL.RawQuery = p.Encode()
 	fmt.Println(r.req.URL)
 	return r
+}
+
+func NewIcingaClient(kubeClient clientset.Interface, secretName string) (*IcingaClient, error) {
+	config, err := getIcingaConfig(kubeClient, secretName)
+	if err != nil {
+		return nil, err
+	}
+	c := newClient(config)
+	return c, nil
 }

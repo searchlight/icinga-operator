@@ -4,17 +4,25 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sync"
+	"time"
 
 	"github.com/appscode/go/crypto/rand"
 	aci "github.com/appscode/k8s-addons/api"
+	addons "github.com/appscode/k8s-addons/client/clientset/fake"
+	"github.com/appscode/k8s-addons/pkg/events"
 	"github.com/appscode/k8s-addons/pkg/testing"
+	"github.com/appscode/log"
+	"github.com/appscode/searchlight/cmd/searchlight/app"
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/pkg/controller/host"
 	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/apis/apps"
 	ext "k8s.io/kubernetes/pkg/apis/extensions"
 	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
+	"k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset/fake"
 	"k8s.io/kubernetes/pkg/labels"
+	"k8s.io/kubernetes/pkg/runtime"
 )
 
 const (
@@ -190,4 +198,47 @@ func deleteAlertObject(kubeClient *k8s.KubeClient, alert *aci.Alert) (err error)
 	// delete alert
 	err = kubeClient.AppscodeExtensionClient.Alert(alert.Namespace).Delete(alert.Name, nil)
 	return
+}
+
+type fakeKubeClient struct {
+	useFakeServer bool
+	fakeClient    *k8s.KubeClient
+	once          sync.Once
+}
+
+var fakeKube = fakeKubeClient{useFakeServer: false}
+
+func newFakeKubeClient() *k8s.KubeClient {
+	log.Warningln("APIServer is running in fake mode")
+	fakeKube.once.Do(
+		func() {
+			fakeKube.useFakeServer = true
+			log.Infoln("Generating fake clients")
+
+			fakeKube.fakeClient = &k8s.KubeClient{
+				Client:                  fake.NewSimpleClientset(),
+				AppscodeExtensionClient: addons.NewFakeExtensionClient(),
+			}
+		},
+	)
+
+	return fakeKube.fakeClient
+}
+
+func dispatch(w *app.Watcher, objectType events.ObjectType, eventType events.EventType, object runtime.Object) {
+	var metaData kapi.ObjectMeta
+	switch objectType {
+	case events.Alert:
+		alert := object.(*aci.Alert)
+		metaData = alert.ObjectMeta
+	}
+
+	fakeEvent := &events.Event{
+		ResourceType: objectType,
+		EventType:    eventType,
+		MetaData:     metaData,
+	}
+	fakeEvent.RuntimeObj = append(fakeEvent.RuntimeObj, object)
+	w.Dispatch(fakeEvent)
+	time.Sleep(time.Second * 10)
 }
