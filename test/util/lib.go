@@ -39,7 +39,7 @@ func IcingaServiceSearchQuery(icingaServiceName string, objectList []*host.KubeO
 	return fmt.Sprintf(`{"filter": "(%s)&&match(\"%s\",service.name)"}`, matchHost, icingaServiceName)
 }
 
-func CountAlertService(context *client.Context, alert *aci.Alert, expectZero bool) error {
+func CountIcingaService(context *client.Context, alert *aci.Alert, expectZero bool) error {
 
 	checkCommand := alert.Spec.CheckCommand
 	objectType := alert.Labels["alert.appscode.com/objectType"]
@@ -76,7 +76,6 @@ func CountAlertService(context *client.Context, alert *aci.Alert, expectZero boo
 				err = errors.New(fmt.Sprintf("Total Service Mismatch for %s:%s", objectType, objectName))
 			}
 		}
-
 		if err != nil {
 			fmt.Println(err.Error())
 		} else {
@@ -86,8 +85,53 @@ func CountAlertService(context *client.Context, alert *aci.Alert, expectZero boo
 			return err
 		}
 
-		fmt.Println("--> Waiting for 1 more minute in count process")
-		time.Sleep(time.Minute * 1)
+		fmt.Println("--> Waiting for 30 second more in count process")
+		time.Sleep(time.Second * 30)
+	}
+
+	return nil
+}
+
+func CountIcingaHost(context *client.Context, checkCommand, namespace, objectType, objectName string, expectZero bool) error {
+	// create all alerts for pod_status
+	hostType, err := GetIcingaHostType(checkCommand, objectType)
+	if err != nil {
+		return err
+	}
+	objectList, err := host.GetObjectList(context.KubeClient.Client, checkCommand, hostType, namespace, objectType, objectName, "")
+	if err != nil {
+		return err
+	}
+
+	in := IcingaServiceSearchQuery("ping4", objectList)
+	var respService host.ResponseObject
+
+	try := 0
+	for {
+		if _, err = context.IcingaClient.Objects().Service("").Get([]string{}, in).Do().Into(&respService); err != nil {
+			return errors.New("can't check icinga service")
+		}
+
+		if expectZero {
+			if len(respService.Results) != 0 {
+				err = errors.New(fmt.Sprintf("Host Found for %s:%s", objectType, objectName))
+			}
+		} else {
+			if len(respService.Results) != len(objectList) {
+				err = errors.New(fmt.Sprintf("Total Host Mismatch for %s:%s", objectType, objectName))
+			}
+		}
+		if err != nil {
+			fmt.Println(err.Error())
+		} else {
+			break
+		}
+		if try > 5 {
+			return err
+		}
+
+		fmt.Println("--> Waiting for 30 second more in count process")
+		time.Sleep(time.Second * 30)
 	}
 
 	return nil

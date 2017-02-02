@@ -8,7 +8,6 @@ import (
 	"github.com/appscode/searchlight/test/plugin"
 	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/fields"
-	"k8s.io/kubernetes/pkg/labels"
 	"os"
 )
 
