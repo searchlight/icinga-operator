@@ -23,7 +23,7 @@ const (
 
 	ConfigKeyPrefix = "ICINGA"
 
-	IcingaDefaultPort int64 = 5665
+	IcingaDefaultPort string = "5665"
 )
 
 type authInfo struct {
@@ -62,10 +62,7 @@ func getIcingaSecretData(kubeClient clientset.Interface, secretName string) (*au
 		host := parts[0]
 		port := IcingaDefaultPort
 		if len(parts) > 1 {
-			port, err = strconv.ParseInt(parts[1], 10, 64)
-			if err != nil {
-				return nil, err
-			}
+			port = parts[1]
 		}
 
 		hostIP := net.ParseIP(host)
