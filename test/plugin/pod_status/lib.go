@@ -12,7 +12,7 @@ import (
 	"k8s.io/kubernetes/pkg/labels"
 )
 
-func GetStatusCodeForPodStatus(kubeClient *config.KubeClient, hostname string) int {
+func GetStatusCodeForPodStatus(kubeClient *config.KubeClient, hostname string) util.IcingaState {
 	objectType, objectName, namespace := plugin.GetKubeObjectInfo(hostname)
 
 	var err error
@@ -23,7 +23,7 @@ func GetStatusCodeForPodStatus(kubeClient *config.KubeClient, hostname string) i
 			os.Exit(1)
 		}
 		if !(pod.Status.Phase == kapi.PodSucceeded || pod.Status.Phase == kapi.PodRunning) {
-			return plugin.CRITICAL
+			return util.CRITICAL
 		}
 
 	} else {
@@ -44,9 +44,9 @@ func GetStatusCodeForPodStatus(kubeClient *config.KubeClient, hostname string) i
 
 		for _, pod := range podList.Items {
 			if !(pod.Status.Phase == kapi.PodSucceeded || pod.Status.Phase == kapi.PodRunning) {
-				return plugin.CRITICAL
+				return util.CRITICAL
 			}
 		}
 	}
-	return plugin.OK
+	return util.OK
 }

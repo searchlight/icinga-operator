@@ -17,13 +17,13 @@ import (
 	rest "k8s.io/kubernetes/pkg/client/restclient"
 )
 
-type request struct {
-	url             string
-	query           string
-	secret          string
-	inClusterConfig bool
-	warning         string
-	critical        string
+type Request struct {
+	Url             string
+	Query           string
+	Secret          string
+	InClusterConfig bool
+	Warning         string
+	Critical        string
 }
 
 type AuthInfo struct {
@@ -43,16 +43,15 @@ const (
 	auth = "auth"
 )
 
-func getData(req *request) string {
-	httpClient := httpclient.Default().WithBaseURL(req.url)
-	if req.secret != "" {
+func getData(req *Request) (string, error) {
+	httpClient := httpclient.Default().WithBaseURL(req.Url)
+	if req.Secret != "" {
 		kubeClient, err := k8s.NewClient()
 		if err != nil {
-			fmt.Fprintln(os.Stdout, util.State[3], err)
-			os.Exit(3)
+			return "", err
 		}
 
-		parts := strings.Split(req.secret, ".")
+		parts := strings.Split(req.Secret, ".")
 		name := parts[0]
 		namespace := "default"
 		if len(parts) > 1 {
@@ -61,15 +60,13 @@ func getData(req *request) string {
 
 		secret, err := kubeClient.Client.Core().Secrets(namespace).Get(name)
 		if err != nil {
-			fmt.Fprintln(os.Stdout, util.State[3], err)
-			os.Exit(3)
+			return "", err
 		}
 
 		secretData := new(AuthInfo)
 		if data, found := secret.Data[auth]; found {
 			if err := json.Unmarshal(data, secretData); err != nil {
-				fmt.Fprintln(os.Stdout, util.State[3], err)
-				os.Exit(3)
+				return "", err
 			}
 		}
 		httpClient.WithBearerToken(secretData.Token)
@@ -78,11 +75,10 @@ func getData(req *request) string {
 			httpClient.WithTLSConfig(secretData.ClientCertificateData, secretData.CertificateAuthorityData)
 		}
 	}
-	if req.inClusterConfig {
+	if req.InClusterConfig {
 		config, err := rest.InClusterConfig()
 		if err != nil {
-			fmt.Fprintln(os.Stdout, util.State[3], err)
-			os.Exit(3)
+			return "", err
 		}
 
 		httpClient.WithBearerToken(config.BearerToken)
@@ -92,92 +88,97 @@ func getData(req *request) string {
 	var respJson interface{}
 	resp, err := httpClient.Call("GET", "", nil, &respJson, true)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return "", err
 	}
 	if resp.StatusCode != 200 {
-		fmt.Fprintln(os.Stdout, util.State[3], fmt.Sprintf("Invalid status_code %v", resp.StatusCode))
-		os.Exit(3)
+		return "", fmt.Errorf("Invalid status_code %v", resp.StatusCode)
 	}
 
 	data, err := json.Marshal(respJson)
 	if err != nil {
+		return "", err
 		fmt.Fprintln(os.Stdout, util.State[3], err)
 		os.Exit(3)
 	}
 
-	return string(data)
+	return string(data), nil
 }
 
-func (j *JQ) eval() (res interface{}) {
+func (j *JQ) eval() (res interface{}, err error) {
 	cmd := exec.Command("jq", j.Q)
 	cmd.Stdin = bytes.NewBufferString(j.J)
-	cmdOut, err := cmd.Output()
-	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+
+	var cmdOut []byte
+	if cmdOut, err = cmd.Output(); err != nil {
+		return
 
 	}
-	if err = json.Unmarshal(cmdOut, &res); err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
-	}
+	err = json.Unmarshal(cmdOut, &res)
 	return
 }
 
-func checkResult(evalDataString, checkQuery string) bool {
+func checkResult(evalDataString, checkQuery string) (bool, error) {
 	jqData := &JQ{
 		J: string(evalDataString),
 		Q: checkQuery,
 	}
-	result := jqData.eval()
-	if reflect.TypeOf(result).Kind() != reflect.Bool {
-		fmt.Fprintln(os.Stdout, util.State[3], fmt.Sprintf("Invalid check query: %v", checkQuery))
-		os.Exit(3)
+	result, err := jqData.eval()
+	if err != nil {
+		return false, err
 	}
-	return result.(bool)
+	if reflect.TypeOf(result).Kind() != reflect.Bool {
+		return false, fmt.Errorf("Invalid check query: %v", checkQuery)
+	}
+	return result.(bool), nil
 }
 
-func checkJsonPath(req *request) {
-	jsonData := getData(req)
-	jqData := &JQ{
-		J: jsonData,
-		Q: req.query,
+func CheckJsonPath(req *Request) (util.IcingaState, interface{}) {
+	jsonData, err := getData(req)
+	if err != nil {
+		return util.UNKNOWN, err
+
 	}
 
-	evalData := jqData.eval()
-	if evalData == nil {
-		fmt.Fprintln(os.Stdout, util.State[3], "Invalid query. No data found")
-		os.Exit(3)
+	jqData := &JQ{
+		J: jsonData,
+		Q: req.Query,
+	}
+
+	evalData, err := jqData.eval()
+	if err != nil {
+		return util.UNKNOWN, "Invalid query. No data found"
 	}
 
 	evalDataByte, err := json.Marshal(evalData)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.UNKNOWN, err
 
 	}
 
 	evalDataString := string(evalDataByte)
-	if req.critical != "" {
-		if checkResult(evalDataString, req.critical) {
-			fmt.Fprintln(os.Stdout, util.State[2], fmt.Sprintf("%v", req.critical))
-			os.Exit(2)
+	if req.Critical != "" {
+		isCritical, err := checkResult(evalDataString, req.Critical)
+		if err != nil {
+			return util.UNKNOWN, err
+		}
+		if isCritical {
+			return util.CRITICAL, fmt.Sprintf("%v", req.Critical)
 		}
 	}
-	if req.warning != "" {
-		if checkResult(evalDataString, req.warning) {
-			fmt.Fprintln(os.Stdout, util.State[1], fmt.Sprintf("%v", req.warning))
-			os.Exit(1)
+	if req.Warning != "" {
+		isWarning, err := checkResult(evalDataString, req.Warning)
+		if err != nil {
+			return util.UNKNOWN, err
+		}
+		if isWarning {
+			return util.WARNING, fmt.Sprintf("%v", req.Warning)
 		}
 	}
-
-	fmt.Fprintln(os.Stdout, util.State[0], "Response looks good")
-	os.Exit(0)
+	return util.OK, "Response looks good"
 }
 
 func NewCmd() *cobra.Command {
-	var req request
+	var req Request
 
 	c := &cobra.Command{
 		Use:     "check_json_path",
@@ -187,15 +188,15 @@ func NewCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "url", "query")
 			flags.EnsureAlterableFlags(cmd, "warning", "critical")
-			checkJsonPath(&req)
+			util.Output(CheckJsonPath(&req))
 		},
 	}
 
-	c.Flags().StringVarP(&req.url, "url", "u", "", "URL to get data")
-	c.Flags().StringVarP(&req.query, "query", "q", "", `JQ query`)
-	c.Flags().StringVarP(&req.secret, "secret", "s", "", `Kubernetes secret name`)
-	c.Flags().BoolVar(&req.inClusterConfig, "in_cluster_config", false, `Use Kubernetes InCluserConfig`)
-	c.Flags().StringVarP(&req.warning, "warning", "w", "", `Warning JQ query which returns [true/false]`)
-	c.Flags().StringVarP(&req.critical, "critical", "c", "", `Critical JQ query which returns [true/false]`)
+	c.Flags().StringVarP(&req.Url, "url", "u", "", "URL to get data")
+	c.Flags().StringVarP(&req.Query, "query", "q", "", `JQ query`)
+	c.Flags().StringVarP(&req.Secret, "secret", "s", "", `Kubernetes secret name`)
+	c.Flags().BoolVar(&req.InClusterConfig, "in_cluster_config", false, `Use Kubernetes InCluserConfig`)
+	c.Flags().StringVarP(&req.Warning, "warning", "w", "", `Warning JQ query which returns [true/false]`)
+	c.Flags().StringVarP(&req.Critical, "critical", "c", "", `Critical JQ query which returns [true/false]`)
 	return c
 }

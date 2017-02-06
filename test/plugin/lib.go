@@ -7,12 +7,7 @@ import (
 	"strings"
 
 	"github.com/appscode/searchlight/pkg/controller/host"
-)
-
-const (
-	OK       int = 0
-	WARNING  int = 1
-	CRITICAL int = 2
+	"reflect"
 )
 
 func GetKubeObjectInfo(hostname string) (objectType string, objectName string, namespace string) {
@@ -40,4 +35,12 @@ func GetKubeObjectInfo(hostname string) (objectType string, objectName string, n
 		}
 	}
 	return
+}
+
+func FillStruct(data map[string]interface{}, result interface{}) {
+    t := reflect.ValueOf(result).Elem()
+    for k, v := range data {
+        val := t.FieldByName(k)
+        val.Set(reflect.ValueOf(v))
+    }
 }

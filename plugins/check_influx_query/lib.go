@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"os"
 	"strconv"
 
 	"github.com/Knetic/govaluate"
@@ -71,7 +72,8 @@ func getValue(con *client.Client, db string, req *request) (map[string]interface
 
 	defer func() {
 		if e := recover(); e != nil {
-			return nil, e
+			fmt.Fprintln(os.Stdout, util.State[3], e)
+			os.Exit(3)
 		}
 	}()
 
@@ -135,7 +137,7 @@ func checkResult(checkQuery string, valueMap map[string]interface{}) (bool, erro
 	return false, nil
 }
 
-func CheckInfluxQuery(req *request) (int32, interface{}) {
+func CheckInfluxQuery(req *request) (util.IcingaState, interface{}) {
 	authData, err := influxdb.GetInfluxDBSecretData(req.secret)
 	if err != nil {
 		return util.UNKNOWN, err

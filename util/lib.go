@@ -55,7 +55,7 @@ func GetLabels(kubeClient *k8s.KubeClient, namespace, objectType, objectName str
 	return labels.SelectorFromSet(labelMap), nil
 }
 
-func Output(exitCode int32, message interface{}) {
+func Output(icingaState IcingaState, message interface{}) {
 	fmt.Fprintln(os.Stdout, State[3], message)
 	os.Exit(3)
 }

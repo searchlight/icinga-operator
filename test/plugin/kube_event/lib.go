@@ -1,18 +1,17 @@
 package kube_event
 
 import (
+	"fmt"
+	"os"
 	"time"
 
-	"fmt"
 	"github.com/appscode/searchlight/pkg/client/k8s"
-	"github.com/appscode/searchlight/test/plugin"
+	"github.com/appscode/searchlight/util"
 	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/fields"
-	"k8s.io/kubernetes/pkg/labels"
-	"os"
 )
 
-func GetStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Duration) int {
+func GetStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Duration) util.IcingaState {
 	count := 0
 	field := fields.OneTermEqualSelector(kapi.EventTypeField, kapi.EventTypeWarning)
 	checkTime := time.Now().Add(-(checkInterval + clockSkew))
@@ -33,8 +32,8 @@ func GetStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clock
 	}
 
 	if count > 0 {
-		return plugin.WARNING
+		return util.WARNING
 	}
 
-	return plugin.OK
+	return util.OK
 }

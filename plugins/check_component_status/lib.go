@@ -21,7 +21,7 @@ type serviceOutput struct {
 	Message string        `json:"message,omitempty"`
 }
 
-func CheckComponentStatus() (int32, interface{}) {
+func CheckComponentStatus() (util.IcingaState, interface{}) {
 	kubeClient, err := k8s.NewClient()
 	if err != nil {
 		return util.UNKNOWN, err
