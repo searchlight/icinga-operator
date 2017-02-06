@@ -2,6 +2,8 @@ package util
 
 import (
 	"errors"
+	"fmt"
+	"os"
 
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/pkg/controller/host"
@@ -51,4 +53,9 @@ func GetLabels(kubeClient *k8s.KubeClient, namespace, objectType, objectName str
 		return nil, errors.New("Invalid kubernetes object type")
 	}
 	return labels.SelectorFromSet(labelMap), nil
+}
+
+func Output(exitCode int32, message interface{}) {
+	fmt.Fprintln(os.Stdout, State[3], message)
+	os.Exit(3)
 }

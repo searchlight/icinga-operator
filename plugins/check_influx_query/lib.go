@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"os"
 	"strconv"
 
 	"github.com/Knetic/govaluate"
@@ -30,7 +29,7 @@ func trunc(val float64) interface{} {
 	return float64(intData) / 1000.0
 }
 
-func getInfluxDBClient(authData *influxdb.AuthInfo) *client.Client {
+func getInfluxDBClient(authData *influxdb.AuthInfo) (*client.Client, error) {
 	config := &client.Config{
 		URL: url.URL{
 			Scheme: "http",
@@ -41,130 +40,154 @@ func getInfluxDBClient(authData *influxdb.AuthInfo) *client.Client {
 	}
 	client, err := client.NewClient(*config)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return nil, err
 	}
-	return client
+	return client, nil
 }
 
-func getInfluxdbData(con *client.Client, command, db, queryName string) float64 {
+func getInfluxdbData(con *client.Client, command, db, queryName string) (float64, error) {
 	q := client.Query{
 		Command:  command,
 		Database: db,
 	}
 	res, err := con.Query(q)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return 0.0, err
 	}
 
 	if len(res.Results[0].Series) == 0 {
-		fmt.Fprintln(os.Stdout, util.State[3], errors.New(fmt.Sprint("Value not found for query: ", queryName)))
-		os.Exit(3)
+		return 0.0, errors.New(fmt.Sprint("Value not found for query: ", queryName))
 	}
 	data, err := strconv.ParseFloat((string(res.Results[0].Series[0].Values[0][1].(json.Number))), 64)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return 0.0, err
 	}
-	return data
+	return data, nil
 }
 
-func getValue(con *client.Client, db string, req *request) map[string]interface{} {
+func getValue(con *client.Client, db string, req *request) (map[string]interface{}, error) {
 
 	valMap := make(map[string]interface{})
 
 	defer func() {
 		if e := recover(); e != nil {
-			fmt.Fprintln(os.Stdout, util.State[3], e)
-			os.Exit(3)
+			return nil, e
 		}
 	}()
 
 	if req.a != "" {
-		data := getInfluxdbData(con, req.a, db, "A")
+		data, err := getInfluxdbData(con, req.a, db, "A")
+		if err != nil {
+			return nil, err
+		}
 		valMap["A"] = data
 	}
 
 	if req.b != "" {
-		data := getInfluxdbData(con, req.b, db, "B")
+		data, err := getInfluxdbData(con, req.b, db, "B")
+		if err != nil {
+			return nil, err
+		}
 		valMap["B"] = data
 	}
 
 	if req.c != "" {
-		data := getInfluxdbData(con, req.c, db, "C")
+		data, err := getInfluxdbData(con, req.c, db, "C")
+		if err != nil {
+			return nil, err
+		}
 		valMap["C"] = data
 	}
 
 	if req.d != "" {
-		data := getInfluxdbData(con, req.d, db, "D")
+		data, err := getInfluxdbData(con, req.d, db, "D")
+		if err != nil {
+			return nil, err
+		}
 		valMap["D"] = data
 	}
 
 	if req.e != "" {
-		data := getInfluxdbData(con, req.e, db, "E")
+		data, err := getInfluxdbData(con, req.e, db, "E")
+		if err != nil {
+			return nil, err
+		}
 		valMap["E"] = data
 	}
 
-	return valMap
+	return valMap, nil
 }
 
-func checkResult(checkQuery string, valueMap map[string]interface{}) bool {
+func checkResult(checkQuery string, valueMap map[string]interface{}) (bool, error) {
 	expr, err := govaluate.NewEvaluableExpression(checkQuery)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return false, err
 	}
 
 	res, err := expr.Evaluate(valueMap)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return false, err
 	}
 
-	return res.(bool)
+	if res.(bool) {
+		return true, nil
+	}
+	return false, nil
 }
 
-func checkInfluxQuery(req *request) {
+func CheckInfluxQuery(req *request) (int32, interface{}) {
 	authData, err := influxdb.GetInfluxDBSecretData(req.secret)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.UNKNOWN, err
 	}
 
 	if req.host != "" {
 		authData.Host = req.host
 	}
 	if authData.Host == "" {
-		fmt.Fprintln(os.Stdout, util.State[3], errors.New("No InfluxDB host found"))
-		os.Exit(3)
+		return util.UNKNOWN, "No InfluxDB host found"
 	}
-	client := getInfluxDBClient(authData)
+	client, err := getInfluxDBClient(authData)
+	if err != nil {
+		return util.UNKNOWN, err
+	}
 
-	valMap := getValue(client, authData.Database, req)
+	valMap, err := getValue(client, authData.Database, req)
+	if err != nil {
+		return util.UNKNOWN, err
+	}
 
 	expression, err := govaluate.NewEvaluableExpression(req.r)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.UNKNOWN, err
 	}
 
 	if valMap["R"], err = expression.Evaluate(valMap); err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.UNKNOWN, err
 	}
 	valMap["R"] = trunc(valMap["R"].(float64))
 
 	if req.critical != "" {
-		checkResult(req.critical, valMap)
+		isCritical, err := checkResult(req.critical, valMap)
+		if err != nil {
+			return util.UNKNOWN, err.Error()
+		}
+		if isCritical {
+			return util.CRITICAL, nil
+		}
 	}
 
 	if req.warning != "" {
-		checkResult(req.warning, valMap)
+		isWarning, err := checkResult(req.warning, valMap)
+		if err != nil {
+			return util.UNKNOWN, err
+		}
+		if isWarning {
+			return util.WARNING, nil
+		}
 	}
 
-	fmt.Fprintln(os.Stdout, util.State[0], "Fine")
-	os.Exit(0)
+	return util.OK, "Fine"
 }
 
 func NewCmd() *cobra.Command {
@@ -179,7 +202,7 @@ func NewCmd() *cobra.Command {
 			flags.EnsureRequiredFlags(cmd, "secret", "R")
 			flags.EnsureAlterableFlags(cmd, "A", "B", "C", "D", "E")
 			flags.EnsureAlterableFlags(cmd, "warning", "critical")
-			checkInfluxQuery(&req)
+			util.Output(CheckInfluxQuery(&req))
 		},
 	}
 

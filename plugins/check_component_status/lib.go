@@ -3,7 +3,6 @@ package check_component_status
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
@@ -22,11 +21,10 @@ type serviceOutput struct {
 	Message string        `json:"message,omitempty"`
 }
 
-func checkComponentStatus() {
+func CheckComponentStatus() (int32, interface{}) {
 	kubeClient, err := k8s.NewClient()
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.UNKNOWN, err
 	}
 
 	components, err := kubeClient.Client.Core().
@@ -36,8 +34,7 @@ func checkComponentStatus() {
 		},
 	)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.UNKNOWN, err
 	}
 
 	objectInfoList := make([]*objectInfo, 0)
@@ -55,8 +52,7 @@ func checkComponentStatus() {
 	}
 
 	if len(objectInfoList) == 0 {
-		fmt.Fprintln(os.Stdout, util.State[0], "All components are healthy")
-		os.Exit(0)
+		return util.OK, "All components are healthy"
 	} else {
 		output := &serviceOutput{
 			Objects: objectInfoList,
@@ -64,11 +60,9 @@ func checkComponentStatus() {
 		}
 		outputByte, err := json.MarshalIndent(output, "", "  ")
 		if err != nil {
-			fmt.Fprintln(os.Stdout, util.State[3], err)
-			os.Exit(3)
+			return util.UNKNOWN, err
 		}
-		fmt.Fprintln(os.Stdout, util.State[2], string(outputByte))
-		os.Exit(2)
+		return util.CRITICAL, outputByte
 	}
 }
 
@@ -79,7 +73,8 @@ func NewCmd() *cobra.Command {
 		Example: "",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			checkComponentStatus()
+			util.Output(CheckComponentStatus())
+
 		},
 	}
 	return c
