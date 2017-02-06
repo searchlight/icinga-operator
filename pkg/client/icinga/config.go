@@ -13,11 +13,13 @@ import (
 )
 
 const (
-	env string = ".env"
+	ENV string = ".env"
 
 	IcingaService string = "ICINGA_K8S_SERVICE"
 	IcingaAPIUser string = "ICINGA_API_USER"
 	IcingaAPIPass string = "ICINGA_API_PASSWORD"
+
+	ConfigKeyPrefix = "ICINGA"
 )
 
 type authInfo struct {
@@ -40,21 +42,24 @@ func getIcingaSecretData(kubeClient clientset.Interface, secretName string) (*au
 	}
 
 	authData := new(authInfo)
-	if data, found := secret.Data[env]; found {
+	if data, found := secret.Data[ENV]; found {
 		dataReader := strings.NewReader(string(data))
 		secretData, err := ini.Load(dataReader)
 		if err != nil {
 			return nil, err
 		}
 
+		host, found := secretData.Get("", IcingaService)
 		if _env.InCluster() {
-			if host, found := secretData.Get("", IcingaService); found {
+			if found {
 				serviceIP, err := dns.GetServiceClusterIP(kubeClient, ConfigKeyPrefix, host)
 				if err != nil {
 					return nil, err
 				}
 				authData.Endpoint = fmt.Sprintf("https://%v:5665/v1", serviceIP)
 			}
+		} else {
+			authData.Endpoint = fmt.Sprintf("https://%v:5665/v1", host)
 		}
 
 		if authData.Username, found = secretData.Get("", IcingaAPIUser); !found {
