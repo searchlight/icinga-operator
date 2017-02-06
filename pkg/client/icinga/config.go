@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"strconv"
 	"strings"
 
 	_env "github.com/appscode/go/env"
@@ -72,8 +71,6 @@ func getIcingaSecretData(kubeClient clientset.Interface, secretName string) (*au
 				if err != nil {
 					return nil, err
 				}
-			} else {
-				return nil, errors.New("Invalid ICINGA_ADDRESS")
 			}
 		}
 
