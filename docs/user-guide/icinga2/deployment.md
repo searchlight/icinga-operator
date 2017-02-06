@@ -29,8 +29,16 @@ ICINGA_IDO_USER=icingaido
 ICINGA_IDO_PASSWORD=12345678
 ICINGA_API_USER=icingaapi
 ICINGA_API_PASSWORD=12345678
-ICINGA_K8S_SERVICE=appscode-icinga.kube-system
+ICINGA_ADDRESS=appscode-icinga.kube-system
 ```
+
+We can use following as `ICINGA_ADDRESS`:
+
+* `<HostIP>:<HostPort>`
+* `<KubernetesService.KubernetesNamespace>:<ServicePort>`
+
+> Port is optional. Default: 5665
+> KubernetesNamespace is optional. Default: default
 
 Encode Secret data and set `ICINGA_SECRET_ENV` to it
 ```sh

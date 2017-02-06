@@ -88,7 +88,10 @@ func TestKubeD(t *testing.T) {
 	kubeClient := getKubernetesClient()
 	context.KubeClient = kubeClient
 
-	icingaClient, err := icinga.NewIcingaClient(kubeClient.Client)
+	/*
+		TODO: Pass Secret Name
+	*/
+	icingaClient, err := icinga.NewIcingaClient(kubeClient.Client, "")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -503,7 +506,10 @@ func TestGeneralAlert(t *testing.T) {
 	kubeClient := getKubernetesClient()
 	context.KubeClient = kubeClient
 
-	icingaClient, err := icinga.NewIcingaClient(kubeClient.Client)
+	/*
+		TODO: Pass Secret Name
+	*/
+	icingaClient, err := icinga.NewIcingaClient(kubeClient.Client, "")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -600,7 +606,10 @@ func TestAcknowledge(t *testing.T) {
 	kubeClient := getKubernetesClient()
 	context.KubeClient = kubeClient
 
-	icingaClient, err := icinga.NewIcingaClient(kubeClient.Client)
+	/*
+		TODO: Pass Secret Name
+	*/
+	icingaClient, err := icinga.NewIcingaClient(kubeClient.Client, "")
 	if err != nil {
 		log.Fatalln(err)
 	}
