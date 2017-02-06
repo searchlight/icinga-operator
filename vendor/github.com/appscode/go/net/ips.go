@@ -133,7 +133,7 @@ func NodeIP(interfaceName ...string) (string, net.IP, error) {
 	}
 }
 
-func hostIPs(routable bool) ([]net.IP, []net.IP, error) {
+func detectIPs(routable bool) ([]net.IP, []net.IP, error) {
 	internalIPs := make([]net.IP, 0)
 	externalIPs := make([]net.IP, 0)
 
@@ -202,10 +202,10 @@ func hostIPs(routable bool) ([]net.IP, []net.IP, error) {
 // RoutableIPs returns routable public and private IPs associated with current host.
 // It will also use https://my-ip.space/index.json to detect public IP, if no public IP is assigned to a host interface.
 func RoutableIPs() ([]net.IP, []net.IP, error) {
-	return hostIPs(true)
+	return detectIPs(true)
 }
 
 // HostIPs returns public and private IPs assigned to various interfaces on current host.
 func HostIPs() ([]net.IP, []net.IP, error) {
-	return hostIPs(false)
+	return detectIPs(false)
 }

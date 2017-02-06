@@ -1,5 +1,5 @@
 hash: e4b74732134c9a8a049c47376ebebec5530aef323faa81165e3d358a016c8008
-updated: 2017-01-27T01:10:39.388247156-08:00
+updated: 2017-02-06T15:04:20.078989121+06:00
 imports:
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
@@ -36,7 +36,7 @@ imports:
   subpackages:
   - h/log
 - name: github.com/appscode/go
-  version: 2b10f748f0201d9d077ef7dedaf39669c0029fc9
+  version: 7ba1c0a441c6c319a501e54db6e93deaff5fe0dd
   subpackages:
   - crypto/rand
   - env
@@ -55,7 +55,7 @@ imports:
   - smtp
   - twilio
 - name: github.com/appscode/k8s-addons
-  version: 8d1b3d70406095c62da705045f3ce3ed6c90469f
+  version: df2733eb348ebeaadee7b704e009bce062eaca48
   subpackages:
   - api
   - api/install
