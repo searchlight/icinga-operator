@@ -15,8 +15,10 @@ import (
 	"k8s.io/kubernetes/pkg/labels"
 )
 
-type request struct {
-	host string
+type Request struct {
+	ObjectType string
+	ObjectName string
+	Namespace  string
 }
 
 type objectInfo struct {
@@ -30,19 +32,17 @@ type serviceOutput struct {
 	Message string        `json:"message,omitempty"`
 }
 
-func checkPodStatus(namespace, objectType, objectName string) {
+func CheckPodStatus(req *Request) (util.IcingaState, interface{}) {
 	kubeClient, err := k8s.NewClient()
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	objectInfoList := make([]*objectInfo, 0)
-	if objectType == host.TypePods {
-		pod, err := kubeClient.Client.Core().Pods(namespace).Get(objectName)
+	if req.ObjectType == host.TypePods {
+		pod, err := kubeClient.Client.Core().Pods(req.Namespace).Get(req.ObjectName)
 		if err != nil {
-			fmt.Fprintln(os.Stdout, util.State[3], err)
-			os.Exit(3)
+			return util.Unknown, err
 		}
 
 		if !(pod.Status.Phase == kapi.PodSucceeded || pod.Status.Phase == kapi.PodRunning) {
@@ -50,22 +50,20 @@ func checkPodStatus(namespace, objectType, objectName string) {
 		}
 	} else {
 		labelSelector := labels.Everything()
-		if objectType != "" {
-			if labelSelector, err = util.GetLabels(kubeClient.Client, namespace, objectType, objectName); err != nil {
-				fmt.Fprintln(os.Stdout, util.State[3], err)
-				os.Exit(3)
+		if req.ObjectType != "" {
+			if labelSelector, err = util.GetLabels(kubeClient.Client, req.Namespace, req.ObjectType, req.ObjectName); err != nil {
+				return util.Unknown, err
 			}
 		}
 
 		podList, err := kubeClient.Client.Core().
-			Pods(namespace).List(
+			Pods(req.Namespace).List(
 			kapi.ListOptions{
 				LabelSelector: labelSelector,
 			},
 		)
 		if err != nil {
-			fmt.Fprintln(os.Stdout, util.State[3], err)
-			os.Exit(3)
+			return util.Unknown, err
 		}
 
 		for _, pod := range podList.Items {
@@ -76,8 +74,7 @@ func checkPodStatus(namespace, objectType, objectName string) {
 	}
 
 	if len(objectInfoList) == 0 {
-		fmt.Fprintln(os.Stdout, util.State[0], "All pods are Ready")
-		os.Exit(0)
+		return util.Ok, "All pods are Ready"
 	} else {
 		output := &serviceOutput{
 			Objects: objectInfoList,
@@ -85,16 +82,16 @@ func checkPodStatus(namespace, objectType, objectName string) {
 		}
 		outputByte, err := json.MarshalIndent(output, "", "  ")
 		if err != nil {
-			fmt.Fprintln(os.Stdout, util.State[3], err)
-			os.Exit(3)
+			return util.Unknown, err
 		}
-		fmt.Fprintln(os.Stdout, util.State[2], string(outputByte))
-		os.Exit(2)
+		return util.Critical, outputByte
 	}
 }
 
 func NewCmd() *cobra.Command {
-	var req request
+	var req Request
+	var icingaHost string
+
 	c := &cobra.Command{
 		Use:     "check_pod_status",
 		Short:   "Check Kubernetes Pod(s) status",
@@ -103,7 +100,7 @@ func NewCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "host")
 
-			parts := strings.Split(req.host, "@")
+			parts := strings.Split(icingaHost, "@")
 			if len(parts) != 2 {
 				fmt.Fprintln(os.Stdout, util.State[3], "Invalid icinga host.name")
 				os.Exit(3)
@@ -128,9 +125,13 @@ func NewCmd() *cobra.Command {
 				}
 			}
 
-			checkPodStatus(namespace, objectType, objectName)
+			req.ObjectType = objectType
+			req.ObjectName = objectName
+			req.Namespace = namespace
+
+			util.Output(CheckPodStatus(&req))
 		},
 	}
-	c.Flags().StringVarP(&req.host, "host", "H", "", "Icinga host name")
+	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	return c
 }

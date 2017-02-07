@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/appscode/go/flags"
@@ -172,57 +171,52 @@ func getUsage(hostIP, path string) (*usageStat, error) {
 	return usages[0], nil
 }
 
-func checkResult(field string, warning, critical, result float64) {
+func checkResult(field string, warning, critical, result float64) (util.IcingaState, interface{}) {
 	if result >= critical {
-		fmt.Fprintln(os.Stdout, util.State[2], fmt.Sprintf("%v used more than %v%%", field, critical))
-		os.Exit(2)
+		return util.Critical, fmt.Sprintf("%v used more than %v%%", field, critical)
 	}
 	if result >= warning {
-		fmt.Fprintln(os.Stdout, util.State[1], fmt.Sprintf("%v used more than %v%%", field, warning))
-		os.Exit(1)
+		return util.Warning, fmt.Sprintf("%v used more than %v%%", field, warning)
 	}
+	return util.Ok, "(Disk & Inodes)"
 }
 
-func checkDiskStat(req *request, nodeIP, path string) {
+func checkDiskStat(req *request, nodeIP, path string) (util.IcingaState, interface{}) {
 	usage, err := getUsage(nodeIP, path)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	warning := req.warning
 	critical := req.critical
-	checkResult("Disk", warning, critical, usage.UsedPercent)
-	checkResult("Inodes", warning, critical, usage.InodesUsedPercent)
-
-	fmt.Fprintln(os.Stdout, util.State[0], "(Disk & Inodes)")
-	os.Exit(0)
+	state, message := checkResult("Disk", warning, critical, usage.UsedPercent)
+	if state != util.Ok {
+		return state, message
+	}
+	state, message = checkResult("Inodes", warning, critical, usage.InodesUsedPercent)
+	return state, message
 }
 
-func checkNodeDiskStat(req *request) {
+func checkNodeDiskStat(req *request) (util.IcingaState, interface{}) {
 	host := req.host
 	parts := strings.Split(host, "@")
 	if len(parts) != 2 {
-		fmt.Fprintln(os.Stdout, util.State[3], "Invalid icinga host.name")
-		os.Exit(3)
+		return util.Unknown, "Invalid icinga host.name"
 	}
 
 	kubeClient, err := k8s.NewClient()
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	node_name := parts[0]
 	node, err := kubeClient.Client.Core().Nodes().Get(node_name)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	if node == nil {
-		fmt.Fprintln(os.Stdout, util.State[3], "Node not found")
-		os.Exit(3)
+		return util.Unknown, "Node not found"
 	}
 
 	hostIP := ""
@@ -233,32 +227,29 @@ func checkNodeDiskStat(req *request) {
 	}
 
 	if hostIP == "" {
-		fmt.Fprintln(os.Stdout, util.State[3], "Node InternalIP not found")
-		os.Exit(3)
+		return util.Unknown, "Node InternalIP not found"
 	}
-	checkDiskStat(req, hostIP, "/")
+	return checkDiskStat(req, hostIP, "/")
 }
-func checkPodVolumeStat(req *request) {
+
+func checkPodVolumeStat(req *request) (util.IcingaState, interface{}) {
 	host := req.host
 	name := req.name
 	parts := strings.Split(host, "@")
 	if len(parts) != 2 {
-		fmt.Fprintln(os.Stdout, util.State[3], "Invalid icinga host.name")
-		os.Exit(3)
+		return util.Unknown, "Invalid icinga host.name"
 	}
 
 	kubeClient, err := k8s.NewClient()
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	pod_name := parts[0]
 	namespace := parts[1]
 	pod, err := kubeClient.Client.Core().Pods(namespace).Get(pod_name)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	var volumeSourcePluginName = ""
@@ -269,14 +260,12 @@ func checkPodVolumeStat(req *request) {
 				claim, err := kubeClient.Client.Core().
 					PersistentVolumeClaims(namespace).Get(volume.PersistentVolumeClaim.ClaimName)
 				if err != nil {
-					fmt.Fprintln(os.Stdout, util.State[3], err)
-					os.Exit(3)
+					return util.Unknown, err
 
 				}
 				volume, err := kubeClient.Client.Core().PersistentVolumes().Get(claim.Spec.VolumeName)
 				if err != nil {
-					fmt.Fprintln(os.Stdout, util.State[3], err)
-					os.Exit(3)
+					return util.Unknown, err
 				}
 				volumeSourcePluginName = getPersistentVolumePluginName(&volume.Spec.PersistentVolumeSource)
 				volumeSourceName = volume.Name
@@ -290,12 +279,11 @@ func checkPodVolumeStat(req *request) {
 	}
 
 	if volumeSourcePluginName == "" {
-		fmt.Fprintln(os.Stdout, util.State[3], errors.New("Invalid volume source"))
-		os.Exit(3)
+		return util.Unknown, errors.New("Invalid volume source")
 	}
 
 	path := fmt.Sprintf("/var/lib/kubelet/pods/%v/volumes/%v/%v", pod.UID, volumeSourcePluginName, volumeSourceName)
-	checkDiskStat(req, pod.Status.HostIP, path)
+	return checkDiskStat(req, pod.Status.HostIP, path)
 }
 
 func NewCmd() *cobra.Command {

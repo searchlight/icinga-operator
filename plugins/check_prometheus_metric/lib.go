@@ -15,14 +15,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type request struct {
-	host        string
-	query       string
-	metric_name string
-	method      string
-	warning     int64
-	critical    int64
-	accept_nan  bool
+type Request struct {
+	Host       string
+	Query      string
+	MetricName string
+	Method     string
+	Warning    int64
+	Critical   int64
+	AcceptNan  bool
 }
 
 func checkResult(method string, valueToCheck, result int64) bool {
@@ -55,66 +55,56 @@ func checkResult(method string, valueToCheck, result int64) bool {
 	return false
 }
 
-func checkPrometheusMetric(req *request) {
+func CheckPrometheusMetric(req *Request) (util.IcingaState, interface{}) {
 	config := prometheus.Config{
-		Address: req.host,
+		Address: req.Host,
 	}
 	client, err := prometheus.New(config)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 	queryApi := prometheus.NewQueryAPI(client)
 
-	result, err := queryApi.Query(context.Background(), req.query, time.Now())
+	result, err := queryApi.Query(context.Background(), req.Query, time.Now())
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	vector := result.(model.Vector)
 
 	if len(vector) == 0 {
-		if req.accept_nan {
-			fmt.Fprintln(os.Stdout, util.State[0], errors.New("NaN"))
-			os.Exit(0)
+		if req.AcceptNan {
+			return util.Ok, errors.New("NaN")
 		}
-		fmt.Fprintln(os.Stdout, util.State[3], errors.New("No data found"))
-		os.Exit(3)
+		return util.Unknown, errors.New("No data found")
 	} else if len(vector) > 1 {
-		fmt.Fprintln(os.Stdout, util.State[3], errors.New("Invalid query.\nQuery should return single float or int"))
-		os.Exit(3)
+		return util.Unknown, errors.New("Invalid query.\nQuery should return single float or int")
 	}
 
 	value := vector[0].Value.String()
 	val, err := strconv.ParseFloat(value, 64)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	valInt64 := int64(val)
 	outputStr := fmt.Sprintf("%v", valInt64)
-	if req.metric_name != "" {
-		outputStr = fmt.Sprintf("%v is %v", req.metric_name, valInt64)
+	if req.MetricName != "" {
+		outputStr = fmt.Sprintf("%v is %v", req.MetricName, valInt64)
 	}
 
-	if checkResult(req.method, req.critical, valInt64) {
-		fmt.Fprintln(os.Stdout, util.State[2], outputStr)
-		os.Exit(2)
+	if checkResult(req.Method, req.Critical, valInt64) {
+		return util.Critical, outputStr
 	}
-	if checkResult(req.method, req.warning, valInt64) {
-		fmt.Fprintln(os.Stdout, util.State[1], outputStr)
-		os.Exit(1)
+	if checkResult(req.Method, req.Warning, valInt64) {
+		return util.Warning, outputStr
 	}
 
-	fmt.Fprintln(os.Stdout, util.State[0], outputStr)
-	os.Exit(0)
-	return
+	return util.Ok, outputStr
 }
 
 func NewCmd() *cobra.Command {
-	var req request
+	var req Request
 
 	c := &cobra.Command{
 		Use:     "check_prometheus_metric",
@@ -122,22 +112,22 @@ func NewCmd() *cobra.Command {
 		Example: "",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			if req.host == "" {
+			if req.Host == "" {
 				fmt.Fprintln(os.Stdout, util.State[3], errors.New("No prometheus host found"))
 				os.Exit(3)
 			}
 			flags.EnsureRequiredFlags(cmd, "query", "warning", "critical")
-			checkPrometheusMetric(&req)
+			CheckPrometheusMetric(&req)
 		},
 	}
 
-	c.Flags().StringVarP(&req.host, "prom_host", "H", "", "URL of Prometheus host to query")
-	c.Flags().StringVarP(&req.query, "query", "q", "", "Prometheus query that returns a float or int")
-	c.Flags().StringVarP(&req.metric_name, "metric_name", "n", "", "A name for the metric being checked")
-	c.Flags().StringVarP(&req.method, "method", "m", "ge", `Comparison method, one of gt, ge, lt, le, eq, ne
+	c.Flags().StringVarP(&req.Host, "prom_host", "H", "", "URL of Prometheus host to query")
+	c.Flags().StringVarP(&req.Query, "query", "q", "", "Prometheus query that returns a float or int")
+	c.Flags().StringVarP(&req.MetricName, "metric_name", "n", "", "A name for the metric being checked")
+	c.Flags().StringVarP(&req.Method, "method", "m", "ge", `Comparison method, one of gt, ge, lt, le, eq, ne
 	(defaults to ge unless otherwise specified)`)
-	c.Flags().BoolVarP(&req.accept_nan, "accept_nan", "O", false, `Accept NaN as an "OK" result`)
-	c.Flags().Int64VarP(&req.warning, "warning", "w", 0, "Warning level value (must be zero or positive)")
-	c.Flags().Int64VarP(&req.critical, "critical", "c", 0, "Critical level value (must be zero or positive)")
+	c.Flags().BoolVarP(&req.AcceptNan, "accept_nan", "O", false, `Accept NaN as an "OK" result`)
+	c.Flags().Int64VarP(&req.Warning, "warning", "w", 0, "Warning level value (must be zero or positive)")
+	c.Flags().Int64VarP(&req.Critical, "critical", "c", 0, "Critical level value (must be zero or positive)")
 	return c
 }

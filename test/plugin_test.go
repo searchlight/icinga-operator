@@ -16,7 +16,6 @@ import (
 	"github.com/appscode/searchlight/plugins/check_kube_exec"
 	"github.com/appscode/searchlight/plugins/check_node_count"
 	"github.com/appscode/searchlight/plugins/check_node_status"
-	"github.com/appscode/searchlight/plugins/check_pod_exists"
 	"github.com/appscode/searchlight/test/mini"
 	"github.com/appscode/searchlight/test/plugin"
 	"github.com/appscode/searchlight/test/plugin/component_status"
@@ -25,10 +24,10 @@ import (
 	"github.com/appscode/searchlight/test/plugin/node_count"
 	"github.com/appscode/searchlight/test/plugin/node_status"
 	"github.com/appscode/searchlight/test/plugin/pod_exists"
-	"github.com/appscode/searchlight/test/plugin/pod_status"
 	"github.com/appscode/searchlight/util"
 	"github.com/stretchr/testify/assert"
 	kapi "k8s.io/kubernetes/pkg/api"
+	"github.com/appscode/searchlight/test/plugin/pod_status"
 )
 
 type testData struct {
@@ -277,8 +276,8 @@ func TestNodeStatus(t *testing.T) {
 	}
 }
 
-func TestPodExists(t *testing.T) {
-	fmt.Println("== Plugin Testing >", host.CheckCommandPodExists)
+func TestPodExistsPodStatus(t *testing.T) {
+	fmt.Println("== Plugin Testing >", host.CheckCommandPodExists, host.CheckCommandPodStatus)
 
 	context := &client.Context{}
 	kubeClient, err := config.NewClient()
@@ -292,58 +291,15 @@ func TestPodExists(t *testing.T) {
 	watcher := runKubeD(context)
 	fmt.Println("--> Running kubeD")
 
-	testPodExists := func(objectType, objectName, namespace string, count int) {
-		testDataList := []testData{
-			testData{
-				// To check for any pods
-				data: map[string]interface{}{
-					"ObjectType": objectType,
-					"ObjectName": objectName,
-					"Namespace":  namespace,
-				},
-				expectedIcingaState: 0,
-			},
-			testData{
-				// To check for specific number of pods
-				data: map[string]interface{}{
-					"ObjectType": objectType,
-					"ObjectName": objectName,
-					"Namespace":  namespace,
-					"Count":      count,
-				},
-				expectedIcingaState: 0,
-			},
-			testData{
-				// To check for critical when pod number mismatch
-				data: map[string]interface{}{
-					"ObjectType": objectType,
-					"ObjectName": objectName,
-					"Namespace":  namespace,
-					"Count":      count + 1,
-				},
-				expectedIcingaState: 2,
-			},
-		}
-
-		for _, testData := range testDataList {
-			var req check_pod_exists.Request
-			plugin.FillStruct(testData.data, &req)
-			isCountSet := false
-			if req.Count != 0 {
-				isCountSet = true
-			}
-			icingaState, _ := check_pod_exists.CheckPodExists(&req, isCountSet)
-			assert.EqualValues(t, testData.expectedIcingaState, icingaState)
-		}
-	}
-
 	// Replicationcontrollers
 	fmt.Println()
 	fmt.Println("-- >> Testing plugings for", host.TypeReplicationcontrollers)
 	fmt.Println("---- >> Creating")
 	replicationController := mini.CreateReplicationController(watcher, kapi.NamespaceDefault)
-	fmt.Println("---- >> Testing")
-	testPodExists(host.TypeReplicationcontrollers, replicationController.Name, replicationController.Namespace, int(replicationController.Spec.Replicas))
+	fmt.Println("---- >> Testing", host.CheckCommandPodExists)
+	pod_exists.CheckPodExists(t, host.TypeReplicationcontrollers, replicationController.Name, replicationController.Namespace, int(replicationController.Spec.Replicas))
+	fmt.Println("---- >> Testing", host.CheckCommandPodStatus)
+	pod_status.CheckPodStatus(t, watcher, host.TypeReplicationcontrollers, replicationController.Name, replicationController.Namespace)
 	fmt.Println("---- >> Deleting")
 	mini.DeleteReplicationController(watcher, replicationController)
 
@@ -352,8 +308,10 @@ func TestPodExists(t *testing.T) {
 	fmt.Println("-- >> Testing plugings for", host.TypeDaemonsets)
 	fmt.Println("---- >> Creating")
 	daemonSet := mini.CreateDaemonSet(watcher, kapi.NamespaceDefault)
-	fmt.Println("---- >> Testing")
-	testPodExists(host.TypeDaemonsets, daemonSet.Name, daemonSet.Namespace, int(daemonSet.Status.DesiredNumberScheduled))
+	fmt.Println("---- >> Testing", host.CheckCommandPodExists)
+	pod_exists.CheckPodExists(t, host.TypeDaemonsets, daemonSet.Name, daemonSet.Namespace, int(daemonSet.Status.DesiredNumberScheduled))
+	fmt.Println("---- >> Testing", host.CheckCommandPodStatus)
+	pod_status.CheckPodStatus(t, watcher, host.TypeDaemonsets, daemonSet.Name, daemonSet.Namespace)
 	fmt.Println("---- >> Deleting")
 	mini.DeleteDaemonSet(watcher, daemonSet)
 
@@ -362,8 +320,10 @@ func TestPodExists(t *testing.T) {
 	fmt.Println("-- >> Testing plugings for", host.TypeDeployments)
 	fmt.Println("---- >> Creating")
 	deployment := mini.CreateDeployment(watcher, kapi.NamespaceDefault)
-	fmt.Println("---- >> Testing")
-	testPodExists(host.TypeDeployments, deployment.Name, deployment.Namespace, int(deployment.Spec.Replicas))
+	fmt.Println("---- >> Testing", host.CheckCommandPodExists)
+	pod_exists.CheckPodExists(t, host.TypeDeployments, deployment.Name, deployment.Namespace, int(deployment.Spec.Replicas))
+	fmt.Println("---- >> Testing", host.CheckCommandPodStatus)
+	pod_status.CheckPodStatus(t, watcher, host.TypeDeployments, deployment.Name, deployment.Namespace)
 	fmt.Println("---- >> Deleting")
 	mini.DeleteDeployment(watcher, deployment)
 
@@ -372,8 +332,10 @@ func TestPodExists(t *testing.T) {
 	fmt.Println("-- >> Testing plugings for", host.TypeStatefulSet)
 	fmt.Println("---- >> Creating")
 	statefulSet := mini.CreateStatefulSet(watcher, kapi.NamespaceDefault)
-	fmt.Println("---- >> Testing")
-	testPodExists(host.TypeStatefulSet, statefulSet.Name, statefulSet.Namespace, int(statefulSet.Spec.Replicas))
+	fmt.Println("---- >> Testing", host.CheckCommandPodExists)
+	pod_exists.CheckPodExists(t, host.TypeStatefulSet, statefulSet.Name, statefulSet.Namespace, int(statefulSet.Spec.Replicas))
+	fmt.Println("---- >> Testing", host.CheckCommandPodStatus)
+	pod_status.CheckPodStatus(t, watcher, host.TypeStatefulSet, statefulSet.Name, statefulSet.Namespace)
 	fmt.Println(fmt.Sprintf(`---- >> Skip deleting "%s" for further test`, host.TypeStatefulSet))
 
 	// Replicasets
@@ -381,8 +343,10 @@ func TestPodExists(t *testing.T) {
 	fmt.Println("-- >> Testing plugings for", host.TypeReplicasets)
 	fmt.Println("---- >> Creating")
 	replicaSet := mini.CreateReplicaSet(watcher, kapi.NamespaceDefault)
-	fmt.Println("---- >> Testing")
-	testPodExists(host.TypeReplicasets, replicaSet.Name, replicaSet.Namespace, int(replicaSet.Spec.Replicas))
+	fmt.Println("---- >> Testing", host.CheckCommandPodExists)
+	pod_exists.CheckPodExists(t, host.TypeReplicasets, replicaSet.Name, replicaSet.Namespace, int(replicaSet.Spec.Replicas))
+	fmt.Println("---- >> Testing", host.CheckCommandPodStatus)
+	pod_status.CheckPodStatus(t, watcher, host.TypeReplicasets, replicaSet.Name, replicaSet.Namespace)
 	fmt.Println(fmt.Sprintf(`---- >> Skip deleting "%s" for further test`, host.TypeReplicasets))
 
 	// Services
@@ -390,99 +354,25 @@ func TestPodExists(t *testing.T) {
 	fmt.Println("-- >> Testing plugings for", host.TypeServices)
 	fmt.Println("---- >> Creating", host.TypeServices)
 	service := mini.CreateService(watcher, replicaSet.Namespace, replicaSet.Spec.Template.Labels)
-	fmt.Println("---- >> Testing")
-	testPodExists(host.TypeServices, service.Name, service.Namespace, int(replicaSet.Spec.Replicas))
+	fmt.Println("---- >> Testing", host.CheckCommandPodExists)
+	pod_exists.CheckPodExists(t, host.TypeServices, service.Name, service.Namespace, int(replicaSet.Spec.Replicas))
+	fmt.Println("---- >> Testing", host.CheckCommandPodStatus)
+	pod_status.CheckPodStatus(t, watcher, host.TypeServices, service.Name, service.Namespace)
 	fmt.Println("---- >> Deleting", host.TypeServices)
 	mini.DeleteService(watcher, service)
 
-	// Delete skiped objects
+	// Cluster
 	fmt.Println()
 	fmt.Println("-- >> Testing plugings for", host.TypeCluster)
-	fmt.Println("---- >> Testing")
+	fmt.Println("---- >> Testing", host.CheckCommandPodExists)
 	totalPod := pod_exists.GetPodCount(watcher, kapi.NamespaceDefault)
-	testPodExists("", "", kapi.NamespaceDefault, totalPod)
+	pod_exists.CheckPodExists(t, "", "", kapi.NamespaceDefault, totalPod)
+	fmt.Println("---- >> Testing", host.CheckCommandPodStatus)
+	pod_status.CheckPodStatus(t, watcher, "", "", kapi.NamespaceDefault)
 
+	// Delete skiped objects
 	fmt.Println("-- >> Deleting", host.TypeStatefulSet)
 	mini.DeleteStatefulSet(watcher, statefulSet)
 	fmt.Println("-- >> Deleting", host.TypeReplicasets)
 	mini.DeleteReplicaSet(watcher, replicaSet)
-}
-
-func TestPodStatus(t *testing.T) {
-	fmt.Println("== Plugin Testing >", host.CheckCommandPodStatus)
-
-	kubeClient := getKubernetesClient()
-
-	testPodStatus := func(dataConfig *dataConfig) {
-		// This will create object & return icinga_host name
-		name, _ := getTestData(kubeClient, dataConfig)
-		time.Sleep(time.Second * 30)
-
-		// This will check pod status under specific object
-		// and will return 2 (critical) if any pod is not running
-		expectedCode := pod_status.GetStatusCodeForPodStatus(kubeClient, name)
-
-		testDataList := []testData{
-			testData{
-				data: map[string]interface{}{
-					"host": name,
-				},
-				expectedIcingaState: expectedCode,
-			},
-		}
-
-		for _, testData := range testDataList {
-			argList := []string{
-				"check_pod_status",
-			}
-			for key, val := range testData.data {
-				argList = append(argList, fmt.Sprintf("--%s=%v", key, val))
-			}
-			//statusCode := execCheckCommand("hyperalert", argList...)
-			//assert.EqualValues(t, testData.expectedCode, statusCode)
-		}
-	}
-
-	ns := "e2e"
-	dataConfig := &dataConfig{
-		Namespace: ns,
-	}
-
-	fmt.Println(">> Creating namespace", ns)
-	createNewNamespace(kubeClient, ns)
-	fmt.Println()
-
-	fmt.Println(">> Testing plugings for", host.TypeReplicationcontrollers)
-	dataConfig.ObjectType = host.TypeReplicationcontrollers
-	testPodStatus(dataConfig)
-
-	fmt.Println(">> Testing plugings for", host.TypeReplicasets)
-	dataConfig.ObjectType = host.TypeReplicasets
-	testPodStatus(dataConfig)
-
-	fmt.Println(">> Testing plugings for", host.TypeDaemonsets)
-	dataConfig.ObjectType = host.TypeDaemonsets
-	testPodStatus(dataConfig)
-
-	fmt.Println(">> Testing plugings for", host.TypeDeployments)
-	dataConfig.ObjectType = host.TypeDeployments
-	testPodStatus(dataConfig)
-
-	fmt.Println(">> Testing plugings for", host.TypeServices)
-	dataConfig.ObjectType = host.TypeServices
-	testPodStatus(dataConfig)
-
-	fmt.Println(">> Testing plugings for", host.TypePods)
-	dataConfig.ObjectType = host.TypePods
-	testPodStatus(dataConfig)
-
-	fmt.Println(">> Testing plugings for", host.TypeCluster)
-	dataConfig.ObjectType = host.TypeCluster
-	dataConfig.CheckCommand = host.CheckCommandPodStatus
-	testPodStatus(dataConfig)
-
-	fmt.Println(">> Deleting namespace", ns)
-	deleteNewNamespace(kubeClient, ns)
-
-	fmt.Println()
 }
