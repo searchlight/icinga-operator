@@ -321,7 +321,6 @@ func TestPodExists(t *testing.T) {
 					"Count":      count + 1,
 				},
 				expectedIcingaState: 2,
-				deleteObject:        true,
 			},
 		}
 
@@ -354,21 +353,25 @@ func TestPodExists(t *testing.T) {
 	//testPodExists(host.TypeReplicasets, replicaSet.Name, replicaSet.Namespace, int(replicaSet.Spec.Replicas))
 	//fmt.Println("---- >> Deleting")
 	//mini.DeleteReplicaSet(watcher, replicaSet)
+	//
+	//fmt.Println()
+	//fmt.Println("-- >> Testing plugings for", host.TypeDaemonsets)
+	//fmt.Println("---- >> Creating")
+	//daemonSet := mini.CreateDaemonSet(watcher, kapi.NamespaceDefault)
+	//fmt.Println("---- >> Testing")
+	//testPodExists(host.TypeDaemonsets, daemonSet.Name, daemonSet.Namespace, int(daemonSet.Status.DesiredNumberScheduled))
+	//fmt.Println("---- >> Deleting")
+	//mini.DeleteDaemonSet(watcher, daemonSet)
 
 	fmt.Println()
-	fmt.Println("-- >> Testing plugings for", host.TypeDaemonsets)
+	fmt.Println("-- >> Testing plugings for", host.TypeDeployments)
 	fmt.Println("---- >> Creating")
-	daemonSet := mini.CreateDaemonSet(watcher, kapi.NamespaceDefault)
+	deployment := mini.CreateDeployment(watcher, kapi.NamespaceDefault)
 	fmt.Println("---- >> Testing")
-	testPodExists(host.TypeDaemonsets, daemonSet.Name, daemonSet.Namespace, int(daemonSet.Status.DesiredNumberScheduled))
+	testPodExists(host.TypeDeployments, deployment.Name, deployment.Namespace, int(deployment.Spec.Replicas))
 	fmt.Println("---- >> Deleting")
-	mini.DeleteDaemonSet(watcher, daemonSet)
+	mini.DeleteDeployment(watcher, deployment)
 
-	//
-	//fmt.Println(">> Testing plugings for", host.TypeDaemonsets)
-	//dataConfig.ObjectType = host.TypeDaemonsets
-	//testPodExists(dataConfig)
-	//
 	//fmt.Println(">> Testing plugings for", host.TypeDeployments)
 	//dataConfig.ObjectType = host.TypeDeployments
 	//testPodExists(dataConfig)
@@ -388,6 +391,33 @@ func TestPodExists(t *testing.T) {
 	fmt.Println()
 }
 
+func TestDaemonSet(t *testing.T) {
+
+	context := &client.Context{}
+	kubeClient, err := config.NewClient()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	context.KubeClient = kubeClient
+
+	// Run KubeD
+	watcher := runKubeD(context)
+	fmt.Println("--> Running kubeD")
+
+	fmt.Println()
+	fmt.Println("-- >> Testing plugings for", host.TypeDaemonsets)
+	fmt.Println("---- >> Creating")
+	daemonSet := mini.CreateDaemonSet(watcher, kapi.NamespaceDefault)
+
+
+	// Delete DaemonSet
+	daemonSet.Status.DesiredNumberScheduled = 0
+	if _, err := watcher.Client.Extensions().DaemonSets(daemonSet.Namespace).Update(daemonSet); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
 func TestPodStatus(t *testing.T) {
 	fmt.Println("== Plugin Testing >", host.CheckCommandPodStatus)
 

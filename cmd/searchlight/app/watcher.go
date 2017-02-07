@@ -27,6 +27,7 @@ func (watch *Watcher) Run() {
 	watch.Alert()
 	watch.AlertEvent()
 	watch.Node()
+	watch.Deployment()
 }
 
 func (w *Watcher) Dispatch(e *events.Event) error {
