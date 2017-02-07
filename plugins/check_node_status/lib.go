@@ -42,7 +42,7 @@ func CheckNodeStatus(req *Request) (util.IcingaState, interface{}) {
 
 func NewCmd() *cobra.Command {
 	var req Request
-	var host string
+	var icingaHost string
 	c := &cobra.Command{
 		Use:     "check_node_status",
 		Short:   "Check Kubernetes Node",
@@ -50,7 +50,7 @@ func NewCmd() *cobra.Command {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "host")
-			parts := strings.Split(host, "@")
+			parts := strings.Split(icingaHost, "@")
 			if len(parts) != 2 {
 				fmt.Fprintln(os.Stdout, util.State[3], "Invalid icinga host.name")
 				os.Exit(3)
@@ -61,6 +61,6 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().StringVarP(&host, "host", "H", "", "Icinga host name")
+	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	return c
 }

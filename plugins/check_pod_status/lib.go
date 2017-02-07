@@ -51,7 +51,7 @@ func checkPodStatus(namespace, objectType, objectName string) {
 	} else {
 		labelSelector := labels.Everything()
 		if objectType != "" {
-			if labelSelector, err = util.GetLabels(kubeClient, namespace, objectType, objectName); err != nil {
+			if labelSelector, err = util.GetLabels(kubeClient.Client, namespace, objectType, objectName); err != nil {
 				fmt.Fprintln(os.Stdout, util.State[3], err)
 				os.Exit(3)
 			}

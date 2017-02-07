@@ -29,7 +29,7 @@ func GetStatusCodeForPodStatus(kubeClient *config.KubeClient, hostname string) u
 	} else {
 		labelSelector := labels.Everything()
 		if objectType != "" {
-			labelSelector, err = util.GetLabels(kubeClient, namespace, objectType, objectName)
+			labelSelector, err = util.GetLabels(kubeClient.Client, namespace, objectType, objectName)
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)

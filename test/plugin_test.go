@@ -16,6 +16,7 @@ import (
 	"github.com/appscode/searchlight/plugins/check_kube_exec"
 	"github.com/appscode/searchlight/plugins/check_node_count"
 	"github.com/appscode/searchlight/plugins/check_node_status"
+	"github.com/appscode/searchlight/plugins/check_pod_exists"
 	"github.com/appscode/searchlight/test/mini"
 	"github.com/appscode/searchlight/test/plugin"
 	"github.com/appscode/searchlight/test/plugin/component_status"
@@ -201,7 +202,7 @@ func TestKubeExec(t *testing.T) {
 		assert.EqualValues(t, testData.expectedIcingaState, icingaState)
 	}
 
-	mini.DeleteReplicaSet(kubeClient, replicaSet)
+	mini.DeleteReplicaSet(watcher, replicaSet)
 }
 
 func TestNodeCount(t *testing.T) {
@@ -278,34 +279,46 @@ func TestNodeStatus(t *testing.T) {
 func TestPodExists(t *testing.T) {
 	fmt.Println("== Plugin Testing >", host.CheckCommandPodExists)
 
-	kubeClient := getKubernetesClient()
-	testPodExists := func(dataConfig *dataConfig) {
-		// This will create object & return icinga_host name
-		// and number of pods under it
-		name, count := getTestData(kubeClient, dataConfig)
-		time.Sleep(time.Second * 30)
+	context := &client.Context{}
+	kubeClient, err := config.NewClient()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	context.KubeClient = kubeClient
 
+	// Run KubeD
+	watcher := runKubeD(context)
+	fmt.Println("--> Running kubeD")
+
+	testPodExists := func(objectType, objectName, namespace string, count int) {
 		testDataList := []testData{
 			testData{
 				// To check for any pods
 				data: map[string]interface{}{
-					"host": name,
+					"ObjectType": objectType,
+					"ObjectName": objectName,
+					"Namespace":  namespace,
 				},
 				expectedIcingaState: 0,
 			},
 			testData{
 				// To check for specific number of pods
 				data: map[string]interface{}{
-					"host":  name,
-					"count": count,
+					"ObjectType": objectType,
+					"ObjectName": objectName,
+					"Namespace":  namespace,
+					"Count":      count,
 				},
 				expectedIcingaState: 0,
 			},
 			testData{
 				// To check for critical when pod number mismatch
 				data: map[string]interface{}{
-					"host":  name,
-					"count": count + 1,
+					"ObjectType": objectType,
+					"ObjectName": objectName,
+					"Namespace":  namespace,
+					"Count":      count + 1,
 				},
 				expectedIcingaState: 2,
 				deleteObject:        true,
@@ -313,53 +326,64 @@ func TestPodExists(t *testing.T) {
 		}
 
 		for _, testData := range testDataList {
-			argList := []string{
-				"check_pod_exists",
+			var req check_pod_exists.Request
+			plugin.FillStruct(testData.data, &req)
+			isCountSet := false
+			if req.Count != 0 {
+				isCountSet = true
 			}
-			for key, val := range testData.data {
-				argList = append(argList, fmt.Sprintf("--%s=%v", key, val))
-			}
-			//statusCode := execCheckCommand("hyperalert", argList...)
-			//assert.EqualValues(t, testData.expectedCode, statusCode)
+			icingaState, _ := check_pod_exists.CheckPodExists(&req, isCountSet)
+			assert.EqualValues(t, testData.expectedIcingaState, icingaState)
 		}
 	}
 
-	ns := "e2e"
-	dataConfig := &dataConfig{
-		Namespace: ns,
-	}
+	//fmt.Println()
+	//fmt.Println("-- >> Testing plugings for", host.TypeReplicationcontrollers)
+	//fmt.Println("---- >> Creating")
+	//replicationController := mini.CreateReplicationController(watcher, kapi.NamespaceDefault)
+	//fmt.Println("---- >> Testing")
+	//testPodExists(host.TypeReplicationcontrollers, replicationController.Name, replicationController.Namespace, int(replicationController.Spec.Replicas))
+	//fmt.Println("---- >> Deleting")
+	//mini.DeleteReplicationController(watcher, replicationController)
+	//
+	//fmt.Println()
+	//fmt.Println("-- >> Testing plugings for", host.TypeReplicasets)
+	//fmt.Println("---- >> Creating")
+	//replicaSet := mini.CreateReplicaSet(watcher, kapi.NamespaceDefault)
+	//fmt.Println("---- >> Testing")
+	//testPodExists(host.TypeReplicasets, replicaSet.Name, replicaSet.Namespace, int(replicaSet.Spec.Replicas))
+	//fmt.Println("---- >> Deleting")
+	//mini.DeleteReplicaSet(watcher, replicaSet)
 
-	fmt.Println(">> Creating namespace", ns)
-	createNewNamespace(kubeClient, ns)
 	fmt.Println()
+	fmt.Println("-- >> Testing plugings for", host.TypeDaemonsets)
+	fmt.Println("---- >> Creating")
+	daemonSet := mini.CreateDaemonSet(watcher, kapi.NamespaceDefault)
+	fmt.Println("---- >> Testing")
+	testPodExists(host.TypeDaemonsets, daemonSet.Name, daemonSet.Namespace, int(daemonSet.Status.DesiredNumberScheduled))
+	fmt.Println("---- >> Deleting")
+	mini.DeleteDaemonSet(watcher, daemonSet)
 
-	fmt.Println(">> Testing plugings for", host.TypeReplicationcontrollers)
-	dataConfig.ObjectType = host.TypeReplicationcontrollers
-	testPodExists(dataConfig)
-
-	fmt.Println(">> Testing plugings for", host.TypeReplicasets)
-	dataConfig.ObjectType = host.TypeReplicasets
-	testPodExists(dataConfig)
-
-	fmt.Println(">> Testing plugings for", host.TypeDaemonsets)
-	dataConfig.ObjectType = host.TypeDaemonsets
-	testPodExists(dataConfig)
-
-	fmt.Println(">> Testing plugings for", host.TypeDeployments)
-	dataConfig.ObjectType = host.TypeDeployments
-	testPodExists(dataConfig)
-
-	fmt.Println(">> Testing plugings for", host.TypeServices)
-	dataConfig.ObjectType = host.TypeServices
-	testPodExists(dataConfig)
-
-	fmt.Println(">> Testing plugings for", host.TypeCluster)
-	dataConfig.ObjectType = host.TypeCluster
-	dataConfig.CheckCommand = host.CheckCommandPodExists
-	testPodExists(dataConfig)
-
-	fmt.Println(">> Deleting namespace", ns)
-	deleteNewNamespace(kubeClient, ns)
+	//
+	//fmt.Println(">> Testing plugings for", host.TypeDaemonsets)
+	//dataConfig.ObjectType = host.TypeDaemonsets
+	//testPodExists(dataConfig)
+	//
+	//fmt.Println(">> Testing plugings for", host.TypeDeployments)
+	//dataConfig.ObjectType = host.TypeDeployments
+	//testPodExists(dataConfig)
+	//
+	//fmt.Println(">> Testing plugings for", host.TypeServices)
+	//dataConfig.ObjectType = host.TypeServices
+	//testPodExists(dataConfig)
+	//
+	//fmt.Println(">> Testing plugings for", host.TypeCluster)
+	//dataConfig.ObjectType = host.TypeCluster
+	//dataConfig.CheckCommand = host.CheckCommandPodExists
+	//testPodExists(dataConfig)
+	//
+	//fmt.Println(">> Deleting namespace", ns)
+	//deleteNewNamespace(kubeClient, ns)
 
 	fmt.Println()
 }

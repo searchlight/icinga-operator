@@ -209,6 +209,6 @@ func runKubeD(context *client.Context) *app.Watcher {
 
 	w.Watcher.Dispatch = w.Dispatch
 	go w.Run()
-	time.Sleep(time.Second * 30)
+	time.Sleep(time.Second * 10)
 	return w
 }
