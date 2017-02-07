@@ -2,7 +2,6 @@ package check_node_count
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/appscode/go/flags"
 	"github.com/appscode/searchlight/pkg/client/k8s"
@@ -12,15 +11,14 @@ import (
 	"k8s.io/kubernetes/pkg/labels"
 )
 
-type request struct {
-	count int
+type Request struct {
+	Count int
 }
 
-func checkNodeStatus(req *request) {
+func CheckNodeCount(req *Request) (util.IcingaState, interface{}) {
 	kubeClient, err := k8s.NewClient()
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	nodeList, err := kubeClient.Client.Core().
@@ -30,21 +28,18 @@ func checkNodeStatus(req *request) {
 		},
 	)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
-	if len(nodeList.Items) == req.count {
-		fmt.Fprintln(os.Stdout, util.State[0], "Found all nodes")
-		os.Exit(0)
+	if len(nodeList.Items) == req.Count {
+		return util.Ok, "Found all nodes"
 	} else {
-		fmt.Fprintln(os.Stdout, util.State[2], fmt.Sprintf("Found %d node(s) instead of %d", len(nodeList.Items), req.count))
-		os.Exit(2)
+		return util.Critical, fmt.Sprintf("Found %d node(s) instead of %d", len(nodeList.Items), req.Count)
 	}
 }
 
 func NewCmd() *cobra.Command {
-	var req request
+	var req Request
 
 	c := &cobra.Command{
 		Use:     "check_node_count",
@@ -53,10 +48,10 @@ func NewCmd() *cobra.Command {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "count")
-			checkNodeStatus(&req)
+			util.Output(CheckNodeCount(&req))
 		},
 	}
 
-	c.Flags().IntVarP(&req.count, "count", "c", 0, "Number of expected Kubernetes Node")
+	c.Flags().IntVarP(&req.Count, "count", "c", 0, "Number of expected Kubernetes Node")
 	return c
 }
