@@ -2,17 +2,19 @@ package e2e
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"testing"
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
+	"github.com/appscode/searchlight/pkg/client"
 	config "github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/pkg/controller/host"
 	"github.com/appscode/searchlight/plugins/check_component_status"
 	"github.com/appscode/searchlight/plugins/check_json_path"
 	"github.com/appscode/searchlight/plugins/check_kube_event"
+	"github.com/appscode/searchlight/plugins/check_kube_exec"
+	"github.com/appscode/searchlight/test/mini"
 	"github.com/appscode/searchlight/test/plugin"
 	"github.com/appscode/searchlight/test/plugin/component_status"
 	"github.com/appscode/searchlight/test/plugin/json_path"
@@ -22,6 +24,7 @@ import (
 	"github.com/appscode/searchlight/test/plugin/pod_status"
 	"github.com/appscode/searchlight/util"
 	"github.com/stretchr/testify/assert"
+	kapi "k8s.io/kubernetes/pkg/api"
 )
 
 type testData struct {
@@ -144,67 +147,60 @@ func TestKubeEvent(t *testing.T) {
 func TestKubeExec(t *testing.T) {
 	fmt.Println("== Testing >", host.CheckCommandKubeExec)
 
+	context := &client.Context{}
+
 	kubeClient, err := config.NewClient()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	context.KubeClient = kubeClient
 
-	testkubeExec := func(dataConfig *dataConfig) {
-		// This will create object & return icinga_host name
-		name, _ := getTestData(kubeClient, dataConfig)
-		time.Sleep(time.Second * 30)
+	// Run KubeD
+	watcher := runKubeD(context)
+	fmt.Println("--> Running kubeD")
 
-		objectType, objectName, namespace := plugin.GetKubeObjectInfo(name)
-		objectList, err := host.GetObjectList(kubeClient.Client, host.CheckCommandKubeExec, host.HostTypePod, namespace, objectType, objectName, "")
-		if err != nil {
-			log.Fatal(err)
-		}
+	replicaSet := mini.CreateReplicaSet(watcher, kapi.NamespaceDefault)
 
-		testDataList := make([]testData, 0)
-
-		for _, object := range objectList {
-			testDataList = append(testDataList, testData{
-				data: map[string]interface{}{
-					"host": object.Name,
-					"arg":  "exit 0",
-				},
-				expectedIcingaState: 0,
-			})
-			testDataList = append(testDataList, testData{
-				data: map[string]interface{}{
-					"host": object.Name,
-					"arg":  "exit 5",
-				},
-				expectedIcingaState: 2,
-			})
-		}
-
-		for _, testData := range testDataList {
-			argList := []string{
-				"check_kube_exec",
-			}
-			for key, val := range testData.data {
-				argList = append(argList, fmt.Sprintf("--%s=%v", key, val))
-			}
-			//statusCode := execCheckCommand("hyperalert", argList...)
-			//assert.EqualValues(t, testData.expectedCode, statusCode)
-		}
+	objectList, err := host.GetObjectList(kubeClient.Client, host.CheckCommandKubeExec, host.HostTypePod,
+		replicaSet.Namespace, host.TypeReplicasets, replicaSet.Name, "")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
-	ns := "e2e-1"
-	dataConfig := &dataConfig{
+	testDataList := make([]testData, 0)
+	for _, object := range objectList {
+		_, objectName, namespace := plugin.GetKubeObjectInfo(object.Name)
+		testDataList = append(testDataList, testData{
+			data: map[string]interface{}{
+				"Pod":       objectName,
+				"Namespace": namespace,
+				"Command":   "/bin/sh",
+				"Arg":       "exit 0",
+			},
+			expectedIcingaState: 0,
+		})
+		testDataList = append(testDataList, testData{
+			data: map[string]interface{}{
+				"Pod":       objectName,
+				"Namespace": namespace,
+				"Command":   "/bin/sh",
+				"Arg":       "exit 5",
+			},
+			expectedIcingaState: 2,
+		})
 	}
 
-	
-	fmt.Println(">> Testing plugings for", host.TypeReplicationcontrollers)
-	dataConfig.ObjectType = host.TypeReplicationcontrollers
-	testkubeExec(dataConfig)
+	for _, testData := range testDataList {
+		var req check_kube_exec.Request
+		plugin.FillStruct(testData.data, &req)
 
-	fmt.Println(">> Deleting namespace", ns)
-	deleteNewNamespace(kubeClient, ns)
+		icingaState, _ := check_kube_exec.CheckKubeExec(&req)
+		assert.EqualValues(t, testData.expectedIcingaState, icingaState)
+	}
 
-	fmt.Println()
+	mini.DeleteReplicaSet(kubeClient, replicaSet)
 }
 
 func TestNodeCount(t *testing.T) {
@@ -447,5 +443,3 @@ func TestPodStatus(t *testing.T) {
 
 	fmt.Println()
 }
-
-

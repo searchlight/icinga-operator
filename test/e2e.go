@@ -4,10 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/appscode/go/crypto/rand"
 	aci "github.com/appscode/k8s-addons/api"
 	"github.com/appscode/k8s-addons/pkg/testing"
+	acw "github.com/appscode/k8s-addons/pkg/watcher"
+	"github.com/appscode/searchlight/cmd/searchlight/app"
+	"github.com/appscode/searchlight/pkg/client"
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/pkg/controller/host"
 	kapi "k8s.io/kubernetes/pkg/api"
@@ -190,4 +194,21 @@ func deleteAlertObject(kubeClient *k8s.KubeClient, alert *aci.Alert) (err error)
 	// delete alert
 	err = kubeClient.AppscodeExtensionClient.Alert(alert.Namespace).Delete(alert.Name, nil)
 	return
+}
+
+func runKubeD(context *client.Context) *app.Watcher {
+	fmt.Println("-- TestE2E: Waiting for kubed")
+	w := &app.Watcher{
+		Watcher: acw.Watcher{
+			Client:                  context.KubeClient.Client,
+			AppsCodeExtensionClient: context.KubeClient.AppscodeExtensionClient,
+			SyncPeriod:              time.Minute * 2,
+		},
+		IcingaClient: context.IcingaClient,
+	}
+
+	w.Watcher.Dispatch = w.Dispatch
+	go w.Run()
+	time.Sleep(time.Second * 30)
+	return w
 }

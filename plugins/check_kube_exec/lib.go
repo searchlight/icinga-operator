@@ -35,7 +35,7 @@ func newStringReader(ss []string) io.Reader {
 	return reader
 }
 
-func CheckKubeExec(req *request) (util.IcingaState, interface{}) {
+func CheckKubeExec(req *Request) (util.IcingaState, interface{}) {
 	kubeConfig, err := k8s.GetKubeConfig()
 	if err != nil {
 		return util.Unknown, err
@@ -46,15 +46,15 @@ func CheckKubeExec(req *request) (util.IcingaState, interface{}) {
 		return util.Unknown, err
 	}
 
-	pod, err := kubeClient.Core().Pods(req.namespace).Get(req.pod)
+	pod, err := kubeClient.Core().Pods(req.Namespace).Get(req.Pod)
 	if err != nil {
 		return util.Unknown, err
 	}
 
 	foundContainer := false
-	if req.container != "" {
+	if req.Container != "" {
 		for _, container := range pod.Spec.Containers {
-			if container.Name == req.container {
+			if container.Name == req.Container {
 				foundContainer = true
 				break
 			}
@@ -64,19 +64,19 @@ func CheckKubeExec(req *request) (util.IcingaState, interface{}) {
 	}
 
 	if !foundContainer {
-		return util.Unknown, fmt.Sprintf(`Container "%v" not found`, req.container)
+		return util.Unknown, fmt.Sprintf(`Container "%v" not found`, req.Container)
 	}
 
 	execRequest := kubeClient.Core().RESTClient().Post().
 		Resource("pods").
-		Name(req.pod).
-		Namespace(req.namespace).
+		Name(req.Pod).
+		Namespace(req.Namespace).
 		SubResource("exec").
-		Param("container", req.container)
+		Param("container", req.Container)
 
 	execRequest.VersionedParams(&kapi.PodExecOptions{
-		Container: req.container,
-		Command:   []string{req.command},
+		Container: req.Container,
+		Command:   []string{req.Command},
 		Stdin:     true,
 		Stdout:    false,
 		Stderr:    false,
@@ -88,7 +88,7 @@ func CheckKubeExec(req *request) (util.IcingaState, interface{}) {
 		return util.Unknown, err
 	}
 
-	stdIn := newStringReader([]string{"-c", req.arg})
+	stdIn := newStringReader([]string{"-c", req.Arg})
 	stdOut := new(Writer)
 	stdErr := new(Writer)
 
@@ -119,16 +119,16 @@ func CheckKubeExec(req *request) (util.IcingaState, interface{}) {
 	return util.IcingaState(exitCode), output
 }
 
-type request struct {
-	pod       string
-	container string
-	namespace string
-	command   string
-	arg       string
+type Request struct {
+	Pod       string
+	Container string
+	Namespace string
+	Command   string
+	Arg       string
 }
 
 func NewCmd() *cobra.Command {
-	var req request
+	var req Request
 	var host string
 	c := &cobra.Command{
 		Use:     "check_kube_exec",
@@ -143,15 +143,15 @@ func NewCmd() *cobra.Command {
 				fmt.Fprintln(os.Stdout, util.State[3], "Invalid icinga host.name")
 				os.Exit(3)
 			}
-			req.pod = parts[0]
-			req.namespace = parts[1]
+			req.Pod = parts[0]
+			req.Namespace = parts[1]
 			util.Output(CheckKubeExec(&req))
 		},
 	}
 
 	c.Flags().StringVarP(&host, "host", "H", "", "Icinga host name")
-	c.Flags().StringVarP(&req.container, "container", "C", "", "Container name in specified pod")
-	c.Flags().StringVarP(&req.command, "cmd", "c", "/bin/sh", "Exec command. [Default: /bin/sh]")
-	c.Flags().StringVarP(&req.arg, "argv", "a", "", "Arguments for exec command. [Format: 'arg; arg; arg']")
+	c.Flags().StringVarP(&req.Container, "container", "C", "", "Container name in specified pod")
+	c.Flags().StringVarP(&req.Command, "cmd", "c", "/bin/sh", "Exec command. [Default: /bin/sh]")
+	c.Flags().StringVarP(&req.Arg, "argv", "a", "", "Arguments for exec command. [Format: 'arg; arg; arg']")
 	return c
 }
