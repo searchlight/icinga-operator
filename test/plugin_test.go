@@ -24,26 +24,10 @@ import (
 	"github.com/appscode/searchlight/test/plugin/node_count"
 	"github.com/appscode/searchlight/test/plugin/node_status"
 	"github.com/appscode/searchlight/test/plugin/pod_exists"
-	"github.com/appscode/searchlight/util"
+	"github.com/appscode/searchlight/test/plugin/pod_status"
 	"github.com/stretchr/testify/assert"
 	kapi "k8s.io/kubernetes/pkg/api"
-	"github.com/appscode/searchlight/test/plugin/pod_status"
 )
-
-type testData struct {
-	data                map[string]interface{}
-	expectedIcingaState util.IcingaState
-	deleteObject        bool
-}
-
-func getKubernetesClient() *config.KubeClient {
-	kubeClient, err := config.NewClient()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	return kubeClient
-}
 
 func TestComponentStatus(t *testing.T) {
 	fmt.Println("== Plugin Testing >", host.CheckComponentStatus)
@@ -71,48 +55,48 @@ func TestJsonPath(t *testing.T) {
 		os.Exit(1)
 	}
 
-	testDataList := []testData{
-		testData{
-			data: map[string]interface{}{
+	testDataList := []plugin.TestData{
+		plugin.TestData{
+			Data: map[string]interface{}{
 				"Url":     url + uri,
 				"Query":   ".",
 				"Warning": fmt.Sprintf(`.public_repos!=%v`, repoNumber),
 			},
-			expectedIcingaState: 0,
+			ExpectedIcingaState: 0,
 		},
-		testData{
-			data: map[string]interface{}{
+		plugin.TestData{
+			Data: map[string]interface{}{
 				"Url":     url + uri,
 				"Query":   ".",
 				"Warning": fmt.Sprintf(`.public_repos==%v`, repoNumber),
 			},
-			expectedIcingaState: 1,
+			ExpectedIcingaState: 1,
 		},
-		testData{
-			data: map[string]interface{}{
+		plugin.TestData{
+			Data: map[string]interface{}{
 				"Url":      url + uri,
 				"Query":    ".",
 				"Warning":  fmt.Sprintf(`.public_repos==%v`, repoNumber-1),
 				"Critical": fmt.Sprintf(`.public_repos==%v`, repoNumber),
 			},
-			expectedIcingaState: 2,
+			ExpectedIcingaState: 2,
 		},
-		testData{
-			data: map[string]interface{}{
+		plugin.TestData{
+			Data: map[string]interface{}{
 				"Url":     url + uri + "fake",
 				"Query":   ".",
 				"Warning": fmt.Sprintf(`.public_repos==%v`, repoNumber-1),
 			},
-			expectedIcingaState: 3,
+			ExpectedIcingaState: 3,
 		},
 	}
 
 	for _, testData := range testDataList {
 		var req check_json_path.Request
-		plugin.FillStruct(testData.data, &req)
+		plugin.FillStruct(testData.Data, &req)
 
 		icingaState, _ := check_json_path.CheckJsonPath(&req)
-		assert.EqualValues(t, testData.expectedIcingaState, icingaState)
+		assert.EqualValues(t, testData.ExpectedIcingaState, icingaState)
 	}
 }
 
@@ -129,21 +113,21 @@ func TestKubeEvent(t *testing.T) {
 	clockSkew, _ := time.ParseDuration("0s")
 	expectedIcingaState := kube_event.GetStatusCodeForEventCount(kubeClient, checkInterval, clockSkew)
 
-	testDataList := []testData{
-		testData{
-			data: map[string]interface{}{
+	testDataList := []plugin.TestData{
+		plugin.TestData{
+			Data: map[string]interface{}{
 				"CheckInterval": checkInterval,
 				"ClockSkew":     clockSkew,
 			},
-			expectedIcingaState: expectedIcingaState,
+			ExpectedIcingaState: expectedIcingaState,
 		},
 	}
 	for _, testData := range testDataList {
 		var req check_kube_event.Request
-		plugin.FillStruct(testData.data, &req)
+		plugin.FillStruct(testData.Data, &req)
 
 		icingaState, _ := check_kube_event.CheckKubeEvent(&req)
-		assert.EqualValues(t, testData.expectedIcingaState, icingaState)
+		assert.EqualValues(t, testData.ExpectedIcingaState, icingaState)
 	}
 }
 
@@ -171,35 +155,38 @@ func TestKubeExec(t *testing.T) {
 		os.Exit(1)
 	}
 
-	testDataList := make([]testData, 0)
+	testDataList := make([]plugin.TestData, 0)
 	for _, object := range objectList {
 		_, objectName, namespace := plugin.GetKubeObjectInfo(object.Name)
-		testDataList = append(testDataList, testData{
-			data: map[string]interface{}{
-				"Pod":       objectName,
-				"Namespace": namespace,
-				"Command":   "/bin/sh",
-				"Arg":       "exit 0",
+		testData := []plugin.TestData{
+			plugin.TestData{
+				Data: map[string]interface{}{
+					"Pod":       objectName,
+					"Namespace": namespace,
+					"Command":   "/bin/sh",
+					"Arg":       "exit 0",
+				},
+				ExpectedIcingaState: 0,
 			},
-			expectedIcingaState: 0,
-		})
-		testDataList = append(testDataList, testData{
-			data: map[string]interface{}{
-				"Pod":       objectName,
-				"Namespace": namespace,
-				"Command":   "/bin/sh",
-				"Arg":       "exit 5",
+			plugin.TestData{
+				Data: map[string]interface{}{
+					"Pod":       objectName,
+					"Namespace": namespace,
+					"Command":   "/bin/sh",
+					"Arg":       "exit 5",
+				},
+				ExpectedIcingaState: 2,
 			},
-			expectedIcingaState: 2,
-		})
+		}
+		testDataList = append(testDataList, testData...)
 	}
 
 	for _, testData := range testDataList {
 		var req check_kube_exec.Request
-		plugin.FillStruct(testData.data, &req)
+		plugin.FillStruct(testData.Data, &req)
 
 		icingaState, _ := check_kube_exec.CheckKubeExec(&req)
-		assert.EqualValues(t, testData.expectedIcingaState, icingaState)
+		assert.EqualValues(t, testData.ExpectedIcingaState, icingaState)
 	}
 
 	mini.DeleteReplicaSet(watcher, replicaSet)
@@ -216,27 +203,27 @@ func TestNodeCount(t *testing.T) {
 
 	actualNodeCount := node_count.GetKubernetesNodeCount(kubeClient)
 
-	testDataList := []testData{
-		testData{
-			data: map[string]interface{}{
+	testDataList := []plugin.TestData{
+		plugin.TestData{
+			Data: map[string]interface{}{
 				"Count": actualNodeCount,
 			},
-			expectedIcingaState: 0,
+			ExpectedIcingaState: 0,
 		},
-		testData{
-			data: map[string]interface{}{
+		plugin.TestData{
+			Data: map[string]interface{}{
 				"Count": actualNodeCount + 1,
 			},
-			expectedIcingaState: 2,
+			ExpectedIcingaState: 2,
 		},
 	}
 
 	for _, testData := range testDataList {
 		var req check_node_count.Request
-		plugin.FillStruct(testData.data, &req)
+		plugin.FillStruct(testData.Data, &req)
 
 		icingaState, _ := check_node_count.CheckNodeCount(&req)
-		assert.EqualValues(t, testData.expectedIcingaState, icingaState)
+		assert.EqualValues(t, testData.ExpectedIcingaState, icingaState)
 	}
 }
 
@@ -251,28 +238,28 @@ func TestNodeStatus(t *testing.T) {
 
 	actualNodeName := node_status.GetKubernetesNodeName(kubeClient)
 
-	testDataList := []testData{
-		testData{
-			data: map[string]interface{}{
+	testDataList := []plugin.TestData{
+		plugin.TestData{
+			Data: map[string]interface{}{
 				"Name": actualNodeName,
 			},
-			expectedIcingaState: 0,
+			ExpectedIcingaState: 0,
 		},
-		testData{
-			data: map[string]interface{}{
+		plugin.TestData{
+			Data: map[string]interface{}{
 				// make node name invalid using random 2 character.
 				"Name": actualNodeName + rand.Characters(2),
 			},
-			expectedIcingaState: 3,
+			ExpectedIcingaState: 3,
 		},
 	}
 
 	for _, testData := range testDataList {
 		var req check_node_status.Request
-		plugin.FillStruct(testData.data, &req)
+		plugin.FillStruct(testData.Data, &req)
 
 		icingaState, _ := check_node_status.CheckNodeStatus(&req)
-		assert.EqualValues(t, testData.expectedIcingaState, icingaState)
+		assert.EqualValues(t, testData.ExpectedIcingaState, icingaState)
 	}
 }
 
