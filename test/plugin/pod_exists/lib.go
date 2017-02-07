@@ -3,13 +3,13 @@ package pod_exists
 import (
 	"fmt"
 	"os"
+	"testing"
 
 	"github.com/appscode/searchlight/cmd/searchlight/app"
 	"github.com/appscode/searchlight/plugins/check_pod_exists"
 	"github.com/appscode/searchlight/test/plugin"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/kubernetes/pkg/labels"
-	"testing"
 )
 
 func GetPodCount(watcher *app.Watcher, namespace string) int {
