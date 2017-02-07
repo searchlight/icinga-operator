@@ -3,8 +3,8 @@ package client
 import (
 	artifactory "github.com/appscode/api/artifactory/v1beta1"
 	auth "github.com/appscode/api/auth/v1beta1"
-	ci "github.com/appscode/api/ci/v1beta1"
 	ca "github.com/appscode/api/certificate/v1beta1"
+	ci "github.com/appscode/api/ci/v1beta1"
 	db "github.com/appscode/api/db/v1beta1"
 	glusterfs "github.com/appscode/api/glusterfs/v1beta1"
 	kubernetesV1beta1 "github.com/appscode/api/kubernetes/v1beta1"
@@ -55,7 +55,7 @@ func newMultiClientService(conn *grpc.ClientConn) multiClientInterface {
 			certificateClient: ca.NewCertificatesClient(conn),
 		},
 		ciClient: &ciService{
-			agentsClient: ci.NewAgentsClient(conn),
+			agentsClient:   ci.NewAgentsClient(conn),
 			metadataClient: ci.NewMetadataClient(conn),
 		},
 		glusterfsClient: &glusterFSService{
@@ -162,8 +162,8 @@ func (a *authenticationService) Project() auth.ProjectsClient {
 }
 
 type ciService struct {
-	agentsClient ci.AgentsClient
-	metadataClient        ci.MetadataClient
+	agentsClient   ci.AgentsClient
+	metadataClient ci.MetadataClient
 }
 
 func (a *ciService) Agents() ci.AgentsClient {
