@@ -15,6 +15,7 @@ import (
 	"github.com/appscode/searchlight/plugins/check_kube_event"
 	"github.com/appscode/searchlight/plugins/check_kube_exec"
 	"github.com/appscode/searchlight/plugins/check_node_count"
+	"github.com/appscode/searchlight/plugins/check_node_status"
 	"github.com/appscode/searchlight/test/mini"
 	"github.com/appscode/searchlight/test/plugin"
 	"github.com/appscode/searchlight/test/plugin/component_status"
@@ -241,36 +242,36 @@ func TestNodeCount(t *testing.T) {
 func TestNodeStatus(t *testing.T) {
 	fmt.Println("== Plugin Testing >", host.CheckNodeStatus)
 
-	kubeClient := getKubernetesClient()
+	kubeClient, err := config.NewClient()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	actualNodeName := node_status.GetKubernetesNodeName(kubeClient)
-	hostname := actualNodeName + "@default"
 
 	testDataList := []testData{
 		testData{
 			data: map[string]interface{}{
-				"host": hostname,
+				"Name": actualNodeName,
 			},
 			expectedIcingaState: 0,
 		},
 		testData{
 			data: map[string]interface{}{
 				// make node name invalid using random 2 character.
-				// Added as prefix because 1st part of hostname is nodename. (<node-name>@<alert-namespace>)
-				"host": rand.Characters(2) + hostname,
+				"Name": actualNodeName + rand.Characters(2),
 			},
 			expectedIcingaState: 3,
 		},
 	}
 
 	for _, testData := range testDataList {
-		argList := []string{
-			"check_node_status",
-		}
-		for key, val := range testData.data {
-			argList = append(argList, fmt.Sprintf("--%s=%v", key, val))
-		}
-		//statusCode := execCheckCommand("hyperalert", argList...)
-		//assert.EqualValues(t, testData.expectedCode, statusCode)
+		var req check_node_status.Request
+		plugin.FillStruct(testData.data, &req)
+
+		icingaState, _ := check_node_status.CheckNodeStatus(&req)
+		assert.EqualValues(t, testData.expectedIcingaState, icingaState)
 	}
 }
 

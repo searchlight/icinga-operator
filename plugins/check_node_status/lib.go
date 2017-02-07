@@ -12,41 +12,36 @@ import (
 	kapi "k8s.io/kubernetes/pkg/api"
 )
 
-type request struct {
-	name string
+type Request struct {
+	Name string
 }
 
-func checkNodeStatus(req *request) {
+func CheckNodeStatus(req *Request) (util.IcingaState, interface{}) {
 	kubeClient, err := k8s.NewClient()
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
-	node, err := kubeClient.Client.Core().Nodes().Get(req.name)
+	node, err := kubeClient.Client.Core().Nodes().Get(req.Name)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	if node == nil {
-		fmt.Fprintln(os.Stdout, util.State[2], "Node not found")
-		os.Exit(2)
+		return util.Critical, "Node not found"
 	}
 
 	for _, condition := range node.Status.Conditions {
 		if condition.Type == kapi.NodeReady && condition.Status == kapi.ConditionFalse {
-			fmt.Fprintln(os.Stdout, util.State[2], "Node is not Ready")
-			os.Exit(2)
+			return util.Critical, "Node is not Ready"
 		}
 	}
 
-	fmt.Fprintln(os.Stdout, util.State[0], "Node is Ready")
-	os.Exit(0)
+	return util.Ok, "Node is Ready"
 }
 
 func NewCmd() *cobra.Command {
-	var req request
+	var req Request
 	var host string
 	c := &cobra.Command{
 		Use:     "check_node_status",
@@ -61,8 +56,8 @@ func NewCmd() *cobra.Command {
 				os.Exit(3)
 			}
 
-			req.name = parts[0]
-			checkNodeStatus(&req)
+			req.Name = parts[0]
+			CheckNodeStatus(&req)
 		},
 	}
 
