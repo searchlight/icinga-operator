@@ -1,5 +1,5 @@
 hash: e4b74732134c9a8a049c47376ebebec5530aef323faa81165e3d358a016c8008
-updated: 2017-02-06T15:12:19.550649746+06:00
+updated: 2017-02-07T12:53:14.020204702+06:00
 imports:
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
@@ -55,7 +55,7 @@ imports:
   - smtp
   - twilio
 - name: github.com/appscode/k8s-addons
-  version: df2733eb348ebeaadee7b704e009bce062eaca48
+  version: 911e98ca1147df0fce024ccd2ea1ce874da875a7
   subpackages:
   - api
   - api/install
