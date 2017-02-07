@@ -13,7 +13,6 @@ import (
 )
 
 func CreateReplicaSet(watcher *app.Watcher, namespace string) *extensions.ReplicaSet {
-
 	replicaSet := &extensions.ReplicaSet{}
 	replicaSet.Namespace = namespace
 	if err := testing.CreateKubernetesObject(watcher.Client, replicaSet); err != nil {
@@ -44,7 +43,7 @@ func CreateReplicaSet(watcher *app.Watcher, namespace string) *extensions.Replic
 }
 
 func DeleteReplicaSet(watcher *app.Watcher, replicaSet *extensions.ReplicaSet) {
-	// Create ReplicationController
+	// Update ReplicaSet
 	replicaSet.Spec.Replicas = 0
 	if _, err := watcher.Client.Extensions().ReplicaSets(replicaSet.Namespace).Update(replicaSet); err != nil {
 		fmt.Println(err)
@@ -76,7 +75,7 @@ func DeleteReplicaSet(watcher *app.Watcher, replicaSet *extensions.ReplicaSet) {
 		check++
 	}
 
-	// Create ReplicationController
+	// Delete ReplicaSet
 	if err := watcher.Client.Extensions().ReplicaSets(replicaSet.Namespace).Delete(replicaSet.Name, nil); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

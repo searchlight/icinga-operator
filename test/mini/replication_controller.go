@@ -43,7 +43,7 @@ func CreateReplicationController(watcher *app.Watcher, namespace string) *kapi.R
 }
 
 func DeleteReplicationController(watcher *app.Watcher, replicationController *kapi.ReplicationController) {
-	// Create ReplicationController
+	// Update ReplicationController
 	replicationController.Spec.Replicas = 0
 	if _, err := watcher.Client.Core().ReplicationControllers(replicationController.Namespace).Update(replicationController); err != nil {
 		fmt.Println(err)
@@ -75,7 +75,7 @@ func DeleteReplicationController(watcher *app.Watcher, replicationController *ka
 		check++
 	}
 
-	// Create ReplicationController
+	// Delete ReplicationController
 	if err := watcher.Client.Core().ReplicationControllers(replicationController.Namespace).Delete(replicationController.Name, nil); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

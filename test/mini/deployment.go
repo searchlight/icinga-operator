@@ -43,7 +43,7 @@ func CreateDeployment(watcher *app.Watcher, namespace string) *extensions.Deploy
 }
 
 func DeleteDeployment(watcher *app.Watcher, deployment *extensions.Deployment) {
-	// Create ReplicationController
+	// Update Deployment
 	deployment.Spec.Replicas = 0
 	if _, err := watcher.Client.Extensions().Deployments(deployment.Namespace).Update(deployment); err != nil {
 		fmt.Println(err)
@@ -75,7 +75,7 @@ func DeleteDeployment(watcher *app.Watcher, deployment *extensions.Deployment) {
 		check++
 	}
 
-	// Create ReplicationController
+	// Delete Deployment
 	if err := watcher.Client.Extensions().Deployments(deployment.Namespace).Delete(deployment.Name, nil); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

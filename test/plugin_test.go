@@ -362,24 +362,29 @@ func TestPodExists(t *testing.T) {
 	//testPodExists(host.TypeDaemonsets, daemonSet.Name, daemonSet.Namespace, int(daemonSet.Status.DesiredNumberScheduled))
 	//fmt.Println("---- >> Deleting")
 	//mini.DeleteDaemonSet(watcher, daemonSet)
-
-	fmt.Println()
-	fmt.Println("-- >> Testing plugings for", host.TypeDeployments)
-	fmt.Println("---- >> Creating")
-	deployment := mini.CreateDeployment(watcher, kapi.NamespaceDefault)
-	fmt.Println("---- >> Testing")
-	testPodExists(host.TypeDeployments, deployment.Name, deployment.Namespace, int(deployment.Spec.Replicas))
-	fmt.Println("---- >> Deleting")
-	mini.DeleteDeployment(watcher, deployment)
-
-	//fmt.Println(">> Testing plugings for", host.TypeDeployments)
-	//dataConfig.ObjectType = host.TypeDeployments
-	//testPodExists(dataConfig)
 	//
-	//fmt.Println(">> Testing plugings for", host.TypeServices)
-	//dataConfig.ObjectType = host.TypeServices
-	//testPodExists(dataConfig)
+	//fmt.Println()
+	//fmt.Println("-- >> Testing plugings for", host.TypeDeployments)
+	//fmt.Println("---- >> Creating")
+	//deployment := mini.CreateDeployment(watcher, kapi.NamespaceDefault)
+	//fmt.Println("---- >> Testing")
+	//testPodExists(host.TypeDeployments, deployment.Name, deployment.Namespace, int(deployment.Spec.Replicas))
+	//fmt.Println("---- >> Deleting")
+	//mini.DeleteDeployment(watcher, deployment)
 	//
+	//fmt.Println()
+	//fmt.Println("-- >> Testing plugings for", host.TypeServices)
+	//fmt.Println("---- >> Creating", host.TypeReplicasets)
+	//replicaSet := mini.CreateReplicaSet(watcher, kapi.NamespaceDefault)
+	//fmt.Println("---- >> Creating", host.TypeServices)
+	//service := mini.CreateService(watcher, replicaSet.Namespace, replicaSet.Spec.Template.Labels)
+	//fmt.Println("---- >> Testing")
+	//testPodExists(host.TypeServices, service.Name, service.Namespace, int(replicaSet.Spec.Replicas))
+	//fmt.Println("---- >> Deleting", host.TypeReplicasets)
+	//mini.DeleteReplicaSet(watcher, replicaSet)
+	//fmt.Println("---- >> Deleting", host.TypeServices)
+	//mini.DeleteService(watcher, service)
+
 	//fmt.Println(">> Testing plugings for", host.TypeCluster)
 	//dataConfig.ObjectType = host.TypeCluster
 	//dataConfig.CheckCommand = host.CheckCommandPodExists
