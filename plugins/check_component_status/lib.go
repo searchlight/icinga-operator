@@ -24,7 +24,7 @@ type serviceOutput struct {
 func CheckComponentStatus() (util.IcingaState, interface{}) {
 	kubeClient, err := k8s.NewClient()
 	if err != nil {
-		return util.UNKNOWN, err
+		return util.Unknown, err
 	}
 
 	components, err := kubeClient.Client.Core().
@@ -34,7 +34,7 @@ func CheckComponentStatus() (util.IcingaState, interface{}) {
 		},
 	)
 	if err != nil {
-		return util.UNKNOWN, err
+		return util.Unknown, err
 	}
 
 	objectInfoList := make([]*objectInfo, 0)
@@ -52,7 +52,7 @@ func CheckComponentStatus() (util.IcingaState, interface{}) {
 	}
 
 	if len(objectInfoList) == 0 {
-		return util.OK, "All components are healthy"
+		return util.Ok, "All components are healthy"
 	} else {
 		output := &serviceOutput{
 			Objects: objectInfoList,
@@ -60,9 +60,9 @@ func CheckComponentStatus() (util.IcingaState, interface{}) {
 		}
 		outputByte, err := json.MarshalIndent(output, "", "  ")
 		if err != nil {
-			return util.UNKNOWN, err
+			return util.Unknown, err
 		}
-		return util.CRITICAL, outputByte
+		return util.Critical, outputByte
 	}
 }
 

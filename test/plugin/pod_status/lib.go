@@ -23,7 +23,7 @@ func GetStatusCodeForPodStatus(kubeClient *config.KubeClient, hostname string) u
 			os.Exit(1)
 		}
 		if !(pod.Status.Phase == kapi.PodSucceeded || pod.Status.Phase == kapi.PodRunning) {
-			return util.CRITICAL
+			return util.Critical
 		}
 
 	} else {
@@ -44,9 +44,9 @@ func GetStatusCodeForPodStatus(kubeClient *config.KubeClient, hostname string) u
 
 		for _, pod := range podList.Items {
 			if !(pod.Status.Phase == kapi.PodSucceeded || pod.Status.Phase == kapi.PodRunning) {
-				return util.CRITICAL
+				return util.Critical
 			}
 		}
 	}
-	return util.OK
+	return util.Ok
 }

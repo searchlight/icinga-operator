@@ -35,23 +35,20 @@ func newStringReader(ss []string) io.Reader {
 	return reader
 }
 
-func checkKubeExec(req *request) {
+func CheckKubeExec(req *request) (util.IcingaState, interface{}) {
 	kubeConfig, err := k8s.GetKubeConfig()
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	kubeClient, err := clientset.NewForConfig(kubeConfig)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	pod, err := kubeClient.Core().Pods(req.namespace).Get(req.pod)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	foundContainer := false
@@ -67,8 +64,7 @@ func checkKubeExec(req *request) {
 	}
 
 	if !foundContainer {
-		fmt.Fprintln(os.Stdout, util.State[3], fmt.Sprintf(`Container "%v" not found`, req.container))
-		os.Exit(3)
+		return util.Unknown, fmt.Sprintf(`Container "%v" not found`, req.container)
 	}
 
 	execRequest := kubeClient.Core().RESTClient().Post().
@@ -89,8 +85,7 @@ func checkKubeExec(req *request) {
 
 	exec, err := remotecommand.NewExecutor(kubeConfig, "POST", execRequest.URL())
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	stdIn := newStringReader([]string{"-c", req.arg})
@@ -112,8 +107,7 @@ func checkKubeExec(req *request) {
 		if exitErr, ok := err.(utilexec.ExitError); ok && exitErr.Exited() {
 			exitCode = exitErr.ExitStatus()
 		} else {
-			fmt.Fprintln(os.Stdout, util.State[3], "Failed to find exit code.")
-			os.Exit(3)
+			return util.Unknown, "Failed to find exit code."
 		}
 	}
 
@@ -122,8 +116,7 @@ func checkKubeExec(req *request) {
 		exitCode = 2
 	}
 
-	fmt.Fprintln(os.Stdout, util.State[exitCode], output)
-	os.Exit(exitCode)
+	return util.IcingaState(exitCode), output
 }
 
 type request struct {
@@ -152,7 +145,7 @@ func NewCmd() *cobra.Command {
 			}
 			req.pod = parts[0]
 			req.namespace = parts[1]
-			checkKubeExec(&req)
+			util.Output(CheckKubeExec(&req))
 		},
 	}
 

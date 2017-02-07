@@ -135,7 +135,7 @@ func checkResult(evalDataString, checkQuery string) (bool, error) {
 func CheckJsonPath(req *Request) (util.IcingaState, interface{}) {
 	jsonData, err := getData(req)
 	if err != nil {
-		return util.UNKNOWN, err
+		return util.Unknown, err
 
 	}
 
@@ -146,12 +146,12 @@ func CheckJsonPath(req *Request) (util.IcingaState, interface{}) {
 
 	evalData, err := jqData.eval()
 	if err != nil {
-		return util.UNKNOWN, "Invalid query. No data found"
+		return util.Unknown, "Invalid query. No data found"
 	}
 
 	evalDataByte, err := json.Marshal(evalData)
 	if err != nil {
-		return util.UNKNOWN, err
+		return util.Unknown, err
 
 	}
 
@@ -159,22 +159,22 @@ func CheckJsonPath(req *Request) (util.IcingaState, interface{}) {
 	if req.Critical != "" {
 		isCritical, err := checkResult(evalDataString, req.Critical)
 		if err != nil {
-			return util.UNKNOWN, err
+			return util.Unknown, err
 		}
 		if isCritical {
-			return util.CRITICAL, fmt.Sprintf("%v", req.Critical)
+			return util.Critical, fmt.Sprintf("%v", req.Critical)
 		}
 	}
 	if req.Warning != "" {
 		isWarning, err := checkResult(evalDataString, req.Warning)
 		if err != nil {
-			return util.UNKNOWN, err
+			return util.Unknown, err
 		}
 		if isWarning {
-			return util.WARNING, fmt.Sprintf("%v", req.Warning)
+			return util.Warning, fmt.Sprintf("%v", req.Warning)
 		}
 	}
-	return util.OK, "Response looks good"
+	return util.Ok, "Response looks good"
 }
 
 func NewCmd() *cobra.Command {

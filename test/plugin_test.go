@@ -12,6 +12,7 @@ import (
 	"github.com/appscode/searchlight/pkg/controller/host"
 	"github.com/appscode/searchlight/plugins/check_component_status"
 	"github.com/appscode/searchlight/plugins/check_json_path"
+	"github.com/appscode/searchlight/plugins/check_kube_event"
 	"github.com/appscode/searchlight/test/plugin"
 	"github.com/appscode/searchlight/test/plugin/component_status"
 	"github.com/appscode/searchlight/test/plugin/json_path"
@@ -85,7 +86,7 @@ func TestJsonPath(t *testing.T) {
 			data: map[string]interface{}{
 				"Url":      url + uri,
 				"Query":    ".",
-				"Warning": fmt.Sprintf(`.public_repos==%v`, repoNumber-1),
+				"Warning":  fmt.Sprintf(`.public_repos==%v`, repoNumber-1),
 				"Critical": fmt.Sprintf(`.public_repos==%v`, repoNumber),
 			},
 			expectedIcingaState: 2,
@@ -104,10 +105,106 @@ func TestJsonPath(t *testing.T) {
 		var req check_json_path.Request
 		plugin.FillStruct(testData.data, &req)
 
-		icingaState, resp := check_json_path.CheckJsonPath(&req)
-		fmt.Println("--- ", resp)
+		icingaState, _ := check_json_path.CheckJsonPath(&req)
 		assert.EqualValues(t, testData.expectedIcingaState, icingaState)
 	}
+}
+
+func TestKubeEvent(t *testing.T) {
+	fmt.Println("== Testing >", host.CheckCommandKubeEvent)
+
+	kubeClient, err := config.NewClient()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	checkInterval, _ := time.ParseDuration("2m")
+	clockSkew, _ := time.ParseDuration("0s")
+	expectedIcingaState := kube_event.GetStatusCodeForEventCount(kubeClient, checkInterval, clockSkew)
+
+	testDataList := []testData{
+		testData{
+			data: map[string]interface{}{
+				"CheckInterval": checkInterval,
+				"ClockSkew":     clockSkew,
+			},
+			expectedIcingaState: expectedIcingaState,
+		},
+	}
+	for _, testData := range testDataList {
+		var req check_kube_event.Request
+		plugin.FillStruct(testData.data, &req)
+
+		icingaState, _ := check_kube_event.CheckKubeEvent(&req)
+		assert.EqualValues(t, testData.expectedIcingaState, icingaState)
+	}
+}
+
+func TestKubeExec(t *testing.T) {
+	fmt.Println("== Testing >", host.CheckCommandKubeExec)
+
+	kubeClient, err := config.NewClient()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	testkubeExec := func(dataConfig *dataConfig) {
+		// This will create object & return icinga_host name
+		name, _ := getTestData(kubeClient, dataConfig)
+		time.Sleep(time.Second * 30)
+
+		objectType, objectName, namespace := plugin.GetKubeObjectInfo(name)
+		objectList, err := host.GetObjectList(kubeClient.Client, host.CheckCommandKubeExec, host.HostTypePod, namespace, objectType, objectName, "")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		testDataList := make([]testData, 0)
+
+		for _, object := range objectList {
+			testDataList = append(testDataList, testData{
+				data: map[string]interface{}{
+					"host": object.Name,
+					"arg":  "exit 0",
+				},
+				expectedIcingaState: 0,
+			})
+			testDataList = append(testDataList, testData{
+				data: map[string]interface{}{
+					"host": object.Name,
+					"arg":  "exit 5",
+				},
+				expectedIcingaState: 2,
+			})
+		}
+
+		for _, testData := range testDataList {
+			argList := []string{
+				"check_kube_exec",
+			}
+			for key, val := range testData.data {
+				argList = append(argList, fmt.Sprintf("--%s=%v", key, val))
+			}
+			//statusCode := execCheckCommand("hyperalert", argList...)
+			//assert.EqualValues(t, testData.expectedCode, statusCode)
+		}
+	}
+
+	ns := "e2e-1"
+	dataConfig := &dataConfig{
+	}
+
+	
+	fmt.Println(">> Testing plugings for", host.TypeReplicationcontrollers)
+	dataConfig.ObjectType = host.TypeReplicationcontrollers
+	testkubeExec(dataConfig)
+
+	fmt.Println(">> Deleting namespace", ns)
+	deleteNewNamespace(kubeClient, ns)
+
+	fmt.Println()
 }
 
 func TestNodeCount(t *testing.T) {
@@ -351,97 +448,4 @@ func TestPodStatus(t *testing.T) {
 	fmt.Println()
 }
 
-func TestKubeEvent(t *testing.T) {
-	fmt.Println("== Testing >", host.CheckCommandKubeEvent)
 
-	kubeClient := getKubernetesClient()
-
-	checkInterval, _ := time.ParseDuration("30s")
-	clockSkew, _ := time.ParseDuration("0s")
-	exitCode := kube_event.GetStatusCodeForEventCount(kubeClient, checkInterval, clockSkew)
-
-	testDataList := []testData{
-		testData{
-			data: map[string]interface{}{
-				"check_interval": checkInterval,
-			},
-			expectedIcingaState: exitCode,
-		},
-	}
-	for _, testData := range testDataList {
-		argList := []string{
-			"check_kube_event",
-		}
-		for key, val := range testData.data {
-			argList = append(argList, fmt.Sprintf("--%s=%v", key, val))
-		}
-		//statusCode := execCheckCommand("hyperalert", argList...)
-		//assert.EqualValues(t, testData.expectedCode, statusCode)
-	}
-}
-
-func TestKubeExec(t *testing.T) {
-	fmt.Println("== Testing >", host.CheckCommandKubeExec)
-
-	kubeClient := getKubernetesClient()
-
-	testkubeExec := func(dataConfig *dataConfig) {
-		// This will create object & return icinga_host name
-		name, _ := getTestData(kubeClient, dataConfig)
-		time.Sleep(time.Second * 30)
-
-		objectType, objectName, namespace := plugin.GetKubeObjectInfo(name)
-		objectList, err := host.GetObjectList(kubeClient.Client, host.CheckCommandKubeExec, host.HostTypePod, namespace, objectType, objectName, "")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		testDataList := make([]testData, 0)
-
-		for _, object := range objectList {
-			testDataList = append(testDataList, testData{
-				data: map[string]interface{}{
-					"host": object.Name,
-					"arg":  "exit 0",
-				},
-				expectedIcingaState: 0,
-			})
-			testDataList = append(testDataList, testData{
-				data: map[string]interface{}{
-					"host": object.Name,
-					"arg":  "exit 5",
-				},
-				expectedIcingaState: 2,
-			})
-		}
-
-		for _, testData := range testDataList {
-			argList := []string{
-				"check_kube_exec",
-			}
-			for key, val := range testData.data {
-				argList = append(argList, fmt.Sprintf("--%s=%v", key, val))
-			}
-			//statusCode := execCheckCommand("hyperalert", argList...)
-			//assert.EqualValues(t, testData.expectedCode, statusCode)
-		}
-	}
-
-	ns := "e2e-1"
-	dataConfig := &dataConfig{
-		Namespace: ns,
-	}
-
-	fmt.Println(">> Creating namespace", ns)
-	createNewNamespace(kubeClient, ns)
-	fmt.Println()
-
-	fmt.Println(">> Testing plugings for", host.TypeReplicationcontrollers)
-	dataConfig.ObjectType = host.TypeReplicationcontrollers
-	testkubeExec(dataConfig)
-
-	fmt.Println(">> Deleting namespace", ns)
-	deleteNewNamespace(kubeClient, ns)
-
-	fmt.Println()
-}

@@ -140,56 +140,56 @@ func checkResult(checkQuery string, valueMap map[string]interface{}) (bool, erro
 func CheckInfluxQuery(req *request) (util.IcingaState, interface{}) {
 	authData, err := influxdb.GetInfluxDBSecretData(req.secret)
 	if err != nil {
-		return util.UNKNOWN, err
+		return util.Unknown, err
 	}
 
 	if req.host != "" {
 		authData.Host = req.host
 	}
 	if authData.Host == "" {
-		return util.UNKNOWN, "No InfluxDB host found"
+		return util.Unknown, "No InfluxDB host found"
 	}
 	client, err := getInfluxDBClient(authData)
 	if err != nil {
-		return util.UNKNOWN, err
+		return util.Unknown, err
 	}
 
 	valMap, err := getValue(client, authData.Database, req)
 	if err != nil {
-		return util.UNKNOWN, err
+		return util.Unknown, err
 	}
 
 	expression, err := govaluate.NewEvaluableExpression(req.r)
 	if err != nil {
-		return util.UNKNOWN, err
+		return util.Unknown, err
 	}
 
 	if valMap["R"], err = expression.Evaluate(valMap); err != nil {
-		return util.UNKNOWN, err
+		return util.Unknown, err
 	}
 	valMap["R"] = trunc(valMap["R"].(float64))
 
 	if req.critical != "" {
 		isCritical, err := checkResult(req.critical, valMap)
 		if err != nil {
-			return util.UNKNOWN, err.Error()
+			return util.Unknown, err.Error()
 		}
 		if isCritical {
-			return util.CRITICAL, nil
+			return util.Critical, nil
 		}
 	}
 
 	if req.warning != "" {
 		isWarning, err := checkResult(req.warning, valMap)
 		if err != nil {
-			return util.UNKNOWN, err
+			return util.Unknown, err
 		}
 		if isWarning {
-			return util.WARNING, nil
+			return util.Warning, nil
 		}
 	}
 
-	return util.OK, "Fine"
+	return util.Ok, "Fine"
 }
 
 func NewCmd() *cobra.Command {

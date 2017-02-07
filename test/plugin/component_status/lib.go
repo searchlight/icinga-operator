@@ -21,9 +21,9 @@ func GetStatusCodeForComponentStatus(kubeClient *k8s.KubeClient) util.IcingaStat
 	for _, component := range components.Items {
 		for _, condition := range component.Conditions {
 			if condition.Type == kapi.ComponentHealthy && condition.Status == kapi.ConditionFalse {
-				return util.CRITICAL
+				return util.Critical
 			}
 		}
 	}
-	return util.OK
+	return util.Ok
 }

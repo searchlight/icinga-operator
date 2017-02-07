@@ -3,7 +3,6 @@ package check_kube_event
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/appscode/go/flags"
@@ -28,17 +27,16 @@ type serviceOutput struct {
 	Message string       `json:"message,omitempty"`
 }
 
-func checkKubeEvent(req *request) {
+func CheckKubeEvent(req *Request) (util.IcingaState, interface{}) {
 	kubeClient, err := k8s.NewClient()
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	eventInfoList := make([]*eventInfo, 0)
 	field := fields.OneTermEqualSelector(kapi.EventTypeField, kapi.EventTypeWarning)
 
-	checkTime := time.Now().Add(-(req.checkInterval + req.clockSkew))
+	checkTime := time.Now().Add(-(req.CheckInterval + req.ClockSkew))
 
 	eventList, err := kubeClient.Client.Core().Events(kapi.NamespaceAll).List(
 		kapi.ListOptions{
@@ -46,8 +44,7 @@ func checkKubeEvent(req *request) {
 		},
 	)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
+		return util.Unknown, err
 	}
 
 	for _, event := range eventList.Items {
@@ -66,8 +63,7 @@ func checkKubeEvent(req *request) {
 	}
 
 	if len(eventInfoList) == 0 {
-		fmt.Fprintln(os.Stdout, util.State[0], "All events look Normal")
-		os.Exit(0)
+		return util.Ok, "All events look Normal"
 	} else {
 		output := &serviceOutput{
 			Events:  eventInfoList,
@@ -75,21 +71,19 @@ func checkKubeEvent(req *request) {
 		}
 		outputByte, err := json.MarshalIndent(output, "", "  ")
 		if err != nil {
-			fmt.Fprintln(os.Stdout, util.State[3], err)
-			os.Exit(3)
+			return util.Unknown, err
 		}
-		fmt.Fprintln(os.Stdout, util.State[1], string(outputByte))
-		os.Exit(1)
+		return util.Warning, outputByte
 	}
 }
 
-type request struct {
-	checkInterval time.Duration
-	clockSkew     time.Duration
+type Request struct {
+	CheckInterval time.Duration
+	ClockSkew     time.Duration
 }
 
 func NewCmd() *cobra.Command {
-	var req request
+	var req Request
 
 	c := &cobra.Command{
 		Use:     "check_kube_event",
@@ -98,11 +92,11 @@ func NewCmd() *cobra.Command {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "check_interval")
-			checkKubeEvent(&req)
+			util.Output(CheckKubeEvent(&req))
 		},
 	}
 
-	c.Flags().DurationVarP(&req.checkInterval, "check_interval", "c", time.Second*0, "Icinga check_interval in duration. [Format: 30s, 5m]")
-	c.Flags().DurationVarP(&req.clockSkew, "clock_skew", "s", time.Second*30, "Add skew with check_interval in duration. [Default: 30s]")
+	c.Flags().DurationVarP(&req.CheckInterval, "check_interval", "c", time.Second*0, "Icinga check_interval in duration. [Format: 30s, 5m]")
+	c.Flags().DurationVarP(&req.ClockSkew, "clock_skew", "s", time.Second*30, "Add skew with check_interval in duration. [Default: 30s]")
 	return c
 }
