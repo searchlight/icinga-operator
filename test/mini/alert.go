@@ -101,7 +101,7 @@ func CreateAlert(watcher *app.Watcher, namespace string, labelMap map[string]str
 
 func DeleteAlert(watcher *app.Watcher, alert *aci.Alert) error {
 	// Delete Alert
-	if err := watcher.AppsCodeExtensionClient.Alert(alert.Namespace).Delete(alert.Name, nil); err != nil {
+	if err := watcher.AppsCodeExtensionClient.Alert(alert.Namespace).Delete(alert.Name); err != nil {
 		return err
 	}
 	return nil

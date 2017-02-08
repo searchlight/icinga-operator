@@ -6,7 +6,7 @@ It reads local `~/.kube/config` data and uses `current-context` for cluster and 
 
 ### Run Test
 
-Run following command to test
+Run following command to test Plugins
 
 * __component_status__
 
@@ -41,3 +41,13 @@ Run following command to test
 > To run all Test
 
     go test -v github.com/appscode/searchlight/test
+
+Run following command for E2E test
+
+* __MultipleAlerts__
+
+        go test -v github.com/appscode/searchlight/test -run ^TestMultipleAlerts$
+
+* __MultipleAlertsOnMultipleObjects__
+
+        go test -v github.com/appscode/searchlight/test -run ^TestMultipleAlertsOnMultipleObjects$

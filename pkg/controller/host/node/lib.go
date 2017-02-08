@@ -180,10 +180,18 @@ func (b *biblio) updateIcingaService(objectList []*host.KubeObjectInfo) error {
 func (b *biblio) delete(specificObject string) error {
 	alertSpec := b.Resource.Spec
 
-	// Get Icinga Host Info
-	objectList, err := host.GetObjectList(b.KubeClient, alertSpec.CheckCommand, host.HostTypeNode, b.Resource.Namespace, b.ObjectType, b.ObjectName, specificObject)
-	if err != nil {
-		return errors.New().WithCause(err).Internal()
+	var objectList []*host.KubeObjectInfo
+	if specificObject != "" {
+		objectList = append(objectList, &host.KubeObjectInfo{Name: specificObject + "@" + b.Resource.Namespace})
+	} else {
+		// Get Icinga Host Info
+		var err error
+		objectList, err = host.GetObjectList(b.KubeClient, alertSpec.CheckCommand, host.HostTypeNode,
+			b.Resource.Namespace, b.ObjectType, b.ObjectName, specificObject)
+		if err != nil {
+			return errors.New().WithCause(err).Internal()
+		}
+
 	}
 
 	if err := host.DeleteIcingaService(b.IcingaClient, objectList, b.Resource.Name); err != nil {

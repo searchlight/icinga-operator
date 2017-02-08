@@ -55,6 +55,12 @@ type icingaClient struct {
 
 var e2eIcingaClient = icingaClient{isIcingaClientSet: false}
 
+const (
+	IcingaAddress string = ""
+	IcingaAPIUser string = ""
+	IcingaAPIPass string = ""
+)
+
 func getIcingaClient() (icingaClient *icinga.IcingaClient, err error) {
 	if e2eIcingaClient.isIcingaClientSet {
 		icingaClient = e2eIcingaClient.client
@@ -70,9 +76,9 @@ func getIcingaClient() (icingaClient *icinga.IcingaClient, err error) {
 
 			// Secret will be created with information of Icinga2 running in Docker for travisCI test
 			secretMap := map[string]string{
-				icinga.IcingaAPIUser: "icingaapi",
-				icinga.IcingaAPIPass: "GNVbk6wPKV5CFfOT",
-				icinga.IcingaAddress: "a9e684210a56411e6a8b6124f2ed5f41-795882289.us-east-1.elb.amazonaws.com",
+				icinga.IcingaAPIUser: IcingaAPIUser,
+				icinga.IcingaAPIPass: IcingaAPIPass,
+				icinga.IcingaAddress: IcingaAddress,
 			}
 			icingaSecretName, err := mini.CreateIcingaSecret(kubeClient, "default", secretMap)
 

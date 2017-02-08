@@ -8,7 +8,9 @@ import (
 	"github.com/appscode/searchlight/cmd/searchlight/app"
 	"github.com/appscode/searchlight/pkg/controller/host"
 	"github.com/appscode/searchlight/util"
+	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/apis/extensions"
+	"k8s.io/kubernetes/pkg/labels"
 )
 
 func CreateReplicaSet(watcher *app.Watcher, namespace string) (*extensions.ReplicaSet, error) {
@@ -36,6 +38,18 @@ func CreateReplicaSet(watcher *app.Watcher, namespace string) (*extensions.Repli
 	}
 
 	return replicaSet, nil
+}
+
+func GetSinglePod(watcher *app.Watcher, replicaSet *extensions.ReplicaSet) (*kapi.Pod, error) {
+	podList, err := watcher.Storage.PodStore.List(labels.Set(replicaSet.Spec.Selector.MatchLabels).AsSelector())
+	if err != nil {
+		return nil, err
+	}
+	if len(podList) == 0 {
+		return nil, errors.New("Pod Not Fount")
+	}
+
+	return podList[0], nil
 }
 
 func DeleteReplicaSet(watcher *app.Watcher, replicaSet *extensions.ReplicaSet) error {
