@@ -17,7 +17,7 @@ func getStatusCodeForPodStatus(watcher *app.Watcher, objectType, objectName, nam
 			return util.Unknown, err
 		}
 		if !(pod.Status.Phase == kapi.PodSucceeded || pod.Status.Phase == kapi.PodRunning) {
-			return util.Critical
+			return util.Critical, nil
 		}
 
 	} else {

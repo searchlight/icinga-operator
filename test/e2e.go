@@ -2,13 +2,13 @@ package e2e
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	acw "github.com/appscode/k8s-addons/pkg/watcher"
 	"github.com/appscode/searchlight/cmd/searchlight/app"
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
-	"sync"
 )
 
 type testData struct {

@@ -34,6 +34,5 @@ func GetTestData(objectList []*host.KubeObjectInfo) ([]plugin.TestData, error) {
 		}
 		testDataList = append(testDataList, testData...)
 	}
-
-	return testDataList
+	return testDataList, nil
 }

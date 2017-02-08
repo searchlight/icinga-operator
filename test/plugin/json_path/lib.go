@@ -5,7 +5,6 @@ import (
 
 	"github.com/appscode/go/net/httpclient"
 	"github.com/appscode/searchlight/test/plugin"
-	"github.com/appscode/searchlight/util"
 )
 
 type GithubOrg struct {
@@ -30,7 +29,7 @@ func GetTestData() ([]plugin.TestData, error) {
 
 	repoNumber, err := getPublicRepoNumber(url, uri)
 	if err != nil {
-		return util.Unknown, err
+		return nil, err
 	}
 
 	testDataList := []plugin.TestData{

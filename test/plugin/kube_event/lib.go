@@ -57,7 +57,7 @@ func getStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clock
 func GetTestData(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Duration) ([]plugin.TestData, error) {
 	expectedIcingaState, err := getStatusCodeForEventCount(kubeClient, checkInterval, clockSkew)
 	if err != nil {
-		return expectedIcingaState, err
+		return nil, err
 	}
 	testDataList := []plugin.TestData{
 		plugin.TestData{

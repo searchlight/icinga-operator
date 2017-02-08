@@ -1,9 +1,6 @@
 package mini
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/appscode/k8s-addons/pkg/testing"
 	"github.com/appscode/searchlight/cmd/searchlight/app"
 	kapi "k8s.io/kubernetes/pkg/api"

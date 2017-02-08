@@ -38,10 +38,6 @@ Run following command to test
 
         go test -v github.com/appscode/searchlight/test -run ^TestPodExistsPodStatus$
 
-### Configure Icinga2 Client
+> To run all Test
 
-Following information will be collected from secret:
-
-1. ICINGA_ADDRESS
-2. ICINGA_API_USER
-3. ICINGA_API_PASSWORD
+    go test -v github.com/appscode/searchlight/test
