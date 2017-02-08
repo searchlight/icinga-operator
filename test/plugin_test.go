@@ -88,7 +88,7 @@ func TestKubeExec(t *testing.T) {
 	fmt.Println("== Plugin Testing >", host.CheckCommandKubeExec)
 
 	// Run KubeD
-	watcher, err := runKubeD()
+	watcher, err := runKubeD(false)
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -171,7 +171,7 @@ func TestPodExistsPodStatus(t *testing.T) {
 	fmt.Println("== Plugin Testing >", host.CheckCommandPodExists, host.CheckCommandPodStatus)
 
 	// Run KubeD
-	watcher, err := runKubeD()
+	watcher, err := runKubeD(false)
 	if !assert.Nil(t, err) {
 		return
 	}

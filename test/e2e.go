@@ -7,7 +7,9 @@ import (
 
 	acw "github.com/appscode/k8s-addons/pkg/watcher"
 	"github.com/appscode/searchlight/cmd/searchlight/app"
+	"github.com/appscode/searchlight/pkg/client/icinga"
 	"github.com/appscode/searchlight/pkg/client/k8s"
+	"github.com/appscode/searchlight/test/mini"
 	"github.com/appscode/searchlight/util"
 )
 
@@ -45,15 +47,78 @@ func getKubeClient() (kubeClient *k8s.KubeClient, err error) {
 	return
 }
 
+type icingaClient struct {
+	isIcingaClientSet bool
+	client            *icinga.IcingaClient
+	once              sync.Once
+}
+
+var e2eIcingaClient = icingaClient{isIcingaClientSet: false}
+
+func getIcingaClient() (icingaClient *icinga.IcingaClient, err error) {
+	if e2eIcingaClient.isIcingaClientSet {
+		icingaClient = e2eIcingaClient.client
+		return
+	}
+	e2eIcingaClient.once.Do(
+		func() {
+			var kubeClient *k8s.KubeClient
+			kubeClient, err = getKubeClient()
+			if err != nil {
+				return
+			}
+
+			// Secret will be created with information of Icinga2 running in Docker for travisCI test
+			secretMap := map[string]string{
+				icinga.IcingaAPIUser: "icingaapi",
+				icinga.IcingaAPIPass: "GNVbk6wPKV5CFfOT",
+				icinga.IcingaAddress: "a9e684210a56411e6a8b6124f2ed5f41-795882289.us-east-1.elb.amazonaws.com",
+			}
+			icingaSecretName, err := mini.CreateIcingaSecret(kubeClient, "default", secretMap)
+
+			icingaClient, err = icinga.NewIcingaClient(kubeClient.Client, icingaSecretName)
+			if err != nil {
+				return
+			}
+
+			e2eIcingaClient.client = icingaClient
+			e2eIcingaClient.isIcingaClientSet = true
+		},
+	)
+	return
+}
+
 type kubeWatcher struct {
-	isWatcherSet bool
-	watcher      *app.Watcher
-	once         sync.Once
+	isWatcherSet     bool
+	isIcingaIncluded bool
+	watcher          *app.Watcher
+	once             sync.Once
 }
 
 var e2eWatcher = kubeWatcher{isWatcherSet: false}
 
-func runKubeD() (w *app.Watcher, err error) {
+func runKubeD(setIcingaClient bool) (w *app.Watcher, err error) {
+	// Watcher is already running.. Want to Add IcingaClient
+	if e2eWatcher.isWatcherSet && setIcingaClient {
+		// IcingaClient is already added in watcher
+		if e2eWatcher.isIcingaIncluded {
+			w = e2eWatcher.watcher
+			return
+		} else {
+			// Added IcingaClient
+			var icingaClient *icinga.IcingaClient
+			icingaClient, err = getIcingaClient()
+			if err != nil {
+				return
+			}
+			e2eWatcher.watcher.IcingaClient = icingaClient
+			e2eWatcher.isIcingaIncluded = true
+		}
+		w = e2eWatcher.watcher
+		return
+	}
+
+	// Watcher is already running
 	if e2eWatcher.isWatcherSet {
 		w = e2eWatcher.watcher
 		return
@@ -73,6 +138,18 @@ func runKubeD() (w *app.Watcher, err error) {
 					AppsCodeExtensionClient: kubeClient.AppscodeExtensionClient,
 					SyncPeriod:              time.Minute * 2,
 				},
+			}
+
+			// Set IcingaClient
+			if setIcingaClient {
+				// Added IcingaClient
+				var icingaClient *icinga.IcingaClient
+				icingaClient, err = getIcingaClient()
+				if err != nil {
+					return
+				}
+				w.IcingaClient = icingaClient
+				e2eWatcher.isIcingaIncluded = true
 			}
 
 			w.Watcher.Dispatch = w.Dispatch
