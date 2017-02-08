@@ -51,11 +51,11 @@ func countIcingaService(watcher *app.Watcher, objectList []*host.KubeObjectInfo,
 		} else {
 			if expectZero {
 				if len(respService.Results) != 0 {
-					err = errors.New(fmt.Sprintf("Service Found"))
+					err = errors.New("Service Found")
 				}
 			} else {
 				if len(respService.Results) != len(objectList) {
-					err = errors.New(fmt.Sprintf("Total Service Mismatch"))
+					err = errors.New("Total Service Mismatch")
 				}
 			}
 		}
@@ -88,11 +88,11 @@ func countIcingaHost(watcher *app.Watcher, objectList []*host.KubeObjectInfo, ex
 		} else {
 			if expectZero {
 				if len(respHost.Results) != 0 {
-					err = errors.New(fmt.Sprintf("Host Found"))
+					err = errors.New("Host Found")
 				}
 			} else {
 				if len(respHost.Results) != len(objectList) {
-					err = errors.New(fmt.Sprintf("Total Host Mismatch"))
+					err = errors.New("Total Host Mismatch")
 				}
 			}
 		}
@@ -172,7 +172,7 @@ func CheckIcingaObjects(watcher *app.Watcher, alert *aci.Alert, objectList []*ho
 func CheckIcingaObjectsForPod(watcher *app.Watcher, podName, namespace string, expectedService int32) error {
 
 	// Count Icinga Host in Icinga2. Should be found
-	fmt.Println(fmt.Sprintf("----> Counting Icinga Service"))
+	fmt.Println("----> Counting Icinga Service")
 
 	objectList := []*host.KubeObjectInfo{
 		&host.KubeObjectInfo{
@@ -198,7 +198,7 @@ func CheckIcingaObjectsForPod(watcher *app.Watcher, podName, namespace string, e
 		}
 
 		if expectedService != validService {
-			err = errors.New(fmt.Sprintf("Service Mismatch"))
+			err = errors.New("Service Mismatch")
 			fmt.Println(err.Error())
 		} else {
 			break
