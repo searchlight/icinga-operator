@@ -10,7 +10,13 @@ import (
 	"k8s.io/kubernetes/pkg/labels"
 )
 
-func GetStatusCodeForComponentStatus(kubeClient *k8s.KubeClient) util.IcingaState {
+func GetStatusCodeForComponentStatus() util.IcingaState {
+	kubeClient, err := k8s.NewClient()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	components, err := kubeClient.Client.Core().ComponentStatuses().
 		List(kapi.ListOptions{LabelSelector: labels.Everything()})
 	if err != nil {

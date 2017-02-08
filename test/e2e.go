@@ -7,7 +7,13 @@ import (
 	acw "github.com/appscode/k8s-addons/pkg/watcher"
 	"github.com/appscode/searchlight/cmd/searchlight/app"
 	"github.com/appscode/searchlight/pkg/client"
+	"github.com/appscode/searchlight/util"
 )
+
+type testData struct {
+	Data                map[string]interface{}
+	ExpectedIcingaState util.IcingaState
+}
 
 type dataConfig struct {
 	ObjectType   string

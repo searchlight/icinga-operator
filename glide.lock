@@ -1,5 +1,5 @@
 hash: e4b74732134c9a8a049c47376ebebec5530aef323faa81165e3d358a016c8008
-updated: 2017-02-07T18:38:18.131359263+06:00
+updated: 2017-02-08T10:11:57.937543158+06:00
 imports:
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
@@ -7,7 +7,7 @@ imports:
   - compute/metadata
   - internal
 - name: github.com/appscode/api
-  version: a0aa24b5b48454245292967b3ec7195722c30648
+  version: 61bde2caf45993e76e75f4a260506b159e84af27
   subpackages:
   - artifactory/v1beta1
   - auth/v1beta1
@@ -23,11 +23,10 @@ imports:
   - mailinglist/v1beta1
   - namespace/v1beta1
   - operation/v1beta1
-  - pv/v1beta1
   - ssh/v1beta1
   - version
 - name: github.com/appscode/client
-  version: f91b484fadb4ef33a345d6519ab35f5f1d38ff1d
+  version: 5b8552c9798513d75b0f6b51125a4e9b440738e0
   subpackages:
   - credential
   - util

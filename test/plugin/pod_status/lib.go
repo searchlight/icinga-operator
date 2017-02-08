@@ -3,14 +3,11 @@ package pod_status
 import (
 	"fmt"
 	"os"
-	"testing"
 
 	"github.com/appscode/searchlight/cmd/searchlight/app"
 	"github.com/appscode/searchlight/pkg/controller/host"
-	"github.com/appscode/searchlight/plugins/check_pod_status"
 	"github.com/appscode/searchlight/test/plugin"
 	"github.com/appscode/searchlight/util"
-	"github.com/stretchr/testify/assert"
 	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/labels"
 )
@@ -52,7 +49,7 @@ func getStatusCodeForPodStatus(watcher *app.Watcher, objectType, objectName, nam
 	return util.Ok
 }
 
-func CheckPodStatus(t *testing.T, watcher *app.Watcher, objectType, objectName, namespace string) {
+func GetTestData(watcher *app.Watcher, objectType, objectName, namespace string) []plugin.TestData {
 	testDataList := []plugin.TestData{
 		plugin.TestData{
 			Data: map[string]interface{}{
@@ -63,11 +60,5 @@ func CheckPodStatus(t *testing.T, watcher *app.Watcher, objectType, objectName, 
 			ExpectedIcingaState: getStatusCodeForPodStatus(watcher, objectType, objectName, namespace),
 		},
 	}
-
-	for _, testData := range testDataList {
-		var req check_pod_status.Request
-		plugin.FillStruct(testData.Data, &req)
-		icingaState, _ := check_pod_status.CheckPodStatus(&req)
-		assert.EqualValues(t, testData.ExpectedIcingaState, icingaState)
-	}
+	return testDataList
 }

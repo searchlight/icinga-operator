@@ -3,12 +3,9 @@ package pod_exists
 import (
 	"fmt"
 	"os"
-	"testing"
 
 	"github.com/appscode/searchlight/cmd/searchlight/app"
-	"github.com/appscode/searchlight/plugins/check_pod_exists"
 	"github.com/appscode/searchlight/test/plugin"
-	"github.com/stretchr/testify/assert"
 	"k8s.io/kubernetes/pkg/labels"
 )
 
@@ -21,7 +18,7 @@ func GetPodCount(watcher *app.Watcher, namespace string) int {
 	return len(podList)
 }
 
-func CheckPodExists(t *testing.T, objectType, objectName, namespace string, count int) {
+func GetTestData(objectType, objectName, namespace string, count int) []plugin.TestData {
 	testDataList := []plugin.TestData{
 		plugin.TestData{
 			// To check for any pods
@@ -53,15 +50,5 @@ func CheckPodExists(t *testing.T, objectType, objectName, namespace string, coun
 			ExpectedIcingaState: 2,
 		},
 	}
-
-	for _, testData := range testDataList {
-		var req check_pod_exists.Request
-		plugin.FillStruct(testData.Data, &req)
-		isCountSet := false
-		if req.Count != 0 {
-			isCountSet = true
-		}
-		icingaState, _ := check_pod_exists.CheckPodExists(&req, isCountSet)
-		assert.EqualValues(t, testData.ExpectedIcingaState, icingaState)
-	}
+	return testDataList
 }

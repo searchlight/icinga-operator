@@ -7,13 +7,14 @@ import (
 
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/searchlight/pkg/client/k8s"
+	"github.com/appscode/searchlight/test/plugin"
 	"github.com/appscode/searchlight/util"
 	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/api/unversioned"
 	"k8s.io/kubernetes/pkg/fields"
 )
 
-func GetStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Duration) util.IcingaState {
+func getStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Duration) util.IcingaState {
 
 	now := time.Now()
 	// Create some fake event
@@ -55,4 +56,25 @@ func GetStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clock
 		return util.Warning
 	}
 	return util.Ok
+}
+
+func GetTestData(checkInterval, clockSkew time.Duration) []plugin.TestData {
+	kubeClient, err := k8s.NewClient()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	expectedIcingaState := getStatusCodeForEventCount(kubeClient, checkInterval, clockSkew)
+	testDataList := []plugin.TestData{
+		plugin.TestData{
+			Data: map[string]interface{}{
+				"CheckInterval": checkInterval,
+				"ClockSkew":     clockSkew,
+			},
+			ExpectedIcingaState: expectedIcingaState,
+		},
+	}
+
+	return testDataList
 }

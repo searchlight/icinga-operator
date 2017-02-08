@@ -1,19 +1,73 @@
 package json_path
 
-import "github.com/appscode/go/net/httpclient"
+import (
+	"fmt"
+	"github.com/appscode/go/net/httpclient"
+	"github.com/appscode/searchlight/test/plugin"
+	"os"
+)
 
 type GithubOrg struct {
 	PublicRepos int `json:"public_repos"`
 }
 
-func GetPublicRepoNumber() (int, error) {
-	httpClient := httpclient.Default().WithBaseURL("https://api.github.com")
+func getPublicRepoNumber(url, uri string) (int, error) {
+	httpClient := httpclient.Default().WithBaseURL(url)
 
 	var githubOrg GithubOrg
-	_, err := httpClient.Call("GET", "/orgs/appscode", nil, &githubOrg, false)
+	_, err := httpClient.Call("GET", uri, nil, &githubOrg, false)
 	if err != nil {
 		return 0, err
 	}
 
 	return githubOrg.PublicRepos, nil
+}
+
+func GetTestData() []plugin.TestData {
+	url := "https://api.github.com"
+	uri := "/orgs/appscode"
+
+	repoNumber, err := getPublicRepoNumber(url, uri)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	testDataList := []plugin.TestData{
+		plugin.TestData{
+			Data: map[string]interface{}{
+				"Url":     url + uri,
+				"Query":   ".",
+				"Warning": fmt.Sprintf(`.public_repos!=%v`, repoNumber),
+			},
+			ExpectedIcingaState: 0,
+		},
+		plugin.TestData{
+			Data: map[string]interface{}{
+				"Url":     url + uri,
+				"Query":   ".",
+				"Warning": fmt.Sprintf(`.public_repos==%v`, repoNumber),
+			},
+			ExpectedIcingaState: 1,
+		},
+		plugin.TestData{
+			Data: map[string]interface{}{
+				"Url":      url + uri,
+				"Query":    ".",
+				"Warning":  fmt.Sprintf(`.public_repos==%v`, repoNumber-1),
+				"Critical": fmt.Sprintf(`.public_repos==%v`, repoNumber),
+			},
+			ExpectedIcingaState: 2,
+		},
+		plugin.TestData{
+			Data: map[string]interface{}{
+				"Url":     url + uri + "fake",
+				"Query":   ".",
+				"Warning": fmt.Sprintf(`.public_repos==%v`, repoNumber-1),
+			},
+			ExpectedIcingaState: 3,
+		},
+	}
+
+	return testDataList
 }

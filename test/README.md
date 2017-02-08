@@ -4,18 +4,6 @@
 
 It reads local `~/.kube/config` data and uses `current-context` for cluster and auth information.
 
-Note:
-
-* Set ENV `APPSCODE_ENV` to `dev` or make it empty
-
-
-### Build `hyperalert`
-
-    ./hack/make.py build_cmd hyperalert
-
- This will create a binary in `dist/hyperalert/` directory
-
-
 ### Run Test
 
 Run following command to test
@@ -28,6 +16,10 @@ Run following command to test
 
         go test -v github.com/appscode/searchlight/test -run ^TestJsonPath$
 
+* __kube_event__
+
+        go test -v github.com/appscode/searchlight/test -run ^TestKubeEvent$
+
 * __node_count__
 
         go test -v github.com/appscode/searchlight/test -run ^TestNodeCount$
@@ -38,28 +30,18 @@ Run following command to test
 
 > Following two will create temporary kubernetes objects to test
 
-* __pod_exists__
+* __kube_exec__
 
-        go test -v github.com/appscode/searchlight/test -run ^TestPodExists$
+        go test -v github.com/appscode/searchlight/test -run ^TestKubeExec$
 
-* __pod_status__
+* __pod_exists & pod_status__
 
-        go test -v github.com/appscode/searchlight/test -run ^TestPodStatus$
-
+        go test -v github.com/appscode/searchlight/test -run ^TestPodExistsPodStatus$
 
 ### Configure Icinga2 Client
 
-* Set ENV `E2E_ICINGA_SECRET` to kubernetes `secret` name
-* Set ENV `E2E_ICINGA_URL` to Icinga2 API url [default: Service LoadBalancer.Ingress]
-
 Following information will be collected from secret:
 
-1. ICINGA_K8S_SERVICE
+1. ICINGA_ADDRESS
 2. ICINGA_API_USER
 3. ICINGA_API_PASSWORD
-
-`ICINGA_K8S_SERVICE` will be used to get `LoadBalancer.Ingress` if `E2E_ICINGA_URL` ENV is not set
-
-#### __General Test__
-
-    go test -v github.com/appscode/searchlight/test -run ^TestGeneralAlert$
