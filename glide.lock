@@ -1,5 +1,5 @@
 hash: e4b74732134c9a8a049c47376ebebec5530aef323faa81165e3d358a016c8008
-updated: 2017-02-08T10:11:57.937543158+06:00
+updated: 2017-02-08T13:50:14.964081807+06:00
 imports:
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
@@ -7,7 +7,7 @@ imports:
   - compute/metadata
   - internal
 - name: github.com/appscode/api
-  version: 61bde2caf45993e76e75f4a260506b159e84af27
+  version: 688a529d9f1518e84da14fa635351b13968e5db1
   subpackages:
   - artifactory/v1beta1
   - auth/v1beta1
@@ -54,7 +54,7 @@ imports:
   - smtp
   - twilio
 - name: github.com/appscode/k8s-addons
-  version: 6da6570c6292901ccb97155c6dcec57e395e8e22
+  version: b7b5a31530be7e8fc686e3b529f69f2baac4ea0c
   subpackages:
   - api
   - api/install
