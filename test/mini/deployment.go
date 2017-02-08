@@ -1,8 +1,7 @@
 package mini
 
 import (
-	"fmt"
-	"os"
+	"errors"
 	"time"
 
 	"github.com/appscode/k8s-addons/pkg/testing"
@@ -12,12 +11,11 @@ import (
 	"k8s.io/kubernetes/pkg/apis/extensions"
 )
 
-func CreateDeployment(watcher *app.Watcher, namespace string) *extensions.Deployment {
+func CreateDeployment(watcher *app.Watcher, namespace string) (*extensions.Deployment, error) {
 	deployment := &extensions.Deployment{}
 	deployment.Namespace = namespace
 	if err := testing.CreateKubernetesObject(watcher.Client, deployment); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return nil, err
 	}
 
 	check := 0
@@ -25,35 +23,30 @@ func CreateDeployment(watcher *app.Watcher, namespace string) *extensions.Deploy
 		time.Sleep(time.Second * 10)
 		nDeployment, err := watcher.Storage.DeploymentStore.Deployments(deployment.Namespace).Get(deployment.Name)
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			return nil, err
 		}
 
 		if deployment.Spec.Replicas == nDeployment.Status.AvailableReplicas {
-			break
+			return nDeployment, nil
 		}
 
 		if check > 6 {
-			fmt.Println("Fail to create Deployment")
-			os.Exit(1)
+			return nil, errors.New("Fail to create Deployment")
 		}
 		check++
 	}
-	return deployment
 }
 
-func DeleteDeployment(watcher *app.Watcher, deployment *extensions.Deployment) {
+func DeleteDeployment(watcher *app.Watcher, deployment *extensions.Deployment) error {
 	// Update Deployment
 	deployment.Spec.Replicas = 0
 	if _, err := watcher.Client.Extensions().Deployments(deployment.Namespace).Update(deployment); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
 
 	labelSelector, err := util.GetLabels(watcher.Client, deployment.Namespace, host.TypeDeployments, deployment.Name)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
 
 	check := 0
@@ -61,23 +54,21 @@ func DeleteDeployment(watcher *app.Watcher, deployment *extensions.Deployment) {
 		time.Sleep(time.Second * 10)
 		podList, err := watcher.Storage.PodStore.List(labelSelector)
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			return err
 		}
 		if len(podList) == 0 {
 			break
 		}
 
 		if check > 6 {
-			fmt.Println("Fail to delete Deployment Pods")
-			os.Exit(1)
+			return errors.New("Fail to delete Deployment Pods")
 		}
 		check++
 	}
 
 	// Delete Deployment
 	if err := watcher.Client.Extensions().Deployments(deployment.Namespace).Delete(deployment.Name, nil); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
+	return nil
 }

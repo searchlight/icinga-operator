@@ -1,8 +1,7 @@
 package node_status
 
 import (
-	"fmt"
-	"os"
+	"errors"
 
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/searchlight/pkg/client/k8s"
@@ -11,32 +10,27 @@ import (
 	"k8s.io/kubernetes/pkg/labels"
 )
 
-func getKubernetesNodeName(kubeClient *k8s.KubeClient) string {
+func getKubernetesNodeName(kubeClient *k8s.KubeClient) (string, error) {
 	nodeList, err := kubeClient.Client.Core().Nodes().List(
 		kapi.ListOptions{
 			LabelSelector: labels.Everything(),
 		},
 	)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return "", err
 	}
 
 	if len(nodeList.Items) == 0 {
-		fmt.Println("No node found")
-		os.Exit(1)
+		return "", errors.New("No node found")
 	}
-	return nodeList.Items[0].Name
+	return nodeList.Items[0].Name, nil
 }
 
-func GetTestData() []plugin.TestData {
-	kubeClient, err := k8s.NewClient()
+func GetTestData(kubeClient *k8s.KubeClient) ([]plugin.TestData, error) {
+	actualNodeName, err := getKubernetesNodeName(kubeClient)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return nil, err
 	}
-
-	actualNodeName := getKubernetesNodeName(kubeClient)
 
 	testDataList := []plugin.TestData{
 		plugin.TestData{
@@ -53,5 +47,5 @@ func GetTestData() []plugin.TestData {
 			ExpectedIcingaState: 3,
 		},
 	}
-	return testDataList
+	return testDataList, nil
 }

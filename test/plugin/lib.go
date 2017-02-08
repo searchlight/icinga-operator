@@ -2,19 +2,17 @@ package plugin
 
 import (
 	"errors"
-	"fmt"
-	"os"
+	"reflect"
 	"strings"
 
 	"github.com/appscode/searchlight/pkg/controller/host"
-	"reflect"
 )
 
-func GetKubeObjectInfo(hostname string) (objectType string, objectName string, namespace string) {
+func GetKubeObjectInfo(hostname string) (objectType string, objectName string, namespace string, err error) {
 	parts := strings.Split(hostname, "@")
 	if len(parts) != 2 {
-		fmt.Println(errors.New("Invalid icinga host.name"))
-		os.Exit(1)
+		err = errors.New("Invalid icinga host.name")
+		return
 	}
 	name := parts[0]
 	namespace = parts[1]
@@ -30,17 +28,17 @@ func GetKubeObjectInfo(hostname string) (objectType string, objectName string, n
 			objectType = parts[0]
 			objectName = parts[1]
 		} else {
-			fmt.Println(errors.New("Invalid icinga host.name"))
-			os.Exit(1)
+			err = errors.New("Invalid icinga host.name")
+			return
 		}
 	}
 	return
 }
 
 func FillStruct(data map[string]interface{}, result interface{}) {
-    t := reflect.ValueOf(result).Elem()
-    for k, v := range data {
-        val := t.FieldByName(k)
-        val.Set(reflect.ValueOf(v))
-    }
+	t := reflect.ValueOf(result).Elem()
+	for k, v := range data {
+		val := t.FieldByName(k)
+		val.Set(reflect.ValueOf(v))
+	}
 }

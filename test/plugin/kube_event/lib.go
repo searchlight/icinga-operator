@@ -1,8 +1,6 @@
 package kube_event
 
 import (
-	"fmt"
-	"os"
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
@@ -14,7 +12,7 @@ import (
 	"k8s.io/kubernetes/pkg/fields"
 )
 
-func getStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Duration) util.IcingaState {
+func getStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Duration) (util.IcingaState, error) {
 
 	now := time.Now()
 	// Create some fake event
@@ -28,8 +26,7 @@ func getStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clock
 			LastTimestamp:  unversioned.NewTime(now),
 		})
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			return util.Unknown, err
 		}
 	}
 
@@ -42,8 +39,7 @@ func getStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clock
 		},
 	)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return util.Unknown, err
 	}
 
 	for _, event := range eventList.Items {
@@ -53,19 +49,16 @@ func getStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clock
 	}
 
 	if count > 0 {
-		return util.Warning
+		return util.Warning, nil
 	}
-	return util.Ok
+	return util.Ok, nil
 }
 
-func GetTestData(checkInterval, clockSkew time.Duration) []plugin.TestData {
-	kubeClient, err := k8s.NewClient()
+func GetTestData(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Duration) ([]plugin.TestData, error) {
+	expectedIcingaState, err := getStatusCodeForEventCount(kubeClient, checkInterval, clockSkew)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return expectedIcingaState, err
 	}
-
-	expectedIcingaState := getStatusCodeForEventCount(kubeClient, checkInterval, clockSkew)
 	testDataList := []plugin.TestData{
 		plugin.TestData{
 			Data: map[string]interface{}{
@@ -76,5 +69,5 @@ func GetTestData(checkInterval, clockSkew time.Duration) []plugin.TestData {
 		},
 	}
 
-	return testDataList
+	return testDataList, nil
 }

@@ -1,35 +1,25 @@
 package component_status
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
 	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/labels"
 )
 
-func GetStatusCodeForComponentStatus() util.IcingaState {
-	kubeClient, err := k8s.NewClient()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
+func GetStatusCodeForComponentStatus(kubeClient *k8s.KubeClient) (util.IcingaState, error) {
 	components, err := kubeClient.Client.Core().ComponentStatuses().
 		List(kapi.ListOptions{LabelSelector: labels.Everything()})
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return util.Unknown, err
 	}
 
 	for _, component := range components.Items {
 		for _, condition := range component.Conditions {
 			if condition.Type == kapi.ComponentHealthy && condition.Status == kapi.ConditionFalse {
-				return util.Critical
+				return util.Critical, nil
 			}
 		}
 	}
-	return util.Ok
+	return util.Ok, nil
 }

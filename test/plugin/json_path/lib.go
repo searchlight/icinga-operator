@@ -2,9 +2,10 @@ package json_path
 
 import (
 	"fmt"
+
 	"github.com/appscode/go/net/httpclient"
 	"github.com/appscode/searchlight/test/plugin"
-	"os"
+	"github.com/appscode/searchlight/util"
 )
 
 type GithubOrg struct {
@@ -23,14 +24,13 @@ func getPublicRepoNumber(url, uri string) (int, error) {
 	return githubOrg.PublicRepos, nil
 }
 
-func GetTestData() []plugin.TestData {
+func GetTestData() ([]plugin.TestData, error) {
 	url := "https://api.github.com"
 	uri := "/orgs/appscode"
 
 	repoNumber, err := getPublicRepoNumber(url, uri)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return util.Unknown, err
 	}
 
 	testDataList := []plugin.TestData{
@@ -69,5 +69,5 @@ func GetTestData() []plugin.TestData {
 		},
 	}
 
-	return testDataList
+	return testDataList, nil
 }

@@ -1,8 +1,7 @@
 package mini
 
 import (
-	"fmt"
-	"os"
+	"errors"
 	"time"
 
 	"github.com/appscode/k8s-addons/pkg/testing"
@@ -12,12 +11,11 @@ import (
 	"k8s.io/kubernetes/pkg/apis/extensions"
 )
 
-func CreateDaemonSet(watcher *app.Watcher, namespace string) *extensions.DaemonSet {
+func CreateDaemonSet(watcher *app.Watcher, namespace string) (*extensions.DaemonSet, error) {
 	daemonSet := &extensions.DaemonSet{}
 	daemonSet.Namespace = namespace
 	if err := testing.CreateKubernetesObject(watcher.Client, daemonSet); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return nil, err
 	}
 
 	check := 0
@@ -25,49 +23,43 @@ func CreateDaemonSet(watcher *app.Watcher, namespace string) *extensions.DaemonS
 		time.Sleep(time.Second * 10)
 		nDaemonSet, exists, err := watcher.Storage.DaemonSetStore.Get(daemonSet)
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			return nil, err
 		}
 		if !exists {
-			fmt.Println("DaemonSet not found")
-			os.Exit(1)
+			return nil, errors.New("DaemonSet not found")
 		}
 
 		if nDaemonSet.(*extensions.DaemonSet).Status.DesiredNumberScheduled == nDaemonSet.(*extensions.DaemonSet).Status.CurrentNumberScheduled {
-			return nDaemonSet.(*extensions.DaemonSet)
+			return nDaemonSet.(*extensions.DaemonSet), nil
 		}
 
 		if check > 6 {
-			fmt.Println("Fail to create DaemonSet")
-			os.Exit(1)
+			return nil, errors.New("Fail to create DaemonSet")
 		}
 		check++
 	}
 }
 
-func DeleteDaemonSet(watcher *app.Watcher, daemonSet *extensions.DaemonSet) {
+func DeleteDaemonSet(watcher *app.Watcher, daemonSet *extensions.DaemonSet) error {
 	labelSelector, err := util.GetLabels(watcher.Client, daemonSet.Namespace, host.TypeDaemonsets, daemonSet.Name)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
 
 	// Delete DaemonSet
 	if err := watcher.Client.Extensions().DaemonSets(daemonSet.Namespace).Delete(daemonSet.Name, nil); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
 
 	podList, err := watcher.Storage.PodStore.List(labelSelector)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
 
 	for _, pod := range podList {
 		if err := watcher.Client.Core().Pods(pod.Namespace).Delete(pod.Name, nil); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			return err
 		}
 	}
+	return nil
 }

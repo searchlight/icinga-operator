@@ -1,8 +1,7 @@
 package mini
 
 import (
-	"fmt"
-	"os"
+	"errors"
 	"time"
 
 	"github.com/appscode/k8s-addons/pkg/testing"
@@ -12,12 +11,11 @@ import (
 	"k8s.io/kubernetes/pkg/apis/extensions"
 )
 
-func CreateReplicaSet(watcher *app.Watcher, namespace string) *extensions.ReplicaSet {
+func CreateReplicaSet(watcher *app.Watcher, namespace string) (*extensions.ReplicaSet, error) {
 	replicaSet := &extensions.ReplicaSet{}
 	replicaSet.Namespace = namespace
 	if err := testing.CreateKubernetesObject(watcher.Client, replicaSet); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return nil, err
 	}
 
 	check := 0
@@ -25,35 +23,31 @@ func CreateReplicaSet(watcher *app.Watcher, namespace string) *extensions.Replic
 		time.Sleep(time.Second * 10)
 		nReplicaset, err := watcher.Storage.ReplicaSetStore.ReplicaSets(replicaSet.Namespace).Get(replicaSet.Name)
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			return nil, err
 		}
 		if nReplicaset.Status.ReadyReplicas == nReplicaset.Status.Replicas {
 			break
 		}
 
 		if check > 6 {
-			fmt.Println("Fail to create ReplicaSet")
-			os.Exit(1)
+			return nil, errors.New("Fail to create ReplicaSet")
 		}
 		check++
 	}
 
-	return replicaSet
+	return replicaSet, nil
 }
 
-func DeleteReplicaSet(watcher *app.Watcher, replicaSet *extensions.ReplicaSet) {
+func DeleteReplicaSet(watcher *app.Watcher, replicaSet *extensions.ReplicaSet) error {
 	// Update ReplicaSet
 	replicaSet.Spec.Replicas = 0
 	if _, err := watcher.Client.Extensions().ReplicaSets(replicaSet.Namespace).Update(replicaSet); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
 
 	labelSelector, err := util.GetLabels(watcher.Client, replicaSet.Namespace, host.TypeReplicasets, replicaSet.Name)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
 
 	check := 0
@@ -61,23 +55,21 @@ func DeleteReplicaSet(watcher *app.Watcher, replicaSet *extensions.ReplicaSet) {
 		time.Sleep(time.Second * 10)
 		podList, err := watcher.Storage.PodStore.List(labelSelector)
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			return err
 		}
 		if len(podList) == 0 {
 			break
 		}
 
 		if check > 6 {
-			fmt.Println("Fail to delete ReplicaSet Pods")
-			os.Exit(1)
+			return errors.New("Fail to delete ReplicaSet Pods")
 		}
 		check++
 	}
 
 	// Delete ReplicaSet
 	if err := watcher.Client.Extensions().ReplicaSets(replicaSet.Namespace).Delete(replicaSet.Name, nil); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
+	return nil
 }

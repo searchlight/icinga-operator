@@ -1,17 +1,13 @@
 package node_count
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/labels"
 	"github.com/appscode/searchlight/test/plugin"
 )
 
-func getKubernetesNodeCount(kubeClient *k8s.KubeClient) int {
-
+func getKubernetesNodeCount(kubeClient *k8s.KubeClient) (int, error) {
 	nodeList, err := kubeClient.Client.Core().
 		Nodes().List(
 		kapi.ListOptions{
@@ -19,20 +15,16 @@ func getKubernetesNodeCount(kubeClient *k8s.KubeClient) int {
 		},
 	)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return 0, err
 	}
-	return len(nodeList.Items)
+	return len(nodeList.Items), nil
 }
 
-func GetTestData() []plugin.TestData {
-	kubeClient, err := k8s.NewClient()
+func GetTestData(kubeClient *k8s.KubeClient) ([]plugin.TestData, error) {
+	actualNodeCount, err := getKubernetesNodeCount(kubeClient)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return nil, err
 	}
-
-	actualNodeCount := getKubernetesNodeCount(kubeClient)
 
 	testDataList := []plugin.TestData{
 		plugin.TestData{
@@ -49,5 +41,5 @@ func GetTestData() []plugin.TestData {
 		},
 	}
 
-	return testDataList
+	return testDataList, nil
 }

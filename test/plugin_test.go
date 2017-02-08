@@ -2,12 +2,9 @@ package e2e
 
 import (
 	"fmt"
-	"os"
 	"testing"
 	"time"
 
-	"github.com/appscode/searchlight/pkg/client"
-	config "github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/pkg/controller/host"
 	"github.com/appscode/searchlight/plugins/check_component_status"
 	"github.com/appscode/searchlight/plugins/check_json_path"
@@ -34,7 +31,14 @@ import (
 func TestComponentStatus(t *testing.T) {
 	fmt.Println("== Plugin Testing >", host.CheckComponentStatus)
 
-	expectedIcingaState := component_status.GetStatusCodeForComponentStatus()
+	kubeClient, err := getKubeClient()
+	if !assert.Nil(t, err) {
+		return
+	}
+	expectedIcingaState, err := component_status.GetStatusCodeForComponentStatus(kubeClient)
+	if !assert.Nil(t, err) {
+		return
+	}
 	icingaState, _ := check_component_status.CheckComponentStatus()
 	assert.EqualValues(t, expectedIcingaState, icingaState)
 }
@@ -42,7 +46,11 @@ func TestComponentStatus(t *testing.T) {
 func TestJsonPath(t *testing.T) {
 	fmt.Println("== Plugin Testing >", host.CheckJsonPath)
 
-	testDataList := json_path.GetTestData()
+	testDataList, err := json_path.GetTestData()
+	if !assert.Nil(t, err) {
+		return
+	}
+
 	for _, testData := range testDataList {
 		var req check_json_path.Request
 		plugin.FillStruct(testData.Data, &req)
@@ -55,9 +63,18 @@ func TestJsonPath(t *testing.T) {
 func TestKubeEvent(t *testing.T) {
 	fmt.Println("== Plugin Testing >", host.CheckCommandKubeEvent)
 
+	kubeClient, err := getKubeClient()
+	if !assert.Nil(t, err) {
+		return
+	}
+
 	checkInterval, _ := time.ParseDuration("2m")
 	clockSkew, _ := time.ParseDuration("0s")
-	testDataList := kube_event.GetTestData(checkInterval, clockSkew)
+	testDataList, err := kube_event.GetTestData(kubeClient, checkInterval, clockSkew)
+	if !assert.Nil(t, err) {
+		return
+	}
+
 	for _, testData := range testDataList {
 		var req check_kube_event.Request
 		plugin.FillStruct(testData.Data, &req)
@@ -70,28 +87,28 @@ func TestKubeEvent(t *testing.T) {
 func TestKubeExec(t *testing.T) {
 	fmt.Println("== Plugin Testing >", host.CheckCommandKubeExec)
 
-	context := &client.Context{}
-	kubeClient, err := config.NewClient()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	context.KubeClient = kubeClient
-
 	// Run KubeD
-	watcher := runKubeD(context)
+	watcher, err := runKubeD()
+	if !assert.Nil(t, err) {
+		return
+	}
 	fmt.Println("--> Running kubeD")
 
-	replicaSet := mini.CreateReplicaSet(watcher, kapi.NamespaceDefault)
-
-	objectList, err := host.GetObjectList(kubeClient.Client, host.CheckCommandKubeExec, host.HostTypePod,
-		replicaSet.Namespace, host.TypeReplicasets, replicaSet.Name, "")
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+	replicaSet, err := mini.CreateReplicaSet(watcher, kapi.NamespaceDefault)
+	if !assert.Nil(t, err) {
+		return
 	}
 
-	testDataList := kube_exec.GetTestData(objectList)
+	objectList, err := host.GetObjectList(watcher.Client, host.CheckCommandKubeExec, host.HostTypePod,
+		replicaSet.Namespace, host.TypeReplicasets, replicaSet.Name, "")
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	testDataList, err := kube_exec.GetTestData(objectList)
+	if !assert.Nil(t, err) {
+		return
+	}
 	for _, testData := range testDataList {
 		var req check_kube_exec.Request
 		plugin.FillStruct(testData.Data, &req)
@@ -100,13 +117,25 @@ func TestKubeExec(t *testing.T) {
 		assert.EqualValues(t, testData.ExpectedIcingaState, icingaState)
 	}
 
-	mini.DeleteReplicaSet(watcher, replicaSet)
+	err = mini.DeleteReplicaSet(watcher, replicaSet)
+	if !assert.Nil(t, err) {
+		return
+	}
 }
 
 func TestNodeCount(t *testing.T) {
 	fmt.Println("== Plugin Testing >", host.CheckNodeCount)
 
-	testDataList := node_count.GetTestData()
+	kubeClient, err := getKubeClient()
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	testDataList, err := node_count.GetTestData(kubeClient)
+	if !assert.Nil(t, err) {
+		return
+	}
+
 	for _, testData := range testDataList {
 		var req check_node_count.Request
 		plugin.FillStruct(testData.Data, &req)
@@ -119,7 +148,16 @@ func TestNodeCount(t *testing.T) {
 func TestNodeStatus(t *testing.T) {
 	fmt.Println("== Plugin Testing >", host.CheckNodeStatus)
 
-	testDataList := node_status.GetTestData()
+	kubeClient, err := getKubeClient()
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	testDataList, err := node_status.GetTestData(kubeClient)
+	if !assert.Nil(t, err) {
+		return
+	}
+
 	for _, testData := range testDataList {
 		var req check_node_status.Request
 		plugin.FillStruct(testData.Data, &req)
@@ -132,16 +170,11 @@ func TestNodeStatus(t *testing.T) {
 func TestPodExistsPodStatus(t *testing.T) {
 	fmt.Println("== Plugin Testing >", host.CheckCommandPodExists, host.CheckCommandPodStatus)
 
-	context := &client.Context{}
-	kubeClient, err := config.NewClient()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	context.KubeClient = kubeClient
-
 	// Run KubeD
-	watcher := runKubeD(context)
+	watcher, err := runKubeD()
+	if !assert.Nil(t, err) {
+		return
+	}
 	fmt.Println("--> Running kubeD")
 
 	checkPodExists := func(objectType, objectName, namespace string, count int) {
@@ -159,7 +192,10 @@ func TestPodExistsPodStatus(t *testing.T) {
 	}
 
 	checkPodStatus := func(objectType, objectName, namespace string) {
-		testDataList := pod_status.GetTestData(watcher, objectType, objectName, namespace)
+		testDataList, err := pod_status.GetTestData(watcher, objectType, objectName, namespace)
+		if !assert.Nil(t, err) {
+			return
+		}
 		for _, testData := range testDataList {
 			var req check_pod_status.Request
 			plugin.FillStruct(testData.Data, &req)
@@ -172,84 +208,123 @@ func TestPodExistsPodStatus(t *testing.T) {
 	fmt.Println()
 	fmt.Println("-- >> Testing plugings for", host.TypeReplicationcontrollers)
 	fmt.Println("---- >> Creating")
-	replicationController := mini.CreateReplicationController(watcher, kapi.NamespaceDefault)
+	replicationController, err := mini.CreateReplicationController(watcher, kapi.NamespaceDefault)
+	if !assert.Nil(t, err) {
+		return
+	}
 	fmt.Println("---- >> Testing", host.CheckCommandPodExists)
-	checkPodExists(t, host.TypeReplicationcontrollers, replicationController.Name, replicationController.Namespace, int(replicationController.Spec.Replicas))
+	checkPodExists(host.TypeReplicationcontrollers, replicationController.Name, replicationController.Namespace, int(replicationController.Spec.Replicas))
 	fmt.Println("---- >> Testing", host.CheckCommandPodStatus)
-	checkPodStatus(t, watcher, host.TypeReplicationcontrollers, replicationController.Name, replicationController.Namespace)
+	checkPodStatus(host.TypeReplicationcontrollers, replicationController.Name, replicationController.Namespace)
 	fmt.Println("---- >> Deleting")
-	mini.DeleteReplicationController(watcher, replicationController)
+	err = mini.DeleteReplicationController(watcher, replicationController)
+	if !assert.Nil(t, err) {
+		return
+	}
 
 	// Daemonsets
 	fmt.Println()
 	fmt.Println("-- >> Testing plugings for", host.TypeDaemonsets)
 	fmt.Println("---- >> Creating")
-	daemonSet := mini.CreateDaemonSet(watcher, kapi.NamespaceDefault)
+	daemonSet, err := mini.CreateDaemonSet(watcher, kapi.NamespaceDefault)
+	if !assert.Nil(t, err) {
+		return
+	}
 	fmt.Println("---- >> Testing", host.CheckCommandPodExists)
-	checkPodExists(t, host.TypeDaemonsets, daemonSet.Name, daemonSet.Namespace, int(daemonSet.Status.DesiredNumberScheduled))
+	checkPodExists(host.TypeDaemonsets, daemonSet.Name, daemonSet.Namespace, int(daemonSet.Status.DesiredNumberScheduled))
 	fmt.Println("---- >> Testing", host.CheckCommandPodStatus)
-	checkPodStatus(t, watcher, host.TypeDaemonsets, daemonSet.Name, daemonSet.Namespace)
+	checkPodStatus(host.TypeDaemonsets, daemonSet.Name, daemonSet.Namespace)
 	fmt.Println("---- >> Deleting")
-	mini.DeleteDaemonSet(watcher, daemonSet)
+	err = mini.DeleteDaemonSet(watcher, daemonSet)
+	if !assert.Nil(t, err) {
+		return
+	}
 
 	// Deployments
 	fmt.Println()
 	fmt.Println("-- >> Testing plugings for", host.TypeDeployments)
 	fmt.Println("---- >> Creating")
-	deployment := mini.CreateDeployment(watcher, kapi.NamespaceDefault)
+	deployment, err := mini.CreateDeployment(watcher, kapi.NamespaceDefault)
+	if !assert.Nil(t, err) {
+		return
+	}
 	fmt.Println("---- >> Testing", host.CheckCommandPodExists)
-	checkPodExists(t, host.TypeDeployments, deployment.Name, deployment.Namespace, int(deployment.Spec.Replicas))
+	checkPodExists(host.TypeDeployments, deployment.Name, deployment.Namespace, int(deployment.Spec.Replicas))
 	fmt.Println("---- >> Testing", host.CheckCommandPodStatus)
-	checkPodStatus(t, watcher, host.TypeDeployments, deployment.Name, deployment.Namespace)
+	checkPodStatus(host.TypeDeployments, deployment.Name, deployment.Namespace)
 	fmt.Println("---- >> Deleting")
-	mini.DeleteDeployment(watcher, deployment)
+	err = mini.DeleteDeployment(watcher, deployment)
+	if !assert.Nil(t, err) {
+		return
+	}
 
 	// StatefulSet
 	fmt.Println()
 	fmt.Println("-- >> Testing plugings for", host.TypeStatefulSet)
 	fmt.Println("---- >> Creating")
-	statefulSet := mini.CreateStatefulSet(watcher, kapi.NamespaceDefault)
+	statefulSet, err := mini.CreateStatefulSet(watcher, kapi.NamespaceDefault)
+	if !assert.Nil(t, err) {
+		return
+	}
 	fmt.Println("---- >> Testing", host.CheckCommandPodExists)
-	checkPodExists(t, host.TypeStatefulSet, statefulSet.Name, statefulSet.Namespace, int(statefulSet.Spec.Replicas))
+	checkPodExists(host.TypeStatefulSet, statefulSet.Name, statefulSet.Namespace, int(statefulSet.Spec.Replicas))
 	fmt.Println("---- >> Testing", host.CheckCommandPodStatus)
-	checkPodStatus(t, watcher, host.TypeStatefulSet, statefulSet.Name, statefulSet.Namespace)
+	checkPodStatus(host.TypeStatefulSet, statefulSet.Name, statefulSet.Namespace)
 	fmt.Println(fmt.Sprintf(`---- >> Skip deleting "%s" for further test`, host.TypeStatefulSet))
 
 	// Replicasets
 	fmt.Println()
 	fmt.Println("-- >> Testing plugings for", host.TypeReplicasets)
 	fmt.Println("---- >> Creating")
-	replicaSet := mini.CreateReplicaSet(watcher, kapi.NamespaceDefault)
+	replicaSet, err := mini.CreateReplicaSet(watcher, kapi.NamespaceDefault)
+	if !assert.Nil(t, err) {
+		return
+	}
 	fmt.Println("---- >> Testing", host.CheckCommandPodExists)
-	checkPodExists(t, host.TypeReplicasets, replicaSet.Name, replicaSet.Namespace, int(replicaSet.Spec.Replicas))
+	checkPodExists(host.TypeReplicasets, replicaSet.Name, replicaSet.Namespace, int(replicaSet.Spec.Replicas))
 	fmt.Println("---- >> Testing", host.CheckCommandPodStatus)
-	checkPodStatus(t, watcher, host.TypeReplicasets, replicaSet.Name, replicaSet.Namespace)
+	checkPodStatus(host.TypeReplicasets, replicaSet.Name, replicaSet.Namespace)
 	fmt.Println(fmt.Sprintf(`---- >> Skip deleting "%s" for further test`, host.TypeReplicasets))
 
 	// Services
 	fmt.Println()
 	fmt.Println("-- >> Testing plugings for", host.TypeServices)
 	fmt.Println("---- >> Creating", host.TypeServices)
-	service := mini.CreateService(watcher, replicaSet.Namespace, replicaSet.Spec.Template.Labels)
+	service, err := mini.CreateService(watcher, replicaSet.Namespace, replicaSet.Spec.Template.Labels)
+	if !assert.Nil(t, err) {
+		return
+	}
 	fmt.Println("---- >> Testing", host.CheckCommandPodExists)
-	checkPodExists(t, host.TypeServices, service.Name, service.Namespace, int(replicaSet.Spec.Replicas))
+	checkPodExists(host.TypeServices, service.Name, service.Namespace, int(replicaSet.Spec.Replicas))
 	fmt.Println("---- >> Testing", host.CheckCommandPodStatus)
-	checkPodStatus(t, watcher, host.TypeServices, service.Name, service.Namespace)
+	checkPodStatus(host.TypeServices, service.Name, service.Namespace)
 	fmt.Println("---- >> Deleting", host.TypeServices)
-	mini.DeleteService(watcher, service)
+	err = mini.DeleteService(watcher, service)
+	if !assert.Nil(t, err) {
+		return
+	}
 
 	// Cluster
 	fmt.Println()
 	fmt.Println("-- >> Testing plugings for", host.TypeCluster)
 	fmt.Println("---- >> Testing", host.CheckCommandPodExists)
-	totalPod := pod_exists.GetPodCount(watcher, kapi.NamespaceDefault)
-	checkPodExists(t, "", "", kapi.NamespaceDefault, totalPod)
+	totalPod, err := pod_exists.GetPodCount(watcher, kapi.NamespaceDefault)
+	if !assert.Nil(t, err) {
+		return
+	}
+	checkPodExists("", "", kapi.NamespaceDefault, totalPod)
 	fmt.Println("---- >> Testing", host.CheckCommandPodStatus)
-	checkPodStatus(t, watcher, "", "", kapi.NamespaceDefault)
+	checkPodStatus("", "", kapi.NamespaceDefault)
 
 	// Delete skiped objects
 	fmt.Println("-- >> Deleting", host.TypeStatefulSet)
-	mini.DeleteStatefulSet(watcher, statefulSet)
+	err = mini.DeleteStatefulSet(watcher, statefulSet)
+	if !assert.Nil(t, err) {
+		return
+	}
 	fmt.Println("-- >> Deleting", host.TypeReplicasets)
-	mini.DeleteReplicaSet(watcher, replicaSet)
+	err = mini.DeleteReplicaSet(watcher, replicaSet)
+	if !assert.Nil(t, err) {
+		return
+	}
 }

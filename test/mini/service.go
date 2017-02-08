@@ -9,7 +9,7 @@ import (
 	kapi "k8s.io/kubernetes/pkg/api"
 )
 
-func CreateService(watcher *app.Watcher, namespace string, selector map[string]string) *kapi.Service {
+func CreateService(watcher *app.Watcher, namespace string, selector map[string]string) (*kapi.Service, error) {
 	service := &kapi.Service{
 		ObjectMeta: kapi.ObjectMeta{
 			Namespace: namespace,
@@ -19,16 +19,15 @@ func CreateService(watcher *app.Watcher, namespace string, selector map[string]s
 		},
 	}
 	if err := testing.CreateKubernetesObject(watcher.Client, service); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return nil, err
 	}
-	return service
+	return service, nil
 }
 
-func DeleteService(watcher *app.Watcher, service *kapi.Service) {
+func DeleteService(watcher *app.Watcher, service *kapi.Service) error {
 	// Delete Service
 	if err := watcher.Client.Core().Services(service.Namespace).Delete(service.Name, nil); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
+	return nil
 }

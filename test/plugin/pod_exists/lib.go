@@ -1,21 +1,17 @@
 package pod_exists
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/appscode/searchlight/cmd/searchlight/app"
 	"github.com/appscode/searchlight/test/plugin"
 	"k8s.io/kubernetes/pkg/labels"
 )
 
-func GetPodCount(watcher *app.Watcher, namespace string) int {
+func GetPodCount(watcher *app.Watcher, namespace string) (int, error) {
 	podList, err := watcher.Storage.PodStore.Pods(namespace).List(labels.Everything())
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return 0, err
 	}
-	return len(podList)
+	return len(podList), nil
 }
 
 func GetTestData(objectType, objectName, namespace string, count int) []plugin.TestData {
