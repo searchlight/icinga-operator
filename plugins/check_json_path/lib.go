@@ -18,7 +18,7 @@ import (
 )
 
 type Request struct {
-	Url             string
+	URL             string
 	Query           string
 	Secret          string
 	InClusterConfig bool
@@ -44,7 +44,7 @@ const (
 )
 
 func getData(req *Request) (string, error) {
-	httpClient := httpclient.Default().WithBaseURL(req.Url)
+	httpClient := httpclient.Default().WithBaseURL(req.URL)
 	if req.Secret != "" {
 		kubeClient, err := k8s.NewClient()
 		if err != nil {
@@ -192,7 +192,7 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().StringVarP(&req.Url, "url", "u", "", "URL to get data")
+	c.Flags().StringVarP(&req.URL, "url", "u", "", "URL to get data")
 	c.Flags().StringVarP(&req.Query, "query", "q", "", `JQ query`)
 	c.Flags().StringVarP(&req.Secret, "secret", "s", "", `Kubernetes secret name`)
 	c.Flags().BoolVar(&req.InClusterConfig, "in_cluster_config", false, `Use Kubernetes InCluserConfig`)

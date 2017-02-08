@@ -35,7 +35,7 @@ func GetTestData() ([]plugin.TestData, error) {
 	testDataList := []plugin.TestData{
 		plugin.TestData{
 			Data: map[string]interface{}{
-				"Url":     url + uri,
+				"URL":     url + uri,
 				"Query":   ".",
 				"Warning": fmt.Sprintf(`.public_repos!=%v`, repoNumber),
 			},
@@ -43,7 +43,7 @@ func GetTestData() ([]plugin.TestData, error) {
 		},
 		plugin.TestData{
 			Data: map[string]interface{}{
-				"Url":     url + uri,
+				"URL":     url + uri,
 				"Query":   ".",
 				"Warning": fmt.Sprintf(`.public_repos==%v`, repoNumber),
 			},
@@ -51,7 +51,7 @@ func GetTestData() ([]plugin.TestData, error) {
 		},
 		plugin.TestData{
 			Data: map[string]interface{}{
-				"Url":      url + uri,
+				"URL":      url + uri,
 				"Query":    ".",
 				"Warning":  fmt.Sprintf(`.public_repos==%v`, repoNumber-1),
 				"Critical": fmt.Sprintf(`.public_repos==%v`, repoNumber),
@@ -60,7 +60,7 @@ func GetTestData() ([]plugin.TestData, error) {
 		},
 		plugin.TestData{
 			Data: map[string]interface{}{
-				"Url":     url + uri + "fake",
+				"URL":     url + uri + "fake",
 				"Query":   ".",
 				"Warning": fmt.Sprintf(`.public_repos==%v`, repoNumber-1),
 			},
