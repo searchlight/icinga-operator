@@ -12,7 +12,7 @@ import (
 	"github.com/appscode/searchlight/pkg/controller/host"
 )
 
-func GetIcingaHostType(commandName, objectType string) (string, error) {
+func getIcingaHostType(commandName, objectType string) (string, error) {
 	icingaData, err := data.LoadIcingaData()
 	if err != nil {
 		return "", err
@@ -28,7 +28,7 @@ func GetIcingaHostType(commandName, objectType string) (string, error) {
 	return "", errors.New("Icinga host_type not found")
 }
 
-func IcingaHostSearchQuery(objectList []*host.KubeObjectInfo) string {
+func icingaHostSearchQuery(objectList []*host.KubeObjectInfo) string {
 	matchHost := ""
 	for id, object := range objectList {
 		if id > 0 {
@@ -77,7 +77,7 @@ func countIcingaService(watcher *app.Watcher, objectList []*host.KubeObjectInfo,
 }
 
 func countIcingaHost(watcher *app.Watcher, objectList []*host.KubeObjectInfo, expectZero bool) error {
-	in := IcingaHostSearchQuery(objectList)
+	in := icingaHostSearchQuery(objectList)
 	var respHost host.ResponseObject
 
 	try := 0
@@ -118,7 +118,7 @@ func GetObjectList(watcher *app.Watcher, alert *aci.Alert) ([]*host.KubeObjectIn
 	checkCommand := alert.Spec.CheckCommand
 
 	// create all alerts for pod_status
-	hostType, err := GetIcingaHostType(checkCommand, objectType)
+	hostType, err := getIcingaHostType(checkCommand, objectType)
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +180,7 @@ func CheckIcingaObjectsForPod(watcher *app.Watcher, podName, namespace string, e
 		},
 	}
 
-	in := IcingaHostSearchQuery(objectList)
+	in := icingaHostSearchQuery(objectList)
 	var respService host.ResponseObject
 
 	try := 0
