@@ -113,7 +113,7 @@ func countIcingaHost(watcher *app.Watcher, objectList []*host.KubeObjectInfo, ex
 	return nil
 }
 
-func GetObjectList(watcher *app.Watcher, alert *aci.Alert) ([]*host.KubeObjectInfo, error) {
+func GetIcingaHostList(watcher *app.Watcher, alert *aci.Alert) ([]*host.KubeObjectInfo, error) {
 	objectType, objectName := host.GetObjectInfo(alert.Labels)
 	checkCommand := alert.Spec.CheckCommand
 
@@ -131,7 +131,7 @@ func GetObjectList(watcher *app.Watcher, alert *aci.Alert) ([]*host.KubeObjectIn
 }
 
 func CheckIcingaObjectsForAlert(watcher *app.Watcher, alert *aci.Alert, expectZeroHost, expectZeroService bool) (err error) {
-	objectList, err := GetObjectList(watcher, alert)
+	objectList, err := GetIcingaHostList(watcher, alert)
 	if err != nil {
 		return err
 	}

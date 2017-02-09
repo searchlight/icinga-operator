@@ -3,6 +3,7 @@ package mini
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/appscode/go/crypto/rand"
 	aci "github.com/appscode/k8s-addons/api"
@@ -10,6 +11,7 @@ import (
 	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/api/unversioned"
 	"k8s.io/kubernetes/pkg/apis/extensions"
+	"k8s.io/kubernetes/pkg/labels"
 )
 
 type alertThirdPartyResource struct {
@@ -46,9 +48,23 @@ func createAlertThirdPartyResource(watcher *app.Watcher) (err error) {
 				return
 			}
 
-			_, err = watcher.Client.Extensions().ThirdPartyResources().Get("alert.appscode.com")
-			if err != nil {
-				return
+			try := 0
+			for {
+				_, err = watcher.AppsCodeExtensionClient.Alert(kapi.NamespaceDefault).
+					List(kapi.ListOptions{LabelSelector: labels.Everything()})
+
+				if err != nil {
+					fmt.Println(err.Error())
+				} else {
+					return
+				}
+				if try > 5 {
+					return
+				}
+
+				fmt.Println("--> Waiting for 30 second more in check process")
+				time.Sleep(time.Second * 30)
+				try++
 			}
 		},
 	)

@@ -58,6 +58,28 @@ func TestMultipleAlerts(t *testing.T) {
 	}
 	fmt.Println("---->> Check Successful")
 
+	// Increment Replica
+	fmt.Println("--> Incrementing Replica")
+	replicaSet.Spec.Replicas++
+	if replicaSet, err = mini.UpdateReplicaSet(watcher, replicaSet); !assert.Nil(t, err) {
+		return
+	}
+
+	// Get Last Replica
+	fmt.Println("--> Getting Last Replica")
+	lastPod, err := mini.GetLastReplica(watcher, replicaSet)
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	// Checking Icinga Objects for This Pod
+	fmt.Println("----> Checking Icinga Objects for last Pod")
+	if err = util.CheckIcingaObjectsForPod(watcher, lastPod.Name, lastPod.Namespace, 2); !assert.Nil(t, err) {
+		return
+	}
+	fmt.Println("---->> Check Successful")
+
+
 	// Delete 1st Alert
 	fmt.Println("--> Deleting 1st Alert")
 	if err := mini.DeleteAlert(watcher, firstAlert); !assert.Nil(t, err) {
@@ -153,7 +175,7 @@ func TestMultipleAlertsOnMultipleObjects(t *testing.T) {
 
 	// Get Pod
 	fmt.Println("--> Getting Pod")
-	pod, err := mini.GetSinglePod(watcher, replicaSet)
+	pod, err := mini.GetLastReplica(watcher, replicaSet)
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -179,7 +201,7 @@ func TestMultipleAlertsOnMultipleObjects(t *testing.T) {
 	fmt.Println("---->> Check Successful")
 
 	// Getting ReplicaSetObjectList
-	replicaSetObjectList, err := util.GetObjectList(watcher, firstAlert)
+	replicaSetObjectList, err := util.GetIcingaHostList(watcher, firstAlert)
 	if !assert.Nil(t, err) {
 		return
 	}
