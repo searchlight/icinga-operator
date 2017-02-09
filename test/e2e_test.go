@@ -323,3 +323,90 @@ func TestAlertWhileReCreateKubeObject(t *testing.T) {
 		return
 	}
 }
+
+func TestAlertOnPod(t *testing.T) {
+	// Run KubeD
+	// runKubeD(setIcingaClient bool)
+	// Pass true to set IcingaClient in watcher
+	watcher, err := runKubeD(true)
+	if !assert.Nil(t, err) {
+		return
+	}
+	fmt.Println("--> Running kubeD")
+
+	// Create Pod
+	fmt.Println("--> Creating Pod")
+	pod, err := mini.CreatePod(watcher, "default")
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	fmt.Println("--> Creating Alert on Pod")
+	labelMap := map[string]string{
+		"objectType": host.TypePods,
+		"objectName": pod.Name,
+	}
+	alert, err := mini.CreateAlert(watcher, pod.Namespace, labelMap, host.CheckCommandVolume)
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	// Check Icinga Objects for Alert.
+	fmt.Println("----> Checking Icinga Objects for Alert")
+	if err := util.CheckIcingaObjectsForAlert(watcher, alert, false, false); !assert.Nil(t, err) {
+		return
+	}
+	fmt.Println("---->> Check Successful")
+
+	// Getting PodObjectList
+	replicaSetObjectList, err := util.GetIcingaHostList(watcher, alert)
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	// Delete Pod
+	fmt.Println("--> Deleting Pod")
+	if err := mini.DeletePod(watcher, pod); !assert.Nil(t, err) {
+		return
+	}
+
+	// Check Icinga Objects for 1st Alert.
+	fmt.Println("----> Checking Icinga Objects for Alert")
+	if err := util.CheckIcingaObjects(watcher, alert, replicaSetObjectList, true, true); !assert.Nil(t, err) {
+		return
+	}
+	fmt.Println("---->> Check Successful")
+
+	// Create Pod with same name
+	fmt.Println("--> ReCreating Pod with same name")
+	newPod, err := mini.ReCreatePod(watcher, pod)
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	// Check Icinga Objects for Alert.
+	fmt.Println("----> Checking Icinga Objects for Alert")
+	if err := util.CheckIcingaObjectsForAlert(watcher, alert, false, false); !assert.Nil(t, err) {
+		return
+	}
+	fmt.Println("---->> Check Successful")
+
+	// Delete 1st Alert
+	fmt.Println("--> Deleting 1st Alert")
+	if err := mini.DeleteAlert(watcher, alert); !assert.Nil(t, err) {
+		return
+	}
+
+	// Check Icinga Objects for 2nd Alert.
+	fmt.Println("----> Checking Icinga Objects for 1st Alert")
+	if err := util.CheckIcingaObjectsForAlert(watcher, alert, true, true); !assert.Nil(t, err) {
+		return
+	}
+	fmt.Println("---->> Check Successful")
+
+	// Delete Pod
+	fmt.Println("--> Deleting Pod")
+	if err := mini.DeletePod(watcher, newPod); !assert.Nil(t, err) {
+		return
+	}
+}
