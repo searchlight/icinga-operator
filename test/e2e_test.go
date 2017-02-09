@@ -79,7 +79,6 @@ func TestMultipleAlerts(t *testing.T) {
 	}
 	fmt.Println("---->> Check Successful")
 
-
 	// Delete 1st Alert
 	fmt.Println("--> Deleting 1st Alert")
 	if err := mini.DeleteAlert(watcher, firstAlert); !assert.Nil(t, err) {
@@ -234,6 +233,93 @@ func TestMultipleAlertsOnMultipleObjects(t *testing.T) {
 	// Delete 2nd Alert
 	fmt.Println("--> Deleting 2nd Alert")
 	if err := mini.DeleteAlert(watcher, secondAlert); !assert.Nil(t, err) {
+		return
+	}
+}
+
+func TestAlertWhileReCreateKubeObject(t *testing.T) {
+	// Run KubeD
+	// runKubeD(setIcingaClient bool)
+	// Pass true to set IcingaClient in watcher
+	watcher, err := runKubeD(true)
+	if !assert.Nil(t, err) {
+		return
+	}
+	fmt.Println("--> Running kubeD")
+
+	// Create ReplicaSet
+	fmt.Println("--> Creating ReplicaSet")
+	replicaSet, err := mini.CreateReplicaSet(watcher, "default")
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	fmt.Println("--> Creating Alert on ReplicaSet")
+	labelMap := map[string]string{
+		"objectType": host.TypeReplicasets,
+		"objectName": replicaSet.Name,
+	}
+	alert, err := mini.CreateAlert(watcher, replicaSet.Namespace, labelMap, host.CheckCommandVolume)
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	// Check Icinga Objects for Alert.
+	fmt.Println("----> Checking Icinga Objects for Alert")
+	if err := util.CheckIcingaObjectsForAlert(watcher, alert, false, false); !assert.Nil(t, err) {
+		return
+	}
+	fmt.Println("---->> Check Successful")
+
+	// Getting ReplicaSetObjectList
+	replicaSetObjectList, err := util.GetIcingaHostList(watcher, alert)
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	// Delete ReplicaSet
+	fmt.Println("--> Deleting ReplicaSet")
+	if err := mini.DeleteReplicaSet(watcher, replicaSet); !assert.Nil(t, err) {
+		return
+	}
+
+	// Check Icinga Objects for 1st Alert.
+	fmt.Println("----> Checking Icinga Objects for Alert")
+	if err := util.CheckIcingaObjects(watcher, alert, replicaSetObjectList, true, true); !assert.Nil(t, err) {
+		return
+	}
+	fmt.Println("---->> Check Successful")
+
+	// Create ReplicaSet with same name
+	fmt.Println("--> ReCreating ReplicaSet with same name")
+	newReplicaSet, err := mini.ReCreateReplicaSet(watcher, replicaSet)
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	// Check Icinga Objects for Alert.
+	fmt.Println("----> Checking Icinga Objects for Alert")
+	if err := util.CheckIcingaObjectsForAlert(watcher, alert, false, false); !assert.Nil(t, err) {
+		return
+	}
+	fmt.Println("---->> Check Successful")
+
+	// Delete 1st Alert
+	fmt.Println("--> Deleting 1st Alert")
+	if err := mini.DeleteAlert(watcher, alert); !assert.Nil(t, err) {
+		return
+	}
+
+	// Check Icinga Objects for 2nd Alert.
+	fmt.Println("----> Checking Icinga Objects for 1st Alert")
+	if err := util.CheckIcingaObjectsForAlert(watcher, alert, true, true); !assert.Nil(t, err) {
+		return
+	}
+	fmt.Println("---->> Check Successful")
+
+	// Delete ReplicaSet
+	fmt.Println("--> Deleting ReplicaSet")
+	if err := mini.DeleteReplicaSet(watcher, newReplicaSet); !assert.Nil(t, err) {
 		return
 	}
 }
