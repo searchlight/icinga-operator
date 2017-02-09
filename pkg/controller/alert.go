@@ -230,8 +230,7 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 					}
 				}
 
-				// If we do not want to set alert when pod is created with same name
-				if e.EventType.IsAdded() && objectType != events.Pod.String() {
+				if e.EventType.IsAdded() {
 					// Waiting for POD IP to use as Icinga Host IP
 					then := time.Now()
 					for {
