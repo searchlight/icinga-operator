@@ -12,7 +12,7 @@ This is used to check InfluxDB query result.
 | deployments            | pod                |
 | daemonsets             | pod                |
 | replicasets            | pod                |
-| petsets                | pod                |
+| statefulsets           | pod                |
 | replicationcontrollers | pod                |
 | services               | pod                |
 

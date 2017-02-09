@@ -35,10 +35,10 @@ Controller detects following ResourceEventType:
 
     1. ###### localhost
      
-        | Kubernetes Object                                                                                    | CheckCommand               | Icinga2 Host                            |
-        | :---                                                                                                 | :---                       | :---                                    |
-        | cluster                                                                                              | `<supported any>`          | `<check_command>@<namespace>`           |
-        | deployments <br>  daemonsets <br> replicasets <br> petsets <br> replicationcontrollers <br> services | pod_exists <br> pod_status | `<objectType>|<objectName>@<namespace>` |
+        | Kubernetes Object                                                                                         | CheckCommand               | Icinga2 Host                            |
+        | :---                                                                                                      | :---                       | :---                                    |
+        | cluster                                                                                                   | `<supported any>`          | `<check_command>@<namespace>`           |
+        | deployments <br>  daemonsets <br> replicasets <br> statefulsets <br> replicationcontrollers <br> services | pod_exists <br> pod_status | `<objectType>|<objectName>@<namespace>` |
         Assigned Host IP: `127.0.0.1`
 
     2. ###### node

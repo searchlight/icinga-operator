@@ -10,7 +10,7 @@ This is used to check Kubernetes pod existence.
 | deployments            | localhost         |
 | daemonsets             | localhost         |
 | replicasets            | localhost         |
-| petsets                | localhost         |
+| statefulsets           | localhost         |
 | replicationcontrollers | localhost         |
 | services               | localhost         |
 
