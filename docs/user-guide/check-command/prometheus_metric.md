@@ -11,7 +11,7 @@ This is used to check Prometheus query result.
 | deployments            | pod               |
 | daemonsets             | pod               |
 | replicasets            | pod               |
-| petsets                | pod               |
+| statefulsets           | pod               |
 | replicationcontrollers | pod               |
 | services               | pod               |
 | pods                   | pod               |

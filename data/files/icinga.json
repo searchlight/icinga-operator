@@ -32,7 +32,7 @@
       "object_to_host": {
         "services": "pod",
         "replicationcontrollers": "pod",
-        "petsets": "pod",
+        "statefulsets": "pod",
         "replicasets": "pod",
         "daemonsets": "pod",
         "deployments": "pod",
@@ -315,7 +315,7 @@
       "object_to_host": {
         "services": "localhost",
         "replicationcontrollers": "localhost",
-        "petsets": "localhost",
+        "statefulsets": "localhost",
         "replicasets": "localhost",
         "daemonsets": "localhost",
         "deployments": "localhost",
@@ -353,7 +353,7 @@
       "object_to_host": {
         "services": "localhost",
         "replicationcontrollers": "localhost",
-        "petsets": "localhost",
+        "statefulsets": "localhost",
         "replicasets": "localhost",
         "daemonsets": "localhost",
         "deployments": "localhost",
@@ -380,7 +380,7 @@
       "object_to_host": {
         "services": "pod",
         "replicationcontrollers": "pod",
-        "petsets": "pod",
+        "statefulsets": "pod",
         "replicasets": "pod",
         "daemonsets": "pod",
         "deployments": "pod",
@@ -531,7 +531,7 @@
       "object_to_host": {
         "services": "pod",
         "replicationcontrollers": "pod",
-        "petsets": "pod",
+        "statefulsets": "pod",
         "replicasets": "pod",
         "daemonsets": "pod",
         "deployments": "pod",
@@ -625,7 +625,7 @@
       "object_to_host": {
         "services": "pod",
         "replicationcontrollers": "pod",
-        "petsets": "pod",
+        "statefulsets": "pod",
         "replicasets": "pod",
         "daemonsets": "pod",
         "deployments": "pod",
@@ -2480,7 +2480,7 @@
         "cluster": "localhost",
         "services": "pod",
         "replicationcontrollers": "pod",
-        "petsets": "pod",
+        "statefulsets": "pod",
         "replicasets": "pod",
         "daemonsets": "pod",
         "deployments": "pod",

@@ -7,7 +7,6 @@ Searchlight Watcher watches following Kubernetes objects:
 * DaemonSet
 * ReplicaSet
 * ReplicationController
-* Petsets
 * Pod
 * Alert
 * Node
