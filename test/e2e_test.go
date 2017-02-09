@@ -410,3 +410,50 @@ func TestAlertOnPod(t *testing.T) {
 		return
 	}
 }
+
+func TestInvalidNamespace(t *testing.T) {
+	// Run KubeD
+	// runKubeD(setIcingaClient bool)
+	// Pass true to set IcingaClient in watcher
+	watcher, err := runKubeD(true)
+	if !assert.Nil(t, err) {
+		return
+	}
+	fmt.Println("--> Running kubeD")
+
+	// Create Pod
+	fmt.Println("--> Creating Pod")
+	pod, err := mini.CreatePod(watcher, "kube-system")
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	fmt.Println("--> Creating Alert on Pod")
+	labelMap := map[string]string{
+		"objectType": host.TypePods,
+		"objectName": pod.Name,
+	}
+	alert, err := mini.CreateAlert(watcher, "default", labelMap, host.CheckCommandVolume)
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	// Check Icinga Objects for Alert.
+	fmt.Println("----> Checking Icinga Objects for Alert")
+	if err := util.CheckIcingaObjectsForAlert(watcher, alert, false, false); !assert.NotNil(t, err) {
+		return
+	}
+	fmt.Println("---->> Check Successful")
+
+	// Delete Pod
+	fmt.Println("--> Deleting Pod")
+	if err := mini.DeletePod(watcher, pod); !assert.Nil(t, err) {
+		return
+	}
+
+	// Delete Alert
+	fmt.Println("--> Deleting Alert")
+	if err := mini.DeleteAlert(watcher, alert); !assert.Nil(t, err) {
+		return
+	}
+}
