@@ -118,6 +118,7 @@ Controller detects following ResourceEventType:
     4. Controller determines which Icinga2 objects should be deleted for each Alert.
     5. Controller will then delete related Icinga2 objects for this pod.
 
+        > Note: Any alert directly applied to a pod is left intact, when the pod is deleted. If a new pod is created with same name, alert will be reapplied.
 
 ### Resource `Node`
 <img src="workflow-pods.png">
