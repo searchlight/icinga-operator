@@ -79,8 +79,13 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.CreatingIcingaObjects)
 
 		if err := b.IsObjectExists(); err != nil {
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToCreateIcingaObjects, err.Error())
-			return errors.New().WithCause(err).Internal()
+			if errors.IsNotFound(err) {
+				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.NoIcingaObjectCreated, err.Error())
+				return nil
+			} else {
+				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToCreateIcingaObjects, err.Error())
+				return errors.New().WithCause(err).Internal()
+			}
 		}
 		if err := b.Create(); err != nil {
 			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToCreateIcingaObjects, err.Error())
@@ -104,8 +109,13 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.UpdatingIcingaObjects)
 
 		if err := b.IsObjectExists(); err != nil {
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToUpdateIcingaObjects, err.Error())
-			return errors.New().WithCause(err).Internal()
+			if errors.IsNotFound(err) {
+				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.NoIcingaObjectCreated, err.Error())
+				return nil
+			} else {
+				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToCreateIcingaObjects, err.Error())
+				return errors.New().WithCause(err).Internal()
+			}
 		}
 
 		if err := b.Update(); err != nil {
