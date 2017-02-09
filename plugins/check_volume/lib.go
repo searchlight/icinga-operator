@@ -312,7 +312,7 @@ func checkNodeDiskStat(req *request) (util.IcingaState, interface{}) {
 	if hostIP == "" {
 		return util.Unknown, "Node InternalIP not found"
 	}
-	return checkDiskStat(kubeClient.Client, req, hostIP, "/")
+	return checkDiskStat(kubeClient, req, hostIP, "/")
 }
 
 func checkPodVolumeStat(req *request) (util.IcingaState, interface{}) {
@@ -366,7 +366,7 @@ func checkPodVolumeStat(req *request) (util.IcingaState, interface{}) {
 	}
 
 	path := fmt.Sprintf("/var/lib/kubelet/pods/%v/volumes/%v/%v", pod.UID, volumeSourcePluginName, volumeSourceName)
-	return checkDiskStat(kubeClient.Client, req, pod.Status.HostIP, path)
+	return checkDiskStat(kubeClient, req, pod.Status.HostIP, path)
 }
 
 func NewCmd() *cobra.Command {

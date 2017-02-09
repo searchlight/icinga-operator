@@ -522,7 +522,7 @@
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
-          "optional": false
+          "optional": true
         }
       ],
       "states": [
@@ -596,7 +596,7 @@
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
-          "optional": false
+          "optional": true
         }
       ],
       "states": [
