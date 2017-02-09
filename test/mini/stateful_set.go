@@ -87,5 +87,11 @@ func DeleteStatefulSet(watcher *app.Watcher, statefulSet *apps.StatefulSet) erro
 	if err := watcher.Client.Apps().StatefulSets(statefulSet.Namespace).Delete(statefulSet.Name, nil); err != nil {
 		return err
 	}
-	return nil
+
+	return DeleteService(watcher, &kapi.Service{
+		ObjectMeta: kapi.ObjectMeta{
+			Name:      statefulSet.Spec.ServiceName,
+			Namespace: statefulSet.Namespace,
+		},
+	})
 }
