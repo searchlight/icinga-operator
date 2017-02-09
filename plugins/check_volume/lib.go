@@ -1,12 +1,13 @@
 package check_volume
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/appscode/go/flags"
@@ -129,6 +130,7 @@ type request struct {
 	warning   float64
 	critical  float64
 	node_stat bool
+	secret    string
 }
 
 type usageStat struct {
@@ -144,16 +146,95 @@ type usageStat struct {
 	InodesUsedPercent float64 `json:"inodesUsedPercent"`
 }
 
-func getUsage(hostIP, path string) (*usageStat, error) {
-	u, err := url.Parse(fmt.Sprintf("http://%v:%v/du", hostIP, hostFactPort))
+type authInfo struct {
+	ca        string
+	key       string
+	crt       string
+	authToken string
+	username  string
+	password  string
+}
+
+const (
+	ca        = "ca.crt"
+	key       = "hostfacts.key"
+	crt       = "hostfacts.crt"
+	authToken = "auth_token"
+	username  = "username"
+	password  = "password"
+)
+
+func getHostfactsSecretData(kubeClient *k8s.KubeClient, secretName string) *authInfo {
+	if secretName == "" {
+		return nil
+	}
+
+	parts := strings.Split(secretName, ".")
+	name := parts[0]
+	namespace := "default"
+	if len(parts) > 1 {
+		namespace = parts[1]
+	}
+
+	secret, err := kubeClient.Client.Core().Secrets(namespace).Get(name)
+	if err != nil {
+		return nil
+	}
+
+	authData := &authInfo{
+		ca:        string(secret.Data[ca]),
+		key:       string(secret.Data[key]),
+		crt:       string(secret.Data[crt]),
+		authToken: string(secret.Data[authToken]),
+		username:  string(secret.Data[username]),
+		password:  string(secret.Data[password]),
+	}
+
+	return authData
+}
+
+func getUsage(authInfo *authInfo, hostIP, path string) (*usageStat, error) {
+	protocol := "http"
+	if authInfo != nil {
+		protocol = "https"
+	}
+
+	urlStr := fmt.Sprintf("%v://%v:%v/du?p=%v", protocol, hostIP, hostFactPort, path)
+	req, err := http.NewRequest(http.MethodGet, urlStr, nil)
 	if err != nil {
 		return nil, err
 	}
-	q := u.Query()
-	q.Set("p", path)
-	u.RawQuery = q.Encode()
 
-	resp, err := http.Get(u.String())
+	mTLSConfig := &tls.Config{}
+
+	if authInfo != nil {
+		if authInfo.username != "" && authInfo.password != "" {
+			req.SetBasicAuth(authInfo.username, authInfo.password)
+		} else if authInfo.authToken != "" {
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", authInfo.authToken))
+		}
+
+		if authInfo.ca != "" {
+			certs := x509.NewCertPool()
+			certs.AppendCertsFromPEM([]byte(authInfo.ca))
+			mTLSConfig.RootCAs = certs
+			if authInfo.crt != "" && authInfo.key != "" {
+				cert, err := tls.X509KeyPair([]byte(authInfo.crt), []byte(authInfo.key))
+				if err == nil {
+					mTLSConfig.Certificates = []tls.Certificate{cert}
+				}
+			}
+		} else {
+			mTLSConfig.InsecureSkipVerify = true
+		}
+	}
+
+	tr := &http.Transport{
+		TLSClientConfig: mTLSConfig,
+	}
+	client := &http.Client{Transport: tr}
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -181,8 +262,10 @@ func checkResult(field string, warning, critical, result float64) (util.IcingaSt
 	return util.Ok, "(Disk & Inodes)"
 }
 
-func checkDiskStat(req *request, nodeIP, path string) (util.IcingaState, interface{}) {
-	usage, err := getUsage(nodeIP, path)
+func checkDiskStat(kubeClient *k8s.KubeClient, req *request, nodeIP, path string) (util.IcingaState, interface{}) {
+	authInfo := getHostfactsSecretData(kubeClient, req.secret)
+
+	usage, err := getUsage(authInfo, nodeIP, path)
 	if err != nil {
 		return util.Unknown, err
 	}
@@ -229,7 +312,7 @@ func checkNodeDiskStat(req *request) (util.IcingaState, interface{}) {
 	if hostIP == "" {
 		return util.Unknown, "Node InternalIP not found"
 	}
-	return checkDiskStat(req, hostIP, "/")
+	return checkDiskStat(kubeClient.Client, req, hostIP, "/")
 }
 
 func checkPodVolumeStat(req *request) (util.IcingaState, interface{}) {
@@ -283,7 +366,7 @@ func checkPodVolumeStat(req *request) (util.IcingaState, interface{}) {
 	}
 
 	path := fmt.Sprintf("/var/lib/kubelet/pods/%v/volumes/%v/%v", pod.UID, volumeSourcePluginName, volumeSourceName)
-	return checkDiskStat(req, pod.Status.HostIP, path)
+	return checkDiskStat(kubeClient.Client, req, pod.Status.HostIP, path)
 }
 
 func NewCmd() *cobra.Command {
@@ -306,6 +389,7 @@ func NewCmd() *cobra.Command {
 	}
 
 	c.Flags().BoolVar(&req.node_stat, "node_stat", false, "Checking Node disk size")
+	c.Flags().StringVarP(&req.secret, "secret", "s", "", `Kubernetes secret name`)
 	c.Flags().StringVarP(&req.host, "host", "H", "", "Icinga host name")
 	c.Flags().StringVarP(&req.name, "name", "N", "", "Volume name")
 	c.Flags().Float64VarP(&req.warning, "warning", "w", 75.0, "Warning level value (usage percentage)")

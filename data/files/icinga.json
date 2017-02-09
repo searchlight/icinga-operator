@@ -511,6 +511,18 @@
           "parameterized": false,
           "visibility": true,
           "optional": true
+        },
+        {
+          "description": "Kubernetes secret name",
+          "flag": {
+            "short": "s",
+            "long": "secret"
+          },
+          "name": "secret",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": false
         }
       ],
       "states": [
@@ -573,6 +585,18 @@
           "parameterized": false,
           "visibility": true,
           "optional": true
+        },
+        {
+          "description": "Kubernetes secret name",
+          "flag": {
+            "short": "s",
+            "long": "secret"
+          },
+          "name": "secret",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": false
         }
       ],
       "states": [

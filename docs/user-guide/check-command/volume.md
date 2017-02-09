@@ -17,6 +17,7 @@ This is used to check Pod volume stat.
 #### Vars
 
 * `name` - Volume name
+* `secret` - Kubernetes secret name for hostfacts authentication
 * `warning` - Warning level value (usage percentage defaults to 75.0)
 * `critical` - Critical level value (usage percentage defaults to 90.0)
 
@@ -25,6 +26,15 @@ This is used to check Pod volume stat.
 * OK
 * CRITICAL
 * UNKNOWN
+
+#### Hostfacts Secret keys
+
+* `ca.crt`
+* `hostfacts.key`
+* `hostfacts.crt`
+* `auth_token`
+* `username`
+* `password`
 
 #### Example
 ###### Command
