@@ -457,3 +457,142 @@ func TestInvalidNamespace(t *testing.T) {
 		return
 	}
 }
+
+func TestAlertOnPodAncestors(t *testing.T) {
+	// Run KubeD
+	// runKubeD(setIcingaClient bool)
+	// Pass true to set IcingaClient in watcher
+	watcher, err := runKubeD(true)
+	if !assert.Nil(t, err) {
+		return
+	}
+	fmt.Println("--> Running kubeD")
+
+	testAncestor := func(objectType, objectName, namespace string) error {
+		fmt.Println("--> Creating Alert on", objectType)
+		labelMap := map[string]string{
+			"objectType": objectType,
+			"objectName": objectName,
+		}
+		alert, err := mini.CreateAlert(watcher, namespace, labelMap, host.CheckCommandVolume)
+		if err != nil {
+			return err
+		}
+
+		// Check Icinga Objects for 1st Alert.
+		fmt.Println("----> Checking Icinga Objects for Alert")
+		if err := util.CheckIcingaObjectsForAlert(watcher, alert, false, false); err != nil {
+			return err
+		}
+		fmt.Println("---->> Check Successful")
+
+		// Delete 1st Alert
+		fmt.Println("--> Deleting Alert")
+		if err := mini.DeleteAlert(watcher, alert); err != nil {
+			return err
+		}
+
+		// Check Icinga Objects for Alert.
+		fmt.Println("----> Checking Icinga Objects for Alert")
+		if err := util.CheckIcingaObjectsForAlert(watcher, alert, true, true); err != nil {
+			return err
+		}
+		fmt.Println("---->> Check Successful")
+		return nil
+	}
+
+	// Create DaemonSet
+	fmt.Println("--> Creating DaemonSet")
+	daemonSet, err := mini.CreateDaemonSet(watcher, "default")
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	// Test DaemonSet Ancestor
+	fmt.Println("--> Testing DaemonSet Ancestor")
+	if err := testAncestor(host.TypeDaemonsets, daemonSet.Name, daemonSet.Namespace); !assert.Nil(t, err) {
+		return
+	}
+
+	// Delete DaemonSet
+	fmt.Println("--> Deleting DaemonSet")
+	if err := mini.DeleteDaemonSet(watcher, daemonSet); !assert.Nil(t, err) {
+		return
+	}
+
+	// Create Deployment
+	fmt.Println("--> Creating Deployment")
+	deployment, err := mini.CreateDeployment(watcher, "default")
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	// Test Deployment Ancestor
+	fmt.Println("--> Testing Deployment Ancestor")
+	if err := testAncestor(host.TypeDeployments, deployment.Name, deployment.Namespace); !assert.Nil(t, err) {
+		return
+	}
+
+	// Delete Deployment
+	fmt.Println("--> Deleting Deployment")
+	if err := mini.DeleteDeployment(watcher, deployment); !assert.Nil(t, err) {
+		return
+	}
+
+	// Create ReplicaSet
+	fmt.Println("--> Creating ReplicaSet")
+	replicaSet, err := mini.CreateReplicaSet(watcher, "default")
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	// Test ReplicaSet Ancestor
+	fmt.Println("--> Testing ReplicaSet Ancestor")
+	if err := testAncestor(host.TypeReplicasets, replicaSet.Name, replicaSet.Namespace); !assert.Nil(t, err) {
+		return
+	}
+
+	// Delete ReplicaSet
+	fmt.Println("--> Deleting ReplicaSet")
+	if err := mini.DeleteReplicaSet(watcher, replicaSet); !assert.Nil(t, err) {
+		return
+	}
+
+	// Create ReplicationController
+	fmt.Println("--> Creating ReplicationController")
+	rc, err := mini.CreateReplicationController(watcher, "default")
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	// Test ReplicationController Ancestor
+	fmt.Println("--> Testing ReplicationController Ancestor")
+	if err := testAncestor(host.TypeReplicationcontrollers, rc.Name, rc.Namespace); !assert.Nil(t, err) {
+		return
+	}
+
+	// Delete ReplicationController
+	fmt.Println("--> Deleting ReplicationController")
+	if err := mini.DeleteReplicationController(watcher, rc); !assert.Nil(t, err) {
+		return
+	}
+
+	// Create StatefulSet
+	fmt.Println("--> Creating StatefulSet")
+	statefulSet, err := mini.CreateStatefulSet(watcher, "default")
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	// Test StatefulSet Ancestor
+	fmt.Println("--> Testing StatefulSet Ancestor")
+	if err := testAncestor(host.TypeStatefulSet, statefulSet.Name, statefulSet.Namespace); !assert.Nil(t, err) {
+		return
+	}
+
+	// Delete StatefulSet
+	fmt.Println("--> Deleting StatefulSet")
+	if err := mini.DeleteStatefulSet(watcher, statefulSet); !assert.Nil(t, err) {
+		return
+	}
+}

@@ -56,9 +56,9 @@ type icingaClient struct {
 var e2eIcingaClient = icingaClient{isIcingaClientSet: false}
 
 const (
-	IcingaAddress string = ""
-	IcingaAPIUser string = ""
-	IcingaAPIPass string = ""
+	IcingaAddress string = "a9e684210a56411e6a8b6124f2ed5f41-795882289.us-east-1.elb.amazonaws.com"
+	IcingaAPIUser string = "icingaapi"
+	IcingaAPIPass string = "GNVbk6wPKV5CFfOT"
 )
 
 func getIcingaClient() (icingaClient *icinga.IcingaClient, err error) {
