@@ -144,9 +144,9 @@ type usageStat struct {
 }
 
 type authInfo struct {
-	ca        string
-	key       string
-	crt       string
+	ca        []byte
+	key       []byte
+	crt       []byte
 	authToken string
 	username  string
 	password  string
@@ -179,9 +179,9 @@ func getHostfactsSecretData(kubeClient *k8s.KubeClient, secretName string) *auth
 	}
 
 	authData := &authInfo{
-		ca:        string(secret.Data[ca]),
-		key:       string(secret.Data[key]),
-		crt:       string(secret.Data[crt]),
+		ca:        secret.Data[ca],
+		key:       secret.Data[key],
+		crt:       secret.Data[crt],
 		authToken: string(secret.Data[authToken]),
 		username:  string(secret.Data[username]),
 		password:  string(secret.Data[password]),
@@ -193,11 +193,10 @@ func getHostfactsSecretData(kubeClient *k8s.KubeClient, secretName string) *auth
 func getUsage(authInfo *authInfo, hostIP, path string) (*usageStat, error) {
 	protocol := "http"
 	httpClient := httpclient.Default()
-	if authInfo != nil && authInfo.ca != "" {
+	if authInfo != nil && authInfo.ca != nil {
 		protocol = "https"
-		httpClient.WithBasicAuth(authInfo.username, authInfo.password)
-		httpClient.WithBearerToken(authInfo.authToken)
-		httpClient.WithTLSConfig([]byte(authInfo.ca), []byte(authInfo.crt), []byte(authInfo.key))
+		httpClient.WithBasicAuth(authInfo.username, authInfo.password).
+			WithBearerToken(authInfo.authToken).WithTLSConfig(authInfo.ca, authInfo.crt, authInfo.key)
 	}
 
 	urlStr := fmt.Sprintf("%v://%v:%v/du?p=%v", protocol, hostIP, hostFactPort, path)
