@@ -19,10 +19,10 @@ func TestSetParameterizedVariables(t *testing.T) {
 	}
 
 	commandVars := map[string]data.CommandVar{
-		"A": data.CommandVar{
+		"A": {
 			Parameterized: true,
 		},
-		"B": data.CommandVar{
+		"B": {
 			Parameterized: true,
 		},
 	}
@@ -31,7 +31,7 @@ func TestSetParameterizedVariables(t *testing.T) {
 	mp, err := setParameterizedVariables(alertSpec, fakeNodeName, commandVars, make(map[string]interface{}))
 	assert.Nil(t, err)
 
-	for key, _ := range alertSpec.Vars {
+	for key := range alertSpec.Vars {
 		mpVal, found := mp[host.IVar(key)]
 		if assert.True(t, found) {
 			assert.EqualValues(t, mpVal, fmt.Sprintf(`Fake Query for nodename='%v'`, fakeNodeName))
@@ -54,7 +54,7 @@ func TestSetParameterizedVariables(t *testing.T) {
 	mp, err = setParameterizedVariables(alertSpec, fakeNodeName, commandVars, make(map[string]interface{}))
 	assert.Nil(t, err)
 
-	for key, _ := range alertSpec.Vars {
+	for key := range alertSpec.Vars {
 		mpVal, found := mp[host.IVar(key)]
 		if assert.True(t, found) {
 			assert.NotEqual(t, mpVal, fmt.Sprintf(`Fake Query for nodename='%v'`, fakeNodeName))
