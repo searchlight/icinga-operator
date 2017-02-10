@@ -18,7 +18,9 @@ Controller detects following ResourceEventType:
 ## Workflow
 
 ### Resource `Alert`
-<img src="workflow-alerts.png">
+<p align="center">
+    <img src="workflow-alerts.png" width="715">
+</p>
 * #### EventType `ADDED`
     1. When an Alert object is created, Searchlight Controller detects it.
     2. Controller determines for which Kubernetes object this alert will be set.
@@ -94,7 +96,9 @@ Controller detects following ResourceEventType:
 
 
 ### Resource `Pod`
-<img src="workflow-pods.png">
+<p align="center">
+    <img src="workflow-pods.png" height="600">
+</p>
 * #### EventType `ADDED`
     ###### Icinga2 Pod
     1. When Icinga2 pod is created, Searchlight Controller detects it.
@@ -121,7 +125,9 @@ Controller detects following ResourceEventType:
         > Note: Any alert directly applied to a pod is left intact, when the pod is deleted. If a new pod is created with same name, alert will be reapplied.
 
 ### Resource `Node`
-<img src="workflow-nodes.png">
+<p align="center">
+    <img src="workflow-nodes.png" height="600">
+</p>
 * #### EventType `ADDED`
     1. When node is created, Searchlight Controller detects it.
     2. Controller then determines all Alert objects applied to this node.
@@ -136,7 +142,9 @@ Controller detects following ResourceEventType:
 
 
 ### Resource `Service`
-<img src="workflow-services.png"> 
+<p align="center">
+    <img src="workflow-services.png" height="600">
+</p>
 * #### EventType `ADDED`
 
     ###### Icinga2 Service
