@@ -121,7 +121,7 @@ Controller detects following ResourceEventType:
         > Note: Any alert directly applied to a pod is left intact, when the pod is deleted. If a new pod is created with same name, alert will be reapplied.
 
 ### Resource `Node`
-<img src="workflow-pods.png">
+<img src="workflow-nodes.png">
 * #### EventType `ADDED`
     1. When node is created, Searchlight Controller detects it.
     2. Controller then determines all Alert objects applied to this node.
