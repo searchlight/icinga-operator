@@ -26,6 +26,10 @@ This is used to check Prometheus query result.
 * `warning` - Warning level value (must be zero or positive)
 * `critical` - Critical level value (must be zero or positive)
 
+> Note: `query` is parameterized variable.
+> Regular expression `pod_name[ ]*=[ ]*'[?]'` is replaced with `pod_name='<pod name>'` for pod.
+> And regular expression `nodename[ ]*=[ ]*'[?]'` is replaced with `nodename='<node name>'` for node.
+
 #### Supported Icinga2 State
 
 * OK

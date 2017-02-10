@@ -29,6 +29,10 @@ This is used to check InfluxDB query result.
 * `warning` - Condition for warning, compare with result. (Example: R > 75)
 * `critical` - Condition for critical, compare with result. (Example: R > 90)
 
+> Note: `A`, `B`, `C`, `D`, `E` are parameterized variables.
+> Regular expression `pod_name[ ]*=[ ]*'[?]'` is replaced with `pod_name='<pod name>'` for pod.
+> And regular expression `nodename[ ]*=[ ]*'[?]'` is replaced with `nodename='<node name>'` for node.
+
 #### Supported Icinga2 State
 
 * OK
