@@ -191,15 +191,15 @@ func getHostfactsSecretData(kubeClient *k8s.KubeClient, secretName string) *auth
 }
 
 func getUsage(authInfo *authInfo, hostIP, path string) (*usageStat, error) {
-	protocol := "http"
+	scheme := "http"
 	httpClient := httpclient.Default()
 	if authInfo != nil && authInfo.ca != nil {
-		protocol = "https"
+		scheme = "https"
 		httpClient.WithBasicAuth(authInfo.username, authInfo.password).
 			WithBearerToken(authInfo.authToken).WithTLSConfig(authInfo.ca, authInfo.crt, authInfo.key)
 	}
 
-	urlStr := fmt.Sprintf("%v://%v:%v/du?p=%v", protocol, hostIP, hostFactPort, path)
+	urlStr := fmt.Sprintf("%v://%v:%v/du?p=%v", scheme, hostIP, hostFactPort, path)
 	usages := make([]*usageStat, 1)
 	_, err := httpClient.Call(http.MethodGet, urlStr, nil, &usages, true)
 	if err != nil {
