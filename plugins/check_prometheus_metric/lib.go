@@ -117,7 +117,7 @@ func NewCmd() *cobra.Command {
 				os.Exit(3)
 			}
 			flags.EnsureRequiredFlags(cmd, "query", "warning", "critical")
-			CheckPrometheusMetric(&req)
+			util.Output(CheckPrometheusMetric(&req))
 		},
 	}
 

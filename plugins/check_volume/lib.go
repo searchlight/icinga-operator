@@ -338,10 +338,10 @@ func NewCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "host")
 			if req.node_stat {
-				checkNodeDiskStat(&req)
+				util.Output(checkNodeDiskStat(&req))
 			} else {
 				flags.EnsureRequiredFlags(cmd, "name")
-				checkPodVolumeStat(&req)
+				util.Output(checkPodVolumeStat(&req))
 			}
 		},
 	}

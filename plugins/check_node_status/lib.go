@@ -57,7 +57,7 @@ func NewCmd() *cobra.Command {
 			}
 
 			req.Name = parts[0]
-			CheckNodeStatus(&req)
+			util.Output(CheckNodeStatus(&req))
 		},
 	}
 

@@ -56,6 +56,6 @@ func GetLabels(client clientset.Interface, namespace, objectType, objectName str
 }
 
 func Output(icingaState IcingaState, message interface{}) {
-	fmt.Fprintln(os.Stdout, State[3], message)
-	os.Exit(3)
+	fmt.Fprintln(os.Stdout, State[int(icingaState)], message)
+	os.Exit(int(icingaState))
 }
