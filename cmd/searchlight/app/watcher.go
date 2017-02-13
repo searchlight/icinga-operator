@@ -18,6 +18,7 @@ type Watcher struct {
 func (watch *Watcher) Run() {
 	watch.Watcher.Dispatch = watch.Dispatch
 	watch.Storage = &stash.Storage{}
+	watch.setup()
 	watch.Service()
 	watch.StatefulSet()
 	watch.DaemonSet()
@@ -28,6 +29,13 @@ func (watch *Watcher) Run() {
 	watch.AlertEvent()
 	watch.Node()
 	watch.Deployment()
+}
+
+func (w *Watcher) setup() {
+	log.Infoln("Ensure ThirdPartyResource")
+	if err := controller.CreateThirdPartyResource(w.Client); err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func (w *Watcher) Dispatch(e *events.Event) error {
