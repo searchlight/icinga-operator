@@ -29,8 +29,6 @@ func CreateThirdPartyResource(kubeClient clientset.Interface) error {
 		},
 	}
 
-	if _, err := kubeClient.Extensions().ThirdPartyResources().Create(thirdPartyResource); err != nil {
-		return err
-	}
-	return nil
+	_, err = kubeClient.Extensions().ThirdPartyResources().Create(thirdPartyResource)
+	return err
 }
