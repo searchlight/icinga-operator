@@ -1,12 +1,17 @@
 package app
 
 import (
+	aci "github.com/appscode/k8s-addons/api"
 	"github.com/appscode/k8s-addons/pkg/events"
 	"github.com/appscode/k8s-addons/pkg/stash"
 	acw "github.com/appscode/k8s-addons/pkg/watcher"
 	"github.com/appscode/log"
 	"github.com/appscode/searchlight/pkg/client/icinga"
 	"github.com/appscode/searchlight/pkg/controller"
+	kapi "k8s.io/kubernetes/pkg/api"
+	"k8s.io/kubernetes/pkg/api/errors"
+	"k8s.io/kubernetes/pkg/api/unversioned"
+	"k8s.io/kubernetes/pkg/apis/extensions"
 )
 
 type Watcher struct {
@@ -16,8 +21,6 @@ type Watcher struct {
 }
 
 func (watch *Watcher) Run() {
-	watch.Watcher.Dispatch = watch.Dispatch
-	watch.Storage = &stash.Storage{}
 	watch.setup()
 	watch.Service()
 	watch.StatefulSet()
@@ -32,10 +35,39 @@ func (watch *Watcher) Run() {
 }
 
 func (w *Watcher) setup() {
-	log.Infoln("Ensure ThirdPartyResource")
-	if err := controller.CreateThirdPartyResource(w.Client); err != nil {
+	log.Infoln("Ensuring ThirdPartyResource")
+	if err := w.ensureThirdPartyResource(); err != nil {
 		log.Fatalln(err)
 	}
+	w.Watcher.Dispatch = w.Dispatch
+	w.Storage = &stash.Storage{}
+}
+
+func (w *Watcher) ensureThirdPartyResource() error {
+	resourceName := "alert" + "." + aci.V1beta1SchemeGroupVersion.Group
+
+	_, err := w.Client.Extensions().ThirdPartyResources().Get(resourceName)
+	if !errors.IsNotFound(err) {
+		return err
+	}
+
+	thirdPartyResource := &extensions.ThirdPartyResource{
+		TypeMeta: unversioned.TypeMeta{
+			APIVersion: "extensions/v1beta1",
+			Kind:       "ThirdPartyResource",
+		},
+		ObjectMeta: kapi.ObjectMeta{
+			Name: resourceName,
+		},
+		Versions: []extensions.APIVersion{
+			{
+				Name: aci.V1beta1SchemeGroupVersion.Version,
+			},
+		},
+	}
+
+	_, err = w.Client.Extensions().ThirdPartyResources().Create(thirdPartyResource)
+	return err
 }
 
 func (w *Watcher) Dispatch(e *events.Event) error {
