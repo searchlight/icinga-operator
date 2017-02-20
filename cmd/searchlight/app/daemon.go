@@ -32,7 +32,7 @@ func Run(config *options.Config) {
 		},
 	}
 	if config.IcingaSecretName != "" {
-		icingaClient, err := icinga.NewIcingaClient(w.Client, config.IcingaSecretName)
+		icingaClient, err := icinga.NewIcingaClient(w.Client, config.IcingaSecretName, config.IcingaSecretNamespace)
 		if err != nil {
 			log.Fatalln(err)
 		}

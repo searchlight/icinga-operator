@@ -11,6 +11,7 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/test/mini"
 	"github.com/appscode/searchlight/util"
+	kapi "k8s.io/kubernetes/pkg/api"
 )
 
 type testData struct {
@@ -80,9 +81,9 @@ func getIcingaClient() (icingaClient *icinga.IcingaClient, err error) {
 				icinga.IcingaAPIPass: IcingaAPIPass,
 				icinga.IcingaAddress: IcingaAddress,
 			}
-			icingaSecretName, err := mini.CreateIcingaSecret(kubeClient, "default", secretMap)
+			icingaSecretName, err := mini.CreateIcingaSecret(kubeClient, kapi.NamespaceDefault, secretMap)
 
-			icingaClient, err = icinga.NewIcingaClient(kubeClient.Client, icingaSecretName)
+			icingaClient, err = icinga.NewIcingaClient(kubeClient.Client, icingaSecretName, kapi.NamespaceDefault)
 			if err != nil {
 				return
 			}
