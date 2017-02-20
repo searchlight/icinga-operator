@@ -25,5 +25,5 @@ func (s *Config) AddFlags(fs *pflag.FlagSet) {
 	fs.StringVar(&s.Master, "master", s.Master, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
 	fs.StringVar(&s.KubeConfig, "kubeconfig", s.KubeConfig, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
 	fs.StringVarP(&s.IcingaSecretName, "icinga-secret-name", "s", s.IcingaSecretName, "Icinga secret name")
-	fs.StringVarP(&s.IcingaSecretName, "icinga-secret-namespace", "n", s.IcingaSecretNamespace, "Icinga secret namespace")
+	fs.StringVarP(&s.IcingaSecretNamespace, "icinga-secret-namespace", "n", s.IcingaSecretNamespace, "Icinga secret namespace")
 }
