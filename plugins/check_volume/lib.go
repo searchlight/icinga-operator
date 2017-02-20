@@ -121,13 +121,14 @@ const (
 	hostFactPort = 56977
 )
 
-type request struct {
-	host      string
-	name      string
-	warning   float64
-	critical  float64
-	node_stat bool
-	secret    string
+type Request struct {
+	Host            string
+	VolumeName      string
+	Warning         float64
+	Critical        float64
+	NodeStat        bool
+	SecretName      string
+	SecretNamespace string
 }
 
 type usageStat struct {
@@ -161,19 +162,12 @@ const (
 	password  = "password"
 )
 
-func getHostfactsSecretData(kubeClient *k8s.KubeClient, secretName string) *authInfo {
+func getHostfactsSecretData(kubeClient *k8s.KubeClient, secretName, secretNamespace string) *authInfo {
 	if secretName == "" {
 		return nil
 	}
 
-	parts := strings.Split(secretName, ".")
-	name := parts[0]
-	namespace := "default"
-	if len(parts) > 1 {
-		namespace = parts[1]
-	}
-
-	secret, err := kubeClient.Client.Core().Secrets(namespace).Get(name)
+	secret, err := kubeClient.Client.Core().Secrets(secretNamespace).Get(secretName)
 	if err != nil {
 		return nil
 	}
@@ -220,16 +214,16 @@ func checkResult(field string, warning, critical, result float64) (util.IcingaSt
 	return util.Ok, "(Disk & Inodes)"
 }
 
-func checkDiskStat(kubeClient *k8s.KubeClient, req *request, nodeIP, path string) (util.IcingaState, interface{}) {
-	authInfo := getHostfactsSecretData(kubeClient, req.secret)
+func checkDiskStat(kubeClient *k8s.KubeClient, req *Request, nodeIP, path string) (util.IcingaState, interface{}) {
+	authInfo := getHostfactsSecretData(kubeClient, req.SecretName, req.SecretNamespace)
 
 	usage, err := getUsage(authInfo, nodeIP, path)
 	if err != nil {
 		return util.Unknown, err
 	}
 
-	warning := req.warning
-	critical := req.critical
+	warning := req.Warning
+	critical := req.Critical
 	state, message := checkResult("Disk", warning, critical, usage.UsedPercent)
 	if state != util.Ok {
 		return state, message
@@ -238,8 +232,8 @@ func checkDiskStat(kubeClient *k8s.KubeClient, req *request, nodeIP, path string
 	return state, message
 }
 
-func checkNodeDiskStat(req *request) (util.IcingaState, interface{}) {
-	host := req.host
+func checkNodeDiskStat(req *Request) (util.IcingaState, interface{}) {
+	host := req.Host
 	parts := strings.Split(host, "@")
 	if len(parts) != 2 {
 		return util.Unknown, "Invalid icinga host.name"
@@ -273,9 +267,9 @@ func checkNodeDiskStat(req *request) (util.IcingaState, interface{}) {
 	return checkDiskStat(kubeClient, req, hostIP, "/")
 }
 
-func checkPodVolumeStat(req *request) (util.IcingaState, interface{}) {
-	host := req.host
-	name := req.name
+func checkPodVolumeStat(req *Request) (util.IcingaState, interface{}) {
+	host := req.Host
+	name := req.VolumeName
 	parts := strings.Split(host, "@")
 	if len(parts) != 2 {
 		return util.Unknown, "Invalid icinga host.name"
@@ -328,7 +322,8 @@ func checkPodVolumeStat(req *request) (util.IcingaState, interface{}) {
 }
 
 func NewCmd() *cobra.Command {
-	var req request
+	var req Request
+	var icingaHost string
 
 	c := &cobra.Command{
 		Use:     "check_volume",
@@ -337,20 +332,24 @@ func NewCmd() *cobra.Command {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "host")
-			if req.node_stat {
+			if req.SecretName != "" {
+				flags.EnsureRequiredFlags(cmd, "secret_namespace")
+			}
+			if req.NodeStat {
 				util.Output(checkNodeDiskStat(&req))
 			} else {
-				flags.EnsureRequiredFlags(cmd, "name")
+				flags.EnsureRequiredFlags(cmd, "volume_name")
 				util.Output(checkPodVolumeStat(&req))
 			}
 		},
 	}
 
-	c.Flags().BoolVar(&req.node_stat, "node_stat", false, "Checking Node disk size")
-	c.Flags().StringVarP(&req.secret, "secret", "s", "", `Kubernetes secret name`)
-	c.Flags().StringVarP(&req.host, "host", "H", "", "Icinga host name")
-	c.Flags().StringVarP(&req.name, "name", "N", "", "Volume name")
-	c.Flags().Float64VarP(&req.warning, "warning", "w", 75.0, "Warning level value (usage percentage)")
-	c.Flags().Float64VarP(&req.critical, "critical", "c", 90.0, "Critical level value (usage percentage)")
+	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
+	c.Flags().BoolVar(&req.NodeStat, "node_stat", false, "Checking Node disk size")
+	c.Flags().StringVarP(&req.SecretName, "secret_name", "s", "", `Kubernetes secret name`)
+	c.Flags().StringVarP(&req.SecretName, "secret_namespace", "n", "", `Kubernetes secret namespace`)
+	c.Flags().StringVarP(&req.VolumeName, "volume_name", "N", "", "Volume name")
+	c.Flags().Float64VarP(&req.Warning, "warning", "w", 75.0, "Warning level value (usage percentage)")
+	c.Flags().Float64VarP(&req.Critical, "critical", "c", 90.0, "Critical level value (usage percentage)")
 	return c
 }

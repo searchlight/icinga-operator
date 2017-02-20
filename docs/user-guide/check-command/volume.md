@@ -16,8 +16,9 @@ This is used to check Pod volume stat.
 
 #### Vars
 
-* `name` - Volume name
-* `secret` - Kubernetes secret name for hostfacts authentication
+* `volume_name` - Volume name
+* `secret_name` - Kubernetes secret name for hostfacts authentication
+* `secret_namespace` - Kubernetes namespace of secret
 * `warning` - Warning level value (usage percentage defaults to 75.0)
 * `critical` - Critical level value (usage percentage defaults to 90.0)
 
@@ -39,7 +40,7 @@ This is used to check Pod volume stat.
 #### Example
 ###### Command
 ```sh
-hyperalert check_volume --host='monitoring-influxdb-0.12.2-n3lo2@kube-system' --name=influxdb-persistent-storage --warning=70 --critical=85
+hyperalert check_volume --host='monitoring-influxdb-0.12.2-n3lo2@kube-system' --volume_name=influxdb-persistent-storage --warning=70 --critical=85
 # --host are provided by Icinga2
 ```
 ###### Output
@@ -74,7 +75,7 @@ spec:
     State: CRITICAL
     UserUid: system-admin
   vars:
-    name: influxdb-persistent-storage
+    volume_name: influxdb-persistent-storage
     warning: 70
     critical: 85
 ```

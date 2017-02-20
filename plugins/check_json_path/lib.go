@@ -21,6 +21,7 @@ type Request struct {
 	URL             string
 	Query           string
 	Secret          string
+	Namespace       string
 	InClusterConfig bool
 	Warning         string
 	Critical        string
@@ -51,12 +52,8 @@ func getData(req *Request) (string, error) {
 			return "", err
 		}
 
-		parts := strings.Split(req.Secret, ".")
-		name := parts[0]
-		namespace := "default"
-		if len(parts) > 1 {
-			namespace = parts[1]
-		}
+		name := req.Secret
+		namespace := req.Namespace
 
 		secret, err := kubeClient.Client.Core().Secrets(namespace).Get(name)
 		if err != nil {
@@ -179,6 +176,7 @@ func CheckJsonPath(req *Request) (util.IcingaState, interface{}) {
 
 func NewCmd() *cobra.Command {
 	var req Request
+	var icingaHost string
 
 	c := &cobra.Command{
 		Use:     "check_json_path",
@@ -186,12 +184,22 @@ func NewCmd() *cobra.Command {
 		Example: "",
 
 		Run: func(cmd *cobra.Command, args []string) {
+			flags.EnsureRequiredFlags(cmd, "host")
+
+			parts := strings.Split(icingaHost, "@")
+			if len(parts) != 2 {
+				fmt.Fprintln(os.Stdout, util.State[3], "Invalid icinga host.name")
+				os.Exit(3)
+			}
+			req.Namespace = parts[1]
+
 			flags.EnsureRequiredFlags(cmd, "url", "query")
 			flags.EnsureAlterableFlags(cmd, "warning", "critical")
 			util.Output(CheckJsonPath(&req))
 		},
 	}
 
+	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	c.Flags().StringVarP(&req.URL, "url", "u", "", "URL to get data")
 	c.Flags().StringVarP(&req.Query, "query", "q", "", `JQ query`)
 	c.Flags().StringVarP(&req.Secret, "secret", "s", "", `Kubernetes secret name`)

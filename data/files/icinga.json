@@ -44,7 +44,7 @@
         {
           "description": "URL of InfluxDB host to query",
           "flag": {
-            "short": "H",
+            "short": "h",
             "long": "influx_host"
           },
           "name": "influx_host",
@@ -196,7 +196,7 @@
           "optional": false
         },
         {
-          "description": "Kubernetes secret name (secret-name.namespace)",
+          "description": "Kubernetes secret name",
           "flag": {
             "short": "s",
             "long": "secret"
@@ -489,6 +489,30 @@
       },
       "vars": [
         {
+          "description": "Kubernetes secret name",
+          "flag": {
+            "short": "s",
+            "long": "secret_name"
+          },
+          "name": "secret_name",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        },
+        {
+          "description": "Kubernetes secret namespace",
+          "flag": {
+            "short": "n",
+            "long": "secret_namespace"
+          },
+          "name": "secret_namespace",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        },
+        {
           "description": "Warning level value (usage percentage defaults to 75.0)",
           "flag": {
             "short": "w",
@@ -508,18 +532,6 @@
           },
           "name": "critical",
           "type": "INTERGER",
-          "parameterized": false,
-          "visibility": true,
-          "optional": true
-        },
-        {
-          "description": "Kubernetes secret name",
-          "flag": {
-            "short": "s",
-            "long": "secret"
-          },
-          "name": "secret",
-          "type": "STRING",
           "parameterized": false,
           "visibility": true,
           "optional": true
@@ -551,12 +563,36 @@
       },
       "vars": [
         {
+          "description": "Kubernetes secret name",
+          "flag": {
+            "short": "s",
+            "long": "secret_name"
+          },
+          "name": "secret_name",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        },
+        {
+          "description": "Kubernetes secret namespace",
+          "flag": {
+            "short": "n",
+            "long": "secret_namespace"
+          },
+          "name": "secret_namespace",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        },
+        {
           "description": "Volume name",
           "flag": {
             "short": "N",
-            "long": "name"
+            "long": "volume_name"
           },
-          "name": "name",
+          "name": "volume_name",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
@@ -582,18 +618,6 @@
           },
           "name": "critical",
           "type": "INTERGER",
-          "parameterized": false,
-          "visibility": true,
-          "optional": true
-        },
-        {
-          "description": "Kubernetes secret name",
-          "flag": {
-            "short": "s",
-            "long": "secret"
-          },
-          "name": "secret",
-          "type": "STRING",
           "parameterized": false,
           "visibility": true,
           "optional": true

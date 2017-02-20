@@ -14,15 +14,17 @@ import (
 	"github.com/appscode/searchlight/util"
 	"github.com/influxdata/influxdb/client"
 	"github.com/spf13/cobra"
+	"strings"
 )
 
-type request struct {
-	host          string
-	a, b, c, d, e string
-	r             string
-	warning       string
-	critical      string
-	secret        string
+type Request struct {
+	Host          string
+	A, B, C, D, E string
+	R             string
+	Warning       string
+	Critical      string
+	Secret        string
+	Namespace     string
 }
 
 func trunc(val float64) interface{} {
@@ -66,7 +68,7 @@ func getInfluxdbData(con *client.Client, command, db, queryName string) (float64
 	return data, nil
 }
 
-func getValue(con *client.Client, db string, req *request) (map[string]interface{}, error) {
+func getValue(con *client.Client, db string, req *Request) (map[string]interface{}, error) {
 
 	valMap := make(map[string]interface{})
 
@@ -77,40 +79,40 @@ func getValue(con *client.Client, db string, req *request) (map[string]interface
 		}
 	}()
 
-	if req.a != "" {
-		data, err := getInfluxdbData(con, req.a, db, "A")
+	if req.A != "" {
+		data, err := getInfluxdbData(con, req.A, db, "A")
 		if err != nil {
 			return nil, err
 		}
 		valMap["A"] = data
 	}
 
-	if req.b != "" {
-		data, err := getInfluxdbData(con, req.b, db, "B")
+	if req.B != "" {
+		data, err := getInfluxdbData(con, req.B, db, "B")
 		if err != nil {
 			return nil, err
 		}
 		valMap["B"] = data
 	}
 
-	if req.c != "" {
-		data, err := getInfluxdbData(con, req.c, db, "C")
+	if req.C != "" {
+		data, err := getInfluxdbData(con, req.C, db, "C")
 		if err != nil {
 			return nil, err
 		}
 		valMap["C"] = data
 	}
 
-	if req.d != "" {
-		data, err := getInfluxdbData(con, req.d, db, "D")
+	if req.D != "" {
+		data, err := getInfluxdbData(con, req.D, db, "D")
 		if err != nil {
 			return nil, err
 		}
 		valMap["D"] = data
 	}
 
-	if req.e != "" {
-		data, err := getInfluxdbData(con, req.e, db, "E")
+	if req.E != "" {
+		data, err := getInfluxdbData(con, req.E, db, "E")
 		if err != nil {
 			return nil, err
 		}
@@ -137,14 +139,14 @@ func checkResult(checkQuery string, valueMap map[string]interface{}) (bool, erro
 	return false, nil
 }
 
-func CheckInfluxQuery(req *request) (util.IcingaState, interface{}) {
-	authData, err := influxdb.GetInfluxDBSecretData(req.secret)
+func CheckInfluxQuery(req *Request) (util.IcingaState, interface{}) {
+	authData, err := influxdb.GetInfluxDBSecretData(req.Secret, req.Namespace)
 	if err != nil {
 		return util.Unknown, err
 	}
 
-	if req.host != "" {
-		authData.Host = req.host
+	if req.Host != "" {
+		authData.Host = req.Host
 	}
 	if authData.Host == "" {
 		return util.Unknown, "No InfluxDB host found"
@@ -159,7 +161,7 @@ func CheckInfluxQuery(req *request) (util.IcingaState, interface{}) {
 		return util.Unknown, err
 	}
 
-	expression, err := govaluate.NewEvaluableExpression(req.r)
+	expression, err := govaluate.NewEvaluableExpression(req.R)
 	if err != nil {
 		return util.Unknown, err
 	}
@@ -169,8 +171,8 @@ func CheckInfluxQuery(req *request) (util.IcingaState, interface{}) {
 	}
 	valMap["R"] = trunc(valMap["R"].(float64))
 
-	if req.critical != "" {
-		isCritical, err := checkResult(req.critical, valMap)
+	if req.Critical != "" {
+		isCritical, err := checkResult(req.Critical, valMap)
 		if err != nil {
 			return util.Unknown, err.Error()
 		}
@@ -179,8 +181,8 @@ func CheckInfluxQuery(req *request) (util.IcingaState, interface{}) {
 		}
 	}
 
-	if req.warning != "" {
-		isWarning, err := checkResult(req.warning, valMap)
+	if req.Warning != "" {
+		isWarning, err := checkResult(req.Warning, valMap)
 		if err != nil {
 			return util.Unknown, err
 		}
@@ -193,7 +195,8 @@ func CheckInfluxQuery(req *request) (util.IcingaState, interface{}) {
 }
 
 func NewCmd() *cobra.Command {
-	var req request
+	var req Request
+	var icingaHost string
 
 	c := &cobra.Command{
 		Use:     "check_influx_query",
@@ -201,6 +204,15 @@ func NewCmd() *cobra.Command {
 		Example: "",
 
 		Run: func(cmd *cobra.Command, args []string) {
+			flags.EnsureRequiredFlags(cmd, "host")
+
+			parts := strings.Split(icingaHost, "@")
+			if len(parts) != 2 {
+				fmt.Fprintln(os.Stdout, util.State[3], "Invalid icinga host.name")
+				os.Exit(3)
+			}
+			req.Namespace = parts[1]
+
 			flags.EnsureRequiredFlags(cmd, "secret", "R")
 			flags.EnsureAlterableFlags(cmd, "A", "B", "C", "D", "E")
 			flags.EnsureAlterableFlags(cmd, "warning", "critical")
@@ -208,15 +220,16 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().StringVarP(&req.host, "influx_host", "H", "", "URL of InfluxDB host to query")
-	c.Flags().StringVarP(&req.secret, "secret", "s", "", `Kubernetes secret name`)
-	c.Flags().StringVar(&req.a, "A", "", "InfluxDB query A")
-	c.Flags().StringVar(&req.b, "B", "", "InfluxDB query B")
-	c.Flags().StringVar(&req.c, "C", "", "InfluxDB query C")
-	c.Flags().StringVar(&req.d, "D", "", "InfluxDB query D")
-	c.Flags().StringVar(&req.e, "E", "", "InfluxDB query E")
-	c.Flags().StringVar(&req.r, "R", "", `Equation to evaluate result`)
-	c.Flags().StringVarP(&req.warning, "warning", "w", "", `Warning query which returns [true/false]`)
-	c.Flags().StringVarP(&req.critical, "critical", "c", "", `Critical query which returns [true/false]`)
+	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
+	c.Flags().StringVarP(&req.Host, "influx_host", "h", "", "URL of InfluxDB host to query")
+	c.Flags().StringVarP(&req.Secret, "secret", "s", "", `Kubernetes secret name`)
+	c.Flags().StringVar(&req.A, "A", "", "InfluxDB query A")
+	c.Flags().StringVar(&req.B, "B", "", "InfluxDB query B")
+	c.Flags().StringVar(&req.C, "C", "", "InfluxDB query C")
+	c.Flags().StringVar(&req.D, "D", "", "InfluxDB query D")
+	c.Flags().StringVar(&req.E, "E", "", "InfluxDB query E")
+	c.Flags().StringVar(&req.R, "R", "", `Equation to evaluate result`)
+	c.Flags().StringVarP(&req.Warning, "warning", "w", "", `Warning query which returns [true/false]`)
+	c.Flags().StringVarP(&req.Critical, "critical", "c", "", `Critical query which returns [true/false]`)
 	return c
 }
