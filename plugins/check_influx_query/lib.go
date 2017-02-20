@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/Knetic/govaluate"
 	"github.com/appscode/go/flags"
@@ -14,7 +15,6 @@ import (
 	"github.com/appscode/searchlight/util"
 	"github.com/influxdata/influxdb/client"
 	"github.com/spf13/cobra"
-	"strings"
 )
 
 type Request struct {
