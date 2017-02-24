@@ -38,8 +38,8 @@ Searchlight supports additional custom plugins. Followings are currently added
 
 > Note: All of these plugins are combined into a single plugin called `hyperalert`
 
-#### Notifiers
-We are supporting following notifiers
+#### Supported Notifiers
+Searchlight can send alert notification via following notifiers:
 
 1. [Hipchat](docs/user-guide/notifier/hipchat.md)
 2. [Mailgun](docs/user-guide/notifier/mailgun.md)
