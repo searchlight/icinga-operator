@@ -38,6 +38,15 @@ Searchlight supports additional custom plugins. Followings are currently added
 
 > Note: All of these plugins are combined into a single plugin called `hyperalert`
 
+#### Notifiers
+We are supporting following notifiers
+
+1. [Hipchat](docs/user-guide/notifier/hipchat.md)
+2. [Mailgun](docs/user-guide/notifier/mailgun.md)
+3. [SMTP](docs/user-guide/notifier/smtp.md)
+4. [Twilio](docs/user-guide/notifier/twilio.md)
+5. [Slack](docs/user-guide/notifier/slack.md)
+
 ## User Guide
 
 To deploy Searchlight in Kubernetes cluster, follow this [guide](docs/user-guide/deployment-guide.md).
