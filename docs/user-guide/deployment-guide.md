@@ -37,7 +37,7 @@ See Icinga2 [Deployment Guide](icinga2/deployment.md).
 
 Run following command to deploy Icinga2
 ```sh
-curl https://raw.githubusercontent.com/appscode/searchlight/master/hack/deploy/icinga2/run.sh | bash
+curl https://raw.githubusercontent.com/appscode/searchlight/1.5.2/hack/deploy/icinga2/run.sh | bash
 ```
 
 > Make sure you have set notifier to send notifications. Check [this](icinga2/deployment.md#create-deployment).
@@ -48,5 +48,5 @@ Searchlight Controller is used to communicate with Icinga2 API. To set an alert,
  
 ```sh
 # Create Deployment
-kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/master/hack/deploy/searchlight/deployment.yaml
+kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/1.5.2/hack/deploy/searchlight/deployment.yaml
 ```
