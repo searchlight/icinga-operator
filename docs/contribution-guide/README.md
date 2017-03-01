@@ -19,6 +19,8 @@ $ ./hack/make.py build; env APPSCODE_ENV=prod ./hack/make.py push; ./hack/make.p
 ./hack/docker/icinga/build.sh; ./hack/docker/icinga/build.sh release
 ./hack/docker/icinga/setup.sh; ./hack/docker/icinga/setup.sh release
 ```
+- Now, update the release notes in Github. See previous release notes to get an idea what to include there.
+
 
 Now, you should probably also release a new version of kubed. The steps are:
 - Revendor kubed so that new changes become available.
