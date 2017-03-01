@@ -27,3 +27,5 @@ Now, you should probably also release a new version of kubed. The steps are:
 - Build kubed. Add any flags if needed.
 - Push changes to release branch.
 - Build and release kubed docker image.
+- Now update Kubernetes salt stack files so that the new kubed image is used.
+
