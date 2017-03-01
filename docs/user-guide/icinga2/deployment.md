@@ -54,6 +54,7 @@ And also we need to add some keys for notifier in Icinga2 Secret. We are current
 3. [SMTP](../notifier/smtp.md#set-environment-variables)
 4. [Twilio](../notifier/twilio.md#set-environment-variables)
 5. [Slack](../notifier/slack.md#set-environment-variables)
+6. [Plivo](../notifier/plivo.md#set-environment-variables)
 
 If we don't set keys for notifier, notifications will be ignored.
 
@@ -78,7 +79,8 @@ To use notifier we need to set some environment variables. See following links t
 2. [Mailgun](../notifier/mailgun.md#configure)
 3. [SMTP](../notifier/smtp.md#configure)
 4. [Twilio](../notifier/twilio.md#configure)
-4. [Slack](../notifier/slack.md#configure)
+5. [Slack](../notifier/slack.md#configure)
+6. [Plivo](../notifier/plivo.md#configure)
 
 ```sh
 # Create Deployment

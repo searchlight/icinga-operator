@@ -46,6 +46,7 @@ Searchlight can send alert notification via following notifiers:
 3. [SMTP](docs/user-guide/notifier/smtp.md)
 4. [Twilio](docs/user-guide/notifier/twilio.md)
 5. [Slack](docs/user-guide/notifier/slack.md)
+6. [Plivo](docs/user-guide/notifier/plivo.md)
 
 ## User Guide
 

@@ -15,6 +15,7 @@ import (
 	"github.com/appscode/searchlight/plugins/notifier/driver/extpoints"
 	_ "github.com/appscode/searchlight/plugins/notifier/driver/hipchat"
 	_ "github.com/appscode/searchlight/plugins/notifier/driver/mailgun"
+	_ "github.com/appscode/searchlight/plugins/notifier/driver/plivo"
 	_ "github.com/appscode/searchlight/plugins/notifier/driver/slack"
 	_ "github.com/appscode/searchlight/plugins/notifier/driver/smtp"
 	_ "github.com/appscode/searchlight/plugins/notifier/driver/twilio"
