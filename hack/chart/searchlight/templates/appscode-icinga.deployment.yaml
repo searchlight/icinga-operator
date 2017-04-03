@@ -1,0 +1,59 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    chart: '{{.Chart.Name}}-{{.Chart.Version}}'
+    heritage: '{{.Release.Service}}'
+    release: '{{.Release.Name}}'
+    run: '{{.Release.Name}}-appscode-icinga'
+  name: '{{ template "fullname" . }}-appscode-icinga'
+  namespace: '{{.Values.appscodeicinga.namespace}}'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: '{{.Release.Name}}-appscode-icinga'
+  template:
+    metadata:
+      labels:
+        run: '{{.Release.Name}}-appscode-icinga'
+    spec:
+      volumes:
+      - emptyDir: {}
+        name: data-volume
+      - emptyDir: {}
+        name: script-volume
+      - name: appscode-icinga
+        secret:
+          secretName: '{{ template "fullname" . }}-appscode-icinga'
+      containers:
+      - image: '{{.Values.appscodeicinga.icinga.image}}:{{.Values.appscodeicinga.icinga.imageTag}}'
+        name: icinga
+        ports:
+        - containerPort: {{.Values.appscodeicinga.icinga.apiPort}}
+          name: api
+          protocol: TCP
+        - containerPort: {{.Values.appscodeicinga.icinga.tcpPort}}
+          name: tcp
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/pv
+          name: data-volume
+        - mountPath: /var/db-script
+          name: script-volume
+        - mountPath: /srv/icinga2/secrets
+          name: appscode-icinga
+      - args:
+        - basic
+        - ./setup-db.sh
+        image: '{{.Values.appscodeicinga.ido.image}}:{{.Values.appscodeicinga.ido.imageTag}}'
+        name: ido
+        ports:
+        - containerPort: {{.Values.appscodeicinga.ido.idpPort}}
+          name: ido
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/pv
+          name: data-volume
+        - mountPath: /var/db-script
+          name: script-volume

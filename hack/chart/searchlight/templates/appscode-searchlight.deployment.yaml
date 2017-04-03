@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    chart: {{.Chart.Name}}-{{.Chart.Version}}
+    heritage: {{.Release.Service}}
+    release: {{.Release.Name}}
+    run: {{.Release.Name}}-appscode-searchlight
+  name: {{ template "fullname" . }}-appscode-searchlight
+  namespace: {{.Values.appscodesearchlight.namespace}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: '{{.Release.Name}}-appscode-searchlight'
+  template:
+    metadata:
+      labels:
+        run: '{{.Release.Name}}-appscode-searchlight'
+    spec:
+      containers:
+      - args:
+        - --icinga-secret=appscode-icinga.kube-system
+        image: '{{.Values.appscodesearchlight.appscodesearchlight.image}}:{{.Values.appscodesearchlight.appscodesearchlight.imageTag}}'
+        imagePullPolicy: '{{.Values.appscodesearchlight.appscodesearchlight.imagePullPolicy}}'
+        name: appscode-searchlight
