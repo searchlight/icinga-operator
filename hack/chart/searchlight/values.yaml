@@ -14,8 +14,7 @@ appscodeicinga:
   namespace: kube-system
   type: Opaque
 appscodesearchlight:
-  appscodesearchlight:
-    image: appscode/searchlight
-    imagePullPolicy: Always
-    imageTag: 1.5.3
+  image: appscode/searchlight
+  imagePullPolicy: Always
+  imageTag: 1.5.3
   namespace: default

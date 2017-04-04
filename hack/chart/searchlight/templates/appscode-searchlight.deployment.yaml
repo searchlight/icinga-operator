@@ -21,6 +21,6 @@ spec:
       containers:
       - args:
         - --icinga-secret=appscode-icinga.kube-system
-        image: '{{.Values.appscodesearchlight.appscodesearchlight.image}}:{{.Values.appscodesearchlight.appscodesearchlight.imageTag}}'
-        imagePullPolicy: '{{.Values.appscodesearchlight.appscodesearchlight.imagePullPolicy}}'
+        image: '{{.Values.appscodesearchlight.image}}:{{.Values.appscodesearchlight.imageTag}}'
+        imagePullPolicy: '{{.Values.appscodesearchlight.imagePullPolicy}}'
         name: appscode-searchlight
