@@ -16,6 +16,7 @@ import "github.com/grpc-ecosystem/grpc-gateway/runtime"
 func ExportBillingCorsPatterns() []runtime.Pattern {
 	return []runtime.Pattern{
 		pattern_Billing_GetSubscription_0,
+		pattern_Billing_CreateClientToken_0,
 		pattern_Billing_CheckPaymentMethod_0,
 	}
 }

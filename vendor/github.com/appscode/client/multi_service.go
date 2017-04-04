@@ -5,8 +5,6 @@ import (
 	auth "github.com/appscode/api/auth/v1beta1"
 	ca "github.com/appscode/api/certificate/v1beta1"
 	ci "github.com/appscode/api/ci/v1beta1"
-	db "github.com/appscode/api/db/v1beta1"
-	glusterfs "github.com/appscode/api/glusterfs/v1beta1"
 	kubernetesV1beta1 "github.com/appscode/api/kubernetes/v1beta1"
 	kubernetesV1beta2 "github.com/appscode/api/kubernetes/v1beta2"
 	namespace "github.com/appscode/api/namespace/v1beta1"
@@ -20,9 +18,7 @@ type multiClientInterface interface {
 	Authentication() *authenticationService
 	CA() *caService
 	CI() *ciService
-	DB() *dbService
 	Namespace() *nsService
-	GlusterFS() *glusterFSService
 	Kubernetes() *versionedKubernetesService
 }
 
@@ -31,10 +27,8 @@ type multiClientServices struct {
 	authenticationClient      *authenticationService
 	caClient                  *caService
 	ciClient                  *ciService
-	glusterfsClient           *glusterFSService
 	nsClient                  *nsService
 	versionedKubernetesClient *versionedKubernetesService
-	dbClient                  *dbService
 }
 
 func newMultiClientService(conn *grpc.ClientConn) multiClientInterface {
@@ -55,13 +49,8 @@ func newMultiClientService(conn *grpc.ClientConn) multiClientInterface {
 			agentsClient:   ci.NewAgentsClient(conn),
 			metadataClient: ci.NewMetadataClient(conn),
 		},
-		glusterfsClient: &glusterFSService{
-			clusterClient: glusterfs.NewClustersClient(conn),
-			volumeClient:  glusterfs.NewVolumesClient(conn),
-		},
 		versionedKubernetesClient: &versionedKubernetesService{
 			v1beta1Service: &kubernetesV1beta1Service{
-				clientsClient:      kubernetesV1beta1.NewClientsClient(conn),
 				clusterClient:      kubernetesV1beta1.NewClustersClient(conn),
 				eventsClient:       kubernetesV1beta1.NewEventsClient(conn),
 				incidentClient:     kubernetesV1beta1.NewIncidentsClient(conn),
@@ -76,10 +65,6 @@ func newMultiClientService(conn *grpc.ClientConn) multiClientInterface {
 		nsClient: &nsService{
 			teamClient:    namespace.NewTeamsClient(conn),
 			billingClient: namespace.NewBillingClient(conn),
-		},
-		dbClient: &dbService{
-			database: db.NewDatabasesClient(conn),
-			snapshot: db.NewSnapshotsClient(conn),
 		},
 	}
 }
@@ -104,16 +89,8 @@ func (s *multiClientServices) CI() *ciService {
 	return s.ciClient
 }
 
-func (s *multiClientServices) GlusterFS() *glusterFSService {
-	return s.glusterfsClient
-}
-
 func (s *multiClientServices) Kubernetes() *versionedKubernetesService {
 	return s.versionedKubernetesClient
-}
-
-func (s *multiClientServices) DB() *dbService {
-	return s.dbClient
 }
 
 // original service clients that needs to exposed under grouped wrapper
@@ -183,19 +160,6 @@ func (c *caService) CertificatesClient() ca.CertificatesClient {
 	return c.certificateClient
 }
 
-type glusterFSService struct {
-	clusterClient glusterfs.ClustersClient
-	volumeClient  glusterfs.VolumesClient
-}
-
-func (g *glusterFSService) Cluster() glusterfs.ClustersClient {
-	return g.clusterClient
-}
-
-func (g *glusterFSService) Volume() glusterfs.VolumesClient {
-	return g.volumeClient
-}
-
 type versionedKubernetesService struct {
 	v1beta1Service *kubernetesV1beta1Service
 	v1beta2Service *kubernetesV1beta2Service
@@ -210,16 +174,11 @@ func (v *versionedKubernetesService) V1beta2() *kubernetesV1beta2Service {
 }
 
 type kubernetesV1beta1Service struct {
-	clientsClient      kubernetesV1beta1.ClientsClient
 	clusterClient      kubernetesV1beta1.ClustersClient
 	eventsClient       kubernetesV1beta1.EventsClient
 	incidentClient     kubernetesV1beta1.IncidentsClient
 	loadBalancerClient kubernetesV1beta1.LoadBalancersClient
 	metdataClient      kubernetesV1beta1.MetadataClient
-}
-
-func (k *kubernetesV1beta1Service) Client() kubernetesV1beta1.ClientsClient {
-	return k.clientsClient
 }
 
 func (k *kubernetesV1beta1Service) Cluster() kubernetesV1beta1.ClustersClient {
@@ -253,17 +212,4 @@ func (k *kubernetesV1beta2Service) Client() kubernetesV1beta2.ClientsClient {
 
 func (k *kubernetesV1beta2Service) Disk() kubernetesV1beta2.DisksClient {
 	return k.diskClient
-}
-
-type dbService struct {
-	database db.DatabasesClient
-	snapshot db.SnapshotsClient
-}
-
-func (p *dbService) Database() db.DatabasesClient {
-	return p.database
-}
-
-func (p *dbService) Snapshot() db.SnapshotsClient {
-	return p.snapshot
 }

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -168,15 +169,20 @@ func (c *Client) NewRequest(method, path string, request interface{}) (*http.Req
 		return nil, errors.New("No URL is provided.")
 	}
 
-	buf := new(bytes.Buffer)
+	var body io.Reader
 	if request != nil {
-		err := json.NewEncoder(buf).Encode(request)
-		if err != nil {
-			return nil, err
+		if r, ok := request.(io.Reader); ok {
+			body = r
+		} else {
+			var buf bytes.Buffer
+			err := json.NewEncoder(&buf).Encode(request)
+			if err != nil {
+				return nil, err
+			}
+			body = &buf
 		}
 	}
-
-	req, err := http.NewRequest(method, u.String(), buf)
+	req, err := http.NewRequest(method, u.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -228,9 +234,16 @@ func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
 	}
 
 	if v != nil {
-		err := json.NewDecoder(resp.Body).Decode(v)
-		if err != nil {
-			return nil, err
+		if w, ok := v.(io.Writer); ok {
+			_, err := io.Copy(w, resp.Body)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			err := json.NewDecoder(resp.Body).Decode(v)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 	return resp, err

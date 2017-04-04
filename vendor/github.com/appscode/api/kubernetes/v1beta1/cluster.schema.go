@@ -7,77 +7,18 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 )
 
-var clusterScaleRequestSchema *gojsonschema.Schema
-var clusterInstanceListRequestSchema *gojsonschema.Schema
 var clusterInstanceByIPRequestSchema *gojsonschema.Schema
 var clusterUpdateRequestSchema *gojsonschema.Schema
-var clusterSetVersionRequestSchema *gojsonschema.Schema
 var clusterDeleteRequestSchema *gojsonschema.Schema
 var clusterCreateRequestSchema *gojsonschema.Schema
 var clusterDescribeRequestSchema *gojsonschema.Schema
 var clusterListRequestSchema *gojsonschema.Schema
+var clusterReconfigureRequestSchema *gojsonschema.Schema
 var clusterStartupConfigRequestSchema *gojsonschema.Schema
 var clusterClientConfigRequestSchema *gojsonschema.Schema
 
 func init() {
 	var err error
-	clusterScaleRequestSchema, err = gojsonschema.NewSchema(gojsonschema.NewStringLoader(`{
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "definitions": {
-    "v1beta1InstanceGroup": {
-      "properties": {
-        "count": {
-          "type": "integer"
-        },
-        "sku": {
-          "type": "string"
-        },
-        "use_spot_instances": {
-          "type": "boolean"
-        }
-      },
-      "type": "object"
-    }
-  },
-  "properties": {
-    "name": {
-      "maxLength": 63,
-      "pattern": "^[a-z0-9](?:[a-z0-9\\-]{0,61}[a-z0-9])?$",
-      "type": "string"
-    },
-    "node_groups": {
-      "items": {
-        "$ref": "#/definitions/v1beta1InstanceGroup"
-      },
-      "type": "array"
-    },
-    "node_set": {
-      "additionalProperties": {
-        "type": "integer"
-      },
-      "title": "New node configuration for the cluster",
-      "type": "object"
-    }
-  },
-  "type": "object"
-}`))
-	if err != nil {
-		glog.Fatal(err)
-	}
-	clusterInstanceListRequestSchema, err = gojsonschema.NewSchema(gojsonschema.NewStringLoader(`{
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "properties": {
-    "cluster_name": {
-      "maxLength": 63,
-      "pattern": "^[a-z0-9](?:[a-z0-9\\-]{0,61}[a-z0-9])?$",
-      "type": "string"
-    }
-  },
-  "type": "object"
-}`))
-	if err != nil {
-		glog.Fatal(err)
-	}
 	clusterInstanceByIPRequestSchema, err = gojsonschema.NewSchema(gojsonschema.NewStringLoader(`{
   "$schema": "http://json-schema.org/draft-04/schema#",
   "properties": {
@@ -115,7 +56,7 @@ func init() {
   },
   "properties": {
     "default_access_level": {
-      "title": "Default access level is to allow permission to the cluster\nwhen no Role matched for that specif user or group. This can\nset as\n   - v:cluster-admins    // to allow admin access\n   - v:cluster-deployer  // to allow deployer access\n   - v:cluster-viewer    // to allow viewer access\n   - \"\"                  // empty value stands for no access",
+      "title": "Default access level is to allow permission to the cluster\nwhen no Role matched for that specif user or group. This can\nset as\n  - kubernetes:team-admin\n  - kubernetes:cluster-admin\n  - kubernetes:admin\n  - kubernetes:editor\n  - kubernetes:viewer\n  - deny-access",
       "type": "string"
     },
     "do_not_delete": {
@@ -128,41 +69,6 @@ func init() {
     },
     "settings": {
       "$ref": "#/definitions/v1beta1ClusterSettings"
-    }
-  },
-  "type": "object"
-}`))
-	if err != nil {
-		glog.Fatal(err)
-	}
-	clusterSetVersionRequestSchema, err = gojsonschema.NewSchema(gojsonschema.NewStringLoader(`{
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "properties": {
-    "apply_to_master": {
-      "type": "boolean"
-    },
-    "hostfacts_version": {
-      "type": "string"
-    },
-    "kube_saltbase_version": {
-      "type": "string"
-    },
-    "kube_server_version": {
-      "type": "string"
-    },
-    "kube_starter_version": {
-      "type": "string"
-    },
-    "name": {
-      "maxLength": 63,
-      "pattern": "^[a-z0-9](?:[a-z0-9\\-]{0,61}[a-z0-9])?$",
-      "type": "string"
-    },
-    "sku": {
-      "type": "string"
-    },
-    "version": {
-      "type": "string"
     }
   },
   "type": "object"
@@ -227,7 +133,7 @@ func init() {
       "type": "object"
     },
     "default_access_level": {
-      "title": "Default access level is to allow permission to the cluster\nwhen no Role matched for that specif user or group. This can\nset as\n   - team-admins       // to allow ns admin access\n   - cluster-admins    // to allow admin access\n   - cluster-editors   // to allow editor access\n   - cluster-deployers // to allow deployer access\n   - cluster-viewers   // to allow viewer access\n   - no-access         // to allow no default access\nIf not set this will set \"\"",
+      "title": "Default access level is to allow permission to the cluster\nwhen no Role matched for that specif user or group. This can\nset as\n  - kubernetes:team-admin\n  - kubernetes:cluster-admin\n  - kubernetes:admin\n  - kubernetes:editor\n  - kubernetes:viewer\n  - deny-access\nIf not set this will set \"\"",
       "type": "string"
     },
     "do_not_delete": {
@@ -239,13 +145,10 @@ func init() {
     "hostfacts_version": {
       "type": "string"
     },
-    "kube_saltbase_version": {
-      "type": "string"
-    },
-    "kube_server_version": {
-      "type": "string"
-    },
     "kube_starter_version": {
+      "type": "string"
+    },
+    "kubelet_version": {
       "type": "string"
     },
     "name": {
@@ -266,6 +169,9 @@ func init() {
       "type": "object"
     },
     "provider": {
+      "type": "string"
+    },
+    "saltbase_version": {
       "type": "string"
     },
     "version": {
@@ -307,6 +213,44 @@ func init() {
 	if err != nil {
 		glog.Fatal(err)
 	}
+	clusterReconfigureRequestSchema, err = gojsonschema.NewSchema(gojsonschema.NewStringLoader(`{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "properties": {
+    "apply_to_master": {
+      "type": "boolean"
+    },
+    "count": {
+      "type": "integer"
+    },
+    "hostfacts_version": {
+      "type": "string"
+    },
+    "kube_starter_version": {
+      "type": "string"
+    },
+    "kubelet_version": {
+      "type": "string"
+    },
+    "name": {
+      "maxLength": 63,
+      "pattern": "^[a-z0-9](?:[a-z0-9\\-]{0,61}[a-z0-9])?$",
+      "type": "string"
+    },
+    "saltbase_version": {
+      "type": "string"
+    },
+    "sku": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "type": "object"
+}`))
+	if err != nil {
+		glog.Fatal(err)
+	}
 	clusterStartupConfigRequestSchema, err = gojsonschema.NewSchema(gojsonschema.NewStringLoader(`{
   "$schema": "http://json-schema.org/draft-04/schema#",
   "properties": {
@@ -339,16 +283,6 @@ func init() {
 	}
 }
 
-func (m *ClusterScaleRequest) IsValid() (*gojsonschema.Result, error) {
-	return clusterScaleRequestSchema.Validate(gojsonschema.NewGoLoader(m))
-}
-func (m *ClusterScaleRequest) IsRequest() {}
-
-func (m *ClusterInstanceListRequest) IsValid() (*gojsonschema.Result, error) {
-	return clusterInstanceListRequestSchema.Validate(gojsonschema.NewGoLoader(m))
-}
-func (m *ClusterInstanceListRequest) IsRequest() {}
-
 func (m *ClusterInstanceByIPRequest) IsValid() (*gojsonschema.Result, error) {
 	return clusterInstanceByIPRequestSchema.Validate(gojsonschema.NewGoLoader(m))
 }
@@ -358,11 +292,6 @@ func (m *ClusterUpdateRequest) IsValid() (*gojsonschema.Result, error) {
 	return clusterUpdateRequestSchema.Validate(gojsonschema.NewGoLoader(m))
 }
 func (m *ClusterUpdateRequest) IsRequest() {}
-
-func (m *ClusterSetVersionRequest) IsValid() (*gojsonschema.Result, error) {
-	return clusterSetVersionRequestSchema.Validate(gojsonschema.NewGoLoader(m))
-}
-func (m *ClusterSetVersionRequest) IsRequest() {}
 
 func (m *ClusterDeleteRequest) IsValid() (*gojsonschema.Result, error) {
 	return clusterDeleteRequestSchema.Validate(gojsonschema.NewGoLoader(m))
@@ -384,6 +313,11 @@ func (m *ClusterListRequest) IsValid() (*gojsonschema.Result, error) {
 }
 func (m *ClusterListRequest) IsRequest() {}
 
+func (m *ClusterReconfigureRequest) IsValid() (*gojsonschema.Result, error) {
+	return clusterReconfigureRequestSchema.Validate(gojsonschema.NewGoLoader(m))
+}
+func (m *ClusterReconfigureRequest) IsRequest() {}
+
 func (m *ClusterStartupConfigRequest) IsValid() (*gojsonschema.Result, error) {
 	return clusterStartupConfigRequestSchema.Validate(gojsonschema.NewGoLoader(m))
 }
@@ -394,21 +328,18 @@ func (m *ClusterClientConfigRequest) IsValid() (*gojsonschema.Result, error) {
 }
 func (m *ClusterClientConfigRequest) IsRequest() {}
 
-func (m *ClusterStartupConfigResponse) SetStatus(s *dtypes.Status) {
-	m.Status = s
-}
-func (m *ClusterDescribeResponse) SetStatus(s *dtypes.Status) {
-	m.Status = s
-}
 func (m *ClusterListResponse) SetStatus(s *dtypes.Status) {
+	m.Status = s
+}
+func (m *ClusterInstanceByIPResponse) SetStatus(s *dtypes.Status) {
 	m.Status = s
 }
 func (m *ClusterClientConfigResponse) SetStatus(s *dtypes.Status) {
 	m.Status = s
 }
-func (m *ClusterInstanceListResponse) SetStatus(s *dtypes.Status) {
+func (m *ClusterStartupConfigResponse) SetStatus(s *dtypes.Status) {
 	m.Status = s
 }
-func (m *ClusterInstanceResponse) SetStatus(s *dtypes.Status) {
+func (m *ClusterDescribeResponse) SetStatus(s *dtypes.Status) {
 	m.Status = s
 }

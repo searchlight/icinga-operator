@@ -8,7 +8,7 @@ import (
 	gomail "gopkg.in/gomail.v2"
 )
 
-const Uid = "smtp"
+const UID = "smtp"
 
 type Options struct {
 	Host               string   `json:"host" envconfig:"HOST" required:"true" form:"smtp_host"`
@@ -21,62 +21,60 @@ type Options struct {
 }
 
 type client struct {
-	opt  Options
-	mail *gomail.Message
-	body string
-	html bool
+	opt     Options
+	subject string
+	body    string
+	html    bool
 }
 
 var _ notify.ByEmail = &client{}
 
 func New(opt Options) *client {
-	mail := gomail.NewMessage()
-	mail.SetHeader("From", opt.From)
-	mail.SetHeader("To", opt.To...)
-	return &client{
-		opt:  opt,
-		mail: mail,
-	}
+	return &client{opt: opt}
 }
 
 func Default() (*client, error) {
 	var opt Options
-	err := envconfig.Process(Uid, &opt)
+	err := envconfig.Process(UID, &opt)
 	if err != nil {
 		return nil, err
 	}
 	return New(opt), nil
 }
 
-func (c *client) From(from string) notify.ByEmail {
-	c.mail.SetHeader("From", from)
-	return c
+func (c client) From(from string) notify.ByEmail {
+	c.opt.From = from
+	return &c
 }
 
-func (c *client) WithSubject(subject string) notify.ByEmail {
-	c.mail.SetHeader("Subject", subject)
-	return c
+func (c client) WithSubject(subject string) notify.ByEmail {
+	c.subject = subject
+	return &c
 }
-func (c *client) WithBody(body string) notify.ByEmail {
+
+func (c client) WithBody(body string) notify.ByEmail {
 	c.body = body
-	return c
+	return &c
 }
 
-func (c *client) WithTag(tag string) notify.ByEmail {
-	return c
+func (c client) WithTag(tag string) notify.ByEmail {
+	return &c
 }
 
-func (c *client) To(to string, cc ...string) notify.ByEmail {
-	tos := append([]string{to}, cc...)
-	c.mail.SetHeader("To", tos...)
-	return c
+func (c client) To(to string, cc ...string) notify.ByEmail {
+	c.opt.To = append([]string{to}, cc...)
+	return &c
 }
 
 func (c *client) Send() error {
+	mail := gomail.NewMessage()
+	mail.SetHeader("From", c.opt.From)
+	mail.SetHeader("To", c.opt.To...)
+	mail.SetHeader("Subject", c.subject)
 	if c.html {
-		c.mail.SetBody("text/html", c.body)
+		mail.SetBody("text/html", c.body)
 	} else {
-		c.mail.SetBody("text/plain", c.body)
+		mail.SetBody("text/plain", c.body)
 	}
 
 	var d *gomail.Dialer
@@ -88,10 +86,10 @@ func (c *client) Send() error {
 	if c.opt.InsecureSkipVerify {
 		d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 	}
-	return d.DialAndSend(c.mail)
+	return d.DialAndSend(mail)
 }
 
-func (c *client) SendHtml() error {
+func (c client) SendHtml() error {
 	c.html = true
 	return c.Send()
 }

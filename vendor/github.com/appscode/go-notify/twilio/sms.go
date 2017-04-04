@@ -11,7 +11,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
-const Uid = "twilio"
+const UID = "twilio"
 
 type Options struct {
 	AccountSid string   `envconfig:"ACCOUNT_SID" required:"true"`
@@ -21,54 +21,52 @@ type Options struct {
 }
 
 type client struct {
-	opt Options
-	v   url.Values
-	to  []string
+	opt  Options
+	body string
 }
 
 var _ notify.BySMS = &client{}
 
 func New(opt Options) *client {
-	v := url.Values{}
-	v.Set("From", opt.From)
 	return &client{
 		opt: opt,
-		v:   v,
-		to:  opt.To,
 	}
 }
 
 func Default() (*client, error) {
 	var opt Options
-	err := envconfig.Process(Uid, &opt)
+	err := envconfig.Process(UID, &opt)
 	if err != nil {
 		return nil, err
 	}
 	return New(opt), nil
 }
 
-func (c *client) From(from string) notify.BySMS {
-	c.v.Set("From", from)
-	return c
+func (c client) From(from string) notify.BySMS {
+	c.opt.From = from
+	return &c
 }
 
-func (c *client) WithBody(body string) notify.BySMS {
-	c.v.Set("Body", body)
-	return c
+func (c client) WithBody(body string) notify.BySMS {
+	c.body = body
+	return &c
 }
 
-func (c *client) To(to string, cc ...string) notify.BySMS {
-	c.to = append([]string{to}, cc...)
-	return c
+func (c client) To(to string, cc ...string) notify.BySMS {
+	c.opt.To = append([]string{to}, cc...)
+	return &c
 }
 
 func (c *client) Send() error {
 	h := &http.Client{Timeout: time.Second * 10}
 
-	for _, receiver := range c.to {
-		c.v.Set("To", receiver)
+	v := url.Values{}
+	v.Set("From", c.opt.From)
+	v.Set("Body", c.body)
+	for _, receiver := range c.opt.To {
+		v.Set("To", receiver)
 		urlStr := fmt.Sprintf("https://api.twilio.com/2010-04-01/Accounts/%v/Messages.json", c.opt.AccountSid)
-		req, err := http.NewRequest("POST", urlStr, strings.NewReader(c.v.Encode()))
+		req, err := http.NewRequest("POST", urlStr, strings.NewReader(v.Encode()))
 		if err != nil {
 			return err
 		}

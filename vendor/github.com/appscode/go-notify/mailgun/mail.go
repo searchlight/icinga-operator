@@ -7,7 +7,7 @@ import (
 	mailgun "github.com/mailgun/mailgun-go"
 )
 
-const Uid = "mailgun"
+const UID = "mailgun"
 
 type Options struct {
 	Domain       string   `json:"domain" envconfig:"DOMAIN" required:"true" form:"mailgun_domain"`
@@ -40,36 +40,36 @@ func New(opt Options) *client {
 
 func Default() (*client, error) {
 	var opt Options
-	err := envconfig.Process(Uid, &opt)
+	err := envconfig.Process(UID, &opt)
 	if err != nil {
 		return nil, err
 	}
 	return New(opt), nil
 }
 
-func (c *client) From(from string) notify.ByEmail {
+func (c client) From(from string) notify.ByEmail {
 	c.from = from
-	return c
+	return &c
 }
 
-func (c *client) WithSubject(subject string) notify.ByEmail {
+func (c client) WithSubject(subject string) notify.ByEmail {
 	c.subject = subject
-	return c
+	return &c
 }
 
-func (c *client) WithBody(body string) notify.ByEmail {
+func (c client) WithBody(body string) notify.ByEmail {
 	c.body = body
-	return c
+	return &c
 }
 
-func (c *client) WithTag(tag string) notify.ByEmail {
+func (c client) WithTag(tag string) notify.ByEmail {
 	c.tag = tag
-	return c
+	return &c
 }
 
-func (c *client) To(to string, cc ...string) notify.ByEmail {
+func (c client) To(to string, cc ...string) notify.ByEmail {
 	c.to = append([]string{to}, cc...)
-	return c
+	return &c
 }
 
 func (c *client) Send() error {
@@ -93,7 +93,7 @@ func (c *client) Send() error {
 	return err
 }
 
-func (c *client) SendHtml() error {
+func (c client) SendHtml() error {
 	c.html = true
 	return c.Send()
 }

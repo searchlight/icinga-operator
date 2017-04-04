@@ -12,7 +12,7 @@ import (
 type biblio struct{}
 
 func init() {
-	extpoints.Drivers.Register(new(biblio), smtp.Uid)
+	extpoints.Drivers.Register(new(biblio), smtp.UID)
 }
 
 func (b *biblio) Notify(req *api.IncidentNotifyRequest) error {

@@ -12,7 +12,7 @@ import (
 type biblio struct{}
 
 func init() {
-	extpoints.Drivers.Register(new(biblio), slack.Uid)
+	extpoints.Drivers.Register(new(biblio), slack.UID)
 }
 
 func (b *biblio) Notify(req *api.IncidentNotifyRequest) error {

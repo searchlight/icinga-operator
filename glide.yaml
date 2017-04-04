@@ -5,11 +5,11 @@ import:
 - package: github.com/golang/protobuf
   version: 8ee79997227bf9b34611aee7946ae64735e6fd93
 - package: github.com/grpc-ecosystem/grpc-gateway
-  repo: git@github.com:appscode/grpc-gateway.git
+  repo: https://github.com/appscode/grpc-gateway.git
   vcs: git
   version: master
 - package: google.golang.org/grpc
-  version: v1.0.5
+  version: v1.2.0
 - package: github.com/appscode/api
   version: master
 - package: github.com/appscode/client
@@ -36,9 +36,9 @@ import:
 - package: github.com/shirou/gopsutil
   version: v2.16.11
 - package: gopkg.in/macaron.v1
-  version: v1.1.11
-  repo: https://github.com/go-macaron/macaron.git
-  vcs: git
+  version: v1.2.1
+- package: github.com/Unknwon/com
+  version: master
 testImport:
 - package: github.com/stretchr/testify
   version: v1.1.4

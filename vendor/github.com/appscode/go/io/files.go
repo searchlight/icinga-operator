@@ -3,6 +3,7 @@ package io
 import (
 	"bufio"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -59,7 +60,7 @@ func ReadINIConfig(path string) (map[string]string, error) {
 	return mp, nil
 }
 
-func WriteFile(path string, obj interface{}) error {
+func WriteJson(path string, obj interface{}) error {
 	d, err := json.MarshalIndent(obj, "", "  ")
 	if err != nil {
 		return err
@@ -113,4 +114,33 @@ func IsFileExists(path string) bool {
 		return false
 	}
 	return true
+}
+
+// CopyFile copies the contents from src to dst using io.Copy.
+// If dst does not exist, CopyFile creates it with permissions perm;
+// otherwise CopyFile truncates it before writing.
+func CopyFile(dst, src string, perm os.FileMode) (err error) {
+	in, err := os.Open(src)
+	if err != nil {
+		return
+	}
+	defer in.Close()
+	return WriteFile(dst, in, perm)
+}
+
+// CopyFile copies the contents from src to dst using io.Copy.
+// If dst does not exist, CopyFile creates it with permissions perm;
+// otherwise CopyFile truncates it before writing.
+func WriteFile(dst string, in io.Reader, perm os.FileMode) (err error) {
+	out, err := os.OpenFile(dst, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, perm)
+	if err != nil {
+		return
+	}
+	defer func() {
+		if e := out.Close(); e != nil {
+			err = e
+		}
+	}()
+	_, err = io.Copy(out, in)
+	return
 }
