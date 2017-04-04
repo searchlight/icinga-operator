@@ -2,21 +2,21 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    chart: '{{.Chart.Name}}-{{.Chart.Version}}'
-    heritage: '{{.Release.Service}}'
-    release: '{{.Release.Name}}'
-    run: '{{.Release.Name}}-appscode-icinga'
-  name: '{{ template "fullname" . }}-appscode-icinga'
-  namespace: '{{.Values.appscodeicinga.namespace}}'
+    chart: {{.Chart.Name}}-{{.Chart.Version}}
+    heritage: {{.Release.Service}}
+    release: {{.Release.Name}}
+    run: {{ template "fullname" . }}-appscode-icinga
+  name: {{ template "fullname" . }}-appscode-icinga
+  namespace: {{.Values.appscodeicinga.namespace}}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      run: '{{.Release.Name}}-appscode-icinga'
+      run: {{ template "fullname" . }}-appscode-icinga
   template:
     metadata:
       labels:
-        run: '{{.Release.Name}}-appscode-icinga'
+        run: {{ template "fullname" . }}-appscode-icinga
     spec:
       volumes:
       - emptyDir: {}
@@ -25,9 +25,9 @@ spec:
         name: script-volume
       - name: appscode-icinga
         secret:
-          secretName: '{{ template "fullname" . }}-appscode-icinga'
+          secretName: {{ template "fullname" . }}-appscode-icinga
       containers:
-      - image: '{{.Values.appscodeicinga.icinga.image}}:{{.Values.appscodeicinga.icinga.imageTag}}'
+      - image: {{.Values.appscodeicinga.icinga.image}}:{{.Values.appscodeicinga.icinga.imageTag}}
         name: icinga
         ports:
         - containerPort: {{.Values.appscodeicinga.icinga.apiPort}}
@@ -46,10 +46,10 @@ spec:
       - args:
         - basic
         - ./setup-db.sh
-        image: '{{.Values.appscodeicinga.ido.image}}:{{.Values.appscodeicinga.ido.imageTag}}'
+        image: {{.Values.appscodeicinga.ido.image}}:{{.Values.appscodeicinga.ido.imageTag}}
         name: ido
         ports:
-        - containerPort: {{.Values.appscodeicinga.ido.idpPort}}
+        - containerPort: {{.Values.appscodeicinga.ido.idoPort}}
           name: ido
           protocol: TCP
         volumeMounts:

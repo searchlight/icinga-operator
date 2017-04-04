@@ -1,5 +1,38 @@
 appscodeicinga:
-  .env: SUNJTkdBX1dFQl9IT1NUPTEyNy4wLjAuMQpJQ0lOR0FfV0VCX1BPUlQ9NTQzMgpJQ0lOR0FfV0VCX0RCPWljaW5nYXdlYmRiCklDSU5HQV9XRUJfVVNFUj1pY2luZ2F3ZWIKSUNJTkdBX1dFQl9QQVNTV09SRD0xMjM0NTY3OApJQ0lOR0FfV0VCX0FETUlOX1BBU1NXT1JEPWFkbWluCklDSU5HQV9JRE9fSE9TVD0xMjcuMC4wLjEKSUNJTkdBX0lET19QT1JUPTU0MzIKSUNJTkdBX0lET19EQj1pY2luZ2FpZG9kYgpJQ0lOR0FfSURPX1VTRVI9aWNpbmdhaWRvCklDSU5HQV9JRE9fUEFTU1dPUkQ9MTIzNDU2NzgKSUNJTkdBX0FQSV9VU0VSPWljaW5nYWFwaQpJQ0lOR0FfQVBJX1BBU1NXT1JEPTEyMzQ1Njc4CklDSU5HQV9BRERSRVNTPWFwcHNjb2RlLWljaW5nYS5rdWJlLXN5c3RlbQo=
+##
+## Ihinga secret configaration
+## https://github.com/appscode/searchlight/blob/master/docs/user-guide/icinga2/deployment.md#create-deployment
+##
+
+#  env:
+#  caCrt:
+#  ichingaKey:
+#  ichingaCrt:
+#  notifyVia:
+#  hipchatAuthToken:
+#  hipchatTo:
+#  mailgunDomain:
+#  mailgunAPIKey:
+#  mailgunPublicAPIKey:
+#  mailgunFrom:
+#  mailgunTo:
+#  smtpHost:
+#  smtpPort:
+#  smtpInsecureSkipVerify:
+#  smtpUsername:
+#  smtpPassword:
+#  smtpFrom:
+#  smtpTo:
+#  twilioAccountSid:
+#  twilioAuthToken:
+#  twilioFrom:
+#  twilioTo:
+#  slackAuthToken:
+#  slackChannel:
+#  plivoAuthId:
+#  plivoAuthToken:
+#  plivoFrom:
+#  plivoTo:
   icinga:
     image: appscode/postgres
     imageTag: 9.5-v3-db
@@ -11,10 +44,8 @@ appscodeicinga:
     image: appscode/postgres
     imageTag: 9.5-v3-db
     idoPort: 5432
-  namespace: kube-system
   type: Opaque
 appscodesearchlight:
   image: appscode/searchlight
   imagePullPolicy: Always
   imageTag: 1.5.3
-  namespace: default

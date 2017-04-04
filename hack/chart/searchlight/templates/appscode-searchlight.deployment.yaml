@@ -5,22 +5,21 @@ metadata:
     chart: {{.Chart.Name}}-{{.Chart.Version}}
     heritage: {{.Release.Service}}
     release: {{.Release.Name}}
-    run: {{.Release.Name}}-appscode-searchlight
+    run: {{ template "fullname" . }}-appscode-searchlight
   name: {{ template "fullname" . }}-appscode-searchlight
-  namespace: {{.Values.appscodesearchlight.namespace}}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      run: '{{.Release.Name}}-appscode-searchlight'
+      run: {{ template "fullname" . }}-appscode-searchlight
   template:
     metadata:
       labels:
-        run: '{{.Release.Name}}-appscode-searchlight'
+        run: {{ template "fullname" . }}-appscode-searchlight
     spec:
       containers:
       - args:
         - --icinga-secret=appscode-icinga.kube-system
-        image: '{{.Values.appscodesearchlight.image}}:{{.Values.appscodesearchlight.imageTag}}'
-        imagePullPolicy: '{{.Values.appscodesearchlight.imagePullPolicy}}'
+        image: {{.Values.appscodesearchlight.image}}:{{.Values.appscodesearchlight.imageTag}}
+        imagePullPolicy: {{.Values.appscodesearchlight.imagePullPolicy}}
         name: appscode-searchlight

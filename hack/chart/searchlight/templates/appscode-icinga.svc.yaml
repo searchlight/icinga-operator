@@ -5,9 +5,8 @@ metadata:
     chart: {{.Chart.Name}}-{{.Chart.Version}}
     heritage: {{.Release.Service}}
     release: {{.Release.Name}}
-    run: appscode-icinga
-  name: '{{ template "fullname" . }}-appscode-icinga'
-  namespace: '{{.Values.appscodeicinga.namespace}}'
+    run: {{ template "fullname" . }}-appscode-icinga
+  name: {{ template "fullname" . }}-appscode-icinga
 spec:
   ports:
   - name: web
