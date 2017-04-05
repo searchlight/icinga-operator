@@ -16,4 +16,4 @@ spec:
     port: {{.Values.appscodeicinga.apiTargetPort}}
     targetPort: api
   selector:
-    run: "{{.Release.Name}}-appscode-icinga"
+    run: "{{ template "fullname" . }}-appscode-icinga"
