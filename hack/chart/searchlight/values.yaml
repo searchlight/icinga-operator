@@ -19,13 +19,13 @@ appscodeicinga:
     ICINGA_API_USER=icingaapi
     ICINGA_API_PASSWORD=12345678
 
-## Use Ichinga Service name.Namespace in ICINGA_ADDRESS
+## Use <icinga-service-name>.<namespace> in ICINGA_ADDRESS
 ##
 
     ICINGA_ADDRESS=my-release-searchlight-appscode-icinga.default
 # caCrt:
-# ichingaKey:
-# ichingaCrt:
+# icingaKey:
+# icingaCrt:
 # notifyVia:
 
 ## Hipchat notifier
@@ -82,14 +82,14 @@ appscodeicinga:
 # plivoFrom:
 # plivoTo:
 
-## Ichinga container configaration
+## Icinga container configaration
 ##
 
   icinga:
     image: appscode/icinga
     imageTag: 1.5.3-k8s
     apiPort: 5665
-    tcpPort: 60006
+    tcpPort: 80
 
 ## Postgress configaration
 ##
@@ -99,7 +99,7 @@ appscodeicinga:
     imageTag: 9.5-v3-db
     idoPort: 5432
 
-## Ichinga secret type
+## Icinga secret type
 ##
 
   type: Opaque
@@ -107,7 +107,7 @@ appscodeicinga:
 ##
 
   apiTargetPort: 5665
-  webTargetPort: 80
+  webTargetPort: 60006
 
 ## Search light configaration
 ##
