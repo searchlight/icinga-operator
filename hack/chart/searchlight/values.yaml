@@ -18,11 +18,8 @@ appscodeicinga:
     ICINGA_IDO_PASSWORD=12345678
     ICINGA_API_USER=icingaapi
     ICINGA_API_PASSWORD=12345678
+    # ICINGA_ADDRESS=<icinga-service-name>.<namespace>
 
-## Use <icinga-service-name>.<namespace> in ICINGA_ADDRESS
-##
-
-    ICINGA_ADDRESS=my-release-searchlight-appscode-icinga.default
 # caCrt:
 # icingaKey:
 # icingaCrt:
@@ -89,7 +86,7 @@ appscodeicinga:
     image: appscode/icinga
     imageTag: 1.5.4-k8s
     apiPort: 5665
-    tcpPort: 80
+    webPort: 80
 
 ## Postgress configaration
 ##

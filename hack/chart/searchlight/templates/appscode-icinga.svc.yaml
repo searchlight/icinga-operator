@@ -11,7 +11,7 @@ spec:
   ports:
   - name: web
     port: {{.Values.appscodeicinga.webTargetPort}}
-    targetPort: tcp
+    targetPort: web
   - name: api
     port: {{.Values.appscodeicinga.apiTargetPort}}
     targetPort: api
