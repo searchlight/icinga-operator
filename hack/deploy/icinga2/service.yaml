@@ -8,7 +8,7 @@ metadata:
 spec:
   ports:
     - name: web
-      port: 60006
+      port: 80
       targetPort: web
     - name: api
       port: 5665

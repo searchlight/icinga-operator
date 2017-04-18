@@ -86,7 +86,7 @@ appscodeicinga:
     image: appscode/icinga
     imageTag: 1.5.4-k8s
     apiPort: 5665
-    webPort: 80
+    webPort: 60006
 
 ## Postgress configaration
 ##
@@ -104,7 +104,7 @@ appscodeicinga:
 ##
 
   apiTargetPort: 5665
-  webTargetPort: 60006
+  webTargetPort: 80
 
 ## Search light configaration
 ##
