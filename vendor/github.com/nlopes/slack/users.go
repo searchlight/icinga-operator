@@ -1,8 +1,15 @@
 package slack
 
 import (
+	"encoding/json"
 	"errors"
 	"net/url"
+)
+
+const (
+	DEFAULT_USER_PHOTO_CROP_X = -1
+	DEFAULT_USER_PHOTO_CROP_Y = -1
+	DEFAULT_USER_PHOTO_CROP_W = -1
 )
 
 // UserProfile contains all the information details of a given user
@@ -23,6 +30,8 @@ type UserProfile struct {
 	Title              string `json:"title"`
 	BotID              string `json:"bot_id,omitempty"`
 	ApiAppID           string `json:"api_app_id,omitempty"`
+	StatusText         string `json:"status_text,omitempty"`
+	StatusEmoji        string `json:"status_emoji,omitempty"`
 }
 
 // User contains all the information of a user
@@ -95,6 +104,20 @@ type userResponseFull struct {
 	User         `json:"user,omitempty"` // GetUserInfo
 	UserPresence                         // GetUserPresence
 	SlackResponse
+}
+
+type UserSetPhotoParams struct {
+	CropX int
+	CropY int
+	CropW int
+}
+
+func NewUserSetPhotoParams() UserSetPhotoParams {
+	return UserSetPhotoParams{
+		CropX: DEFAULT_USER_PHOTO_CROP_X,
+		CropY: DEFAULT_USER_PHOTO_CROP_Y,
+		CropW: DEFAULT_USER_PHOTO_CROP_W,
+	}
 }
 
 func userRequest(path string, values url.Values, debug bool) (*userResponseFull, error) {
@@ -188,4 +211,99 @@ func (api *Client) GetUserIdentity() (*UserIdentityResponse, error) {
 		return nil, errors.New(response.Error)
 	}
 	return response, nil
+}
+
+// SetUserPhoto changes the currently authenticated user's profile image
+func (api *Client) SetUserPhoto(image string, params UserSetPhotoParams) error {
+	response := &SlackResponse{}
+	values := url.Values{
+		"token": {api.config.token},
+	}
+	if params.CropX != DEFAULT_USER_PHOTO_CROP_X {
+		values.Add("crop_x", string(params.CropX))
+	}
+	if params.CropY != DEFAULT_USER_PHOTO_CROP_Y {
+		values.Add("crop_y", string(params.CropY))
+	}
+	if params.CropW != DEFAULT_USER_PHOTO_CROP_W {
+		values.Add("crop_w", string(params.CropW))
+	}
+	err := postWithMultipartResponse("users.setPhoto", image, "image", values, response, api.debug)
+	if err != nil {
+		return err
+	}
+	if !response.Ok {
+		return errors.New(response.Error)
+	}
+	return nil
+}
+
+// DeleteUserPhoto deletes the current authenticated user's profile image
+func (api *Client) DeleteUserPhoto() error {
+	response := &SlackResponse{}
+	values := url.Values{
+		"token": {api.config.token},
+	}
+	err := post("users.deletePhoto", values, response, api.debug)
+	if err != nil {
+		return err
+	}
+	if !response.Ok {
+		return errors.New(response.Error)
+	}
+	return nil
+}
+
+// SetUserCustomStatus will set a custom status and emoji for the currently
+// authenticated user. If statusEmoji is "" and statusText is not, the Slack API
+// will automatically set it to ":speech_balloon:". Otherwise, if both are ""
+// the Slack API will unset the custom status/emoji.
+func (api *Client) SetUserCustomStatus(statusText, statusEmoji string) error {
+	// XXX(theckman): this anonymous struct is for making requests to the Slack
+	// API for setting and unsetting a User's Custom Status/Emoji. To change
+	// these values we must provide a JSON document as the profile POST field.
+	//
+	// We use an anonymous struct over UserProfile because to unset the values
+	// on the User's profile we cannot use the `json:"omitempty"` tag. This is
+	// because an empty string ("") is what's used to unset the values. Check
+	// out the API docs for more details:
+	//
+	// - https://api.slack.com/docs/presence-and-status#custom_status
+	profile, err := json.Marshal(
+		&struct {
+			StatusText  string `json:"status_text"`
+			StatusEmoji string `json:"status_emoji"`
+		}{
+			StatusText:  statusText,
+			StatusEmoji: statusEmoji,
+		},
+	)
+
+	if err != nil {
+		return err
+	}
+
+	values := url.Values{
+		"token":   {api.config.token},
+		"profile": {string(profile)},
+	}
+
+	response := &userResponseFull{}
+
+	if err = post("users.profile.set", values, response, api.debug); err != nil {
+		return err
+	}
+
+	if !response.Ok {
+		return errors.New(response.Error)
+	}
+
+	return nil
+}
+
+// UnsetUserCustomStatus removes the custom status message for the currently
+// authenticated user. This is a convenience method that wraps
+// (*Client).SetUserCustomStatus().
+func (api *Client) UnsetUserCustomStatus() error {
+	return api.SetUserCustomStatus("", "")
 }

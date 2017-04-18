@@ -29,7 +29,7 @@ func (s WebError) Error() string {
 	return string(s)
 }
 
-func fileUploadReq(path, fpath string, values url.Values) (*http.Request, error) {
+func fileUploadReq(path, fpath, fieldname string, values url.Values) (*http.Request, error) {
 	fullpath, err := filepath.Abs(fpath)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func fileUploadReq(path, fpath string, values url.Values) (*http.Request, error)
 	body := &bytes.Buffer{}
 	wr := multipart.NewWriter(body)
 
-	ioWriter, err := wr.CreateFormFile("file", filepath.Base(fullpath))
+	ioWriter, err := wr.CreateFormFile(fieldname, filepath.Base(fullpath))
 	if err != nil {
 		wr.Close()
 		return nil, err
@@ -90,8 +90,8 @@ func parseResponseBody(body io.ReadCloser, intf *interface{}, debug bool) error 
 	return nil
 }
 
-func postWithMultipartResponse(path string, filepath string, values url.Values, intf interface{}, debug bool) error {
-	req, err := fileUploadReq(SLACK_API+path, filepath, values)
+func postWithMultipartResponse(path, filepath, fieldname string, values url.Values, intf interface{}, debug bool) error {
+	req, err := fileUploadReq(SLACK_API+path, filepath, fieldname, values)
 	resp, err := HTTPClient.Do(req)
 	if err != nil {
 		return err
@@ -114,6 +114,12 @@ func postForm(endpoint string, values url.Values, intf interface{}, debug bool) 
 	}
 	defer resp.Body.Close()
 
+	// Slack seems to send an HTML body along with 5xx error codes. Don't parse it.
+	if resp.StatusCode != 200 {
+		logResponse(resp, debug)
+		return fmt.Errorf("Slack server error: %s.", resp.Status)
+	}
+
 	return parseResponseBody(resp.Body, &intf, debug)
 }
 
@@ -133,7 +139,7 @@ func logResponse(resp *http.Response, debug bool) error {
 			return err
 		}
 
-		logger.Print(text)
+		logger.Print(string(text))
 	}
 
 	return nil

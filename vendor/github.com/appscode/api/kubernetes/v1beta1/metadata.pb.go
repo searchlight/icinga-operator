@@ -28,7 +28,7 @@ type RegionListRequest struct {
 func (m *RegionListRequest) Reset()                    { *m = RegionListRequest{} }
 func (m *RegionListRequest) String() string            { return proto.CompactTextString(m) }
 func (*RegionListRequest) ProtoMessage()               {}
-func (*RegionListRequest) Descriptor() ([]byte, []int) { return fileDescriptor4, []int{0} }
+func (*RegionListRequest) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{0} }
 
 func (m *RegionListRequest) GetCloudCredential() string {
 	if m != nil {
@@ -45,7 +45,7 @@ type RegionListResponse struct {
 func (m *RegionListResponse) Reset()                    { *m = RegionListResponse{} }
 func (m *RegionListResponse) String() string            { return proto.CompactTextString(m) }
 func (*RegionListResponse) ProtoMessage()               {}
-func (*RegionListResponse) Descriptor() ([]byte, []int) { return fileDescriptor4, []int{1} }
+func (*RegionListResponse) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{1} }
 
 func (m *RegionListResponse) GetStatus() *appscode_dtypes.Status {
 	if m != nil {
@@ -69,7 +69,7 @@ type ZoneListRequest struct {
 func (m *ZoneListRequest) Reset()                    { *m = ZoneListRequest{} }
 func (m *ZoneListRequest) String() string            { return proto.CompactTextString(m) }
 func (*ZoneListRequest) ProtoMessage()               {}
-func (*ZoneListRequest) Descriptor() ([]byte, []int) { return fileDescriptor4, []int{2} }
+func (*ZoneListRequest) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{2} }
 
 func (m *ZoneListRequest) GetCloudCredential() string {
 	if m != nil {
@@ -93,7 +93,7 @@ type ZoneListResponse struct {
 func (m *ZoneListResponse) Reset()                    { *m = ZoneListResponse{} }
 func (m *ZoneListResponse) String() string            { return proto.CompactTextString(m) }
 func (*ZoneListResponse) ProtoMessage()               {}
-func (*ZoneListResponse) Descriptor() ([]byte, []int) { return fileDescriptor4, []int{3} }
+func (*ZoneListResponse) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{3} }
 
 func (m *ZoneListResponse) GetStatus() *appscode_dtypes.Status {
 	if m != nil {
@@ -117,7 +117,7 @@ type BucketListRequest struct {
 func (m *BucketListRequest) Reset()                    { *m = BucketListRequest{} }
 func (m *BucketListRequest) String() string            { return proto.CompactTextString(m) }
 func (*BucketListRequest) ProtoMessage()               {}
-func (*BucketListRequest) Descriptor() ([]byte, []int) { return fileDescriptor4, []int{4} }
+func (*BucketListRequest) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{4} }
 
 func (m *BucketListRequest) GetCloudCredential() string {
 	if m != nil {
@@ -141,7 +141,7 @@ type BucketListResponse struct {
 func (m *BucketListResponse) Reset()                    { *m = BucketListResponse{} }
 func (m *BucketListResponse) String() string            { return proto.CompactTextString(m) }
 func (*BucketListResponse) ProtoMessage()               {}
-func (*BucketListResponse) Descriptor() ([]byte, []int) { return fileDescriptor4, []int{5} }
+func (*BucketListResponse) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{5} }
 
 func (m *BucketListResponse) GetStatus() *appscode_dtypes.Status {
 	if m != nil {
@@ -304,9 +304,9 @@ var _Metadata_serviceDesc = grpc.ServiceDesc{
 	Metadata: "metadata.proto",
 }
 
-func init() { proto.RegisterFile("metadata.proto", fileDescriptor4) }
+func init() { proto.RegisterFile("metadata.proto", fileDescriptor3) }
 
-var fileDescriptor4 = []byte{
+var fileDescriptor3 = []byte{
 	// 473 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x94, 0xcd, 0x6e, 0x13, 0x31,
 	0x10, 0xc7, 0xb5, 0x01, 0xd2, 0x66, 0x22, 0x68, 0x6b, 0x21, 0x58, 0x05, 0x44, 0xab, 0xe5, 0xd2,

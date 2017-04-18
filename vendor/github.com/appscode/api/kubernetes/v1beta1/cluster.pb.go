@@ -7,7 +7,6 @@ Package v1beta1 is a generated protocol buffer package.
 
 It is generated from these files:
 	cluster.proto
-	event.proto
 	incident.proto
 	loadbalancer.proto
 	metadata.proto
@@ -32,8 +31,6 @@ It has these top-level messages:
 	ClusterInstance
 	ClusterUpdateRequest
 	ClusterReconfigureRequest
-	EventRequest
-	EventResponse
 	Incident
 	IncidentListRequest
 	IncidentListResponse

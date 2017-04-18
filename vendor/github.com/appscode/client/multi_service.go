@@ -52,7 +52,6 @@ func newMultiClientService(conn *grpc.ClientConn) multiClientInterface {
 		versionedKubernetesClient: &versionedKubernetesService{
 			v1beta1Service: &kubernetesV1beta1Service{
 				clusterClient:      kubernetesV1beta1.NewClustersClient(conn),
-				eventsClient:       kubernetesV1beta1.NewEventsClient(conn),
 				incidentClient:     kubernetesV1beta1.NewIncidentsClient(conn),
 				loadBalancerClient: kubernetesV1beta1.NewLoadBalancersClient(conn),
 				metdataClient:      kubernetesV1beta1.NewMetadataClient(conn),
@@ -169,7 +168,6 @@ func (v *versionedKubernetesService) V1beta2() *kubernetesV1beta2Service {
 
 type kubernetesV1beta1Service struct {
 	clusterClient      kubernetesV1beta1.ClustersClient
-	eventsClient       kubernetesV1beta1.EventsClient
 	incidentClient     kubernetesV1beta1.IncidentsClient
 	loadBalancerClient kubernetesV1beta1.LoadBalancersClient
 	metdataClient      kubernetesV1beta1.MetadataClient
@@ -177,10 +175,6 @@ type kubernetesV1beta1Service struct {
 
 func (k *kubernetesV1beta1Service) Cluster() kubernetesV1beta1.ClustersClient {
 	return k.clusterClient
-}
-
-func (k *kubernetesV1beta1Service) Event() kubernetesV1beta1.EventsClient {
-	return k.eventsClient
 }
 
 func (a *kubernetesV1beta1Service) Incident() kubernetesV1beta1.IncidentsClient {
