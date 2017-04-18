@@ -7,7 +7,6 @@ metadata:
     release: {{.Release.Name}}
     run: {{ template "fullname" . }}-appscode-icinga
   name: {{ template "fullname" . }}-appscode-icinga
-  namespace: {{.Values.appscodeicinga.namespace}}
 spec:
   replicas: 1
   selector:

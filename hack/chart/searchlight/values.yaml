@@ -1,6 +1,6 @@
 appscodeicinga:
 
-## Ihinga configaration
+## Icinga configaration
 ## https://github.com/appscode/searchlight/blob/master/docs/user-guide/icinga2/deployment.md#create-deployment
 ##
 
@@ -114,11 +114,6 @@ appscodesearchlight:
 ## Searchlight image
 ##
   image: appscode/searchlight
-
-## Searchlight image pull policy
-##
-
-  imagePullPolicy: Always
 
 ## Searchlight image tag
 ##

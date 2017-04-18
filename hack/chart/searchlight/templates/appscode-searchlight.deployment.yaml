@@ -22,5 +22,4 @@ spec:
         - --icinga-secret-name={{ template "fullname" . }}-appscode-icinga
         - --icinga-secret-namespace={{.Release.Namespace}}
         image: {{.Values.appscodesearchlight.image}}:{{.Values.appscodesearchlight.imageTag}}
-        imagePullPolicy: {{.Values.appscodesearchlight.imagePullPolicy}}
         name: appscode-searchlight
