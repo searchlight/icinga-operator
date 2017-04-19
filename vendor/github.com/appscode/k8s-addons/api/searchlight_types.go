@@ -28,10 +28,6 @@ const (
 	PhaseAlertCreating AlertPhase = "Creating"
 	// used for Alert that are created
 	PhaseAlertCreated AlertPhase = "Created"
-	// used for Alert that are currently updating
-	PhaseAlertUpdating AlertPhase = "Updating"
-	// used for Alert that are updated
-	PhaseAlertUpdated AlertPhase = "Updated"
 	// used for Alert that are currently deleting
 	PhaseAlertDeleting AlertPhase = "Deleting"
 	// used for Alert that are Failed

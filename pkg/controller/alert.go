@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/appscode/errors"
@@ -19,6 +20,7 @@ import (
 	_ "github.com/appscode/searchlight/pkg/controller/host/pod"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	kapi "k8s.io/kubernetes/pkg/api"
+	"k8s.io/kubernetes/pkg/api/unversioned"
 	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
 	"k8s.io/kubernetes/pkg/labels"
 )
@@ -74,11 +76,35 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		if len(alert) == 0 {
 			return errors.New().WithMessage("Missing alert data").NotFound()
 		}
-		b.ctx.Resource = alert[0].(*aci.Alert)
+
+		_alert := alert[0].(*aci.Alert)
+		var err error
+
+		if _alert.Status.Created == nil {
+			// Set Status
+			unversionedNow := unversioned.Now()
+			_alert.Status.Created = &unversionedNow
+			_alert.Status.Phase = aci.PhaseAlertCreating
+			_alert, err = b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert)
+			if err != nil {
+				return errors.New().WithCause(err).Internal()
+			}
+		}
+
+		b.ctx.Resource = _alert
 
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.CreatingIcingaObjects)
 
 		if err := b.IsObjectExists(); err != nil {
+			// Update Status
+			unversionedNow := unversioned.Now()
+			_alert.Status.Updated = &unversionedNow
+			_alert.Status.Phase = aci.PhaseAlertFailed
+			_alert.Status.Reason = err
+			if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
+				return errors.New().WithCause(err).Internal()
+			}
+
 			if errors.IsNotFound(err) {
 				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.NoIcingaObjectCreated, err.Error())
 				return nil
@@ -88,9 +114,27 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			}
 		}
 		if err := b.Create(); err != nil {
+			// Update Status
+			unversionedNow := unversioned.Now()
+			_alert.Status.Updated = &unversionedNow
+			_alert.Status.Phase = aci.PhaseAlertFailed
+			_alert.Status.Reason = err
+			if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
+				return errors.New().WithCause(err).Internal()
+			}
+
 			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToCreateIcingaObjects, err.Error())
 			return errors.New().WithCause(err).Internal()
 		}
+
+		unversionedNow := unversioned.Now()
+		_alert.Status.Updated = &unversionedNow
+		_alert.Status.Phase = aci.PhaseAlertCreated
+		_alert.Status.Reason = ""
+		if _, err = b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
+			return errors.New().WithCause(err).Internal()
+		}
+
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.CreatedIcingaObjects)
 	} else if e.EventType.IsUpdated() {
 		if len(alert) == 0 {
@@ -99,6 +143,10 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 
 		oldConfig := alert[0].(*aci.Alert)
 		newConfig := alert[1].(*aci.Alert)
+
+		if reflect.DeepEqual(oldConfig.Spec, newConfig.Spec) {
+			return
+		}
 
 		if err := host.CheckAlertConfig(oldConfig, newConfig); err != nil {
 			return errors.New().WithCause(err).BadRequest()
@@ -122,12 +170,31 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToUpdateIcingaObjects, err.Error())
 			return errors.New().WithCause(err).Internal()
 		}
+
+		// Set Status
+		_alert := b.ctx.Resource
+		unversionedNow := unversioned.Now()
+		_alert.Status.Updated = &unversionedNow
+		if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
+			return errors.New().WithCause(err).Internal()
+		}
+
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.UpdatedIcingaObjects)
 	} else if e.EventType.IsDeleted() {
 		if len(alert) == 0 {
 			return errors.New().WithMessage("Missing alert data").NotFound()
 		}
-		b.ctx.Resource = alert[0].(*aci.Alert)
+
+		_alert := alert[0].(*aci.Alert)
+		var err error
+
+		// Set Status
+		_alert.Status.Phase = aci.PhaseAlertDeleting
+		if _alert, err = b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
+			return errors.New().WithCause(err).Internal()
+		}
+
+		b.ctx.Resource = _alert
 
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.DeletingIcingaObjects)
 
@@ -283,6 +350,10 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 					}
 					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
 				}
+
+				unversionedNow := unversioned.Now()
+				alert.Status.Updated = &unversionedNow
+				b.ctx.AppsCodeExtensionClient.Alert(alert.Namespace).Update(alert)
 			}
 		}
 	}
@@ -355,6 +426,10 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 			}
 			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
 		}
+
+		unversionedNow := unversioned.Now()
+		alert.Status.Updated = &unversionedNow
+		b.ctx.AppsCodeExtensionClient.Alert(alert.Namespace).Update(alert)
 	}
 
 	return nil
