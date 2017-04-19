@@ -100,7 +100,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			unversionedNow := unversioned.Now()
 			_alert.Status.Updated = &unversionedNow
 			_alert.Status.Phase = aci.PhaseAlertFailed
-			_alert.Status.Reason = err
+			_alert.Status.Reason = err.Error()
 			if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
 				return errors.New().WithCause(err).Internal()
 			}
@@ -118,7 +118,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			unversionedNow := unversioned.Now()
 			_alert.Status.Updated = &unversionedNow
 			_alert.Status.Phase = aci.PhaseAlertFailed
-			_alert.Status.Reason = err
+			_alert.Status.Reason = err.Error()
 			if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
 				return errors.New().WithCause(err).Internal()
 			}
@@ -145,7 +145,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		newConfig := alert[1].(*aci.Alert)
 
 		if reflect.DeepEqual(oldConfig.Spec, newConfig.Spec) {
-			return
+			return nil
 		}
 
 		if err := host.CheckAlertConfig(oldConfig, newConfig); err != nil {
@@ -351,9 +351,10 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
 				}
 
+				_alert := &alert
 				unversionedNow := unversioned.Now()
-				alert.Status.Updated = &unversionedNow
-				b.ctx.AppsCodeExtensionClient.Alert(alert.Namespace).Update(alert)
+				_alert.Status.Updated = &unversionedNow
+				b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert)
 			}
 		}
 	}
@@ -427,9 +428,10 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
 		}
 
+		_alert := &alert
 		unversionedNow := unversioned.Now()
-		alert.Status.Updated = &unversionedNow
-		b.ctx.AppsCodeExtensionClient.Alert(alert.Namespace).Update(alert)
+		_alert.Status.Updated = &unversionedNow
+		b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert)
 	}
 
 	return nil
