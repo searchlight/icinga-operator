@@ -77,9 +77,8 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			return errors.New().WithMessage("Missing alert data").NotFound()
 		}
 
-		_alert := alert[0].(*aci.Alert)
 		var err error
-
+		_alert := alert[0].(*aci.Alert)
 		if _alert.Status.Created == nil {
 			// Set Status
 			unversionedNow := unversioned.Now()
@@ -92,7 +91,6 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		}
 
 		b.ctx.Resource = _alert
-
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.CreatingIcingaObjects)
 
 		if err := b.IsObjectExists(); err != nil {
@@ -134,7 +132,6 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		if _, err = b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
 			return errors.New().WithCause(err).Internal()
 		}
-
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.CreatedIcingaObjects)
 	} else if e.EventType.IsUpdated() {
 		if len(alert) == 0 {
@@ -153,7 +150,6 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		}
 
 		b.ctx.Resource = newConfig
-
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.UpdatingIcingaObjects)
 
 		if err := b.IsObjectExists(); err != nil {
@@ -178,16 +174,14 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
 			return errors.New().WithCause(err).Internal()
 		}
-
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.UpdatedIcingaObjects)
 	} else if e.EventType.IsDeleted() {
 		if len(alert) == 0 {
 			return errors.New().WithMessage("Missing alert data").NotFound()
 		}
 
-		_alert := alert[0].(*aci.Alert)
 		var err error
-
+		_alert := alert[0].(*aci.Alert)
 		// Set Status
 		_alert.Status.Phase = aci.PhaseAlertDeleting
 		if _alert, err = b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
@@ -195,7 +189,6 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		}
 
 		b.ctx.Resource = _alert
-
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.DeletingIcingaObjects)
 
 		b.parseAlertOptions()
