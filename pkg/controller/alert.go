@@ -344,10 +344,9 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
 				}
 
-				_alert := &alert
 				unversionedNow := unversioned.Now()
-				_alert.Status.Updated = &unversionedNow
-				b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert)
+				alert.Status.Updated = &unversionedNow
+				b.ctx.AppsCodeExtensionClient.Alert(alert.Namespace).Update(&alert)
 			}
 		}
 	}
@@ -421,10 +420,9 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
 		}
 
-		_alert := &alert
 		unversionedNow := unversioned.Now()
-		_alert.Status.Updated = &unversionedNow
-		b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert)
+		alert.Status.Updated = &unversionedNow
+		b.ctx.AppsCodeExtensionClient.Alert(alert.Namespace).Update(&alert)
 	}
 
 	return nil
