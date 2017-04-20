@@ -1,5 +1,5 @@
 hash: 1a4bacdc0d5dec7495373c372afa5855a2ebdcba71da2f98edffb94a5e44ab9f
-updated: 2017-04-20T01:54:20.470230125-07:00
+updated: 2017-04-20T13:49:22.39624285-07:00
 imports:
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
@@ -7,7 +7,7 @@ imports:
   - compute/metadata
   - internal
 - name: github.com/appscode/api
-  version: 2653ff310b43b1e2d655d7e381f79803bf10dc64
+  version: 5d8fdc0bdf1a1dda6b0f1f5cddce57322dd4e2df
   subpackages:
   - attic/v1beta1
   - auth/v1beta1
@@ -54,7 +54,7 @@ imports:
   - smtp
   - twilio
 - name: github.com/appscode/k8s-addons
-  version: e21b7bb435f4ae4bc34782322110951a3261fa83
+  version: 4812d7a096424f5f4d60b7b9301643bf4afb47f5
   subpackages:
   - api
   - api/install
@@ -129,7 +129,7 @@ imports:
 - name: github.com/flosch/pongo2
   version: 1d0f0d3af150c4a65dfd424d742f7374819e7d29
 - name: github.com/ghodss/yaml
-  version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
+  version: 0ca9ea5df5451ffdf184b4428c902747c2c11cd7
 - name: github.com/go-macaron/auth
   version: 884c0e6c9b92ceebf12101d6cf1417fe0f61bcac
 - name: github.com/go-macaron/inject
@@ -245,7 +245,7 @@ imports:
 - name: github.com/pborman/uuid
   version: ca53cad383cad2479bbba7f7a1a05797ec1386e4
 - name: github.com/prometheus/client_golang
-  version: e51041b3fa41cece0dca035740ba6411905be473
+  version: c5b7fccd204277076155f10851dad72b76a49317
   subpackages:
   - api/prometheus
 - name: github.com/prometheus/common
@@ -272,7 +272,7 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: 51fe59aca108dc5680109e7b2051cbdcfa5a253c
 - name: github.com/spf13/cobra
-  version: b6cb3958937245a12d4d7728be080a6c758f4136
+  version: 10f6b9d7e1631a54ad07c5c0fb71c28a1abfd3c2
 - name: github.com/spf13/pflag
   version: 2300d0f8576fe575f71aaa5b9bbe4e1b0dc2eb51
 - name: github.com/StackExchange/wmi

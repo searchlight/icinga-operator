@@ -79,10 +79,10 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 
 		var err error
 		_alert := alert[0].(*aci.Alert)
-		if _alert.Status.CreateTime == nil {
+		if _alert.Status.CreationTime == nil {
 			// Set Status
-			unversionedNow := unversioned.Now()
-			_alert.Status.CreateTime = &unversionedNow
+			t := unversioned.Now()
+			_alert.Status.CreationTime = &t
 			_alert.Status.Phase = aci.PhaseAlertCreating
 			_alert, err = b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert)
 			if err != nil {
@@ -95,8 +95,8 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 
 		if err := b.IsObjectExists(); err != nil {
 			// Update Status
-			unversionedNow := unversioned.Now()
-			_alert.Status.UpdateTime = &unversionedNow
+			t := unversioned.Now()
+			_alert.Status.UpdateTime = &t
 			_alert.Status.Phase = aci.PhaseAlertFailed
 			_alert.Status.Reason = err.Error()
 			if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
@@ -113,8 +113,8 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		}
 		if err := b.Create(); err != nil {
 			// Update Status
-			unversionedNow := unversioned.Now()
-			_alert.Status.UpdateTime = &unversionedNow
+			t := unversioned.Now()
+			_alert.Status.UpdateTime = &t
 			_alert.Status.Phase = aci.PhaseAlertFailed
 			_alert.Status.Reason = err.Error()
 			if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
@@ -125,8 +125,8 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			return errors.New().WithCause(err).Internal()
 		}
 
-		unversionedNow := unversioned.Now()
-		_alert.Status.UpdateTime = &unversionedNow
+		t := unversioned.Now()
+		_alert.Status.UpdateTime = &t
 		_alert.Status.Phase = aci.PhaseAlertCreated
 		_alert.Status.Reason = ""
 		if _, err = b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
@@ -169,8 +169,8 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 
 		// Set Status
 		_alert := b.ctx.Resource
-		unversionedNow := unversioned.Now()
-		_alert.Status.UpdateTime = &unversionedNow
+		t := unversioned.Now()
+		_alert.Status.UpdateTime = &t
 		if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
 			return errors.New().WithCause(err).Internal()
 		}
@@ -344,8 +344,8 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
 				}
 
-				unversionedNow := unversioned.Now()
-				alert.Status.UpdateTime = &unversionedNow
+				t := unversioned.Now()
+				alert.Status.UpdateTime = &t
 				b.ctx.AppsCodeExtensionClient.Alert(alert.Namespace).Update(&alert)
 			}
 		}
@@ -420,8 +420,8 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
 		}
 
-		unversionedNow := unversioned.Now()
-		alert.Status.UpdateTime = &unversionedNow
+		t := unversioned.Now()
+		alert.Status.UpdateTime = &t
 		b.ctx.AppsCodeExtensionClient.Alert(alert.Namespace).Update(&alert)
 	}
 

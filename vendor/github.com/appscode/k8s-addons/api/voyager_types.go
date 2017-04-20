@@ -230,7 +230,7 @@ type CertificateSpec struct {
 type CertificateStatus struct {
 	CertificateObtained bool                   `json:"certificateObtained"`
 	Message             string                 `json:"message"`
-	Created             time.Time              `json:"created,omitempty"`
+	CreationTime        time.Time              `json:"creationTime,omitempty"`
 	ACMEUserSecretName  string                 `json:"acmeUserSecretName,omitempty"`
 	Details             ACMECertificateDetails `json:"details,omitempty"`
 }
