@@ -35,10 +35,10 @@ const (
 )
 
 type AlertStatus struct {
-	Created *unversioned.Time `json:"created,omitempty"`
-	Updated *unversioned.Time `json:"updated,omitempty"`
-	Phase   AlertPhase        `json:"phase,omitempty"`
-	Reason  string            `json:"reason,omitempty"`
+	CreateTime *unversioned.Time `json:"createTime,omitempty"`
+	UpdateTime *unversioned.Time `json:"updateTime,omitempty"`
+	Phase      AlertPhase        `json:"phase,omitempty"`
+	Reason     string            `json:"reason,omitempty"`
 }
 
 // AlertList is a collection of Alert.
