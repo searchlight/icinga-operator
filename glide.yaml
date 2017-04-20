@@ -28,6 +28,9 @@ import:
 - package: github.com/prometheus/client_golang
 - package: github.com/prometheus/common
 - package: github.com/spf13/cobra
+  version: master
+- package: github.com/spf13/pflag
+  version: master
 - package: github.com/vaughan0/go-ini
 - package: k8s.io/kubernetes
   version: ~1.5.0
