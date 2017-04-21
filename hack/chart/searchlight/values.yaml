@@ -28,7 +28,7 @@ appscodeicinga:
 # icingaCrt:
 
 ##
-##
+## Add notifyVia example: https://github.com/appscode/searchlight/blob/master/docs/user-guide/notifier/mailgun.md#configure
 
 # notifyVia:
 
