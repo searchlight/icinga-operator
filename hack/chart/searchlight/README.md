@@ -3,7 +3,7 @@
 ## TL;DR;
 
 ```bash
-$ helm install hack/chart/searchlight
+$ helm install ./hack/chart/searchlight
 ```
 
 ## Introduction
@@ -17,7 +17,7 @@ This chart bootstraps a [Searchlight controller](https://github.com/appscode/sea
 ## Installing the Chart
 To install the chart with the release name `my-release`:
 ```bash
-$ helm install --name my-release hack/chart/searchlight
+$ helm install --name my-release ./hack/chart/searchlight
 ```
 The command deploys Searchlight Controller on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
 
@@ -51,5 +51,4 @@ The following tables lists the configurable parameters of the Searchlight chart 
 | `icinga.apiTargetPort`        |  Icinga service target port for api  | `5665`                    |
 | `icinga.webTargetPort`        |  Icinga service target port for web  | `80`                      |
 | `searchlight.image`           |  Searchlight image to run            | `appscode/searchlight`    |
-| `searchlight.imagePullPolicy` |  Searchlight image pull policy       | `Always`                  |
 | `searchlight.imageTag`        |  Searchlight image tag to run        | `1.5.5`                   |
