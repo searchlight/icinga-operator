@@ -26,13 +26,13 @@ spec:
         secret:
           secretName: {{ template "fullname" . }}-icinga
       containers:
-      - image: {{.Values.appscodeicinga.icinga.image}}:{{.Values.appscodeicinga.icinga.imageTag}}
+      - image: {{.Values.icinga.icinga.image}}:{{.Values.icinga.icinga.imageTag}}
         name: icinga
         ports:
-        - containerPort: {{.Values.appscodeicinga.icinga.apiPort}}
+        - containerPort: {{.Values.icinga.icinga.apiPort}}
           name: api
           protocol: TCP
-        - containerPort: {{.Values.appscodeicinga.icinga.webPort}}
+        - containerPort: {{.Values.icinga.icinga.webPort}}
           name: web
           protocol: TCP
         volumeMounts:
@@ -45,10 +45,10 @@ spec:
       - args:
         - basic
         - ./setup-db.sh
-        image: {{.Values.appscodeicinga.ido.image}}:{{.Values.appscodeicinga.ido.imageTag}}
+        image: {{.Values.icinga.ido.image}}:{{.Values.icinga.ido.imageTag}}
         name: ido
         ports:
-        - containerPort: {{.Values.appscodeicinga.ido.idoPort}}
+        - containerPort: {{.Values.icinga.ido.idoPort}}
           name: ido
           protocol: TCP
         volumeMounts:

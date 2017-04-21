@@ -38,18 +38,18 @@ The command removes all the Kubernetes components associated with the chart and 
 The following tables lists the configurable parameters of the Searchlight chart and their default values.
 
 
-| Parameter                             | Description                          | Default                   |
-| -----------------------               | ----------------------------------   | --------------------------|
-| `appscodeicinga.icinga.image`         |  Icinga container image to run       | `appscode/icinga`         |
-| `appscodeicinga.icinga.imageTag`      |  Icinga container image tag to run   | `1.5.5-k8s`               |
-| `appscodeicinga.icinga.apiPort`       |  api port for Icinga container       | `5665`                    |
-| `appscodeicinga.icinga.webPort`       |  web port for Icinga container       | `60006`                   |
-| `appscodeicinga.ido.image`            |  ido container image to run          | `appscode/postgress`      |
-| `appscodeicinga.ido.imageTag`         |  ido container image tag to run      | `9.5-v3-db`               |
-| `appscodeicinga.ido.idoPort`          |  ido port for ido container          | `5432`                    |
-| `appscodeicinga.type`                 |  Icinga secret type                  | `Opaque`                  |
-| `appscodeicinga.apiTargetPort`        |  Icinga service target port for api  | `5665`                    |
-| `appscodeicinga.webTargetPort`        |  Icinga service target port for web  | `80`                      |
-| `appscodesearchlight.image`           |  Searchlight image to run            | `appscode/searchlight`    |
-| `appscodesearchlight.imagePullPolicy` |  Searchlight image pull policy       | `Always`                  |
-| `appscodesearchlight.imageTag`        |  Searchlight image tag to run        | `1.5.5`                   |
+| Parameter                     | Description                          | Default                   |
+| -----------------------       | ----------------------------------   | --------------------------|
+| `icinga.icinga.image`         |  Icinga container image to run       | `appscode/icinga`         |
+| `icinga.icinga.imageTag`      |  Icinga container image tag to run   | `1.5.5-k8s`               |
+| `icinga.icinga.apiPort`       |  api port for Icinga container       | `5665`                    |
+| `icinga.icinga.webPort`       |  web port for Icinga container       | `60006`                   |
+| `icinga.ido.image`            |  ido container image to run          | `appscode/postgress`      |
+| `icinga.ido.imageTag`         |  ido container image tag to run      | `9.5-v3-db`               |
+| `icinga.ido.idoPort`          |  ido port for ido container          | `5432`                    |
+| `icinga.type`                 |  Icinga secret type                  | `Opaque`                  |
+| `icinga.apiTargetPort`        |  Icinga service target port for api  | `5665`                    |
+| `icinga.webTargetPort`        |  Icinga service target port for web  | `80`                      |
+| `searchlight.image`           |  Searchlight image to run            | `appscode/searchlight`    |
+| `searchlight.imagePullPolicy` |  Searchlight image pull policy       | `Always`                  |
+| `searchlight.imageTag`        |  Searchlight image tag to run        | `1.5.5`                   |

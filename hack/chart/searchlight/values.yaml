@@ -1,4 +1,4 @@
-appscodeicinga:
+icinga:
 
 ## Icinga configaration
 ## https://github.com/appscode/searchlight/blob/master/docs/user-guide/icinga2/deployment.md#create-deployment
@@ -116,7 +116,7 @@ appscodeicinga:
 ## Search light configaration
 ##
 
-appscodesearchlight:
+searchlight:
 
 ## Searchlight image
 ##

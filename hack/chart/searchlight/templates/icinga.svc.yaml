@@ -10,10 +10,10 @@ metadata:
 spec:
   ports:
   - name: web
-    port: {{.Values.appscodeicinga.webTargetPort}}
+    port: {{.Values.icinga.webTargetPort}}
     targetPort: web
   - name: api
-    port: {{.Values.appscodeicinga.apiTargetPort}}
+    port: {{.Values.icinga.apiTargetPort}}
     targetPort: api
   selector:
     run: "{{ template "fullname" . }}-icinga"
