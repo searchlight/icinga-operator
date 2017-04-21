@@ -1,4 +1,4 @@
-Set caCrt, icingaKey, icingaCrt in values file for successfull working appscode-searchlight
+Set caCrt, icingaKey, icingaCrt in values file for installing searchlight
 
 To verify that searchlight controller has started, run:
 
