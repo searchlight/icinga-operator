@@ -1,3 +1,5 @@
+Set caCrt, icingaKey, icingaCrt in values file for successfull working appscode-searchlight
+
 To verify that searchlight controller has started, run:
 
   kubectl --namespace={{ .Release.Namespace }} get deployments -l "release={{ .Release.Name }}"
