@@ -5,8 +5,8 @@ metadata:
     chart: {{.Chart.Name}}-{{.Chart.Version}}
     heritage: {{.Release.Service}}
     release: {{.Release.Name}}
-    run: appscode-icinga-{{ template "fullname" . }}
-  name: appscode-icinga-{{ template "fullname" . }}
+    run: {{ template "fullname" . }}-icinga
+  name: {{ template "fullname" . }}-icinga
 spec:
   ports:
   - name: web
@@ -16,5 +16,5 @@ spec:
     port: {{.Values.appscodeicinga.apiTargetPort}}
     targetPort: api
   selector:
-    run: "appscode-icinga-{{ template "fullname" . }}"
+    run: "{{ template "fullname" . }}-icinga"
 

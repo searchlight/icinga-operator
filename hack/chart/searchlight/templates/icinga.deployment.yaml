@@ -5,17 +5,17 @@ metadata:
     chart: {{.Chart.Name}}-{{.Chart.Version}}
     heritage: {{.Release.Service}}
     release: {{.Release.Name}}
-    run: appscode-icinga-{{ template "fullname" . }}
-  name: appscode-icinga-{{ template "fullname" . }}
+    run: {{ template "fullname" . }}-icinga
+  name: {{ template "fullname" . }}-icinga
 spec:
   replicas: 1
   selector:
     matchLabels:
-      run: appscode-icinga-{{ template "fullname" . }}
+      run: {{ template "fullname" . }}-icinga
   template:
     metadata:
       labels:
-        run: appscode-icinga-{{ template "fullname" . }}
+        run: {{ template "fullname" . }}-icinga
     spec:
       volumes:
       - emptyDir: {}
@@ -24,7 +24,7 @@ spec:
         name: script-volume
       - name: appscode-icinga
         secret:
-          secretName: appscode-icinga-{{ template "fullname" . }}
+          secretName: {{ template "fullname" . }}-icinga
       containers:
       - image: {{.Values.appscodeicinga.icinga.image}}:{{.Values.appscodeicinga.icinga.imageTag}}
         name: icinga
