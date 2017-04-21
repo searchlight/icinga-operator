@@ -84,7 +84,7 @@ You can ignore SSL when Kubernetes is running in private network like GCE, AWS.
 Download `hostfacts` and add binary in `/usr/bin`
 
 ```sh
-curl -G  https://cdn.appscode.com/binaries/hostfacts/1.5.5/hostfacts-linux-amd64 -o /usr/bin/hostfacts
+curl -G  https://cdn.appscode.com/binaries/hostfacts/1.5.6/hostfacts-linux-amd64 -o /usr/bin/hostfacts
 
 # Change access permissions for hostfacts binary
 chmod +x /usr/bin/hostfacts

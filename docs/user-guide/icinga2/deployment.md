@@ -61,14 +61,14 @@ If we don't set keys for notifier, notifications will be ignored.
 Substitute ENV and deploy secret
 ```sh
 # Deploy Secret
-curl https://raw.githubusercontent.com/appscode/searchlight/1.5.5/hack/deploy/icinga2/secret.yaml |
+curl https://raw.githubusercontent.com/appscode/searchlight/1.5.6/hack/deploy/icinga2/secret.yaml |
 envsubst | kubectl apply -f -
 ```
 
 ###### Create Service
 ```sh
 # Create Service
-kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/1.5.5/hack/deploy/icinga2/service.yaml
+kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/1.5.6/hack/deploy/icinga2/service.yaml
 ```
 
 ###### Create Deployment
@@ -84,7 +84,7 @@ To use notifier we need to set some environment variables. See following links t
 
 ```sh
 # Create Deployment
-kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/1.5.5/hack/deploy/icinga2/deployment.yaml
+kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/1.5.6/hack/deploy/icinga2/deployment.yaml
 ```
 
 ### Login

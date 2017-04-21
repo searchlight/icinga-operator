@@ -58,13 +58,13 @@ pushd $certificate_dir
 popd
 
 # Deploy Secret
-curl https://raw.githubusercontent.com/appscode/searchlight/1.5.5/hack/kubernetes/icinga2/secret.yaml |envsubst | kubectl apply -f -
+curl https://raw.githubusercontent.com/appscode/searchlight/1.5.6/hack/kubernetes/icinga2/secret.yaml |envsubst | kubectl apply -f -
 
 # Create Service
-kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/1.5.5/hack/kubernetes/icinga2/service.yaml
+kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/1.5.6/hack/kubernetes/icinga2/service.yaml
 
 # Create Deployment
-kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/1.5.5/hack/kubernetes/icinga2/deployment.yaml
+kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/1.5.6/hack/kubernetes/icinga2/deployment.yaml
 
 
 #To login into Icingaweb2, use following authentication information:
