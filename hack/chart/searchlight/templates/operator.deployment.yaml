@@ -21,5 +21,6 @@ spec:
       - args:
         - --icinga-secret-name={{ template "fullname" . }}-icinga
         - --icinga-secret-namespace={{.Release.Namespace}}
+        - --v=3
         image: {{.Values.searchlight.image}}:{{.Values.searchlight.imageTag}}
         name: appscode-searchlight
