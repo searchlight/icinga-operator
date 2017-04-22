@@ -3,7 +3,7 @@
 ## TL;DR;
 
 ```bash
-$ helm install hack/chart/searchlight
+$ helm install chart/searchlight
 ```
 
 ## Introduction
@@ -12,12 +12,12 @@ This chart bootstraps a [Searchlight controller](https://github.com/appscode/sea
 
 ## Prerequisites
 
-- Kubernetes 1.5+ 
+- Kubernetes 1.5+
 
 ## Installing the Chart
 To install the chart with the release name `my-release`:
 ```bash
-$ helm install --name my-release hack/chart/searchlight
+$ helm install --name my-release chart/searchlight
 ```
 The command deploys Searchlight Controller on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
 
