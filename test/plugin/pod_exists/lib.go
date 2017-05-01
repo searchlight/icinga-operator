@@ -16,7 +16,7 @@ func GetPodCount(watcher *app.Watcher, namespace string) (int, error) {
 
 func GetTestData(objectType, objectName, namespace string, count int) []plugin.TestData {
 	testDataList := []plugin.TestData{
-		plugin.TestData{
+		{
 			// To check for any pods
 			Data: map[string]interface{}{
 				"ObjectType": objectType,
@@ -25,7 +25,7 @@ func GetTestData(objectType, objectName, namespace string, count int) []plugin.T
 			},
 			ExpectedIcingaState: 0,
 		},
-		plugin.TestData{
+		{
 			// To check for specific number of pods
 			Data: map[string]interface{}{
 				"ObjectType": objectType,
@@ -35,7 +35,7 @@ func GetTestData(objectType, objectName, namespace string, count int) []plugin.T
 			},
 			ExpectedIcingaState: 0,
 		},
-		plugin.TestData{
+		{
 			// To check for critical when pod number mismatch
 			Data: map[string]interface{}{
 				"ObjectType": objectType,

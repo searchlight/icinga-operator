@@ -38,7 +38,7 @@ func createAlertThirdPartyResource(watcher *app.Watcher) (err error) {
 					Name: "alert.appscode.com",
 				},
 				Versions: []extensions.APIVersion{
-					extensions.APIVersion{
+					{
 						Name: "v1beta1",
 					},
 				},

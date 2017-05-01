@@ -49,7 +49,7 @@ func GetTestData(watcher *app.Watcher, objectType, objectName, namespace string)
 		return nil, err
 	}
 	testDataList := []plugin.TestData{
-		plugin.TestData{
+		{
 			Data: map[string]interface{}{
 				"ObjectType": objectType,
 				"ObjectName": objectName,

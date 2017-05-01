@@ -2,9 +2,9 @@ package node_count
 
 import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
+	"github.com/appscode/searchlight/test/plugin"
 	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/labels"
-	"github.com/appscode/searchlight/test/plugin"
 )
 
 func getKubernetesNodeCount(kubeClient *k8s.KubeClient) (int, error) {
@@ -27,13 +27,13 @@ func GetTestData(kubeClient *k8s.KubeClient) ([]plugin.TestData, error) {
 	}
 
 	testDataList := []plugin.TestData{
-		plugin.TestData{
+		{
 			Data: map[string]interface{}{
 				"Count": actualNodeCount,
 			},
 			ExpectedIcingaState: 0,
 		},
-		plugin.TestData{
+		{
 			Data: map[string]interface{}{
 				"Count": actualNodeCount + 1,
 			},

@@ -13,7 +13,7 @@ func GetTestData(objectList []*host.KubeObjectInfo) ([]plugin.TestData, error) {
 			return nil, err
 		}
 		testData := []plugin.TestData{
-			plugin.TestData{
+			{
 				Data: map[string]interface{}{
 					"Pod":       objectName,
 					"Namespace": namespace,
@@ -22,7 +22,7 @@ func GetTestData(objectList []*host.KubeObjectInfo) ([]plugin.TestData, error) {
 				},
 				ExpectedIcingaState: 0,
 			},
-			plugin.TestData{
+			{
 				Data: map[string]interface{}{
 					"Pod":       objectName,
 					"Namespace": namespace,

@@ -33,13 +33,13 @@ func GetTestData(kubeClient *k8s.KubeClient) ([]plugin.TestData, error) {
 	}
 
 	testDataList := []plugin.TestData{
-		plugin.TestData{
+		{
 			Data: map[string]interface{}{
 				"Name": actualNodeName,
 			},
 			ExpectedIcingaState: 0,
 		},
-		plugin.TestData{
+		{
 			Data: map[string]interface{}{
 				// make node name invalid using random 2 character.
 				"Name": actualNodeName + rand.Characters(2),

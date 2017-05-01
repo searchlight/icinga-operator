@@ -175,7 +175,7 @@ func CheckIcingaObjectsForPod(watcher *app.Watcher, podName, namespace string, e
 	fmt.Println("----> Counting Icinga Service")
 
 	objectList := []*host.KubeObjectInfo{
-		&host.KubeObjectInfo{
+		{
 			Name: fmt.Sprintf("%v@%v", podName, namespace),
 		},
 	}

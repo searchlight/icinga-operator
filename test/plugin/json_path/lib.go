@@ -33,7 +33,7 @@ func GetTestData() ([]plugin.TestData, error) {
 	}
 
 	testDataList := []plugin.TestData{
-		plugin.TestData{
+		{
 			Data: map[string]interface{}{
 				"URL":     url + uri,
 				"Query":   ".",
@@ -41,7 +41,7 @@ func GetTestData() ([]plugin.TestData, error) {
 			},
 			ExpectedIcingaState: 0,
 		},
-		plugin.TestData{
+		{
 			Data: map[string]interface{}{
 				"URL":     url + uri,
 				"Query":   ".",
@@ -49,7 +49,7 @@ func GetTestData() ([]plugin.TestData, error) {
 			},
 			ExpectedIcingaState: 1,
 		},
-		plugin.TestData{
+		{
 			Data: map[string]interface{}{
 				"URL":      url + uri,
 				"Query":    ".",
@@ -58,7 +58,7 @@ func GetTestData() ([]plugin.TestData, error) {
 			},
 			ExpectedIcingaState: 2,
 		},
-		plugin.TestData{
+		{
 			Data: map[string]interface{}{
 				"URL":     url + uri + "fake",
 				"Query":   ".",

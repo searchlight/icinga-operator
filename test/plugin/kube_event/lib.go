@@ -60,7 +60,7 @@ func GetTestData(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Durat
 		return nil, err
 	}
 	testDataList := []plugin.TestData{
-		plugin.TestData{
+		{
 			Data: map[string]interface{}{
 				"CheckInterval": checkInterval,
 				"ClockSkew":     clockSkew,
