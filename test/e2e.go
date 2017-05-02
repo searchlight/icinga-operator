@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -12,7 +13,6 @@ import (
 	"github.com/appscode/searchlight/test/mini"
 	"github.com/appscode/searchlight/util"
 	kapi "k8s.io/kubernetes/pkg/api"
-	"os"
 )
 
 type testData struct {
