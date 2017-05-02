@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -56,10 +57,10 @@ type icingaClient struct {
 
 var e2eIcingaClient = icingaClient{isIcingaClientSet: false}
 
-const (
-	IcingaAddress string = ""
-	IcingaAPIUser string = ""
-	IcingaAPIPass string = ""
+var (
+	IcingaAddress string = os.Getenv("ICINGA_ADDRESS")
+	IcingaAPIUser string = os.Getenv("ICINGA_API_USER")
+	IcingaAPIPass string = os.Getenv("ICINGA_API_PASS")
 )
 
 func getIcingaClient() (icingaClient *icinga.IcingaClient, err error) {
@@ -81,9 +82,11 @@ func getIcingaClient() (icingaClient *icinga.IcingaClient, err error) {
 				icinga.IcingaAPIPass: IcingaAPIPass,
 				icinga.IcingaAddress: IcingaAddress,
 			}
-			icingaSecretName, err := mini.CreateIcingaSecret(kubeClient, kapi.NamespaceDefault, secretMap)
 
-			icingaClient, err = icinga.NewIcingaClient(kubeClient.Client, icingaSecretName, kapi.NamespaceDefault)
+			namespace := kapi.NamespaceSystem
+			icingaSecretName, err := mini.CreateIcingaSecret(kubeClient, namespace, secretMap)
+
+			icingaClient, err = icinga.NewIcingaClient(kubeClient.Client, icingaSecretName, namespace)
 			if err != nil {
 				return
 			}

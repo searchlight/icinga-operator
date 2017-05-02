@@ -12,7 +12,7 @@ import (
 func checkPod(watcher *app.Watcher, pod *kapi.Pod) (*kapi.Pod, error) {
 	check := 0
 	for {
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 30)
 		nPod, err := watcher.Storage.PodStore.Pods(pod.Namespace).Get(pod.Name)
 		if err != nil {
 			return nil, err

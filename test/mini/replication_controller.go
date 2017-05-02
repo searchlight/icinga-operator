@@ -20,7 +20,7 @@ func CreateReplicationController(watcher *app.Watcher, namespace string) (*kapi.
 
 	check := 0
 	for {
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 30)
 		nReplicationController, err := watcher.Storage.RcStore.ReplicationControllers(replicationController.Namespace).Get(replicationController.Name)
 		if err != nil {
 			return nil, err
@@ -39,6 +39,10 @@ func CreateReplicationController(watcher *app.Watcher, namespace string) (*kapi.
 }
 
 func DeleteReplicationController(watcher *app.Watcher, replicationController *kapi.ReplicationController) error {
+	replicationController, err := watcher.Client.Core().ReplicationControllers(replicationController.Namespace).Get(replicationController.Name)
+	if err != nil {
+		return err
+	}
 	// Update ReplicationController
 	replicationController.Spec.Replicas = 0
 	if _, err := watcher.Client.Core().ReplicationControllers(replicationController.Namespace).Update(replicationController); err != nil {
@@ -52,7 +56,7 @@ func DeleteReplicationController(watcher *app.Watcher, replicationController *ka
 
 	check := 0
 	for {
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 30)
 		podList, err := watcher.Storage.PodStore.List(labelSelector)
 		if err != nil {
 			return err

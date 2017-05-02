@@ -20,7 +20,7 @@ func CreateDaemonSet(watcher *app.Watcher, namespace string) (*extensions.Daemon
 
 	check := 0
 	for {
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 30)
 		nDaemonSet, exists, err := watcher.Storage.DaemonSetStore.Get(daemonSet)
 		if err != nil {
 			return nil, err
