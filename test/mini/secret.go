@@ -22,7 +22,7 @@ var icingaSecret = icingaSecretInfo{}
 
 func CreateIcingaSecret(kubeClient *k8s.KubeClient, namespace string, secretMap map[string]string) (secretName string, err error) {
 	if icingaSecret.isSecretSet {
-		secretName = icingaSecret.name + "." + icingaSecret.namespace
+		secretName = icingaSecret.name
 		return
 	}
 	icingaSecret.once.Do(
@@ -48,7 +48,7 @@ func CreateIcingaSecret(kubeClient *k8s.KubeClient, namespace string, secretMap 
 			}
 			icingaSecret.name = secret.Name
 			icingaSecret.namespace = secret.Namespace
-			secretName = icingaSecret.name + "." + icingaSecret.namespace
+			secretName = icingaSecret.name
 		},
 	)
 	return

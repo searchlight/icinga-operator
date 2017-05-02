@@ -180,15 +180,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			return errors.New().WithMessage("Missing alert data").NotFound()
 		}
 
-		var err error
-		_alert := alert[0].(*aci.Alert)
-		// Set Status
-		_alert.Status.Phase = aci.PhaseAlertDeleting
-		if _alert, err = b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
-			return errors.New().WithCause(err).Internal()
-		}
-
-		b.ctx.Resource = _alert
+		b.ctx.Resource = alert[0].(*aci.Alert)
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.DeletingIcingaObjects)
 
 		b.parseAlertOptions()
