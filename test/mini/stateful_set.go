@@ -34,7 +34,7 @@ func CreateStatefulSet(watcher *app.Watcher, namespace string) (*apps.StatefulSe
 
 	check := 0
 	for {
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 30)
 		nStatefulSet, exists, err := watcher.Storage.StatefulSetStore.Get(statefulSet)
 		if err != nil {
 			return nil, err
@@ -72,7 +72,7 @@ func DeleteStatefulSet(watcher *app.Watcher, statefulSet *apps.StatefulSet) erro
 
 	check := 0
 	for {
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 30)
 		podList, err := watcher.Storage.PodStore.List(labelSelector)
 		if err != nil {
 			return err

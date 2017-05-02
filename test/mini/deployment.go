@@ -20,7 +20,7 @@ func CreateDeployment(watcher *app.Watcher, namespace string) (*extensions.Deplo
 
 	check := 0
 	for {
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 30)
 		nDeployment, err := watcher.Storage.DeploymentStore.Deployments(deployment.Namespace).Get(deployment.Name)
 		if err != nil {
 			return nil, err
@@ -55,7 +55,7 @@ func DeleteDeployment(watcher *app.Watcher, deployment *extensions.Deployment) e
 
 	check := 0
 	for {
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 30)
 		podList, err := watcher.Storage.PodStore.List(labelSelector)
 		if err != nil {
 			return err

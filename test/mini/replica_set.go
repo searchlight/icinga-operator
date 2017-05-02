@@ -17,7 +17,7 @@ import (
 func checkReplicaSet(watcher *app.Watcher, replicaSet *extensions.ReplicaSet) (*extensions.ReplicaSet, error) {
 	check := 0
 	for {
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 30)
 		nReplicaset, err := watcher.Storage.ReplicaSetStore.ReplicaSets(replicaSet.Namespace).Get(replicaSet.Name)
 		if err != nil {
 			return nil, err
@@ -101,7 +101,7 @@ func DeleteReplicaSet(watcher *app.Watcher, replicaSet *extensions.ReplicaSet) e
 
 	check := 0
 	for {
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 30)
 		podList, err := watcher.Storage.PodStore.List(labelSelector)
 		if err != nil {
 			return err
@@ -130,7 +130,7 @@ func UpdateReplicaSet(watcher *app.Watcher, replicaSet *extensions.ReplicaSet) (
 
 	check := 0
 	for {
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 30)
 		nReplicaset, err := watcher.Storage.ReplicaSetStore.ReplicaSets(replicaSet.Namespace).Get(replicaSet.Name)
 		if err != nil {
 			return nil, err

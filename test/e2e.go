@@ -12,6 +12,7 @@ import (
 	"github.com/appscode/searchlight/test/mini"
 	"github.com/appscode/searchlight/util"
 	kapi "k8s.io/kubernetes/pkg/api"
+	"os"
 )
 
 type testData struct {
@@ -56,10 +57,10 @@ type icingaClient struct {
 
 var e2eIcingaClient = icingaClient{isIcingaClientSet: false}
 
-const (
-	IcingaAddress string = ""
-	IcingaAPIUser string = ""
-	IcingaAPIPass string = ""
+var (
+	IcingaAddress string = os.Getenv("ICINGA_ADDRESS")
+	IcingaAPIUser string = os.Getenv("ICINGA_API_USER")
+	IcingaAPIPass string = os.Getenv("ICINGA_API_PASS")
 )
 
 func getIcingaClient() (icingaClient *icinga.IcingaClient, err error) {
