@@ -81,9 +81,11 @@ func getIcingaClient() (icingaClient *icinga.IcingaClient, err error) {
 				icinga.IcingaAPIPass: IcingaAPIPass,
 				icinga.IcingaAddress: IcingaAddress,
 			}
-			icingaSecretName, err := mini.CreateIcingaSecret(kubeClient, kapi.NamespaceDefault, secretMap)
 
-			icingaClient, err = icinga.NewIcingaClient(kubeClient.Client, icingaSecretName, kapi.NamespaceDefault)
+			namespace := kapi.NamespaceSystem
+			icingaSecretName, err := mini.CreateIcingaSecret(kubeClient, namespace, secretMap)
+
+			icingaClient, err = icinga.NewIcingaClient(kubeClient.Client, icingaSecretName, namespace)
 			if err != nil {
 				return
 			}

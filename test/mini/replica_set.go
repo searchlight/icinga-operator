@@ -84,6 +84,11 @@ func GetLastReplica(watcher *app.Watcher, replicaSet *extensions.ReplicaSet) (*k
 
 func DeleteReplicaSet(watcher *app.Watcher, replicaSet *extensions.ReplicaSet) error {
 	// Update ReplicaSet
+	replicaSet, err := watcher.Client.Extensions().ReplicaSets(replicaSet.Namespace).Get(replicaSet.Name)
+	if err != nil {
+		return err
+	}
+
 	replicaSet.Spec.Replicas = 0
 	if _, err := watcher.Client.Extensions().ReplicaSets(replicaSet.Namespace).Update(replicaSet); err != nil {
 		return err

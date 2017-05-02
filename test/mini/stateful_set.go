@@ -55,6 +55,10 @@ func CreateStatefulSet(watcher *app.Watcher, namespace string) (*apps.StatefulSe
 }
 
 func DeleteStatefulSet(watcher *app.Watcher, statefulSet *apps.StatefulSet) error {
+	statefulSet, err := watcher.Client.Apps().StatefulSets(statefulSet.Namespace).Get(statefulSet.Name)
+	if err != nil {
+		return err
+	}
 	// Update StatefulSet
 	statefulSet.Spec.Replicas = 0
 	if _, err := watcher.Client.Apps().StatefulSets(statefulSet.Namespace).Update(statefulSet); err != nil {
