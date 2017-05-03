@@ -94,8 +94,6 @@ func getData(req *Request) (string, error) {
 	data, err := json.Marshal(respJson)
 	if err != nil {
 		return "", err
-		fmt.Fprintln(os.Stdout, util.State[3], err)
-		os.Exit(3)
 	}
 
 	return string(data), nil
