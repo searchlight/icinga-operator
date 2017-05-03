@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"fmt"
-
 	"github.com/appscode/errors"
 	"github.com/appscode/log"
 	"github.com/appscode/searchlight/pkg/controller/host/extpoints"
