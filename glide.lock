@@ -1,5 +1,5 @@
 hash: 1a4bacdc0d5dec7495373c372afa5855a2ebdcba71da2f98edffb94a5e44ab9f
-updated: 2017-04-20T13:49:22.39624285-07:00
+updated: 2017-05-02T22:47:55.686421296-07:00
 imports:
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
@@ -7,7 +7,7 @@ imports:
   - compute/metadata
   - internal
 - name: github.com/appscode/api
-  version: 5d8fdc0bdf1a1dda6b0f1f5cddce57322dd4e2df
+  version: ca0987240ed0c60252fa08ee6c3d6ef07405070f
   subpackages:
   - attic/v1beta1
   - auth/v1beta1
@@ -24,7 +24,7 @@ imports:
   - ssh/v1beta1
   - version
 - name: github.com/appscode/client
-  version: 24d9ff98e3215ee585c6d43699c8ff01aa1521bc
+  version: b39b799b172902fb4212cfbb1d03d120ff51622a
   subpackages:
   - credential
   - util
@@ -33,7 +33,7 @@ imports:
   subpackages:
   - h/log
 - name: github.com/appscode/go
-  version: bd371af23fb2398b60c065a9e07df5084422d6ad
+  version: 16dae34745b8c485f42293ad6d16ea7d6c129564
   subpackages:
   - crypto/rand
   - env
@@ -45,7 +45,7 @@ imports:
   - runtime
   - version
 - name: github.com/appscode/go-notify
-  version: e26cf1007b61b8615bcdf73f2f399e11ac4b0c01
+  version: b56c335311b82247e828ccdc8516621abc230b45
   subpackages:
   - hipchat
   - mailgun
@@ -54,7 +54,7 @@ imports:
   - smtp
   - twilio
 - name: github.com/appscode/k8s-addons
-  version: 4812d7a096424f5f4d60b7b9301643bf4afb47f5
+  version: 1ce2385fa9796c6079e304058451a96f3f88b003
   subpackages:
   - api
   - api/install
@@ -129,7 +129,7 @@ imports:
 - name: github.com/flosch/pongo2
   version: 1d0f0d3af150c4a65dfd424d742f7374819e7d29
 - name: github.com/ghodss/yaml
-  version: 0ca9ea5df5451ffdf184b4428c902747c2c11cd7
+  version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
 - name: github.com/go-macaron/auth
   version: 884c0e6c9b92ceebf12101d6cf1417fe0f61bcac
 - name: github.com/go-macaron/inject
@@ -241,7 +241,7 @@ imports:
 - name: github.com/mitchellh/go-wordwrap
   version: ad45545899c7b13c020ea92b2072220eefad42b8
 - name: github.com/nlopes/slack
-  version: 8c25eff4976762d1a090aeae6f49174a37a1d710
+  version: 72d15a0fc0b773a59c00f78b9e7d97eeb8c4281f
 - name: github.com/pborman/uuid
   version: ca53cad383cad2479bbba7f7a1a05797ec1386e4
 - name: github.com/prometheus/client_golang
@@ -272,9 +272,9 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: 51fe59aca108dc5680109e7b2051cbdcfa5a253c
 - name: github.com/spf13/cobra
-  version: 10f6b9d7e1631a54ad07c5c0fb71c28a1abfd3c2
+  version: 8f0203be891287870100e4af46262cdf4a4261d1
 - name: github.com/spf13/pflag
-  version: 2300d0f8576fe575f71aaa5b9bbe4e1b0dc2eb51
+  version: c990990ab4981d84da820b7b00c85139ca150b5f
 - name: github.com/StackExchange/wmi
   version: e54cbda6595d7293a7a468ccf9525f6bc8887f99
 - name: github.com/tbruyelle/hipchat-go
@@ -388,7 +388,7 @@ imports:
 - name: gopkg.in/yaml.v2
   version: 53feefa2559fb8dfa8d81baad31be332c97d6c77
 - name: k8s.io/kubernetes
-  version: 114f8911f9597be669a747ab72787e0bd74c9359
+  version: 8eb75a5810cba92ccad845ca360cf924f2385881
   subpackages:
   - pkg/api
   - pkg/api/errors

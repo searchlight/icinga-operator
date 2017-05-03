@@ -101,11 +101,12 @@ func AppendToFile(path string, values string) error {
 	return nil
 }
 
-func EnsureDirectory(path string) {
+func EnsureDirectory(path string) error {
 	parent := filepath.Dir(path)
 	if _, err := os.Stat(parent); err != nil {
-		err = os.MkdirAll(parent, os.ModePerm)
+		return os.MkdirAll(parent, os.ModePerm)
 	}
+	return nil
 }
 
 func IsFileExists(path string) bool {

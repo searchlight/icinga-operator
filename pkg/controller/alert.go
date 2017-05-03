@@ -83,7 +83,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			// Set Status
 			t := unversioned.Now()
 			_alert.Status.CreationTime = &t
-			_alert.Status.Phase = aci.PhaseAlertCreating
+			_alert.Status.Phase = aci.AlertPhaseCreating
 			_alert, err = b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert)
 			if err != nil {
 				return errors.New().WithCause(err).Internal()
@@ -97,7 +97,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			// Update Status
 			t := unversioned.Now()
 			_alert.Status.UpdateTime = &t
-			_alert.Status.Phase = aci.PhaseAlertFailed
+			_alert.Status.Phase = aci.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
 			if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
 				return errors.New().WithCause(err).Internal()
@@ -115,7 +115,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			// Update Status
 			t := unversioned.Now()
 			_alert.Status.UpdateTime = &t
-			_alert.Status.Phase = aci.PhaseAlertFailed
+			_alert.Status.Phase = aci.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
 			if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
 				return errors.New().WithCause(err).Internal()
@@ -127,7 +127,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 
 		t := unversioned.Now()
 		_alert.Status.UpdateTime = &t
-		_alert.Status.Phase = aci.PhaseAlertCreated
+		_alert.Status.Phase = aci.AlertPhaseCreated
 		_alert.Status.Reason = ""
 		if _, err = b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
 			return errors.New().WithCause(err).Internal()
