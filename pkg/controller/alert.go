@@ -20,6 +20,7 @@ import (
 	_ "github.com/appscode/searchlight/pkg/controller/host/pod"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	kapi "k8s.io/kubernetes/pkg/api"
+	kerr "k8s.io/kubernetes/pkg/api/errors"
 	"k8s.io/kubernetes/pkg/api/unversioned"
 	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
 	"k8s.io/kubernetes/pkg/labels"
@@ -74,7 +75,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 
 	if e.EventType.IsAdded() {
 		if len(alert) == 0 {
-			return errors.New().WithMessage("Missing alert data").NotFound()
+			return errors.New("Missing alert data").Err()
 		}
 
 		var err error
@@ -86,7 +87,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			_alert.Status.Phase = aci.AlertPhaseCreating
 			_alert, err = b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert)
 			if err != nil {
-				return errors.New().WithCause(err).Internal()
+				return errors.New().WithCause(err).Err()
 			}
 		}
 
@@ -100,15 +101,14 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			_alert.Status.Phase = aci.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
 			if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
-				return errors.New().WithCause(err).Internal()
+				return errors.New().WithCause(err).Err()
 			}
-
-			if errors.IsNotFound(err) {
+			if kerr.IsNotFound(err) {
 				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.NoIcingaObjectCreated, err.Error())
 				return nil
 			} else {
 				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToCreateIcingaObjects, err.Error())
-				return errors.New().WithCause(err).Internal()
+				return errors.New().WithCause(err).Err()
 			}
 		}
 		if err := b.Create(); err != nil {
@@ -118,11 +118,11 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			_alert.Status.Phase = aci.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
 			if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
-				return errors.New().WithCause(err).Internal()
+				return errors.New().WithCause(err).Err()
 			}
 
 			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToCreateIcingaObjects, err.Error())
-			return errors.New().WithCause(err).Internal()
+			return errors.New().WithCause(err).Err()
 		}
 
 		t := unversioned.Now()
@@ -130,12 +130,12 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		_alert.Status.Phase = aci.AlertPhaseCreated
 		_alert.Status.Reason = ""
 		if _, err = b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
-			return errors.New().WithCause(err).Internal()
+			return errors.New().WithCause(err).Err()
 		}
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.CreatedIcingaObjects)
 	} else if e.EventType.IsUpdated() {
 		if len(alert) == 0 {
-			return errors.New().WithMessage("Missing alert data").NotFound()
+			return errors.New("Missing alert data").Err()
 		}
 
 		oldConfig := alert[0].(*aci.Alert)
@@ -146,25 +146,25 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		}
 
 		if err := host.CheckAlertConfig(oldConfig, newConfig); err != nil {
-			return errors.New().WithCause(err).BadRequest()
+			return errors.New().WithCause(err).Err()
 		}
 
 		b.ctx.Resource = newConfig
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.UpdatingIcingaObjects)
 
 		if err := b.IsObjectExists(); err != nil {
-			if errors.IsNotFound(err) {
+			if kerr.IsNotFound(err) {
 				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.NoIcingaObjectCreated, err.Error())
 				return nil
 			} else {
 				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToCreateIcingaObjects, err.Error())
-				return errors.New().WithCause(err).Internal()
+				return errors.New().WithCause(err).Err()
 			}
 		}
 
 		if err := b.Update(); err != nil {
 			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToUpdateIcingaObjects, err.Error())
-			return errors.New().WithCause(err).Internal()
+			return errors.New().WithCause(err).Err()
 		}
 
 		// Set Status
@@ -172,12 +172,12 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		t := unversioned.Now()
 		_alert.Status.UpdateTime = &t
 		if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
-			return errors.New().WithCause(err).Internal()
+			return errors.New().WithCause(err).Err()
 		}
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.UpdatedIcingaObjects)
 	} else if e.EventType.IsDeleted() {
 		if len(alert) == 0 {
-			return errors.New().WithMessage("Missing alert data").NotFound()
+			return errors.New("Missing alert data").Err()
 		}
 
 		b.ctx.Resource = alert[0].(*aci.Alert)
@@ -186,7 +186,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		b.parseAlertOptions()
 		if err := b.Delete(); err != nil {
 			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToDeleteIcingaObjects)
-			return errors.New().WithCause(err).Internal()
+			return errors.New().WithCause(err).Err()
 		}
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.DeletedIcingaObjects)
 	}
@@ -268,19 +268,19 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 		for _, objectName := range ancestor.Names {
 			lb, err := host.GetLabelSelector(objectType, objectName)
 			if err != nil {
-				return errors.New().WithCause(err).Internal()
+				return errors.New().WithCause(err).Err()
 			}
 
 			alertList, err := b.ctx.AppsCodeExtensionClient.Alert(namespace).List(kapi.ListOptions{
 				LabelSelector: lb,
 			})
 			if err != nil {
-				return errors.New().WithCause(err).Internal()
+				return errors.New().WithCause(err).Err()
 			}
 
 			for _, alert := range alertList.Items {
 				if !icingaUp && !b.checkIcingaAvailability() {
-					return errors.New("Icinga is down").External()
+					return errors.New("Icinga is down").Err()
 				}
 				icingaUp = true
 
@@ -298,7 +298,7 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 					for {
 						hasPodIP, err := b.checkPodIPAvailability(e.MetaData.Name, namespace)
 						if err != nil {
-							return errors.New().WithCause(err).Internal()
+							return errors.New().WithCause(err).Err()
 						}
 						if hasPodIP {
 							break
@@ -306,7 +306,7 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 						log.Debugln("Waiting for pod IP")
 						now := time.Now()
 						if now.Sub(then) > time.Minute*2 {
-							return errors.New("Pod IP is not available for 2 minutes").Internal()
+							return errors.New("Pod IP is not available for 2 minutes").Err()
 						}
 						time.Sleep(time.Second * 30)
 					}
@@ -319,7 +319,7 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 
 					if err := b.Create(e.MetaData.Name); err != nil {
 						event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToSyncIcingaObjects, additionalMessage, err.Error())
-						return errors.New().WithCause(err).Internal()
+						return errors.New().WithCause(err).Err()
 					}
 					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
 				} else if e.EventType.IsDeleted() {
@@ -331,7 +331,7 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 
 					if err := b.Delete(e.MetaData.Name); err != nil {
 						event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToSyncIcingaObjects, additionalMessage, err.Error())
-						return errors.New().WithCause(err).Internal()
+						return errors.New().WithCause(err).Err()
 					}
 					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
 				}
@@ -352,11 +352,11 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 
 	lb, err := host.GetLabelSelector(events.Cluster.String(), "")
 	if err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 	lb1, err := host.GetLabelSelector(events.Node.String(), e.MetaData.Name)
 	if err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 
 	requirements, _ := lb1.Requirements()
@@ -368,12 +368,12 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 		LabelSelector: lb,
 	})
 	if err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 
 	for _, alert := range alertList.Items {
 		if !icingaUp && !b.checkIcingaAvailability() {
-			return errors.New("Icinga is down").External()
+			return errors.New("Icinga is down").Err()
 		}
 		icingaUp = true
 
@@ -394,7 +394,7 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 
 			if err := b.Create(e.MetaData.Name); err != nil {
 				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToSyncIcingaObjects, additionalMessage, err.Error())
-				return errors.New().WithCause(err).Internal()
+				return errors.New().WithCause(err).Err()
 			}
 			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
 
@@ -407,7 +407,7 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 
 			if err := b.Delete(e.MetaData.Name); err != nil {
 				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToSyncIcingaObjects, additionalMessage, err.Error())
-				return errors.New().WithCause(err).Internal()
+				return errors.New().WithCause(err).Err()
 			}
 			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
 		}
@@ -425,7 +425,7 @@ func (b *IcingaController) handleService(e *events.Event) error {
 		if checkIcingaService(e.MetaData.Name, e.MetaData.Namespace) {
 			service, err := b.ctx.KubeClient.Core().Services(e.MetaData.Namespace).Get(e.MetaData.Name)
 			if err != nil {
-				return errors.New().WithCause(err).Internal()
+				return errors.New().WithCause(err).Err()
 			}
 			endpoint := fmt.Sprintf("https://%v:5665/v1", service.Spec.ClusterIP)
 			b.ctx.IcingaClient = b.ctx.IcingaClient.SetEndpoint(endpoint)
@@ -442,18 +442,18 @@ func (b *IcingaController) handleAlertEvent(e *events.Event) error {
 
 	if e.EventType.IsAdded() {
 		if len(alertEvents) == 0 {
-			return errors.New().WithMessage("Missing event data").NotFound()
+			return errors.New("Missing event data").Err()
 		}
 		alertEvent := alertEvents[0].(*kapi.Event)
 
 		if _, found := alertEvent.Annotations[types.AcknowledgeTimestamp]; found {
-			return errors.New().WithMessage("Event is already handled").NotFound()
+			return errors.New("Event is already handled").Err()
 		}
 
 		eventRefObjKind := alertEvent.InvolvedObject.Kind
 
 		if eventRefObjKind != events.ObjectKindAlert.String() {
-			return errors.New().WithMessage("For acknowledgement, Reference object should be Alert").InvalidData()
+			return errors.New("For acknowledgement, Reference object should be Alert").Err()
 		}
 
 		eventRefObjNamespace := alertEvent.InvolvedObject.Namespace
@@ -461,7 +461,7 @@ func (b *IcingaController) handleAlertEvent(e *events.Event) error {
 
 		alert, err := b.ctx.AppsCodeExtensionClient.Alert(eventRefObjNamespace).Get(eventRefObjName)
 		if err != nil {
-			return errors.New().WithCause(err).Internal()
+			return errors.New().WithCause(err).Err()
 		}
 
 		b.ctx.Resource = alert
@@ -473,7 +473,7 @@ func (b *IcingaController) handleAlertEvent(e *events.Event) error {
 func getIcingaDataMap() (map[string]*types.IcingaData, error) {
 	icingaData, err := data.LoadIcingaData()
 	if err != nil {
-		return nil, errors.New().WithCause(err).Internal()
+		return nil, errors.New().WithCause(err).Err()
 	}
 
 	icingaDataMap := make(map[string]*types.IcingaData)

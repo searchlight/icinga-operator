@@ -2,7 +2,6 @@ package v1beta1
 
 // Auto-generated. DO NOT EDIT.
 import (
-	"github.com/appscode/api/dtypes"
 	"github.com/golang/glog"
 	"github.com/xeipuuv/gojsonschema"
 )
@@ -105,9 +104,3 @@ func (m *IsAvailableRequest) IsValid() (*gojsonschema.Result, error) {
 }
 func (m *IsAvailableRequest) IsRequest() {}
 
-func (m *GetResponse) SetStatus(s *dtypes.Status) {
-	m.Status = s
-}
-func (m *CreateResponse) SetStatus(s *dtypes.Status) {
-	m.Status = s
-}

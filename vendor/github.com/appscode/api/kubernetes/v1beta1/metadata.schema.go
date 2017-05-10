@@ -2,7 +2,6 @@ package v1beta1
 
 // Auto-generated. DO NOT EDIT.
 import (
-	"github.com/appscode/api/dtypes"
 	"github.com/golang/glog"
 	"github.com/xeipuuv/gojsonschema"
 )
@@ -78,12 +77,3 @@ func (m *RegionListRequest) IsValid() (*gojsonschema.Result, error) {
 }
 func (m *RegionListRequest) IsRequest() {}
 
-func (m *RegionListResponse) SetStatus(s *dtypes.Status) {
-	m.Status = s
-}
-func (m *BucketListResponse) SetStatus(s *dtypes.Status) {
-	m.Status = s
-}
-func (m *ZoneListResponse) SetStatus(s *dtypes.Status) {
-	m.Status = s
-}

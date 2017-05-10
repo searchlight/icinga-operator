@@ -19,14 +19,14 @@ func (b *IcingaController) Acknowledge(event *kapi.Event) error {
 	var message types.AlertEventMessage
 	err := json.Unmarshal([]byte(event.Message), &message)
 	if err != nil {
-		return errors.New().WithCause(err).InvalidData()
+		return errors.New().WithCause(err).Err()
 	}
 
 	if event.Source.Host == "" {
-		return errors.New().WithMessage("Icinga hostname missing").BadRequest()
+		return errors.New("Icinga hostname missing").Err()
 	}
 	if err = acknowledgeIcingaNotification(b.ctx.IcingaClient, event.Source.Host, icingaService, message.Comment, message.UserName); err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 
 	if event.Annotations == nil {
@@ -37,7 +37,7 @@ func (b *IcingaController) Acknowledge(event *kapi.Event) error {
 	event.Annotations[types.AcknowledgeTimestamp] = timestamp.String()
 
 	if _, err = b.ctx.KubeClient.Core().Events(event.Namespace).Update(event); err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 	return nil
 }
@@ -52,12 +52,12 @@ func acknowledgeIcingaNotification(client *icinga.IcingaClient, icingaHostName, 
 
 	jsonStr, err := json.Marshal(mp)
 	if err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 	resp := client.Actions("acknowledge-problem").Update([]string{}, string(jsonStr)).Do()
 	if resp.Status == 200 {
 		log.Debugln("[Icinga] Problem acknowledged")
 		return nil
 	}
-	return errors.New().WithMessage("[Icinga] Problem acknowledged Error").Failed()
+	return errors.New("[Icinga] Problem acknowledged Error").Err()
 }

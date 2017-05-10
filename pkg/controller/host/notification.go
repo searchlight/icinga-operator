@@ -21,12 +21,12 @@ func CreateIcingaNotification(icingaClient *icinga.IcingaClient, alert *aci.Aler
 
 		jsonStr, err := json.Marshal(obj)
 		if err != nil {
-			return errors.New().WithCause(err).Internal()
+			return errors.New().WithCause(err).Err()
 		}
 
 		resp := icingaClient.Objects().Notifications(object.Name).Create([]string{alert.Name, alert.Name}, string(jsonStr)).Do()
 		if resp.Err != nil {
-			return errors.New().WithCause(resp.Err).Internal()
+			return errors.New().WithCause(resp.Err).Err()
 		}
 		if resp.Status == 200 {
 			continue
@@ -35,7 +35,7 @@ func CreateIcingaNotification(icingaClient *icinga.IcingaClient, alert *aci.Aler
 			continue
 		}
 
-		return errors.New().WithMessage("Can't create Icinga notification").Failed()
+		return errors.New("Can't create Icinga notification").Err()
 	}
 	return nil
 }
@@ -49,15 +49,15 @@ func UpdateIcingaNotification(icingaClient *icinga.IcingaClient, alert *aci.Aler
 		obj.Attrs = mp
 		jsonStr, err := json.Marshal(obj)
 		if err != nil {
-			return errors.New().WithCause(err).Internal()
+			return errors.New().WithCause(err).Err()
 		}
 		resp := icingaClient.Objects().Notifications(object.Name).Update([]string{icignaService, icignaService}, string(jsonStr)).Do()
 
 		if resp.Err != nil {
-			return errors.New().WithCause(resp.Err).Internal()
+			return errors.New().WithCause(resp.Err).Err()
 		}
 		if resp.Status != 200 {
-			return errors.New().WithMessage("Can't update Icinga notification").Failed()
+			return errors.New("Can't update Icinga notification").Err()
 		}
 	}
 	return nil

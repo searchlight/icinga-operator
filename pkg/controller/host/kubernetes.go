@@ -33,49 +33,49 @@ func getLabels(client clientset.Interface, namespace, objectType, objectName str
 	if objectType == TypeServices {
 		service, err := client.Core().Services(namespace).Get(objectName)
 		if err != nil {
-			return nil, errors.New().WithCause(err).Internal()
+			return nil, errors.New().WithCause(err).Err()
 		}
 		labelsMap = service.Spec.Selector
 
 	} else if objectType == TypeReplicationcontrollers {
 		rc, err := client.Core().ReplicationControllers(namespace).Get(objectName)
 		if err != nil {
-			return nil, errors.New().WithCause(err).Internal()
+			return nil, errors.New().WithCause(err).Err()
 		}
 		labelsMap = rc.Spec.Selector
 	} else if objectType == TypeDaemonsets {
 		daemonSet, err := client.Extensions().DaemonSets(namespace).Get(objectName)
 		if err != nil {
-			return nil, errors.New().WithCause(err).Internal()
+			return nil, errors.New().WithCause(err).Err()
 		}
 		labelsMap = daemonSet.Spec.Selector.MatchLabels
 	} else if objectType == TypeReplicasets {
 		replicaSet, err := client.Extensions().ReplicaSets(namespace).Get(objectName)
 		if err != nil {
-			return nil, errors.New().WithCause(err).Internal()
+			return nil, errors.New().WithCause(err).Err()
 		}
 		labelsMap = replicaSet.Spec.Selector.MatchLabels
 	} else if objectType == TypeStatefulSet {
 		statefulSet, err := client.Apps().StatefulSets(namespace).Get(objectName)
 		if err != nil {
-			return nil, errors.New().WithCause(err).Internal()
+			return nil, errors.New().WithCause(err).Err()
 		}
 		labelsMap = statefulSet.Spec.Selector.MatchLabels
 	} else if objectType == TypeDeployments {
 		deployment, err := client.Extensions().Deployments(namespace).Get(objectName)
 		if err != nil {
-			return nil, errors.New().WithCause(err).Internal()
+			return nil, errors.New().WithCause(err).Err()
 		}
 		labelsMap = deployment.Spec.Selector.MatchLabels
 	} else {
-		return label, errors.New().WithMessage("Invalid kubernetes object type").BadRequest()
+		return label, errors.New("Invalid kubernetes object type").Err()
 	}
 
 	for key, value := range labelsMap {
 		s := sets.NewString(value)
 		ls, err := labels.NewRequirement(key, selection.Equals, s.List())
 		if err != nil {
-			return nil, errors.New().WithCause(err).Internal()
+			return nil, errors.New().WithCause(err).Err()
 		}
 		label = label.Add(*ls)
 	}
@@ -88,12 +88,12 @@ func GetPodList(client clientset.Interface, namespace, objectType, objectName st
 
 	label, err := getLabels(client, namespace, objectType, objectName)
 	if err != nil {
-		return nil, errors.New().WithCause(err).Internal()
+		return nil, errors.New().WithCause(err).Err()
 	}
 
 	pods, err := client.Core().Pods(namespace).List(kapi.ListOptions{LabelSelector: label})
 	if err != nil {
-		return nil, errors.New().WithCause(err).Internal()
+		return nil, errors.New().WithCause(err).Err()
 	}
 
 	for _, pod := range pods.Items {
@@ -107,7 +107,7 @@ func GetPod(client clientset.Interface, namespace, objectType, objectName, podNa
 	var podList []*KubeObjectInfo
 	pod, err := client.Core().Pods(namespace).Get(podName)
 	if err != nil {
-		return nil, errors.New().WithCause(err).Internal()
+		return nil, errors.New().WithCause(err).Err()
 	}
 	podList = append(podList, &KubeObjectInfo{Name: pod.Name + "@" + namespace, IP: pod.Status.PodIP, GroupName: objectName, GroupType: objectType})
 	return podList, nil
@@ -117,7 +117,7 @@ func GetNodeList(client clientset.Interface, alertNamespace string) ([]*KubeObje
 	var nodeList []*KubeObjectInfo
 	nodes, err := client.Core().Nodes().List(kapi.ListOptions{LabelSelector: labels.Everything()})
 	if err != nil {
-		return nodeList, errors.New().WithCause(err).Internal()
+		return nodeList, errors.New().WithCause(err).Err()
 	}
 	for _, node := range nodes.Items {
 		nodeIP := "127.0.0.1"
@@ -137,7 +137,7 @@ func GetNode(client clientset.Interface, nodeName, alertNamespace string) ([]*Ku
 	node := &kapi.Node{}
 	node, err := client.Core().Nodes().Get(nodeName)
 	if err != nil {
-		return nodeList, errors.New().WithCause(err).Internal()
+		return nodeList, errors.New().WithCause(err).Err()
 	}
 	nodeIP := "127.0.0.1"
 	for _, ip := range node.Status.Addresses {
@@ -155,7 +155,7 @@ func GetAlertList(acExtClient acs.AppsCodeExtensionInterface, kubeClient clients
 	if namespace != "" {
 		alertList, err := acExtClient.Alert(namespace).List(kapi.ListOptions{LabelSelector: ls})
 		if err != nil {
-			return nil, errors.New().WithCause(err).Internal()
+			return nil, errors.New().WithCause(err).Err()
 		}
 		if len(alertList.Items) > 0 {
 			alerts = append(alerts, alertList.Items...)
@@ -163,7 +163,7 @@ func GetAlertList(acExtClient acs.AppsCodeExtensionInterface, kubeClient clients
 	} else {
 		alertList, err := acExtClient.Alert(kapi.NamespaceAll).List(kapi.ListOptions{LabelSelector: ls})
 		if err != nil {
-			return nil, errors.New().WithCause(err).Internal()
+			return nil, errors.New().WithCause(err).Err()
 		}
 		if len(alertList.Items) > 0 {
 			alerts = append(alerts, alertList.Items...)
@@ -187,7 +187,7 @@ func GetLabelSelector(objectType, objectName string) (labels.Selector, error) {
 	if objectType != "" {
 		lsot, err := labels.NewRequirement(ObjectType, selection.Equals, sets.NewString(objectType).List())
 		if err != nil {
-			return lb, errors.New().WithCause(err).Internal()
+			return lb, errors.New().WithCause(err).Err()
 		}
 		lb = lb.Add(*lsot)
 	}
@@ -195,7 +195,7 @@ func GetLabelSelector(objectType, objectName string) (labels.Selector, error) {
 	if objectName != "" {
 		lson, err := labels.NewRequirement(ObjectName, selection.Equals, sets.NewString(objectName).List())
 		if err != nil {
-			return lb, errors.New().WithCause(err).Internal()
+			return lb, errors.New().WithCause(err).Err()
 		}
 		lb = lb.Add(*lson)
 	}

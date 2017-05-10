@@ -22,12 +22,12 @@ func CreateIcingaService(icingaClient *icinga.IcingaClient, mp map[string]interf
 	obj.Attrs = mp
 	jsonStr, err := json.Marshal(obj)
 	if err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 
 	resp := icingaClient.Objects().Service(object.Name).Create([]string{serviceName}, string(jsonStr)).Do()
 	if resp.Err != nil {
-		return errors.New().WithCause(resp.Err).Internal()
+		return errors.New().WithCause(resp.Err).Err()
 	}
 
 	if resp.Status == 200 {
@@ -37,7 +37,7 @@ func CreateIcingaService(icingaClient *icinga.IcingaClient, mp map[string]interf
 		return nil
 	}
 
-	return errors.New().WithMessage("Can't create Icinga service").Failed()
+	return errors.New("Can't create Icinga service").Err()
 }
 
 func UpdateIcingaService(icingaClient *icinga.IcingaClient, mp map[string]interface{}, object *KubeObjectInfo, icignaService string) error {
@@ -46,15 +46,15 @@ func UpdateIcingaService(icingaClient *icinga.IcingaClient, mp map[string]interf
 	obj.Attrs = mp
 	jsonStr, err := json.Marshal(obj)
 	if err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 	resp := icingaClient.Objects().Service(object.Name).Update([]string{icignaService}, string(jsonStr)).Do()
 	if resp.Err != nil {
-		return errors.New().WithCause(resp.Err).Internal()
+		return errors.New().WithCause(resp.Err).Err()
 	}
 
 	if resp.Status != 200 {
-		return errors.New().WithMessage("Can't update Icinga service").Failed()
+		return errors.New("Can't update Icinga service").Err()
 	}
 	return nil
 }
@@ -67,12 +67,12 @@ func DeleteIcingaService(icingaClient *icinga.IcingaClient, objectList []*KubeOb
 	resp := icingaClient.Objects().Service("").Delete([]string{}, in).Params(param).Do()
 
 	if resp.Err != nil {
-		return errors.New().WithCause(resp.Err).Internal()
+		return errors.New().WithCause(resp.Err).Err()
 	}
 	if resp.Status == 200 {
 		return nil
 	}
-	return errors.New().WithMessage("Fail to delete service").Failed()
+	return errors.New("Fail to delete service").Err()
 }
 
 func CheckIcingaService(icingaClient *icinga.IcingaClient, icingaServiceName string, objectList []*KubeObjectInfo) (bool, error) {
@@ -80,7 +80,7 @@ func CheckIcingaService(icingaClient *icinga.IcingaClient, icingaServiceName str
 	var respService ResponseObject
 
 	if _, err := icingaClient.Objects().Service("").Get([]string{}, in).Do().Into(&respService); err != nil {
-		return true, errors.New().WithMessage("can't check icinga service").Failed()
+		return true, errors.New("can't check icinga service").Err()
 	}
 	return len(respService.Results) > 0, nil
 }

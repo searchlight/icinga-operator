@@ -9,7 +9,6 @@ import (
 	"github.com/appscode/log"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	kapi "k8s.io/kubernetes/pkg/api"
-	k8error "k8s.io/kubernetes/pkg/api/errors"
 )
 
 func (b *IcingaController) IsObjectExists() error {
@@ -33,29 +32,13 @@ func (b *IcingaController) IsObjectExists() error {
 	case events.Pod.String():
 		_, err = b.ctx.KubeClient.Core().Pods(b.ctx.Resource.Namespace).Get(b.ctx.ObjectName)
 	case events.Node.String():
-		if b.ctx.ObjectName == "" {
-			return nil
-		}
-		if _, err = b.ctx.KubeClient.Core().Nodes().Get(b.ctx.ObjectName); err != nil {
-			if k8error.IsNotFound(err) {
-				return errors.New(fmt.Sprintf(`Node "%s" not found`, b.ctx.ObjectName)).NotFound()
-			}
-			return errors.New().WithCause(err)
-		}
+		_, err = b.ctx.KubeClient.Core().Nodes().Get(b.ctx.ObjectName)
 	case events.Cluster.String():
-		return nil
+		err = nil
 	default:
-		return errors.New(fmt.Sprintf(`Invalid Object Type "%s"`, b.ctx.ObjectType)).InvalidData()
+		err = errors.New(fmt.Sprintf(`Invalid Object Type "%s"`, b.ctx.ObjectType)).Err()
 	}
-
-	if err != nil {
-		if k8error.IsNotFound(err) {
-			return errors.New(fmt.Sprintf(`Kubernetes Object "%s" of kind "%s" in namespace "%s" not found`, b.ctx.ObjectName, b.ctx.ObjectType, b.ctx.Resource.Namespace)).NotFound()
-		}
-		return errors.New().WithCause(err)
-	}
-
-	return nil
+	return err
 }
 
 func (b *IcingaController) getParentsForPod(o interface{}) []*types.Ancestors {
@@ -140,7 +123,7 @@ func (b *IcingaController) checkPodIPAvailability(podName, namespace string) (bo
 	log.Debugln("Checking pod IP")
 	pod, err := b.ctx.KubeClient.Core().Pods(namespace).Get(podName)
 	if err != nil {
-		return false, errors.New().WithCause(err).Internal()
+		return false, errors.New().WithCause(err).Err()
 	}
 	if pod.Status.PodIP == "" {
 		return false, nil

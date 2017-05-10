@@ -39,18 +39,18 @@ func (p *icingaHost) DeleteAlert(ctx *types.Context, specificObject string) erro
 func (b *biblio) create() error {
 	alertSpec := b.Resource.Spec
 	if alertSpec.CheckCommand == "" {
-		return errors.New().WithMessage("Invalid request").BadRequest()
+		return errors.New("Invalid request").Err()
 	}
 
 	// Get Icinga Host Info
 	objectList, err := host.GetObjectList(b.KubeClient, alertSpec.CheckCommand, host.HostTypeLocalhost, b.Resource.Namespace, b.ObjectType, b.ObjectName, "")
 	if err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 
 	var has bool
 	if has, err = host.CheckIcingaService(b.IcingaClient, b.Resource.Name, objectList); err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 	if has {
 		return nil
@@ -58,15 +58,15 @@ func (b *biblio) create() error {
 
 	// Create Icinga Host
 	if err := host.CreateIcingaHost(b.IcingaClient, objectList, b.Resource.Namespace); err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 
 	if err := b.createIcingaService(objectList); err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 
 	if err := host.CreateIcingaNotification(b.IcingaClient, b.Resource, objectList); err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 
 	return nil
@@ -98,15 +98,15 @@ func (b *biblio) update() error {
 	// Get Icinga Host Info
 	objectList, err := host.GetObjectList(b.KubeClient, alertSpec.CheckCommand, host.HostTypeLocalhost, b.Resource.Namespace, b.ObjectType, b.ObjectName, "")
 	if err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 
 	if err := b.updateIcingaService(objectList); err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 
 	if err := host.UpdateIcingaNotification(b.IcingaClient, b.Resource, objectList); err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 	return nil
 }
@@ -128,7 +128,7 @@ func (b *biblio) updateIcingaService(objectList []*host.KubeObjectInfo) error {
 
 	for _, object := range objectList {
 		if err := host.UpdateIcingaService(b.IcingaClient, mp, object, b.Resource.Name); err != nil {
-			return errors.New().WithCause(err).Internal()
+			return errors.New().WithCause(err).Err()
 		}
 	}
 	return nil
@@ -139,16 +139,16 @@ func (b *biblio) delete() error {
 
 	objectList, err := host.GetObjectList(b.KubeClient, alertSpec.CheckCommand, host.HostTypeLocalhost, b.Resource.Namespace, b.ObjectType, b.ObjectName, "")
 	if err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 
 	if err := host.DeleteIcingaService(b.IcingaClient, objectList, b.Resource.Name); err != nil {
-		return errors.New().WithCause(err).Internal()
+		return errors.New().WithCause(err).Err()
 	}
 
 	for _, object := range objectList {
 		if err := host.DeleteIcingaHost(b.IcingaClient, object.Name); err != nil {
-			return errors.New().WithCause(err).Internal()
+			return errors.New().WithCause(err).Err()
 		}
 	}
 	return nil
