@@ -87,7 +87,7 @@ func setParameterizedVariables(alertSpec aci.AlertSpec, objectName string, comma
 			}
 			mp[host.IVar(key)] = reg.ReplaceAllString(val.(string), fmt.Sprintf("nodename='%s'", objectName))
 		} else {
-			return nil, errors.New(fmt.Sprintf("variable %v not found", key)).Err()
+			return nil, errors.Newf("variable %v not found", key).Err()
 		}
 	}
 	return mp, nil

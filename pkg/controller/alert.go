@@ -92,7 +92,6 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		}
 
 		b.ctx.Resource = _alert
-		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.CreatingIcingaObjects)
 
 		if err := b.IsObjectExists(); err != nil {
 			// Update Status
@@ -104,13 +103,16 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 				return errors.New().WithCause(err).Err()
 			}
 			if kerr.IsNotFound(err) {
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.NoIcingaObjectCreated, err.Error())
+				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonNotFound, err.Error())
 				return nil
 			} else {
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToCreateIcingaObjects, err.Error())
+				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToProceed, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
 		}
+
+		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonCreating)
+
 		if err := b.Create(); err != nil {
 			// Update Status
 			t := unversioned.Now()
@@ -121,7 +123,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 				return errors.New().WithCause(err).Err()
 			}
 
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToCreateIcingaObjects, err.Error())
+			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToCreate, err.Error())
 			return errors.New().WithCause(err).Err()
 		}
 
@@ -132,7 +134,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		if _, err = b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
 			return errors.New().WithCause(err).Err()
 		}
-		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.CreatedIcingaObjects)
+		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulCreate)
 	} else if e.EventType.IsUpdated() {
 		if len(alert) == 0 {
 			return errors.New("Missing alert data").Err()
@@ -150,20 +152,21 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		}
 
 		b.ctx.Resource = newConfig
-		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.UpdatingIcingaObjects)
 
 		if err := b.IsObjectExists(); err != nil {
 			if kerr.IsNotFound(err) {
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.NoIcingaObjectCreated, err.Error())
+				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonNotFound, err.Error())
 				return nil
 			} else {
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToCreateIcingaObjects, err.Error())
+				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToProceed, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
 		}
 
+		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonUpdating)
+
 		if err := b.Update(); err != nil {
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToUpdateIcingaObjects, err.Error())
+			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToUpdate, err.Error())
 			return errors.New().WithCause(err).Err()
 		}
 
@@ -174,21 +177,21 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
 			return errors.New().WithCause(err).Err()
 		}
-		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.UpdatedIcingaObjects)
+		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulUpdate)
 	} else if e.EventType.IsDeleted() {
 		if len(alert) == 0 {
 			return errors.New("Missing alert data").Err()
 		}
 
 		b.ctx.Resource = alert[0].(*aci.Alert)
-		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.DeletingIcingaObjects)
+		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonDeleting)
 
 		b.parseAlertOptions()
 		if err := b.Delete(); err != nil {
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToDeleteIcingaObjects)
+			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToDelete, err.Error())
 			return errors.New().WithCause(err).Err()
 		}
-		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.DeletedIcingaObjects)
+		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulDelete)
 	}
 	return nil
 }
@@ -314,26 +317,26 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 					b.ctx.Resource = &alert
 
 					additionalMessage := fmt.Sprintf(`pod "%v.%v"`, e.MetaData.Name, e.MetaData.Namespace)
-					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncIcingaObjects, additionalMessage)
+					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSync, additionalMessage)
 					b.parseAlertOptions()
 
 					if err := b.Create(e.MetaData.Name); err != nil {
-						event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToSyncIcingaObjects, additionalMessage, err.Error())
+						event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
 						return errors.New().WithCause(err).Err()
 					}
-					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
+					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 				} else if e.EventType.IsDeleted() {
 					b.ctx.Resource = &alert
 
 					additionalMessage := fmt.Sprintf(`pod "%v.%v"`, e.MetaData.Name, e.MetaData.Namespace)
-					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncIcingaObjects, additionalMessage)
+					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSync, additionalMessage)
 					b.parseAlertOptions()
 
 					if err := b.Delete(e.MetaData.Name); err != nil {
-						event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToSyncIcingaObjects, additionalMessage, err.Error())
+						event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
 						return errors.New().WithCause(err).Err()
 					}
-					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
+					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 				}
 
 				t := unversioned.Now()
@@ -389,27 +392,27 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 			b.ctx.Resource = &alert
 
 			additionalMessage := fmt.Sprintf(`node "%v"`, e.MetaData.Name)
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncIcingaObjects, additionalMessage)
+			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSync, additionalMessage)
 			b.parseAlertOptions()
 
 			if err := b.Create(e.MetaData.Name); err != nil {
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToSyncIcingaObjects, additionalMessage, err.Error())
+				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
+			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 
 		} else if e.EventType.IsDeleted() {
 			b.ctx.Resource = &alert
 
 			additionalMessage := fmt.Sprintf(`node "%v"`, e.MetaData.Name)
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncIcingaObjects, additionalMessage)
+			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSync, additionalMessage)
 			b.parseAlertOptions()
 
 			if err := b.Delete(e.MetaData.Name); err != nil {
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.FailedToSyncIcingaObjects, additionalMessage, err.Error())
+				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.SyncedIcingaObjects, additionalMessage)
+			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 		}
 
 		t := unversioned.Now()

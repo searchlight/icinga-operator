@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/appscode/errors"
@@ -36,7 +35,7 @@ func (b *IcingaController) IsObjectExists() error {
 	case events.Cluster.String():
 		err = nil
 	default:
-		err = errors.New(fmt.Sprintf(`Invalid Object Type "%s"`, b.ctx.ObjectType)).Err()
+		err = errors.Newf(`Invalid Object Type "%s"`, b.ctx.ObjectType).Err()
 	}
 	return err
 }

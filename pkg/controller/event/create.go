@@ -36,57 +36,62 @@ func CreateAlertEvent(kubeClient clientset.Interface, alert *aci.Alert, reason t
 	}
 
 	switch reason {
-	case types.CreatingIcingaObjects:
+	case types.EventReasonNotFound:
+		event.Reason = reason.String()
+		event.Message = fmt.Sprintf(`failed to set alerts. Reason: %v`, additionalMessage)
+		event.Type = kapi.EventTypeWarning
+	case types.EventReasonFailedToProceed:
+		event.Reason = reason.String()
+		event.Message = fmt.Sprintf(`failed to proceed. Reason: %v`, additionalMessage)
+		event.Type = kapi.EventTypeWarning
+
+	case types.EventReasonCreating:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`creating Icinga objects`)
 		event.Type = kapi.EventTypeNormal
-	case types.FailedToCreateIcingaObjects:
+	case types.EventReasonFailedToCreate:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`failed to create Icinga objects. Error: %v`, additionalMessage)
 		event.Type = kapi.EventTypeWarning
-	case types.NoIcingaObjectCreated:
-		event.Reason = reason.String()
-		event.Message = fmt.Sprintf(`no Icinga object is created. Reason: %v`, additionalMessage)
-		event.Type = kapi.EventTypeNormal
-	case types.CreatedIcingaObjects:
+	case types.EventReasonSuccessfulCreate:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`successfully created Icinga objects`)
 		event.Type = kapi.EventTypeNormal
 
-	case types.UpdatingIcingaObjects:
+	case types.EventReasonUpdating:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`updating Icinga objects`)
-	case types.FailedToUpdateIcingaObjects:
+	case types.EventReasonFailedToUpdate:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`failed to update Icinga objects. Error: %v`, additionalMessage)
 		event.Type = kapi.EventTypeWarning
-	case types.UpdatedIcingaObjects:
+	case types.EventReasonSuccessfulUpdate:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`successfully updated Icinga objects.`)
 		event.Type = kapi.EventTypeNormal
 
-	case types.DeletingIcingaObjects:
+	case types.EventReasonDeleting:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`deleting Icinga objects`)
 		event.Type = kapi.EventTypeNormal
-	case types.FailedToDeleteIcingaObjects:
+	case types.EventReasonFailedToDelete:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`failed to delete Icinga objects. Error: %v`, additionalMessage)
 		event.Type = kapi.EventTypeWarning
-	case types.DeletedIcingaObjects:
+	case types.EventReasonSuccessfulDelete:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`successfully deleted Icinga objects.`)
 		event.Type = kapi.EventTypeNormal
 
-	case types.SyncIcingaObjects:
+	case types.EventReasonSync:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`synchronizing alert for %v.`, additionalMessage[0])
 		event.Type = kapi.EventTypeNormal
-	case types.FailedToSyncIcingaObjects:
+	case types.EventReasonFailedToSync:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`failed to synchronize alert for %v. Error: %v`, additionalMessage[0], additionalMessage[1])
 		event.Type = kapi.EventTypeWarning
-	case types.SyncedIcingaObjects:
+	case types.EventReasonSuccessfulSync:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`successfully synchronized alert for %v.`, additionalMessage[0])
 		event.Type = kapi.EventTypeNormal

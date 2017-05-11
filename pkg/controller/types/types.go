@@ -14,26 +14,28 @@ import (
 type EventReason string
 
 const (
+	EventReasonNotFound        EventReason = "NotFound"
+	EventReasonFailedToProceed EventReason = "FailedToProceed"
+
 	// Icinga objects create event list
-	CreatingIcingaObjects       EventReason = "Creating"
-	FailedToCreateIcingaObjects EventReason = "FailedToCreate"
-	NoIcingaObjectCreated       EventReason = "NoIcingaObjectCreated"
-	CreatedIcingaObjects        EventReason = "Created"
+	EventReasonCreating         EventReason = "Creating"
+	EventReasonFailedToCreate   EventReason = "FailedToCreate"
+	EventReasonSuccessfulCreate EventReason = "SuccessfulCreate"
 
 	// Icinga objects update event list
-	UpdatingIcingaObjects       EventReason = "Updating"
-	FailedToUpdateIcingaObjects EventReason = "FailedToUpdate"
-	UpdatedIcingaObjects        EventReason = "Updated"
+	EventReasonUpdating         EventReason = "Updating"
+	EventReasonFailedToUpdate   EventReason = "FailedToUpdate"
+	EventReasonSuccessfulUpdate EventReason = "SuccessfulUpdate"
 
 	// Icinga objects delete event list
-	DeletingIcingaObjects       EventReason = "Deleting"
-	FailedToDeleteIcingaObjects EventReason = "FailedToDelete"
-	DeletedIcingaObjects        EventReason = "Deleted"
+	EventReasonDeleting         EventReason = "Deleting"
+	EventReasonFailedToDelete   EventReason = "FailedToDelete"
+	EventReasonSuccessfulDelete EventReason = "SuccessfulDelete"
 
 	// Icinga objects sync event list
-	SyncIcingaObjects         EventReason = "Sync"
-	FailedToSyncIcingaObjects EventReason = "FailedToSync"
-	SyncedIcingaObjects       EventReason = "Synced"
+	EventReasonSync           EventReason = "Sync"
+	EventReasonFailedToSync   EventReason = "FailedToSync"
+	EventReasonSuccessfulSync EventReason = "SuccessfulSync"
 )
 
 func (r EventReason) String() string {
