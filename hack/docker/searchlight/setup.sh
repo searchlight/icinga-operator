@@ -43,7 +43,7 @@ build_docker() {
 FROM alpine
 
 RUN set -x \
-    && apk --update upgrade \
+    && apk update \
     && apk add ca-certificates \
     && rm -rf /var/cache/apk/*
 
