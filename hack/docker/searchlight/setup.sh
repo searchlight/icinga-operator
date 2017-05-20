@@ -43,9 +43,9 @@ build_docker() {
 FROM alpine
 
 RUN set -x \
-    && apk update \
-    && apk add ca-certificates \
-    && rm -rf /var/cache/apk/*
+  && apk update \
+  && apk add ca-certificates \
+  && rm -rf /var/cache/apk/*
 
 COPY searchlight /searchlight
 USER nobody:nobody
