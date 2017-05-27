@@ -14,6 +14,7 @@ import (
 	"github.com/appscode/go/net"
 	"github.com/go-macaron/auth"
 	"github.com/go-macaron/toolbox"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	hostUtil "github.com/shirou/gopsutil/host"
@@ -101,6 +102,8 @@ func main() {
 		ctx.JSON(200, l)
 	})
 
+	m.Get("/metrics", promhttp.Handler().ServeHTTP)
+
 	addr := *host + ":" + com.ToStr(*port)
 	log.Printf("listening on %s (%s)\n", addr, macaron.Env)
 
@@ -132,6 +135,7 @@ func main() {
 				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
 			},
 			ClientAuth: tls.VerifyClientCertIfGiven,
+			NextProtos: []string{"h2", "http/1.1"},
 		}
 		if *caCertFile != "" {
 			caCert, err := ioutil.ReadFile(*caCertFile)

@@ -1,13 +1,15 @@
-hash: ff156f353331e2a20fc8a7f850851bb509139c73f3a5b8b38628dce9cf2439b5
-updated: 2017-05-15T17:21:08.401884915-07:00
+hash: 8dddab7e571f9a10f3fdd2004cc0207463a242b92620aaf4df1a30cb87847941
+updated: 2017-05-27T12:57:35.996637194-07:00
 imports:
+- name: bitbucket.org/ww/goautoneg
+  version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
   subpackages:
   - compute/metadata
   - internal
 - name: github.com/appscode/api
-  version: 51b2051bda2f3b346d6abd37953322fb90b6c35c
+  version: 6ccfba7540c2c013dd596d4955c4a9a5ab8b0812
   subpackages:
   - attic/v1beta1
   - auth/v1beta1
@@ -24,16 +26,16 @@ imports:
   - ssh/v1beta1
   - version
 - name: github.com/appscode/client
-  version: 0d74954b633628967f83891d55a839db440c5d9e
+  version: 9844500890e8cf3df84b3c86ddc17c220db38af1
   subpackages:
   - credential
   - util
 - name: github.com/appscode/errors
-  version: 61db995d0bb9fc75cc7be1f772759a56e59ae4d3
+  version: 748883e321a9f99fe901bd2663c7af3fcae43ea4
   subpackages:
   - h/log
 - name: github.com/appscode/go
-  version: 496a78e678c2a161788f53f94bdb0ab9c812231f
+  version: 04abd631dc552c01c9448db0763611932590cbc4
   subpackages:
   - crypto/rand
   - env
@@ -72,6 +74,10 @@ imports:
   version: 70b2c90b260171e829f1ebd7c17f600c11858dbe
   subpackages:
   - winterm
+- name: github.com/beorn7/perks
+  version: 3ac7bf7a47d159a033b107610db8a1b6575507a4
+  subpackages:
+  - quantile
 - name: github.com/blang/semver
   version: 31b736133b98f26d5e078ec9eb591666edfd091f
 - name: github.com/cenkalti/backoff
@@ -192,7 +198,7 @@ imports:
 - name: github.com/google/gofuzz
   version: bbcb9da2d746f8bdbd6a936686a0a6067ada0ec5
 - name: github.com/grpc-ecosystem/grpc-gateway
-  version: 8d7be3463c01d76c6fd60a2c1cd14bebfabf0b2e
+  version: e40837d7cc3a3e454c1e42012704e92bd49310af
   repo: https://github.com/appscode/grpc-gateway.git
   vcs: git
   subpackages:
@@ -232,6 +238,10 @@ imports:
   - buffer
   - jlexer
   - jwriter
+- name: github.com/matttproud/golang_protobuf_extensions
+  version: fc2b8d3a73c4867e51861bbdd5ae3c1f0869dd6a
+  subpackages:
+  - pbutil
 - name: github.com/mikespook/golib
   version: 38fe6917d34b267a79c3432369e7dcc379e2d5b3
   subpackages:
@@ -248,10 +258,19 @@ imports:
   version: c5b7fccd204277076155f10851dad72b76a49317
   subpackages:
   - api/prometheus
+  - prometheus
+  - prometheus/promhttp
+- name: github.com/prometheus/client_model
+  version: fa8ad6fec33561be4280a8f0514318c79d7f6cb6
+  subpackages:
+  - go
 - name: github.com/prometheus/common
   version: ffe929a3f4c4faeaa10f2b9535c2b1be3ad15650
   subpackages:
+  - expfmt
   - model
+- name: github.com/prometheus/procfs
+  version: 454a56f35412459b5e684fd5ec0f9211b94f002a
 - name: github.com/PuerkitoBio/purell
   version: 8a290539e2e8629dbc4e6bad948158f790ec31f4
 - name: github.com/PuerkitoBio/urlesc
@@ -272,7 +291,7 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: 51fe59aca108dc5680109e7b2051cbdcfa5a253c
 - name: github.com/spf13/cobra
-  version: 4cdb38c072b86bf795d2c81de50784d9fdd6eb77
+  version: ca57f0f5dba473a8a58765d16d7e811fb8027add
 - name: github.com/spf13/pflag
   version: e57e3eeb33f795204c1ca35f56c44f83227c6e66
 - name: github.com/StackExchange/wmi
@@ -353,7 +372,7 @@ imports:
   - internal/urlfetch
   - urlfetch
 - name: google.golang.org/genproto
-  version: 411e09b969b1170a9f0c467558eb4c4c110d9c77
+  version: d80a6e20e776b0b17a324d0ba1ab50a39c8e8944
   subpackages:
   - googleapis/api/annotations
   - googleapis/rpc/status

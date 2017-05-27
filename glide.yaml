@@ -31,6 +31,7 @@ import:
 - package: github.com/influxdata/influxdb
   version: v0.11.0
 - package: github.com/prometheus/client_golang
+  version: v0.8.0
 - package: github.com/prometheus/common
 - package: github.com/spf13/cobra
   version: master
