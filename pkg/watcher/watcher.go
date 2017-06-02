@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	acs "github.com/appscode/k8s-addons/client/clientset"
-	"github.com/appscode/k8s-addons/pkg/events"
-	"github.com/appscode/k8s-addons/pkg/stash"
+	acs "github.com/appscode/searchlight/client/clientset"
+	"github.com/appscode/searchlight/pkg/events"
+	"github.com/appscode/searchlight/pkg/stash"
 	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/client/cache"
 	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
@@ -19,8 +19,8 @@ type Watcher struct {
 	// kubernetes client to apiserver
 	Client clientset.Interface
 
-	// client for getting the appscode extensions
-	AppsCodeExtensionClient acs.AppsCodeExtensionInterface
+	// client for Searchlight extensions
+	ExtClient acs.ExtensionInterface
 
 	// sync time to sync the list.
 	SyncPeriod time.Duration

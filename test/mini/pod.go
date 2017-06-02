@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/appscode/searchlight/pkg/testing"
 	"github.com/appscode/searchlight/cmd/searchlight/app"
+	"github.com/appscode/searchlight/pkg/testing"
 	kapi "k8s.io/kubernetes/pkg/api"
 )
 

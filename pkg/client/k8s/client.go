@@ -2,9 +2,9 @@ package k8s
 
 import (
 	"github.com/appscode/errors"
+	"github.com/appscode/log"
 	_ "github.com/appscode/searchlight/api/install"
 	acs "github.com/appscode/searchlight/client/clientset"
-	"github.com/appscode/log"
 	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
 )
 
@@ -22,13 +22,13 @@ func NewClient() (*KubeClient, error) {
 		return nil, errors.New().WithCause(err).Err()
 	}
 
-	appscodeClient, err := acs.NewForConfig(config)
+	extClient, err := acs.NewForConfig(config)
 	if err != nil {
 		return nil, errors.New().WithCause(err).Err()
 	}
 
 	return &KubeClient{
-		Client:                  client,
-		AppscodeExtensionClient: appscodeClient,
+		Client:    client,
+		ExtClient: extClient,
 	}, nil
 }

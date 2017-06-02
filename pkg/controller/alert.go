@@ -6,11 +6,9 @@ import (
 	"time"
 
 	"github.com/appscode/errors"
+	"github.com/appscode/log"
 	aci "github.com/appscode/searchlight/api"
 	acs "github.com/appscode/searchlight/client/clientset"
-	"github.com/appscode/searchlight/pkg/events"
-	"github.com/appscode/searchlight/pkg/stash"
-	"github.com/appscode/log"
 	"github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/client/icinga"
 	"github.com/appscode/searchlight/pkg/controller/event"
@@ -19,6 +17,8 @@ import (
 	_ "github.com/appscode/searchlight/pkg/controller/host/node"
 	_ "github.com/appscode/searchlight/pkg/controller/host/pod"
 	"github.com/appscode/searchlight/pkg/controller/types"
+	"github.com/appscode/searchlight/pkg/events"
+	"github.com/appscode/searchlight/pkg/stash"
 	kapi "k8s.io/kubernetes/pkg/api"
 	kerr "k8s.io/kubernetes/pkg/api/errors"
 	"k8s.io/kubernetes/pkg/api/unversioned"
@@ -39,11 +39,11 @@ func New(kubeClient clientset.Interface,
 		log.Errorln("Icinga data not found")
 	}
 	ctx := &types.Context{
-		KubeClient:              kubeClient,
-		AppsCodeExtensionClient: appsCodeExtensionClient,
-		IcingaData:              data,
-		IcingaClient:            icingaClient,
-		Storage:                 storage,
+		KubeClient:   kubeClient,
+		ExtClient:    appsCodeExtensionClient,
+		IcingaData:   data,
+		IcingaClient: icingaClient,
+		Storage:      storage,
 	}
 	return &IcingaController{ctx: ctx}
 }
@@ -85,7 +85,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			t := unversioned.Now()
 			_alert.Status.CreationTime = &t
 			_alert.Status.Phase = aci.AlertPhaseCreating
-			_alert, err = b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert)
+			_alert, err = b.ctx.ExtClient.Alert(_alert.Namespace).Update(_alert)
 			if err != nil {
 				return errors.New().WithCause(err).Err()
 			}
@@ -99,7 +99,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			_alert.Status.UpdateTime = &t
 			_alert.Status.Phase = aci.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
-			if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
+			if _, err := b.ctx.ExtClient.Alert(_alert.Namespace).Update(_alert); err != nil {
 				return errors.New().WithCause(err).Err()
 			}
 			if kerr.IsNotFound(err) {
@@ -119,7 +119,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			_alert.Status.UpdateTime = &t
 			_alert.Status.Phase = aci.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
-			if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
+			if _, err := b.ctx.ExtClient.Alert(_alert.Namespace).Update(_alert); err != nil {
 				return errors.New().WithCause(err).Err()
 			}
 
@@ -131,7 +131,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		_alert.Status.UpdateTime = &t
 		_alert.Status.Phase = aci.AlertPhaseCreated
 		_alert.Status.Reason = ""
-		if _, err = b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
+		if _, err = b.ctx.ExtClient.Alert(_alert.Namespace).Update(_alert); err != nil {
 			return errors.New().WithCause(err).Err()
 		}
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulCreate)
@@ -174,7 +174,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		_alert := b.ctx.Resource
 		t := unversioned.Now()
 		_alert.Status.UpdateTime = &t
-		if _, err := b.ctx.AppsCodeExtensionClient.Alert(_alert.Namespace).Update(_alert); err != nil {
+		if _, err := b.ctx.ExtClient.Alert(_alert.Namespace).Update(_alert); err != nil {
 			return errors.New().WithCause(err).Err()
 		}
 		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulUpdate)
@@ -229,7 +229,7 @@ func (b *IcingaController) handleIcingaPod() {
 	}
 
 	icingaUp := false
-	alertList, err := b.ctx.AppsCodeExtensionClient.Alert(kapi.NamespaceAll).List(kapi.ListOptions{LabelSelector: labels.Everything()})
+	alertList, err := b.ctx.ExtClient.Alert(kapi.NamespaceAll).List(kapi.ListOptions{LabelSelector: labels.Everything()})
 	if err != nil {
 		log.Errorln(err)
 		return
@@ -274,7 +274,7 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 				return errors.New().WithCause(err).Err()
 			}
 
-			alertList, err := b.ctx.AppsCodeExtensionClient.Alert(namespace).List(kapi.ListOptions{
+			alertList, err := b.ctx.ExtClient.Alert(namespace).List(kapi.ListOptions{
 				LabelSelector: lb,
 			})
 			if err != nil {
@@ -341,7 +341,7 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 
 				t := unversioned.Now()
 				alert.Status.UpdateTime = &t
-				b.ctx.AppsCodeExtensionClient.Alert(alert.Namespace).Update(&alert)
+				b.ctx.ExtClient.Alert(alert.Namespace).Update(&alert)
 			}
 		}
 	}
@@ -367,7 +367,7 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 
 	icingaUp := false
 
-	alertList, err := b.ctx.AppsCodeExtensionClient.Alert(kapi.NamespaceAll).List(kapi.ListOptions{
+	alertList, err := b.ctx.ExtClient.Alert(kapi.NamespaceAll).List(kapi.ListOptions{
 		LabelSelector: lb,
 	})
 	if err != nil {
@@ -417,7 +417,7 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 
 		t := unversioned.Now()
 		alert.Status.UpdateTime = &t
-		b.ctx.AppsCodeExtensionClient.Alert(alert.Namespace).Update(&alert)
+		b.ctx.ExtClient.Alert(alert.Namespace).Update(&alert)
 	}
 
 	return nil
@@ -462,7 +462,7 @@ func (b *IcingaController) handleAlertEvent(e *events.Event) error {
 		eventRefObjNamespace := alertEvent.InvolvedObject.Namespace
 		eventRefObjName := alertEvent.InvolvedObject.Name
 
-		alert, err := b.ctx.AppsCodeExtensionClient.Alert(eventRefObjNamespace).Get(eventRefObjName)
+		alert, err := b.ctx.ExtClient.Alert(eventRefObjNamespace).Get(eventRefObjName)
 		if err != nil {
 			return errors.New().WithCause(err).Err()
 		}

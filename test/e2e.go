@@ -6,10 +6,10 @@ import (
 	"sync"
 	"time"
 
-	acw "github.com/appscode/searchlight/pkg/watcher"
 	"github.com/appscode/searchlight/cmd/searchlight/app"
 	"github.com/appscode/searchlight/pkg/client/icinga"
 	"github.com/appscode/searchlight/pkg/client/k8s"
+	acw "github.com/appscode/searchlight/pkg/watcher"
 	"github.com/appscode/searchlight/test/mini"
 	"github.com/appscode/searchlight/util"
 	kapi "k8s.io/kubernetes/pkg/api"
@@ -144,9 +144,9 @@ func runKubeD(setIcingaClient bool) (w *app.Watcher, err error) {
 
 			w = &app.Watcher{
 				Watcher: acw.Watcher{
-					Client:                  kubeClient.Client,
-					AppsCodeExtensionClient: kubeClient.AppscodeExtensionClient,
-					SyncPeriod:              time.Minute * 2,
+					Client:     kubeClient.Client,
+					ExtClient:  kubeClient.ExtClient,
+					SyncPeriod: time.Minute * 2,
 				},
 			}
 

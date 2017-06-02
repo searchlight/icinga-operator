@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
-	aci "github.com/appscode/searchlight/api"
-	"github.com/appscode/searchlight/pkg/events"
 	"github.com/appscode/log"
+	aci "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/controller/types"
+	"github.com/appscode/searchlight/pkg/events"
 	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/api/unversioned"
 	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"

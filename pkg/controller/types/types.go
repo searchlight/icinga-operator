@@ -5,9 +5,9 @@ import (
 
 	aci "github.com/appscode/searchlight/api"
 	acs "github.com/appscode/searchlight/client/clientset"
-	"github.com/appscode/searchlight/pkg/stash"
 	"github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/client/icinga"
+	"github.com/appscode/searchlight/pkg/stash"
 	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
 )
 
@@ -53,8 +53,8 @@ type IcingaData struct {
 
 type Context struct {
 	// kubernetes client
-	KubeClient              clientset.Interface
-	AppsCodeExtensionClient acs.ExtensionInterface
+	KubeClient clientset.Interface
+	ExtClient  acs.ExtensionInterface
 
 	IcingaClient *icinga.IcingaClient
 	IcingaData   map[string]*IcingaData

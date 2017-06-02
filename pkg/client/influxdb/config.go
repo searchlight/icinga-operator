@@ -3,11 +3,9 @@ package influxdb
 import (
 	"errors"
 	"fmt"
-	"net/url"
 	"strings"
 
 	"github.com/appscode/searchlight/pkg/client/k8s"
-	influxdb "github.com/influxdata/influxdb/client"
 	ini "github.com/vaughan0/go-ini"
 )
 
@@ -65,20 +63,4 @@ func GetInfluxDBSecretData(secretName, namespace string) (*AuthInfo, error) {
 		return authData, nil
 	}
 	return nil, errors.New("Invalid InfluxDB secret")
-}
-
-func GetInfluxDBConfig(secretName, namespace string) (*influxdb.Config, error) {
-	authData, err := GetInfluxDBSecretData(secretName, namespace)
-	if err != nil {
-		return nil, err
-	}
-	config := &influxdb.Config{
-		URL: url.URL{
-			Scheme: "http",
-			Host:   authData.Host,
-		},
-		Username: authData.Username,
-		Password: authData.Password,
-	}
-	return config, nil
 }

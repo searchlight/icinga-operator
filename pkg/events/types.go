@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	aci "github.com/appscode/k8s-addons/api"
 	"github.com/appscode/log"
+	aci "github.com/appscode/searchlight/api"
 	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/apis/apps"
 	"k8s.io/kubernetes/pkg/apis/extensions"
@@ -17,7 +17,7 @@ type EventType string
 const (
 	Added   EventType = "ADDED"
 	Deleted EventType = "DELETED"
-	Updated EventType = "UPDATETD"
+	Updated EventType = "UPDATED"
 	None    EventType = "NONE"
 )
 
@@ -80,24 +80,22 @@ func (o ObjectKind) String() string {
 type ObjectType string
 
 const (
-	Alert           ObjectType = "alerts"
-	Certificate     ObjectType = "certificates"
-	Cluster         ObjectType = "cluster"
-	ConfigMap       ObjectType = "configmaps"
-	DaemonSet       ObjectType = "daemonsets"
-	Endpoint        ObjectType = "endpoints"
-	ExtendedIngress ObjectType = "extendedingresses"
-	Ingress         ObjectType = "ingresses"
-	Namespace       ObjectType = "namespaces"
-	Node            ObjectType = "nodes"
-	StatefulSet     ObjectType = "statefulsets"
-	Pod             ObjectType = "pods"
-	RC              ObjectType = "replicationcontrollers"
-	ReplicaSet      ObjectType = "replicasets"
-	Deployments     ObjectType = "deployments"
-	Service         ObjectType = "services"
-	Unknown         ObjectType = "unknown"
-	AlertEvent      ObjectType = "alertevents"
+	Alert       ObjectType = "alerts"
+	Certificate ObjectType = "certificates"
+	Cluster     ObjectType = "cluster"
+	ConfigMap   ObjectType = "configmaps"
+	DaemonSet   ObjectType = "daemonsets"
+	Endpoint    ObjectType = "endpoints"
+	Namespace   ObjectType = "namespaces"
+	Node        ObjectType = "nodes"
+	StatefulSet ObjectType = "statefulsets"
+	Pod         ObjectType = "pods"
+	RC          ObjectType = "replicationcontrollers"
+	ReplicaSet  ObjectType = "replicasets"
+	Deployments ObjectType = "deployments"
+	Service     ObjectType = "services"
+	Unknown     ObjectType = "unknown"
+	AlertEvent  ObjectType = "alertevents"
 )
 
 func (o ObjectType) String() string {
@@ -166,18 +164,12 @@ func detectObjectType(o interface{}) ObjectType {
 		return RC
 	case kapi.Node, *kapi.Node:
 		return Node
-	case extensions.Ingress, *extensions.Ingress:
-		return Ingress
 	case kapi.ConfigMap, *kapi.ConfigMap:
 		return ConfigMap
 	case kapi.Endpoints, *kapi.Endpoints:
 		return Endpoint
-	case aci.Ingress, *aci.Ingress:
-		return ExtendedIngress
 	case aci.Alert, *aci.Alert:
 		return Alert
-	case aci.Certificate, *aci.Certificate:
-		return Certificate
 	case kapi.Event, *kapi.Event:
 		return AlertEvent
 	case extensions.ReplicaSet, *extensions.ReplicaSet:
@@ -204,12 +196,6 @@ func objectMetadata(o interface{}, t ObjectType) kapi.ObjectMeta {
 		return o.(*kapi.ReplicationController).ObjectMeta
 	case Node:
 		return o.(*kapi.Node).ObjectMeta
-	case Ingress:
-		return o.(*extensions.Ingress).ObjectMeta
-	case ExtendedIngress:
-		return o.(*aci.Ingress).ObjectMeta
-	case Certificate:
-		return o.(*aci.Certificate).ObjectMeta
 	case Endpoint:
 		return o.(*kapi.Endpoints).ObjectMeta
 	case AlertEvent:

@@ -1,13 +1,13 @@
 package app
 
 import (
+	"github.com/appscode/log"
 	aci "github.com/appscode/searchlight/api"
+	"github.com/appscode/searchlight/pkg/client/icinga"
+	"github.com/appscode/searchlight/pkg/controller"
 	"github.com/appscode/searchlight/pkg/events"
 	"github.com/appscode/searchlight/pkg/stash"
 	acw "github.com/appscode/searchlight/pkg/watcher"
-	"github.com/appscode/log"
-	"github.com/appscode/searchlight/pkg/client/icinga"
-	"github.com/appscode/searchlight/pkg/controller"
 	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/api/errors"
 	"k8s.io/kubernetes/pkg/api/unversioned"
@@ -77,7 +77,7 @@ func (w *Watcher) Dispatch(e *events.Event) error {
 	log.Debugln("Dispatching event with resource", e.ResourceType, "event", e.EventType)
 	if e.ResourceType == events.Alert || e.ResourceType == events.Node ||
 		e.ResourceType == events.Pod || e.ResourceType == events.Service || e.ResourceType == events.AlertEvent {
-		return controller.New(w.Client, w.IcingaClient, w.AppsCodeExtensionClient, w.Storage).Handle(e)
+		return controller.New(w.Client, w.IcingaClient, w.ExtClient, w.Storage).Handle(e)
 	}
 	return nil
 }

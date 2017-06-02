@@ -1,8 +1,8 @@
 package watcher
 
 import (
-	acs "github.com/appscode/k8s-addons/client/clientset"
-	"github.com/appscode/k8s-addons/pkg/events"
+	acs "github.com/appscode/searchlight/client/clientset"
+	"github.com/appscode/searchlight/pkg/events"
 	kapi "k8s.io/kubernetes/pkg/api"
 	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
 	"k8s.io/kubernetes/pkg/fields"
@@ -19,18 +19,6 @@ func IngressListFunc(c clientset.Interface) func(kapi.ListOptions) (runtime.Obje
 func IngressWatchFunc(c clientset.Interface) func(options kapi.ListOptions) (watch.Interface, error) {
 	return func(options kapi.ListOptions) (watch.Interface, error) {
 		return c.Extensions().Ingresses(kapi.NamespaceAll).Watch(options)
-	}
-}
-
-func ExtendedIngressListFunc(c acs.AppsCodeExtensionInterface) func(kapi.ListOptions) (runtime.Object, error) {
-	return func(opts kapi.ListOptions) (runtime.Object, error) {
-		return c.Ingress(kapi.NamespaceAll).List(opts)
-	}
-}
-
-func ExtendedIngressWatchFunc(c acs.AppsCodeExtensionInterface) func(options kapi.ListOptions) (watch.Interface, error) {
-	return func(options kapi.ListOptions) (watch.Interface, error) {
-		return c.Ingress(kapi.NamespaceAll).Watch(options)
 	}
 }
 
@@ -70,27 +58,15 @@ func StatefulSetWatchFunc(c clientset.Interface) func(options kapi.ListOptions) 
 	}
 }
 
-func AlertListFunc(c acs.AppsCodeExtensionInterface) func(kapi.ListOptions) (runtime.Object, error) {
+func AlertListFunc(c acs.ExtensionInterface) func(kapi.ListOptions) (runtime.Object, error) {
 	return func(opts kapi.ListOptions) (runtime.Object, error) {
 		return c.Alert(kapi.NamespaceAll).List(opts)
 	}
 }
 
-func AlertWatchFunc(c acs.AppsCodeExtensionInterface) func(options kapi.ListOptions) (watch.Interface, error) {
+func AlertWatchFunc(c acs.ExtensionInterface) func(options kapi.ListOptions) (watch.Interface, error) {
 	return func(options kapi.ListOptions) (watch.Interface, error) {
 		return c.Alert(kapi.NamespaceAll).Watch(options)
-	}
-}
-
-func CertificateListFunc(c acs.AppsCodeExtensionInterface) func(kapi.ListOptions) (runtime.Object, error) {
-	return func(opts kapi.ListOptions) (runtime.Object, error) {
-		return c.Certificate(kapi.NamespaceAll).List(opts)
-	}
-}
-
-func CertificateWatchFunc(c acs.AppsCodeExtensionInterface) func(options kapi.ListOptions) (watch.Interface, error) {
-	return func(options kapi.ListOptions) (watch.Interface, error) {
-		return c.Certificate(kapi.NamespaceAll).Watch(options)
 	}
 }
 

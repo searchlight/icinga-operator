@@ -1,9 +1,9 @@
 package watcher
 
 import (
-	aci "github.com/appscode/k8s-addons/api"
-	"github.com/appscode/k8s-addons/pkg/events"
 	"github.com/appscode/log"
+	aci "github.com/appscode/searchlight/api"
+	"github.com/appscode/searchlight/pkg/events"
 	kapi "k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/apis/apps"
 	ext "k8s.io/kubernetes/pkg/apis/extensions"
@@ -108,43 +108,13 @@ func (k *Watcher) Node() {
 	go controller.Run(wait.NeverStop)
 }
 
-func (k *Watcher) Ingress() {
-	log.Debugln("watching", events.Ingress.String())
-	lw := &cache.ListWatch{
-		ListFunc:  IngressListFunc(k.Client),
-		WatchFunc: IngressWatchFunc(k.Client),
-	}
-	_, controller := k.Cache(events.Ingress, &ext.Ingress{}, lw)
-	go controller.Run(wait.NeverStop)
-}
-
-func (k *Watcher) ExtendedIngress() {
-	log.Debugln("watching", events.ExtendedIngress.String())
-	lw := &cache.ListWatch{
-		ListFunc:  ExtendedIngressListFunc(k.AppsCodeExtensionClient),
-		WatchFunc: ExtendedIngressWatchFunc(k.AppsCodeExtensionClient),
-	}
-	_, controller := k.Cache(events.ExtendedIngress, &aci.Ingress{}, lw)
-	go controller.Run(wait.NeverStop)
-}
-
 func (k *Watcher) Alert() {
 	log.Debugln("watching", events.Alert.String())
 	lw := &cache.ListWatch{
-		ListFunc:  AlertListFunc(k.AppsCodeExtensionClient),
-		WatchFunc: AlertWatchFunc(k.AppsCodeExtensionClient),
+		ListFunc:  AlertListFunc(k.ExtClient),
+		WatchFunc: AlertWatchFunc(k.ExtClient),
 	}
 	_, controller := k.Cache(events.Alert, &aci.Alert{}, lw)
-	go controller.Run(wait.NeverStop)
-}
-
-func (k *Watcher) Certificate() {
-	log.Debugln("watching", events.Certificate.String())
-	lw := &cache.ListWatch{
-		ListFunc:  CertificateListFunc(k.AppsCodeExtensionClient),
-		WatchFunc: CertificateWatchFunc(k.AppsCodeExtensionClient),
-	}
-	_, controller := k.Cache(events.Certificate, &aci.Certificate{}, lw)
 	go controller.Run(wait.NeverStop)
 }
 
