@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	aci "github.com/appscode/k8s-addons/api"
+	aci "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/controller/host"
 	"github.com/stretchr/testify/assert"

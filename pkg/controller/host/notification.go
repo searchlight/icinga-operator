@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/appscode/errors"
-	aci "github.com/appscode/k8s-addons/api"
+	aci "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/client/icinga"
 )
 

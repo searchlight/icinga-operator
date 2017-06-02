@@ -3,7 +3,7 @@ package driver
 import (
 	"os"
 
-	aci "github.com/appscode/k8s-addons/api"
+	aci "github.com/appscode/searchlight/api"
 	"github.com/appscode/log"
 	"github.com/appscode/searchlight/pkg/client/k8s"
 )

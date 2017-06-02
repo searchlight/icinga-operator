@@ -1,10 +1,10 @@
 package app
 
 import (
-	aci "github.com/appscode/k8s-addons/api"
-	"github.com/appscode/k8s-addons/pkg/events"
-	"github.com/appscode/k8s-addons/pkg/stash"
-	acw "github.com/appscode/k8s-addons/pkg/watcher"
+	aci "github.com/appscode/searchlight/api"
+	"github.com/appscode/searchlight/pkg/events"
+	"github.com/appscode/searchlight/pkg/stash"
+	acw "github.com/appscode/searchlight/pkg/watcher"
 	"github.com/appscode/log"
 	"github.com/appscode/searchlight/pkg/client/icinga"
 	"github.com/appscode/searchlight/pkg/controller"

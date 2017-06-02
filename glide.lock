@@ -1,5 +1,5 @@
-hash: 8dddab7e571f9a10f3fdd2004cc0207463a242b92620aaf4df1a30cb87847941
-updated: 2017-05-27T12:57:35.996637194-07:00
+hash: 47359ea3289e04c66d4f56025d241cba371fc4e90d7132dda5246b6b74dbf37e
+updated: 2017-06-02T13:33:47.99427292-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -9,7 +9,7 @@ imports:
   - compute/metadata
   - internal
 - name: github.com/appscode/api
-  version: 6ccfba7540c2c013dd596d4955c4a9a5ab8b0812
+  version: e5c101f3bad6e4fe387ac7daaa7657b1a4de6e87
   subpackages:
   - attic/v1beta1
   - auth/v1beta1
@@ -35,7 +35,7 @@ imports:
   subpackages:
   - h/log
 - name: github.com/appscode/go
-  version: 04abd631dc552c01c9448db0763611932590cbc4
+  version: 5eabd32a8a0fe824b5e12c37dc53a0afea8507c9
   subpackages:
   - crypto/rand
   - env
@@ -61,11 +61,8 @@ imports:
   - api
   - api/install
   - client/clientset
-  - pkg/dns
   - pkg/events
   - pkg/stash
-  - pkg/testing
-  - pkg/watcher
 - name: github.com/appscode/log
   version: 68e0e42e42c01371f3950571fc87c2298a51dd8f
   subpackages:
@@ -198,7 +195,7 @@ imports:
 - name: github.com/google/gofuzz
   version: bbcb9da2d746f8bdbd6a936686a0a6067ada0ec5
 - name: github.com/grpc-ecosystem/grpc-gateway
-  version: e40837d7cc3a3e454c1e42012704e92bd49310af
+  version: 42a2d1c4991e79a4a8318984e5c81031b21f3c76
   repo: https://github.com/appscode/grpc-gateway.git
   vcs: git
   subpackages:
@@ -229,7 +226,7 @@ imports:
 - name: github.com/kelseyhightower/envconfig
   version: 9aca109c9aec4633fced9717c4a09ecab3d33111
 - name: github.com/Knetic/govaluate
-  version: 36d12fdf60d2eced73454479e9935c9ea8bbe46a
+  version: ed428fc1d628f009bd7fbf100ff72feba3527753
 - name: github.com/mailgun/mailgun-go
   version: 369a1fa57ce6fb314e627087b9fff0db5c266c0f
 - name: github.com/mailru/easyjson
@@ -251,7 +248,7 @@ imports:
 - name: github.com/mitchellh/go-wordwrap
   version: ad45545899c7b13c020ea92b2072220eefad42b8
 - name: github.com/nlopes/slack
-  version: 72d15a0fc0b773a59c00f78b9e7d97eeb8c4281f
+  version: c86337c0ef2486a15edd804355d9c73d2f2caed1
 - name: github.com/pborman/uuid
   version: ca53cad383cad2479bbba7f7a1a05797ec1386e4
 - name: github.com/prometheus/client_golang
@@ -291,7 +288,7 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: 51fe59aca108dc5680109e7b2051cbdcfa5a253c
 - name: github.com/spf13/cobra
-  version: ca57f0f5dba473a8a58765d16d7e811fb8027add
+  version: 8d4ce3549a0bf0e3569df3aae7423b7743cd05a9
 - name: github.com/spf13/pflag
   version: e57e3eeb33f795204c1ca35f56c44f83227c6e66
 - name: github.com/StackExchange/wmi
@@ -318,7 +315,13 @@ imports:
 - name: golang.org/x/crypto
   version: 1f22c0103821b9390939b6776727195525381532
   subpackages:
+  - bcrypt
+  - blowfish
+  - curve25519
   - pbkdf2
+  - pkcs12
+  - pkcs12/internal/rc2
+  - ssh
   - ssh/terminal
 - name: golang.org/x/net
   version: da118f7b8e5954f39d0d2130ab35d4bf0e3cb344
@@ -372,7 +375,7 @@ imports:
   - internal/urlfetch
   - urlfetch
 - name: google.golang.org/genproto
-  version: d80a6e20e776b0b17a324d0ba1ab50a39c8e8944
+  version: aa2eb687b4d3e17154372564ad8d6bf11c3cf21f
   subpackages:
   - googleapis/api/annotations
   - googleapis/rpc/status
@@ -474,6 +477,7 @@ imports:
   - pkg/client/clientset_generated/internalclientset/typed/storage/internalversion
   - pkg/client/metrics
   - pkg/client/restclient
+  - pkg/client/testing/core
   - pkg/client/transport
   - pkg/client/typed/discovery
   - pkg/client/unversioned/auth

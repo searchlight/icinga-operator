@@ -1,7 +1,7 @@
 package client
 
 import (
-	_ "github.com/appscode/k8s-addons/api/install"
+	_ "github.com/appscode/searchlight/api/install"
 	"github.com/appscode/searchlight/pkg/client/icinga"
 	"github.com/appscode/searchlight/pkg/client/k8s"
 )

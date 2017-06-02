@@ -3,9 +3,9 @@ package types
 import (
 	"sync"
 
-	aci "github.com/appscode/k8s-addons/api"
-	acs "github.com/appscode/k8s-addons/client/clientset"
-	"github.com/appscode/k8s-addons/pkg/stash"
+	aci "github.com/appscode/searchlight/api"
+	acs "github.com/appscode/searchlight/client/clientset"
+	"github.com/appscode/searchlight/pkg/stash"
 	"github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/client/icinga"
 	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"

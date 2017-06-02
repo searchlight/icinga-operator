@@ -4,9 +4,9 @@ import (
 	"os"
 
 	"github.com/appscode/errors"
-	aci "github.com/appscode/k8s-addons/api"
-	acs "github.com/appscode/k8s-addons/client/clientset"
-	"github.com/appscode/k8s-addons/pkg/events"
+	aci "github.com/appscode/searchlight/api"
+	acs "github.com/appscode/searchlight/client/clientset"
+	"github.com/appscode/searchlight/pkg/events"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	kapi "k8s.io/kubernetes/pkg/api"
 	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"

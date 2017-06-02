@@ -4,7 +4,7 @@ import (
 	"time"
 
 	api "github.com/appscode/api/kubernetes/v1beta1"
-	aci "github.com/appscode/k8s-addons/api"
+	aci "github.com/appscode/searchlight/api"
 	"github.com/flosch/pongo2"
 )
 

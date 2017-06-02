@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	acw "github.com/appscode/k8s-addons/pkg/watcher"
+	acw "github.com/appscode/searchlight/pkg/watcher"
 	"github.com/appscode/searchlight/cmd/searchlight/app"
 	"github.com/appscode/searchlight/pkg/client/icinga"
 	"github.com/appscode/searchlight/pkg/client/k8s"

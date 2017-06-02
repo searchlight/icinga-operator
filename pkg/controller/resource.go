@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/appscode/errors"
-	"github.com/appscode/k8s-addons/pkg/events"
+	"github.com/appscode/searchlight/pkg/events"
 	"github.com/appscode/log"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	kapi "k8s.io/kubernetes/pkg/api"

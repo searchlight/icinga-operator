@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
-	aci "github.com/appscode/k8s-addons/api"
-	"github.com/appscode/k8s-addons/pkg/events"
+	aci "github.com/appscode/searchlight/api"
+	"github.com/appscode/searchlight/pkg/events"
 	"github.com/appscode/log"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	kapi "k8s.io/kubernetes/pkg/api"

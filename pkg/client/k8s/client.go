@@ -2,8 +2,8 @@ package k8s
 
 import (
 	"github.com/appscode/errors"
-	_ "github.com/appscode/k8s-addons/api/install"
-	acs "github.com/appscode/k8s-addons/client/clientset"
+	_ "github.com/appscode/searchlight/api/install"
+	acs "github.com/appscode/searchlight/client/clientset"
 	"github.com/appscode/log"
 	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
 )

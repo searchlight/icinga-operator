@@ -1,7 +1,5 @@
 package: github.com/appscode/searchlight
 import:
-- package: github.com/appscode/k8s-addons
-  version: release-1.5
 - package: golang.org/x/net
   version: da118f7b8e5954f39d0d2130ab35d4bf0e3cb344
 - package: golang.org/x/text
@@ -25,7 +23,7 @@ import:
   version: master
 - package: github.com/appscode/log
 - package: github.com/Knetic/govaluate
-  version: 36d12fdf60d2eced73454479e9935c9ea8bbe46a
+  version: master
 - package: github.com/flosch/pongo2
   version: master
 - package: github.com/influxdata/influxdb
