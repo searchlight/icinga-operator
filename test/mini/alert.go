@@ -50,7 +50,7 @@ func createAlertThirdPartyResource(watcher *app.Watcher) (err error) {
 
 			try := 0
 			for {
-				_, err = watcher.AppsCodeExtensionClient.Alert(kapi.NamespaceDefault).
+				_, err = watcher.ExtClient.Alert(kapi.NamespaceDefault).
 					List(kapi.ListOptions{LabelSelector: labels.Everything()})
 
 				if err != nil {
@@ -108,7 +108,7 @@ func CreateAlert(watcher *app.Watcher, namespace string, labelMap map[string]str
 	}
 
 	// Create Fake 1st Alert
-	if _, err := watcher.AppsCodeExtensionClient.Alert(alert.Namespace).Create(alert); err != nil {
+	if _, err := watcher.ExtClient.Alert(alert.Namespace).Create(alert); err != nil {
 		return nil, err
 	}
 
@@ -117,7 +117,7 @@ func CreateAlert(watcher *app.Watcher, namespace string, labelMap map[string]str
 
 func DeleteAlert(watcher *app.Watcher, alert *aci.Alert) error {
 	// Delete Alert
-	if err := watcher.AppsCodeExtensionClient.Alert(alert.Namespace).Delete(alert.Name); err != nil {
+	if err := watcher.ExtClient.Alert(alert.Namespace).Delete(alert.Name); err != nil {
 		return err
 	}
 	return nil

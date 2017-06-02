@@ -32,7 +32,7 @@ type IcingaController struct {
 
 func New(kubeClient clientset.Interface,
 	icingaClient *icinga.IcingaClient,
-	appsCodeExtensionClient acs.ExtensionInterface,
+	extClient acs.ExtensionInterface,
 	storage *stash.Storage) *IcingaController {
 	data, err := getIcingaDataMap()
 	if err != nil {
@@ -40,7 +40,7 @@ func New(kubeClient clientset.Interface,
 	}
 	ctx := &types.Context{
 		KubeClient:   kubeClient,
-		ExtClient:    appsCodeExtensionClient,
+		ExtClient:    extClient,
 		IcingaData:   data,
 		IcingaClient: icingaClient,
 		Storage:      storage,
