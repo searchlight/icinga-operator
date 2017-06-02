@@ -48,7 +48,7 @@ metadata:
   name: check-node-disk
   namespace: default
   labels:
-    alert.monitoring.appscode.com/objectType: cluster
+    monitoring.appscode.com/objectType: cluster
 spec:
   CheckCommand: node_disk
   IcingaParam:
@@ -61,6 +61,6 @@ spec:
 
 # To set alert on specific node, set following labels
 # labels:
-#   alert.monitoring.appscode.com/objectType: nodes
-#   alert.monitoring.appscode.com/objectName: ip-172-20-0-9.ec2.internal
+#   monitoring.appscode.com/objectType: nodes
+#   monitoring.appscode.com/objectName: ip-172-20-0-9.ec2.internal
 ```

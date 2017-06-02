@@ -178,8 +178,8 @@ func GetAlert(acExtClient acs.ExtensionInterface, namespace, name string) (*aci.
 }
 
 const (
-	ObjectType = "alert.monitoring.appscode.com/objectType"
-	ObjectName = "alert.monitoring.appscode.com/objectName"
+	ObjectType = "monitoring.appscode.com/objectType"
+	ObjectName = "monitoring.appscode.com/objectName"
 )
 
 func GetLabelSelector(objectType, objectName string) (labels.Selector, error) {

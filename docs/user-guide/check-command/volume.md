@@ -63,8 +63,8 @@ metadata:
   name: check-pod-volume-1
   namespace: kube-system
   labels:
-    alert.monitoring.appscode.com/objectType: services
-    alert.monitoring.appscode.com/objectName: monitoring-influxdb
+    monitoring.appscode.com/objectType: services
+    monitoring.appscode.com/objectName: monitoring-influxdb
 spec:
   CheckCommand: volume
   IcingaParam:

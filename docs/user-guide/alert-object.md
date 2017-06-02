@@ -14,8 +14,8 @@ metadata:
   name: check-es-logging-volume
   namespace: kube-system
   labels:
-    alert.monitoring.appscode.com/objectType: replicationcontrollers
-    alert.monitoring.appscode.com/objectName: elasticsearch-logging-v1
+    monitoring.appscode.com/objectType: replicationcontrollers
+    monitoring.appscode.com/objectName: elasticsearch-logging-v1
 spec:
   CheckCommand: volume
   IcingaParam:
@@ -65,8 +65,8 @@ This object will do the followings:
 > `NotifierParams` is only used when notification is sent via `AppsCode`.
 
 #### Metadata Labels
-* alert.monitoring.appscode.com/objectType - The Kubernetes object type
-* alert.monitoring.appscode.com/objectName - The Kubernetes object name
+* monitoring.appscode.com/objectType - The Kubernetes object type
+* monitoring.appscode.com/objectName - The Kubernetes object name
 
 #### CheckCommand
 

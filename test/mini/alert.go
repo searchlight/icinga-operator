@@ -81,7 +81,7 @@ func getAlert(namespace string) *aci.Alert {
 			Name:      rand.WithUniqSuffix("alert"),
 			Namespace: namespace,
 			Labels: map[string]string{
-				"alert.monitoring.appscode.com/objectType": "cluster",
+				"monitoring.appscode.com/objectType": "cluster",
 			},
 		},
 		Spec: aci.AlertSpec{},
@@ -104,7 +104,7 @@ func CreateAlert(watcher *app.Watcher, namespace string, labelMap map[string]str
 	}
 
 	for key, val := range labelMap {
-		alert.ObjectMeta.Labels[fmt.Sprintf("alert.monitoring.appscode.com/%s", key)] = val
+		alert.ObjectMeta.Labels[fmt.Sprintf("monitoring.appscode.com/%s", key)] = val
 	}
 
 	// Create Fake 1st Alert
