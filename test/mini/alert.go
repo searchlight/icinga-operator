@@ -75,7 +75,7 @@ func getAlert(namespace string) *aci.Alert {
 	fakeAlert := &aci.Alert{
 		TypeMeta: unversioned.TypeMeta{
 			Kind:       "Alert",
-			APIVersion: "appscode.com/v1beta1",
+			APIVersion: "monitoring.appscode.com/v1beta1",
 		},
 		ObjectMeta: kapi.ObjectMeta{
 			Name:      rand.WithUniqSuffix("alert"),

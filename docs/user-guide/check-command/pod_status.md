@@ -49,7 +49,7 @@ CRITICAL: {
 ##### Configure Alert Object
 ```yaml
 # This will check all pod status in default namespace
-apiVersion: appscode.com/v1beta1
+apiVersion: monitoring.appscode.com/v1beta1
 kind: Alert
 metadata:
   name: check-pod-status

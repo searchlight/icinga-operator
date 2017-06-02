@@ -22,7 +22,7 @@ func NewClient() (*KubeClient, error) {
 		return nil, errors.New().WithCause(err).Err()
 	}
 
-	appscodeClient, err := acs.NewACExtensionsForConfig(config)
+	appscodeClient, err := acs.NewForConfig(config)
 	if err != nil {
 		return nil, errors.New().WithCause(err).Err()
 	}

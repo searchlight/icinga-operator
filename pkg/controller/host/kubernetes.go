@@ -150,7 +150,7 @@ func GetNode(client clientset.Interface, nodeName, alertNamespace string) ([]*Ku
 	return nodeList, nil
 }
 
-func GetAlertList(acExtClient acs.AppsCodeExtensionInterface, kubeClient clientset.Interface, namespace string, ls labels.Selector) ([]aci.Alert, error) {
+func GetAlertList(acExtClient acs.ExtensionInterface, kubeClient clientset.Interface, namespace string, ls labels.Selector) ([]aci.Alert, error) {
 	alerts := make([]aci.Alert, 0)
 	if namespace != "" {
 		alertList, err := acExtClient.Alert(namespace).List(kapi.ListOptions{LabelSelector: ls})
@@ -173,7 +173,7 @@ func GetAlertList(acExtClient acs.AppsCodeExtensionInterface, kubeClient clients
 	return alerts, nil
 }
 
-func GetAlert(acExtClient acs.AppsCodeExtensionInterface, namespace, name string) (*aci.Alert, error) {
+func GetAlert(acExtClient acs.ExtensionInterface, namespace, name string) (*aci.Alert, error) {
 	return acExtClient.Alert(namespace).Get(name)
 }
 

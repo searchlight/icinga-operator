@@ -14,7 +14,7 @@ type FakeAlert struct {
 	ns   string
 }
 
-var alertResource = schema.GroupVersionResource{Group: "appscode.com", Version: "v1beta1", Resource: "alerts"}
+var alertResource = schema.GroupVersionResource{Group: "monitoring.appscode.com", Version: "v1beta1", Resource: "alerts"}
 
 // Get returns the Alert by name.
 func (mock *FakeAlert) Get(name string) (*aci.Alert, error) {

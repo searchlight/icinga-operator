@@ -39,7 +39,7 @@ CRITICAL: Exit Code: 2
 
 ##### Configure Alert Object
 ```yaml
-apiVersion: appscode.com/v1beta1
+apiVersion: monitoring.appscode.com/v1beta1
 kind: Alert
 metadata:
   name: check-kube-exec

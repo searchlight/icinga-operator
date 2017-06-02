@@ -29,7 +29,7 @@ func Run(config *options.Config) {
 	w := &Watcher{
 		Watcher: acw.Watcher{
 			Client:                  clientset.NewForConfigOrDie(c),
-			AppsCodeExtensionClient: acs.NewACExtensionsForConfigOrDie(c),
+			AppsCodeExtensionClient: acs.NewForConfigOrDie(c),
 			SyncPeriod:              time.Minute * 2,
 		},
 	}

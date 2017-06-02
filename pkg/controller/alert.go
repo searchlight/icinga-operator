@@ -32,7 +32,7 @@ type IcingaController struct {
 
 func New(kubeClient clientset.Interface,
 	icingaClient *icinga.IcingaClient,
-	appsCodeExtensionClient acs.AppsCodeExtensionInterface,
+	appsCodeExtensionClient acs.ExtensionInterface,
 	storage *stash.Storage) *IcingaController {
 	data, err := getIcingaDataMap()
 	if err != nil {

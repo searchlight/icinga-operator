@@ -54,7 +54,7 @@ type IcingaData struct {
 type Context struct {
 	// kubernetes client
 	KubeClient              clientset.Interface
-	AppsCodeExtensionClient acs.AppsCodeExtensionInterface
+	AppsCodeExtensionClient acs.ExtensionInterface
 
 	IcingaClient *icinga.IcingaClient
 	IcingaData   map[string]*IcingaData

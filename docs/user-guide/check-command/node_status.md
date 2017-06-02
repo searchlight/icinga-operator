@@ -29,7 +29,7 @@ OK: Node is Ready
 ##### Configure Alert Object
 ```yaml
 # This alert will be set to all nodes individually
-apiVersion: appscode.com/v1beta1
+apiVersion: monitoring.appscode.com/v1beta1
 kind: Alert
 metadata:
   name: check-node-status

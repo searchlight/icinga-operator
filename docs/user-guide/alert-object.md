@@ -8,7 +8,7 @@ Before we can create an Alert object, we must create the `Third Party Resource` 
 ##### Alert Object
 
 ```yaml
-apiVersion: appscode.com/v1beta1
+apiVersion: monitoring.appscode.com/v1beta1
 kind: Alert
 metadata:
   name: check-es-logging-volume

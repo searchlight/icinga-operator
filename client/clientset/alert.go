@@ -26,7 +26,9 @@ type AlertImpl struct {
 	ns string
 }
 
-func newAlert(c *AppsCodeExtensionsClient, namespace string) *AlertImpl {
+var _ AlertInterface = &AlertImpl{}
+
+func newAlert(c *ExtensionClient, namespace string) *AlertImpl {
 	return &AlertImpl{c.restClient, namespace}
 }
 

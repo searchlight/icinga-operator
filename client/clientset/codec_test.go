@@ -14,20 +14,20 @@ import (
 )
 
 func TestDefaultGroupVersion(t *testing.T) {
-	i := &aci.Ingress{
+	i := &aci.Alert{
 		ObjectMeta: api.ObjectMeta{
 			Name:      "foo",
 			Namespace: "bar",
 		},
 	}
 
-	gv, err := unversioned.ParseGroupVersion("appscode.com/v1beta1")
+	gv, err := unversioned.ParseGroupVersion("monitoring.appscode.com/v1beta1")
 	if err != nil {
 		fmt.Println(err)
 	}
-	// if appscode.com/v1beta1 is not enabled, return an error
+	// if monitoring.appscode.com/v1beta1 is not enabled, return an error
 	if !registered.IsEnabledVersion(gv) {
-		fmt.Println("appscode.com/v1beta1 is not enabled")
+		fmt.Println("monitoring.appscode.com/v1beta1 is not enabled")
 	}
 
 	fmt.Println(*i)
@@ -36,7 +36,7 @@ func TestDefaultGroupVersion(t *testing.T) {
 func TestSetDefault(t *testing.T) {
 	metadata := &unversioned.TypeMeta{
 		Kind:       "Ingress",
-		APIVersion: "appscode.com/v1beta1",
+		APIVersion: "monitoring.appscode.com/v1beta1",
 	}
 	var obj runtime.Object
 
