@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	ObjectType = "alert.appscode.com/objectType"
-	ObjectName = "alert.appscode.com/objectName"
+	ObjectType = "alert.monitoring.appscode.com/objectType"
+	ObjectName = "alert.monitoring.appscode.com/objectName"
 )
 
 var SubjectMap = map[string]string{

@@ -16,7 +16,7 @@ The `Searchlight` is driven by [Kubernetes Alert Objects](alert-object.md). `Ale
 ```yaml
 # Third Party Resource `Alert`
 metadata:
-  name: alert.appscode.com
+  name: alert.monitoring.appscode.com
 apiVersion: extensions/v1beta1
 kind: ThirdPartyResource
 description: "Alert support for Kubernetes by appscode.com"

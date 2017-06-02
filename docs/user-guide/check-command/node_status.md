@@ -35,7 +35,7 @@ metadata:
   name: check-node-status
   namespace: default
   labels:
-    alert.appscode.com/objectType: cluster
+    alert.monitoring.appscode.com/objectType: cluster
 spec:
   CheckCommand: node_status
   IcingaParam:
@@ -48,6 +48,6 @@ spec:
 
 # To set alert on specific node, set following labels
 # labels:
-#   alert.appscode.com/objectType: nodes
-#   alert.appscode.com/objectName: ip-172-20-0-9.ec2.internal
+#   alert.monitoring.appscode.com/objectType: nodes
+#   alert.monitoring.appscode.com/objectName: ip-172-20-0-9.ec2.internal
 ```

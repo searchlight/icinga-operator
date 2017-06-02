@@ -23,7 +23,7 @@ var alertResource = alertThirdPartyResource{}
 func createAlertThirdPartyResource(watcher *app.Watcher) (err error) {
 	alertResource.once.Do(
 		func() {
-			_, err = watcher.Client.Extensions().ThirdPartyResources().Get("alert.appscode.com")
+			_, err = watcher.Client.Extensions().ThirdPartyResources().Get("alert.monitoring.appscode.com")
 			if err == nil {
 				return
 			}
@@ -35,7 +35,7 @@ func createAlertThirdPartyResource(watcher *app.Watcher) (err error) {
 					Kind:       "ThirdPartyResource",
 				},
 				ObjectMeta: kapi.ObjectMeta{
-					Name: "alert.appscode.com",
+					Name: "alert.monitoring.appscode.com",
 				},
 				Versions: []extensions.APIVersion{
 					{
@@ -81,7 +81,7 @@ func getAlert(namespace string) *aci.Alert {
 			Name:      rand.WithUniqSuffix("alert"),
 			Namespace: namespace,
 			Labels: map[string]string{
-				"alert.appscode.com/objectType": "cluster",
+				"alert.monitoring.appscode.com/objectType": "cluster",
 			},
 		},
 		Spec: aci.AlertSpec{},
@@ -104,7 +104,7 @@ func CreateAlert(watcher *app.Watcher, namespace string, labelMap map[string]str
 	}
 
 	for key, val := range labelMap {
-		alert.ObjectMeta.Labels[fmt.Sprintf("alert.appscode.com/%s", key)] = val
+		alert.ObjectMeta.Labels[fmt.Sprintf("alert.monitoring.appscode.com/%s", key)] = val
 	}
 
 	// Create Fake 1st Alert

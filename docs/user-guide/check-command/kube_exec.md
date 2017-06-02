@@ -45,8 +45,8 @@ metadata:
   name: check-kube-exec
   namespace: kube-system
   labels:
-    alert.appscode.com/objectType: pods
-    alert.appscode.com/objectName: monitoring-influxdb-0.12.2-n3lo2
+    alert.monitoring.appscode.com/objectType: pods
+    alert.monitoring.appscode.com/objectName: monitoring-influxdb-0.12.2-n3lo2
 spec:
   CheckCommand: kube_exec
   IcingaParam:

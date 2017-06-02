@@ -45,7 +45,7 @@ metadata:
   name: check-pod-exist-1
   namespace: default
   labels:
-    alert.appscode.com/objectType: cluster
+    alert.monitoring.appscode.com/objectType: cluster
 spec:
   CheckCommand: pod_exists
   IcingaParam:
@@ -62,6 +62,6 @@ spec:
 
 # To check for others kubernetes objects, set following labels
 # labels:
-#   alert.appscode.com/objectType: services
-#   alert.appscode.com/objectName: elasticsearch-logging
+#   alert.monitoring.appscode.com/objectType: services
+#   alert.monitoring.appscode.com/objectName: elasticsearch-logging
 ```
