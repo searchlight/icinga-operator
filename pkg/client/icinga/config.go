@@ -10,7 +10,7 @@ import (
 	_ "github.com/appscode/searchlight/api/install"
 	"github.com/appscode/searchlight/pkg/dns"
 	ini "github.com/vaughan0/go-ini"
-	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
+	clientset "k8s.io/client-go/kubernetes"
 )
 
 const (

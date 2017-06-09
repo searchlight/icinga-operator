@@ -1,9 +1,9 @@
 package api
 
 import (
-	"k8s.io/kubernetes/pkg/api"
-	schema "k8s.io/kubernetes/pkg/api/unversioned"
-	"k8s.io/kubernetes/pkg/runtime"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // GroupName is the group name use in this package
@@ -33,7 +33,7 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&Alert{},
 		&AlertList{},
 
-		&api.ListOptions{},
+		&metav1.ListOptions{},
 	)
 	return nil
 }

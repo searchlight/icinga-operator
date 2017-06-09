@@ -1,16 +1,15 @@
 package api
 
 import (
-	"k8s.io/kubernetes/pkg/api"
-	"k8s.io/kubernetes/pkg/api/unversioned"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // Alert types for appscode.
 type Alert struct {
-	unversioned.TypeMeta `json:",inline"`
+	metav1.TypeMeta `json:",inline"`
 	// Standard object's metadata.
 	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#metadata
-	api.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// Spec is the desired state of the Alert.
 	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#spec-and-status
@@ -35,18 +34,18 @@ const (
 )
 
 type AlertStatus struct {
-	CreationTime *unversioned.Time `json:"creationTime,omitempty"`
-	UpdateTime   *unversioned.Time `json:"updateTime,omitempty"`
+	CreationTime *metav1.Time `json:"creationTime,omitempty"`
+	UpdateTime   *metav1.Time `json:"updateTime,omitempty"`
 	Phase        AlertPhase        `json:"phase,omitempty"`
 	Reason       string            `json:"reason,omitempty"`
 }
 
 // AlertList is a collection of Alert.
 type AlertList struct {
-	unversioned.TypeMeta `json:",inline"`
+	metav1.TypeMeta `json:",inline"`
 	// Standard object's metadata.
 	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#metadata
-	unversioned.ListMeta `json:"metadata,omitempty"`
+	metav1.ListMeta `json:"metadata,omitempty"`
 
 	// Items is the list of Alert.
 	Items []Alert `json:"items"`

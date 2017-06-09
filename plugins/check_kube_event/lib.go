@@ -9,7 +9,7 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
 	"github.com/spf13/cobra"
-	kapi "k8s.io/kubernetes/pkg/api"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 	"k8s.io/kubernetes/pkg/fields"
 )
 
@@ -34,12 +34,12 @@ func CheckKubeEvent(req *Request) (util.IcingaState, interface{}) {
 	}
 
 	eventInfoList := make([]*eventInfo, 0)
-	field := fields.OneTermEqualSelector(kapi.EventTypeField, kapi.EventTypeWarning)
+	field := fields.OneTermEqualSelector(apiv1.EventTypeField, apiv1.EventTypeWarning)
 
 	checkTime := time.Now().Add(-(req.CheckInterval + req.ClockSkew))
 
-	eventList, err := kubeClient.Client.Core().Events(kapi.NamespaceAll).List(
-		kapi.ListOptions{
+	eventList, err := kubeClient.Client.Core().Events(apiv1.NamespaceAll).List(
+		apiv1.ListOptions{
 			FieldSelector: field,
 		},
 	)

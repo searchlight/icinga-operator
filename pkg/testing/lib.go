@@ -4,11 +4,11 @@ import (
 	"errors"
 
 	"github.com/appscode/go/crypto/rand"
-	api "k8s.io/kubernetes/pkg/api"
-	unversioned "k8s.io/kubernetes/pkg/api/unversioned"
-	apps "k8s.io/kubernetes/pkg/apis/apps"
-	extensions "k8s.io/kubernetes/pkg/apis/extensions"
-	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
+	unversioned "k8s.io/apimachinery/pkg/apis/meta/v1"
+	apps "k8s.io/client-go/pkg/apis/apps/v1beta1"
+	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
+	clientset "k8s.io/client-go/kubernetes"
 )
 
 const (
@@ -24,14 +24,14 @@ func fixNamespace(ns string) string {
 	return ns
 }
 
-func fixServiceSpec(serviceSpec api.ServiceSpec) api.ServiceSpec {
+func fixServiceSpec(serviceSpec apiv1.ServiceSpec) apiv1.ServiceSpec {
 	if serviceSpec.Selector == nil {
 		serviceSpec.Selector = map[string]string{
 			"object/random": rand.Characters(6),
 		}
 	}
 	if len(serviceSpec.Ports) == 0 {
-		serviceSpec.Ports = []api.ServicePort{
+		serviceSpec.Ports = []apiv1.ServicePort{
 			{
 				Port: 80,
 			},
@@ -40,9 +40,9 @@ func fixServiceSpec(serviceSpec api.ServiceSpec) api.ServiceSpec {
 	return serviceSpec
 }
 
-func fixPodSpec(podSpec api.PodSpec) api.PodSpec {
+func fixPodSpec(podSpec apiv1.PodSpec) apiv1.PodSpec {
 	if len(podSpec.Containers) == 0 {
-		podSpec.Containers = []api.Container{
+		podSpec.Containers = []apiv1.Container{
 			{
 				Name:    rand.WithUniqSuffix("container"),
 				Image:   Image,
@@ -53,7 +53,7 @@ func fixPodSpec(podSpec api.PodSpec) api.PodSpec {
 	return podSpec
 }
 
-func fixPodTemplateSpec(template api.PodTemplateSpec) api.PodTemplateSpec {
+func fixPodTemplateSpec(template apiv1.PodTemplateSpec) apiv1.PodTemplateSpec {
 	if template.Labels == nil {
 		template.Labels = map[string]string{
 			"object/random": rand.Characters(6),
@@ -64,9 +64,9 @@ func fixPodTemplateSpec(template api.PodTemplateSpec) api.PodTemplateSpec {
 	return template
 }
 
-func fixPodTemplateSpecPtr(template *api.PodTemplateSpec) *api.PodTemplateSpec {
+func fixPodTemplateSpecPtr(template *apiv1.PodTemplateSpec) *apiv1.PodTemplateSpec {
 	if template == nil {
-		template = &api.PodTemplateSpec{}
+		template = &apiv1.PodTemplateSpec{}
 	}
 
 	fixedTemplate := fixPodTemplateSpec(*template)
@@ -77,8 +77,8 @@ func fixPodTemplateSpecPtr(template *api.PodTemplateSpec) *api.PodTemplateSpec {
 // Pass kubernetes clientset.Interface and object pointer (Example: CreateKubernetesObject(client, &extensions.DaemonSet{}))
 func CreateKubernetesObject(kubeClient clientset.Interface, kubeObject interface{}) (err error) {
 	switch kubeObject.(type) {
-	case *api.ReplicationController:
-		replicationController := kubeObject.(*api.ReplicationController)
+	case *apiv1.ReplicationController:
+		replicationController := kubeObject.(*apiv1.ReplicationController)
 		if replicationController.Name == "" {
 			replicationController.Name = rand.WithUniqSuffix("e2e-rc")
 		}
@@ -142,16 +142,16 @@ func CreateKubernetesObject(kubeClient clientset.Interface, kubeObject interface
 		}
 		deployment, err = kubeClient.Extensions().Deployments(fixNamespace(deployment.Namespace)).Create(deployment)
 		return
-	case *api.Pod:
-		pod := kubeObject.(*api.Pod)
+	case *apiv1.Pod:
+		pod := kubeObject.(*apiv1.Pod)
 		if pod.Name == "" {
 			pod.Name = rand.WithUniqSuffix("e2e-pod")
 		}
 		pod.Spec = fixPodSpec(pod.Spec)
 		pod, err = kubeClient.Core().Pods(fixNamespace(pod.Namespace)).Create(pod)
 		return
-	case *api.Service:
-		service := kubeObject.(*api.Service)
+	case *apiv1.Service:
+		service := kubeObject.(*apiv1.Service)
 		if service.Name == "" {
 			service.Name = rand.WithUniqSuffix("e2e-svc")
 		}

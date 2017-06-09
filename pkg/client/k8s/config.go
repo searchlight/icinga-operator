@@ -4,8 +4,8 @@ import (
 	_env "github.com/appscode/go/env"
 	_ "github.com/appscode/searchlight/api/install"
 	acs "github.com/appscode/searchlight/client/clientset"
-	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
-	rest "k8s.io/kubernetes/pkg/client/restclient"
+	clientset "k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/kubernetes/pkg/client/unversioned/clientcmd"
 )
 

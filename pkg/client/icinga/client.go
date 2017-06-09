@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	_ "github.com/appscode/searchlight/api/install"
-	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
+	clientset "k8s.io/client-go/kubernetes"
 )
 
 type IcingaConfig struct {

@@ -5,7 +5,7 @@ import (
 	"github.com/appscode/log"
 	_ "github.com/appscode/searchlight/api/install"
 	acs "github.com/appscode/searchlight/client/clientset"
-	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
+	clientset "k8s.io/client-go/kubernetes"
 )
 
 // NewClient() should only be used to create kube client for plugins.

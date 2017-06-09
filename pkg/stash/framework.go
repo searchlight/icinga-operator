@@ -3,7 +3,7 @@ package stash
 import (
 	"time"
 
-	kapi "k8s.io/kubernetes/pkg/api"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 	"k8s.io/kubernetes/pkg/api/meta"
 	"k8s.io/kubernetes/pkg/client/cache"
 	"k8s.io/kubernetes/pkg/runtime"
@@ -20,7 +20,7 @@ func NewInformerPopulated(
 	store, controller := cache.NewInformer(lw, objType, resyncPeriod, h)
 
 	// watch false on pre population.
-	options := kapi.ListOptions{
+	options := apiv1.ListOptions{
 		ResourceVersion: "0",
 		Watch:           false,
 	}
@@ -49,7 +49,7 @@ func NewIndexerInformerPopulated(
 	indexer, controller := cache.NewIndexerInformer(lw, objType, resyncPeriod, h, indexers)
 
 	// watch false on pre population.
-	options := kapi.ListOptions{
+	options := apiv1.ListOptions{
 		ResourceVersion: "0",
 		Watch:           false,
 	}

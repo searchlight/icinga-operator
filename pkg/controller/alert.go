@@ -19,10 +19,10 @@ import (
 	"github.com/appscode/searchlight/pkg/controller/types"
 	"github.com/appscode/searchlight/pkg/events"
 	"github.com/appscode/searchlight/pkg/stash"
-	kapi "k8s.io/kubernetes/pkg/api"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 	kerr "k8s.io/kubernetes/pkg/api/errors"
-	"k8s.io/kubernetes/pkg/api/unversioned"
-	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
+	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/kubernetes/pkg/labels"
 )
 
@@ -82,7 +82,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		_alert := alert[0].(*aci.Alert)
 		if _alert.Status.CreationTime == nil {
 			// Set Status
-			t := unversioned.Now()
+			t := v1.Now()
 			_alert.Status.CreationTime = &t
 			_alert.Status.Phase = aci.AlertPhaseCreating
 			_alert, err = b.ctx.ExtClient.Alert(_alert.Namespace).Update(_alert)
@@ -95,7 +95,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 
 		if err := b.IsObjectExists(); err != nil {
 			// Update Status
-			t := unversioned.Now()
+			t := v1.Now()
 			_alert.Status.UpdateTime = &t
 			_alert.Status.Phase = aci.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
@@ -115,7 +115,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 
 		if err := b.Create(); err != nil {
 			// Update Status
-			t := unversioned.Now()
+			t := v1.Now()
 			_alert.Status.UpdateTime = &t
 			_alert.Status.Phase = aci.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
@@ -127,7 +127,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			return errors.New().WithCause(err).Err()
 		}
 
-		t := unversioned.Now()
+		t := v1.Now()
 		_alert.Status.UpdateTime = &t
 		_alert.Status.Phase = aci.AlertPhaseCreated
 		_alert.Status.Reason = ""
@@ -172,7 +172,7 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 
 		// Set Status
 		_alert := b.ctx.Resource
-		t := unversioned.Now()
+		t := v1.Now()
 		_alert.Status.UpdateTime = &t
 		if _, err := b.ctx.ExtClient.Alert(_alert.Namespace).Update(_alert); err != nil {
 			return errors.New().WithCause(err).Err()
@@ -229,7 +229,7 @@ func (b *IcingaController) handleIcingaPod() {
 	}
 
 	icingaUp := false
-	alertList, err := b.ctx.ExtClient.Alert(kapi.NamespaceAll).List(kapi.ListOptions{LabelSelector: labels.Everything()})
+	alertList, err := b.ctx.ExtClient.Alert(apiv1.NamespaceAll).List(apiv1.ListOptions{LabelSelector: labels.Everything()})
 	if err != nil {
 		log.Errorln(err)
 		return
@@ -274,7 +274,7 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 				return errors.New().WithCause(err).Err()
 			}
 
-			alertList, err := b.ctx.ExtClient.Alert(namespace).List(kapi.ListOptions{
+			alertList, err := b.ctx.ExtClient.Alert(namespace).List(apiv1.ListOptions{
 				LabelSelector: lb,
 			})
 			if err != nil {
@@ -339,7 +339,7 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 				}
 
-				t := unversioned.Now()
+				t := v1.Now()
 				alert.Status.UpdateTime = &t
 				b.ctx.ExtClient.Alert(alert.Namespace).Update(&alert)
 			}
@@ -367,7 +367,7 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 
 	icingaUp := false
 
-	alertList, err := b.ctx.ExtClient.Alert(kapi.NamespaceAll).List(kapi.ListOptions{
+	alertList, err := b.ctx.ExtClient.Alert(apiv1.NamespaceAll).List(apiv1.ListOptions{
 		LabelSelector: lb,
 	})
 	if err != nil {
@@ -415,7 +415,7 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 		}
 
-		t := unversioned.Now()
+		t := v1.Now()
 		alert.Status.UpdateTime = &t
 		b.ctx.ExtClient.Alert(alert.Namespace).Update(&alert)
 	}
@@ -447,7 +447,7 @@ func (b *IcingaController) handleAlertEvent(e *events.Event) error {
 		if len(alertEvents) == 0 {
 			return errors.New("Missing event data").Err()
 		}
-		alertEvent := alertEvents[0].(*kapi.Event)
+		alertEvent := alertEvents[0].(*apiv1.Event)
 
 		if _, found := alertEvent.Annotations[types.AcknowledgeTimestamp]; found {
 			return errors.New("Event is already handled").Err()

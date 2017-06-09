@@ -4,7 +4,7 @@ import (
 	"github.com/appscode/searchlight/client/clientset"
 	"k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/apimachinery/registered"
-	rest "k8s.io/kubernetes/pkg/client/restclient"
+	"k8s.io/client-go/rest"
 	testing "k8s.io/kubernetes/pkg/client/testing/core"
 	"k8s.io/kubernetes/pkg/runtime"
 	"k8s.io/kubernetes/pkg/watch"
