@@ -19,6 +19,7 @@ spec:
     spec:
       containers:
       - args:
+        - run
         - --icinga-secret-name={{ template "fullname" . }}-icinga
         - --icinga-secret-namespace={{.Release.Namespace}}
         - --v=3
