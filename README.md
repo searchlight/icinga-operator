@@ -72,10 +72,17 @@ If you're interested in being a contributor, read following guides:
     
     1. [Icinga2](docs/contribution-guide/icinga2/build.md)
     2. [Searchlight Controller](docs/contribution-guide/controller/build.md)
-    
+   
+## Versioning Policy
+There are 2 parts to versioning policy:
+ - Operator version: Voyager __does not follow semver__, rather the _major.minor_ version of operator points to the
+Kubernetes client version. You can verify this from the `glide.yaml` file. This means there might be breaking changes
+between point releases of the operator. This generally manifests as changed annotation keys or their meaning.
+Please always check the release notes for upgrade instructions.
+ - TPR version: monitoring.appscode.com/v1alpha1 is considered in alpha. This means breaking changes to the YAML format
+might happen among different releases of the operator.
 
 ## Support
-
 If you have any questions, you can reach out to us.
 
 * [Slack](https://slack.appscode.com)
