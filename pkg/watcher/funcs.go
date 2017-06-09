@@ -10,18 +10,6 @@ import (
 	"k8s.io/kubernetes/pkg/watch"
 )
 
-func IngressListFunc(c clientset.Interface) func(kapi.ListOptions) (runtime.Object, error) {
-	return func(opts kapi.ListOptions) (runtime.Object, error) {
-		return c.Extensions().Ingresses(kapi.NamespaceAll).List(opts)
-	}
-}
-
-func IngressWatchFunc(c clientset.Interface) func(options kapi.ListOptions) (watch.Interface, error) {
-	return func(options kapi.ListOptions) (watch.Interface, error) {
-		return c.Extensions().Ingresses(kapi.NamespaceAll).Watch(options)
-	}
-}
-
 func DaemonSetListFunc(c clientset.Interface) func(kapi.ListOptions) (runtime.Object, error) {
 	return func(opts kapi.ListOptions) (runtime.Object, error) {
 		return c.Extensions().DaemonSets(kapi.NamespaceAll).List(opts)

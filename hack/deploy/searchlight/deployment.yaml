@@ -17,6 +17,7 @@ spec:
     spec:
       containers:
       - args:
+        - run
         - --icinga-secret-name=appscode-icinga
         - --icinga-secret-namespace=kube-system
         - --v=3

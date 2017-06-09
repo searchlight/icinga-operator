@@ -144,7 +144,7 @@ func runKubeD(setIcingaClient bool) (w *app.Watcher, err error) {
 
 			w = &app.Watcher{
 				Watcher: acw.Watcher{
-					Client:     kubeClient.Client,
+					KubeClient: kubeClient.Client,
 					ExtClient:  kubeClient.ExtClient,
 					SyncPeriod: time.Minute * 2,
 				},

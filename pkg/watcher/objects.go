@@ -11,130 +11,130 @@ import (
 	"k8s.io/kubernetes/pkg/util/wait"
 )
 
-func (k *Watcher) Namespace() {
+func (w *Watcher) Namespace() {
 	log.Debugln("watching", events.Namespace.String())
 	lw := &cache.ListWatch{
-		ListFunc:  NamespaceListFunc(k.Client),
-		WatchFunc: NamespaceWatchFunc(k.Client),
+		ListFunc:  NamespaceListFunc(w.KubeClient),
+		WatchFunc: NamespaceWatchFunc(w.KubeClient),
 	}
-	_, controller := k.Cache(events.Namespace, &kapi.Namespace{}, lw)
+	_, controller := w.Cache(events.Namespace, &kapi.Namespace{}, lw)
 	go controller.Run(wait.NeverStop)
 }
 
-func (k *Watcher) Pod() {
+func (w *Watcher) Pod() {
 	log.Debugln("watching", events.Pod.String())
 	lw := &cache.ListWatch{
-		ListFunc:  PodListFunc(k.Client),
-		WatchFunc: PodWatchFunc(k.Client),
+		ListFunc:  PodListFunc(w.KubeClient),
+		WatchFunc: PodWatchFunc(w.KubeClient),
 	}
-	indexer, controller := k.CacheIndexer(events.Pod, &kapi.Pod{}, lw, nil)
+	indexer, controller := w.CacheIndexer(events.Pod, &kapi.Pod{}, lw, nil)
 	go controller.Run(wait.NeverStop)
-	k.Storage.PodStore = cache.StoreToPodLister{indexer}
+	w.Storage.PodStore = cache.StoreToPodLister{indexer}
 }
 
-func (k *Watcher) Service() {
+func (w *Watcher) Service() {
 	log.Debugln("watching", events.Service.String())
 	lw := &cache.ListWatch{
-		ListFunc:  ServiceListFunc(k.Client),
-		WatchFunc: ServiceWatchFunc(k.Client),
+		ListFunc:  ServiceListFunc(w.KubeClient),
+		WatchFunc: ServiceWatchFunc(w.KubeClient),
 	}
-	indexer, controller := k.CacheIndexer(events.Service, &kapi.Service{}, lw, nil)
+	indexer, controller := w.CacheIndexer(events.Service, &kapi.Service{}, lw, nil)
 	go controller.Run(wait.NeverStop)
-	k.Storage.ServiceStore = cache.StoreToServiceLister{indexer}
+	w.Storage.ServiceStore = cache.StoreToServiceLister{indexer}
 }
 
-func (k *Watcher) RC() {
+func (w *Watcher) RC() {
 	log.Debugln("watching", events.RC.String())
 	lw := &cache.ListWatch{
-		ListFunc:  ReplicationControllerListFunc(k.Client),
-		WatchFunc: ReplicationControllerWatchFunc(k.Client),
+		ListFunc:  ReplicationControllerListFunc(w.KubeClient),
+		WatchFunc: ReplicationControllerWatchFunc(w.KubeClient),
 	}
-	indexer, controller := k.CacheIndexer(events.RC, &kapi.ReplicationController{}, lw, nil)
+	indexer, controller := w.CacheIndexer(events.RC, &kapi.ReplicationController{}, lw, nil)
 	go controller.Run(wait.NeverStop)
-	k.Storage.RcStore = cache.StoreToReplicationControllerLister{indexer}
+	w.Storage.RcStore = cache.StoreToReplicationControllerLister{indexer}
 }
 
-func (k *Watcher) ReplicaSet() {
+func (w *Watcher) ReplicaSet() {
 	log.Debugln("watching", events.ReplicaSet.String())
 	lw := &cache.ListWatch{
-		ListFunc:  ReplicaSetListFunc(k.Client),
-		WatchFunc: ReplicaSetWatchFunc(k.Client),
+		ListFunc:  ReplicaSetListFunc(w.KubeClient),
+		WatchFunc: ReplicaSetWatchFunc(w.KubeClient),
 	}
-	indexer, controller := k.CacheIndexer(events.ReplicaSet, &ext.ReplicaSet{}, lw, nil)
+	indexer, controller := w.CacheIndexer(events.ReplicaSet, &ext.ReplicaSet{}, lw, nil)
 	go controller.Run(wait.NeverStop)
-	k.Storage.ReplicaSetStore = cache.StoreToReplicaSetLister{indexer}
+	w.Storage.ReplicaSetStore = cache.StoreToReplicaSetLister{indexer}
 }
 
-func (k *Watcher) StatefulSet() {
+func (w *Watcher) StatefulSet() {
 	log.Debugln("watching", events.StatefulSet.String())
 	lw := &cache.ListWatch{
-		ListFunc:  StatefulSetListFunc(k.Client),
-		WatchFunc: StatefulSetWatchFunc(k.Client),
+		ListFunc:  StatefulSetListFunc(w.KubeClient),
+		WatchFunc: StatefulSetWatchFunc(w.KubeClient),
 	}
-	indexer, controller := k.CacheIndexer(events.StatefulSet, &apps.StatefulSet{}, lw, nil)
+	indexer, controller := w.CacheIndexer(events.StatefulSet, &apps.StatefulSet{}, lw, nil)
 	go controller.Run(wait.NeverStop)
-	k.Storage.StatefulSetStore = cache.StoreToStatefulSetLister{indexer}
+	w.Storage.StatefulSetStore = cache.StoreToStatefulSetLister{indexer}
 }
 
-func (k *Watcher) DaemonSet() {
+func (w *Watcher) DaemonSet() {
 	log.Debugln("watching", events.DaemonSet.String())
 	lw := &cache.ListWatch{
-		ListFunc:  DaemonSetListFunc(k.Client),
-		WatchFunc: DaemonSetWatchFunc(k.Client),
+		ListFunc:  DaemonSetListFunc(w.KubeClient),
+		WatchFunc: DaemonSetWatchFunc(w.KubeClient),
 	}
-	indexer, controller := k.CacheIndexer(events.DaemonSet, &ext.DaemonSet{}, lw, nil)
+	indexer, controller := w.CacheIndexer(events.DaemonSet, &ext.DaemonSet{}, lw, nil)
 	go controller.Run(wait.NeverStop)
-	k.Storage.DaemonSetStore = cache.StoreToDaemonSetLister{indexer}
+	w.Storage.DaemonSetStore = cache.StoreToDaemonSetLister{indexer}
 }
 
-func (k *Watcher) Endpoint() {
+func (w *Watcher) Endpoint() {
 	log.Debugln("watching", events.Endpoint.String())
 	lw := &cache.ListWatch{
-		ListFunc:  EndpointListFunc(k.Client),
-		WatchFunc: EndpointWatchFunc(k.Client),
+		ListFunc:  EndpointListFunc(w.KubeClient),
+		WatchFunc: EndpointWatchFunc(w.KubeClient),
 	}
-	store, controller := k.CacheStore(events.Endpoint, &kapi.Endpoints{}, lw)
+	store, controller := w.CacheStore(events.Endpoint, &kapi.Endpoints{}, lw)
 	go controller.Run(wait.NeverStop)
-	k.Storage.EndpointStore = cache.StoreToEndpointsLister{store}
+	w.Storage.EndpointStore = cache.StoreToEndpointsLister{store}
 }
 
-func (k *Watcher) Node() {
+func (w *Watcher) Node() {
 	log.Debugln("watching", events.Node.String())
 	lw := &cache.ListWatch{
-		ListFunc:  NodeListFunc(k.Client),
-		WatchFunc: NodeWatchFunc(k.Client),
+		ListFunc:  NodeListFunc(w.KubeClient),
+		WatchFunc: NodeWatchFunc(w.KubeClient),
 	}
-	_, controller := k.CacheStore(events.Node, &kapi.Node{}, lw)
+	_, controller := w.CacheStore(events.Node, &kapi.Node{}, lw)
 	go controller.Run(wait.NeverStop)
 }
 
-func (k *Watcher) Alert() {
+func (w *Watcher) Alert() {
 	log.Debugln("watching", events.Alert.String())
 	lw := &cache.ListWatch{
-		ListFunc:  AlertListFunc(k.ExtClient),
-		WatchFunc: AlertWatchFunc(k.ExtClient),
+		ListFunc:  AlertListFunc(w.ExtClient),
+		WatchFunc: AlertWatchFunc(w.ExtClient),
 	}
-	_, controller := k.Cache(events.Alert, &aci.Alert{}, lw)
+	_, controller := w.Cache(events.Alert, &aci.Alert{}, lw)
 	go controller.Run(wait.NeverStop)
 }
 
-func (k *Watcher) AlertEvent() {
+func (w *Watcher) AlertEvent() {
 	log.Debugln("watching", events.AlertEvent.String())
 	lw := &cache.ListWatch{
-		ListFunc:  AlertEventListFunc(k.Client),
-		WatchFunc: AlertEventWatchFunc(k.Client),
+		ListFunc:  AlertEventListFunc(w.KubeClient),
+		WatchFunc: AlertEventWatchFunc(w.KubeClient),
 	}
-	_, controller := k.Cache(events.AlertEvent, &kapi.Event{}, lw)
+	_, controller := w.Cache(events.AlertEvent, &kapi.Event{}, lw)
 	go controller.Run(wait.NeverStop)
 }
 
-func (k *Watcher) Deployment() {
+func (w *Watcher) Deployment() {
 	log.Debugln("watching", events.Deployments.String())
 	lw := &cache.ListWatch{
-		ListFunc:  DeploymentListFunc(k.Client),
-		WatchFunc: DeploymentWatchFunc(k.Client),
+		ListFunc:  DeploymentListFunc(w.KubeClient),
+		WatchFunc: DeploymentWatchFunc(w.KubeClient),
 	}
-	indexer, controller := k.CacheIndexer(events.Deployments, &ext.Deployment{}, lw, nil)
+	indexer, controller := w.CacheIndexer(events.Deployments, &ext.Deployment{}, lw, nil)
 	go controller.Run(wait.NeverStop)
-	k.Storage.DeploymentStore = cache.StoreToDeploymentLister{indexer}
+	w.Storage.DeploymentStore = cache.StoreToDeploymentLister{indexer}
 }
