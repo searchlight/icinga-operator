@@ -1,10 +1,10 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: appscode-icinga
+  name: searchlight-icinga
   namespace: kube-system
   labels:
-    run: appscode-icinga
+    app: searchlight-icinga
 spec:
   ports:
     - name: web
@@ -14,4 +14,4 @@ spec:
       port: 5665
       targetPort: api
   selector:
-    run: appscode-icinga
+    app: searchlight-icinga

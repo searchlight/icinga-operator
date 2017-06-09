@@ -2,24 +2,24 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    run: appscode-searchlight
-  name: appscode-searchlight
+    app: searchlight-operator
+  name: searchlight-operator
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      run: appscode-searchlight
+      app: searchlight-operator
   template:
     metadata:
       labels:
-        run: appscode-searchlight
+        app: searchlight-operator
     spec:
       containers:
       - args:
         - run
-        - --icinga-secret-name=appscode-icinga
+        - --icinga-secret-name=searchlight-icinga
         - --icinga-secret-namespace=kube-system
         - --v=3
         image: appscode/searchlight:1.5.9
-        name: appscode-searchlight
+        name: operator

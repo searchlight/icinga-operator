@@ -5,17 +5,17 @@ metadata:
     chart: {{.Chart.Name}}-{{.Chart.Version}}
     heritage: {{.Release.Service}}
     release: {{.Release.Name}}
-    run: {{ template "fullname" . }}-icinga
+    app: {{ template "fullname" . }}-icinga
   name: {{ template "fullname" . }}-icinga
 spec:
   replicas: 1
   selector:
     matchLabels:
-      run: {{ template "fullname" . }}-icinga
+      app: {{ template "fullname" . }}-icinga
   template:
     metadata:
       labels:
-        run: {{ template "fullname" . }}-icinga
+        app: {{ template "fullname" . }}-icinga
     spec:
       volumes:
       - emptyDir: {}

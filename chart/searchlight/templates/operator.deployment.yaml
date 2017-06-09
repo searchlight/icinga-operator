@@ -5,17 +5,17 @@ metadata:
     chart: {{.Chart.Name}}-{{.Chart.Version}}
     heritage: {{.Release.Service}}
     release: {{.Release.Name}}
-    run: {{ template "fullname" . }}-operator
+    app: {{ template "fullname" . }}-operator
   name: {{ template "fullname" . }}-operator
 spec:
   replicas: 1
   selector:
     matchLabels:
-      run: {{ template "fullname" . }}-operator
+      app: {{ template "fullname" . }}-operator
   template:
     metadata:
       labels:
-        run: {{ template "fullname" . }}-operator
+        app: {{ template "fullname" . }}-operator
     spec:
       containers:
       - args:
@@ -24,4 +24,4 @@ spec:
         - --icinga-secret-namespace={{.Release.Namespace}}
         - --v=3
         image: {{.Values.searchlight.image}}:{{.Values.searchlight.imageTag}}
-        name: appscode-searchlight
+        name: operator

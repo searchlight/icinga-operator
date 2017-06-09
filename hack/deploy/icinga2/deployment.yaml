@@ -1,19 +1,19 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: appscode-icinga
+  name: searchlight-icinga
   namespace: kube-system
   labels:
-    run: appscode-icinga
+    app: searchlight-icinga
 spec:
   replicas: 1
   selector:
     matchLabels:
-      run: appscode-icinga
+      app: searchlight-icinga
   template:
     metadata:
       labels:
-        run: appscode-icinga
+        app: searchlight-icinga
     spec:
       containers:
       - image: appscode/icinga:1.5.9-k8s
@@ -30,7 +30,7 @@ spec:
             mountPath: /var/pv
           - name: script-volume
             mountPath: /var/db-script
-          - name: appscode-icinga
+          - name: searchlight-icinga
             mountPath: /srv/icinga2/secrets
       - image: appscode/postgres:9.5-v3-db
         name: ido
@@ -51,6 +51,6 @@ spec:
           emptyDir: {}
         - name: script-volume
           emptyDir: {}
-        - name: appscode-icinga
+        - name: searchlight-icinga
           secret:
-            secretName: appscode-icinga
+            secretName: searchlight-icinga
