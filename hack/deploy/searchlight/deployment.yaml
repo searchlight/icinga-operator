@@ -18,10 +18,10 @@ spec:
       containers:
       - args:
         - run
-        - --icinga-secret-name=appscode-icinga
+        - --icinga-secret-name=searchlight-icinga
         - --icinga-secret-namespace=kube-system
         - --v=3
-        image: aerokite/searchlight:analytics
+        image: appscode/searchlight:1.5.9
         name: operator
         ports:
         - containerPort: 8080
