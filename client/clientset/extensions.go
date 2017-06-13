@@ -5,7 +5,7 @@ import (
 
 	schema "k8s.io/kubernetes/pkg/api/unversioned"
 	"k8s.io/kubernetes/pkg/apimachinery/registered"
-	rest "k8s.io/kubernetes/pkg/client/restclient"
+	"k8s.io/client-go/rest"
 )
 
 const (

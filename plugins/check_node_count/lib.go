@@ -7,7 +7,7 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
 	"github.com/spf13/cobra"
-	kapi "k8s.io/kubernetes/pkg/api"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 	"k8s.io/kubernetes/pkg/labels"
 )
 
@@ -23,7 +23,7 @@ func CheckNodeCount(req *Request) (util.IcingaState, interface{}) {
 
 	nodeList, err := kubeClient.Client.Core().
 		Nodes().List(
-		kapi.ListOptions{
+		apiv1.ListOptions{
 			LabelSelector: labels.Everything(),
 		},
 	)

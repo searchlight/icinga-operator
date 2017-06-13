@@ -9,24 +9,24 @@ import (
 	aci "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	"github.com/appscode/searchlight/pkg/events"
-	kapi "k8s.io/kubernetes/pkg/api"
-	"k8s.io/kubernetes/pkg/api/unversioned"
-	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	clientset "k8s.io/client-go/kubernetes"
 )
 
 func CreateAlertEvent(kubeClient clientset.Interface, alert *aci.Alert, reason types.EventReason, additionalMessage ...string) {
 	timestamp := unversioned.NewTime(time.Now().UTC())
-	event := &kapi.Event{
-		ObjectMeta: kapi.ObjectMeta{
+	event := &apiv1.Event{
+		ObjectMeta: apiv1.ObjectMeta{
 			Name:      rand.WithUniqSuffix("alert"),
 			Namespace: alert.Namespace,
 		},
-		InvolvedObject: kapi.ObjectReference{
+		InvolvedObject: apiv1.ObjectReference{
 			Kind:      events.ObjectKindAlert.String(),
 			Namespace: alert.Namespace,
 			Name:      alert.Name,
 		},
-		Source: kapi.EventSource{
+		Source: apiv1.EventSource{
 			Component: "searchlight",
 		},
 
@@ -39,24 +39,24 @@ func CreateAlertEvent(kubeClient clientset.Interface, alert *aci.Alert, reason t
 	case types.EventReasonNotFound:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`failed to set alerts. Reason: %v`, additionalMessage)
-		event.Type = kapi.EventTypeWarning
+		event.Type = apiv1.EventTypeWarning
 	case types.EventReasonFailedToProceed:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`failed to proceed. Reason: %v`, additionalMessage)
-		event.Type = kapi.EventTypeWarning
+		event.Type = apiv1.EventTypeWarning
 
 	case types.EventReasonCreating:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`creating Icinga objects`)
-		event.Type = kapi.EventTypeNormal
+		event.Type = apiv1.EventTypeNormal
 	case types.EventReasonFailedToCreate:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`failed to create Icinga objects. Error: %v`, additionalMessage)
-		event.Type = kapi.EventTypeWarning
+		event.Type = apiv1.EventTypeWarning
 	case types.EventReasonSuccessfulCreate:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`successfully created Icinga objects`)
-		event.Type = kapi.EventTypeNormal
+		event.Type = apiv1.EventTypeNormal
 
 	case types.EventReasonUpdating:
 		event.Reason = reason.String()
@@ -64,37 +64,37 @@ func CreateAlertEvent(kubeClient clientset.Interface, alert *aci.Alert, reason t
 	case types.EventReasonFailedToUpdate:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`failed to update Icinga objects. Error: %v`, additionalMessage)
-		event.Type = kapi.EventTypeWarning
+		event.Type = apiv1.EventTypeWarning
 	case types.EventReasonSuccessfulUpdate:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`successfully updated Icinga objects.`)
-		event.Type = kapi.EventTypeNormal
+		event.Type = apiv1.EventTypeNormal
 
 	case types.EventReasonDeleting:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`deleting Icinga objects`)
-		event.Type = kapi.EventTypeNormal
+		event.Type = apiv1.EventTypeNormal
 	case types.EventReasonFailedToDelete:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`failed to delete Icinga objects. Error: %v`, additionalMessage)
-		event.Type = kapi.EventTypeWarning
+		event.Type = apiv1.EventTypeWarning
 	case types.EventReasonSuccessfulDelete:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`successfully deleted Icinga objects.`)
-		event.Type = kapi.EventTypeNormal
+		event.Type = apiv1.EventTypeNormal
 
 	case types.EventReasonSync:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`synchronizing alert for %v.`, additionalMessage[0])
-		event.Type = kapi.EventTypeNormal
+		event.Type = apiv1.EventTypeNormal
 	case types.EventReasonFailedToSync:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`failed to synchronize alert for %v. Error: %v`, additionalMessage[0], additionalMessage[1])
-		event.Type = kapi.EventTypeWarning
+		event.Type = apiv1.EventTypeWarning
 	case types.EventReasonSuccessfulSync:
 		event.Reason = reason.String()
 		event.Message = fmt.Sprintf(`successfully synchronized alert for %v.`, additionalMessage[0])
-		event.Type = kapi.EventTypeNormal
+		event.Type = apiv1.EventTypeNormal
 	}
 
 	if _, err := kubeClient.Core().Events(alert.Namespace).Create(event); err != nil {

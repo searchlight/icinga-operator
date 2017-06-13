@@ -2,9 +2,9 @@ package clientset
 
 import (
 	aci "github.com/appscode/searchlight/api"
-	"k8s.io/kubernetes/pkg/api"
-	rest "k8s.io/kubernetes/pkg/client/restclient"
-	"k8s.io/kubernetes/pkg/watch"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/rest"
+	"k8s.io/apimachinery/pkg/watch"
 )
 
 type AlertNamespacer interface {
@@ -12,12 +12,12 @@ type AlertNamespacer interface {
 }
 
 type AlertInterface interface {
-	List(opts api.ListOptions) (*aci.AlertList, error)
+	List(opts metav1.ListOptions) (*aci.AlertList, error)
 	Get(name string) (*aci.Alert, error)
 	Create(Alert *aci.Alert) (*aci.Alert, error)
 	Update(Alert *aci.Alert) (*aci.Alert, error)
 	Delete(name string) error
-	Watch(opts api.ListOptions) (watch.Interface, error)
+	Watch(opts metav1.ListOptions) (watch.Interface, error)
 	UpdateStatus(Alert *aci.Alert) (*aci.Alert, error)
 }
 
@@ -32,7 +32,7 @@ func newAlert(c *ExtensionClient, namespace string) *AlertImpl {
 	return &AlertImpl{c.restClient, namespace}
 }
 
-func (c *AlertImpl) List(opts api.ListOptions) (result *aci.AlertList, err error) {
+func (c *AlertImpl) List(opts metav1.ListOptions) (result *aci.AlertList, err error) {
 	result = &aci.AlertList{}
 	err = c.r.Get().
 		Namespace(c.ns).
@@ -86,7 +86,7 @@ func (c *AlertImpl) Delete(name string) (err error) {
 		Error()
 }
 
-func (c *AlertImpl) Watch(opts api.ListOptions) (watch.Interface, error) {
+func (c *AlertImpl) Watch(opts metav1.ListOptions) (watch.Interface, error) {
 	return c.r.Get().
 		Prefix("watch").
 		Namespace(c.ns).

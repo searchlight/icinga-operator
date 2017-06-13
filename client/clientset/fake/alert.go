@@ -2,11 +2,11 @@ package fake
 
 import (
 	aci "github.com/appscode/searchlight/api"
-	"k8s.io/kubernetes/pkg/api"
-	schema "k8s.io/kubernetes/pkg/api/unversioned"
-	testing "k8s.io/kubernetes/pkg/client/testing/core"
-	"k8s.io/kubernetes/pkg/labels"
-	"k8s.io/kubernetes/pkg/watch"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/testing"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/watch"
 )
 
 type FakeAlert struct {
@@ -28,9 +28,9 @@ func (mock *FakeAlert) Get(name string) (*aci.Alert, error) {
 }
 
 // List returns the a of Alerts.
-func (mock *FakeAlert) List(opts api.ListOptions) (*aci.AlertList, error) {
+func (mock *FakeAlert) List(opts metav1.ListOptions) (*aci.AlertList, error) {
 	obj, err := mock.Fake.
-		Invokes(testing.NewListAction(alertResource, mock.ns, opts), &aci.Alert{})
+		Invokes(testing.NewListAction(alertResource, aci.ki mock.ns, opts), &aci.Alert{})
 
 	if obj == nil {
 		return nil, err
@@ -89,7 +89,7 @@ func (mock *FakeAlert) UpdateStatus(srv *aci.Alert) (*aci.Alert, error) {
 	return obj.(*aci.Alert), err
 }
 
-func (mock *FakeAlert) Watch(opts api.ListOptions) (watch.Interface, error) {
+func (mock *FakeAlert) Watch(opts metav1.ListOptions) (watch.Interface, error) {
 	return mock.Fake.
 		InvokesWatch(testing.NewWatchAction(alertResource, mock.ns, opts))
 }

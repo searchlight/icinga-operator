@@ -6,7 +6,7 @@ import (
 
 	"github.com/appscode/errors"
 	"github.com/appscode/searchlight/pkg/client/icinga"
-	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
+	clientset "k8s.io/client-go/kubernetes"
 )
 
 const (
