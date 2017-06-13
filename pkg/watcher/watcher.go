@@ -8,6 +8,7 @@ import (
 	"github.com/appscode/log"
 	aci "github.com/appscode/searchlight/api"
 	acs "github.com/appscode/searchlight/client/clientset"
+	"github.com/appscode/searchlight/pkg/analytics"
 	"github.com/appscode/searchlight/pkg/client/icinga"
 	"github.com/appscode/searchlight/pkg/controller"
 	"github.com/appscode/searchlight/pkg/events"
@@ -32,6 +33,8 @@ type Watcher struct {
 
 	// lister store
 	Storage *stash.Storage
+	// Enable analytics
+	EnableAnalytics bool
 	sync.Mutex
 }
 
@@ -55,6 +58,11 @@ func (w *Watcher) setup() {
 		log.Fatalln(err)
 	}
 	w.Storage = &stash.Storage{}
+
+	// Enable analytics
+	if w.EnableAnalytics {
+		analytics.Enable()
+	}
 }
 
 func (w *Watcher) ensureThirdPartyResource() error {

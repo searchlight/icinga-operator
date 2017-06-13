@@ -46,6 +46,10 @@ import:
   version: v1.2.1
 - package: github.com/Unknwon/com
   version: master
+- package: github.com/Sirupsen/logrus
+  version: v0.10.0
+- package: github.com/jpillora/go-ogle-analytics
+  version: master
 testImport:
 - package: github.com/stretchr/testify
   version: v1.1.4

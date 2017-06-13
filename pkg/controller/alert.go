@@ -10,6 +10,7 @@ import (
 	aci "github.com/appscode/searchlight/api"
 	acs "github.com/appscode/searchlight/client/clientset"
 	"github.com/appscode/searchlight/data"
+	"github.com/appscode/searchlight/pkg/analytics"
 	"github.com/appscode/searchlight/pkg/client/icinga"
 	"github.com/appscode/searchlight/pkg/controller/event"
 	"github.com/appscode/searchlight/pkg/controller/host"
@@ -53,6 +54,7 @@ func (b *IcingaController) Handle(e *events.Event) error {
 	switch e.ResourceType {
 	case events.Alert:
 		err = b.handleAlert(e)
+		sendEventForAlert(e.EventType, err)
 	case events.Pod:
 		err = b.handlePod(e)
 	case events.Node:
@@ -264,8 +266,55 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 		Type:  events.Pod.String(),
 		Names: []string{e.MetaData.Name},
 	}
-	ancestors = append(ancestors, ancestorItself)
 
+	syncAlert := func(alert aci.Alert) error {
+		if e.EventType.IsAdded() {
+			// Waiting for POD IP to use as Icinga Host IP
+			then := time.Now()
+			for {
+				hasPodIP, err := b.checkPodIPAvailability(e.MetaData.Name, namespace)
+				if err != nil {
+					return errors.New().WithCause(err).Err()
+				}
+				if hasPodIP {
+					break
+				}
+				log.Debugln("Waiting for pod IP")
+				now := time.Now()
+				if now.Sub(then) > time.Minute*2 {
+					return errors.New("Pod IP is not available for 2 minutes").Err()
+				}
+				time.Sleep(time.Second * 30)
+			}
+
+			b.ctx.Resource = &alert
+
+			additionalMessage := fmt.Sprintf(`pod "%v.%v"`, e.MetaData.Name, e.MetaData.Namespace)
+			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSync, additionalMessage)
+			b.parseAlertOptions()
+
+			if err := b.Create(e.MetaData.Name); err != nil {
+				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
+				return errors.New().WithCause(err).Err()
+			}
+			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulSync, additionalMessage)
+		} else if e.EventType.IsDeleted() {
+			b.ctx.Resource = &alert
+
+			additionalMessage := fmt.Sprintf(`pod "%v.%v"`, e.MetaData.Name, e.MetaData.Namespace)
+			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSync, additionalMessage)
+			b.parseAlertOptions()
+
+			if err := b.Delete(e.MetaData.Name); err != nil {
+				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
+				return errors.New().WithCause(err).Err()
+			}
+			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulSync, additionalMessage)
+		}
+		return nil
+	}
+
+	ancestors = append(ancestors, ancestorItself)
 	for _, ancestor := range ancestors {
 		objectType := ancestor.Type
 		for _, objectName := range ancestor.Names {
@@ -295,48 +344,11 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 					}
 				}
 
-				if e.EventType.IsAdded() {
-					// Waiting for POD IP to use as Icinga Host IP
-					then := time.Now()
-					for {
-						hasPodIP, err := b.checkPodIPAvailability(e.MetaData.Name, namespace)
-						if err != nil {
-							return errors.New().WithCause(err).Err()
-						}
-						if hasPodIP {
-							break
-						}
-						log.Debugln("Waiting for pod IP")
-						now := time.Now()
-						if now.Sub(then) > time.Minute*2 {
-							return errors.New("Pod IP is not available for 2 minutes").Err()
-						}
-						time.Sleep(time.Second * 30)
-					}
+				err = syncAlert(alert)
+				sendEventForSync(e.EventType, err)
 
-					b.ctx.Resource = &alert
-
-					additionalMessage := fmt.Sprintf(`pod "%v.%v"`, e.MetaData.Name, e.MetaData.Namespace)
-					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSync, additionalMessage)
-					b.parseAlertOptions()
-
-					if err := b.Create(e.MetaData.Name); err != nil {
-						event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
-						return errors.New().WithCause(err).Err()
-					}
-					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulSync, additionalMessage)
-				} else if e.EventType.IsDeleted() {
-					b.ctx.Resource = &alert
-
-					additionalMessage := fmt.Sprintf(`pod "%v.%v"`, e.MetaData.Name, e.MetaData.Namespace)
-					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSync, additionalMessage)
-					b.parseAlertOptions()
-
-					if err := b.Delete(e.MetaData.Name); err != nil {
-						event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
-						return errors.New().WithCause(err).Err()
-					}
-					event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulSync, additionalMessage)
+				if err != nil {
+					return err
 				}
 
 				t := unversioned.Now()
@@ -367,27 +379,7 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 
 	icingaUp := false
 
-	alertList, err := b.ctx.ExtClient.Alert(kapi.NamespaceAll).List(kapi.ListOptions{
-		LabelSelector: lb,
-	})
-	if err != nil {
-		return errors.New().WithCause(err).Err()
-	}
-
-	for _, alert := range alertList.Items {
-		if !icingaUp && !b.checkIcingaAvailability() {
-			return errors.New("Icinga is down").Err()
-		}
-		icingaUp = true
-
-		if command, found := b.ctx.IcingaData[alert.Spec.CheckCommand]; found {
-			if hostType, found := command.HostType[b.ctx.ObjectType]; found {
-				if hostType != host.HostTypeNode {
-					continue
-				}
-			}
-		}
-
+	syncAlert := func(alert aci.Alert) error {
 		if e.EventType.IsAdded() {
 			b.ctx.Resource = &alert
 
@@ -413,6 +405,36 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 				return errors.New().WithCause(err).Err()
 			}
 			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulSync, additionalMessage)
+		}
+		return nil
+	}
+
+	alertList, err := b.ctx.ExtClient.Alert(kapi.NamespaceAll).List(kapi.ListOptions{
+		LabelSelector: lb,
+	})
+	if err != nil {
+		return errors.New().WithCause(err).Err()
+	}
+
+	for _, alert := range alertList.Items {
+		if !icingaUp && !b.checkIcingaAvailability() {
+			return errors.New("Icinga is down").Err()
+		}
+		icingaUp = true
+
+		if command, found := b.ctx.IcingaData[alert.Spec.CheckCommand]; found {
+			if hostType, found := command.HostType[b.ctx.ObjectType]; found {
+				if hostType != host.HostTypeNode {
+					continue
+				}
+			}
+		}
+
+		err = syncAlert(alert)
+		sendEventForSync(e.EventType, err)
+
+		if err != nil {
+			return err
 		}
 
 		t := unversioned.Now()
@@ -492,4 +514,34 @@ func getIcingaDataMap() (map[string]*types.IcingaData, error) {
 		}
 	}
 	return icingaDataMap, nil
+}
+
+func sendEventForAlert(eventType events.EventType, err error) {
+	label := "success"
+	if err != nil {
+		label = "failure"
+	}
+
+	switch eventType {
+	case events.Added:
+		analytics.SendEvent("Alert", "created", label)
+	case events.Updated:
+		analytics.SendEvent("Alert", "updated", label)
+	case events.Deleted:
+		analytics.SendEvent("Alert", "deleted", label)
+	}
+}
+
+func sendEventForSync(eventType events.EventType, err error) {
+	label := "success"
+	if err != nil {
+		label = "failure"
+	}
+
+	switch eventType {
+	case events.Added:
+		analytics.SendEvent("Alert", "added", label)
+	case events.Deleted:
+		analytics.SendEvent("Alert", "removed", label)
+	}
 }

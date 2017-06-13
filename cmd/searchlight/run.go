@@ -9,8 +9,10 @@ import (
 	_ "github.com/appscode/searchlight/api/install"
 	acs "github.com/appscode/searchlight/client/clientset"
 	_ "github.com/appscode/searchlight/client/clientset/fake"
+	"github.com/appscode/searchlight/pkg/analytics"
 	"github.com/appscode/searchlight/pkg/client/icinga"
 	acw "github.com/appscode/searchlight/pkg/watcher"
+	"github.com/k8sdb/apimachinery/pkg/docker"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 	kapi "k8s.io/kubernetes/pkg/api"
@@ -30,6 +32,8 @@ var (
 
 	kubeClient clientset.Interface
 	extClient  acs.ExtensionInterface
+
+	enableAnalytics bool = true
 )
 
 func NewCmdRun() *cobra.Command {
@@ -48,6 +52,9 @@ func NewCmdRun() *cobra.Command {
 
 	cmd.Flags().StringVar(&address, "address", address, "Address to listen on for web interface and telemetry.")
 
+	// Analytics flags
+	cmd.Flags().BoolVar(&enableAnalytics, "analytics", enableAnalytics, "Send analytical event to Google Analytics")
+
 	return cmd
 }
 
@@ -61,9 +68,10 @@ func run() {
 	extClient = acs.NewForConfigOrDie(config)
 
 	w := &acw.Watcher{
-		KubeClient: kubeClient,
-		ExtClient:  extClient,
-		SyncPeriod: time.Minute * 2,
+		KubeClient:      kubeClient,
+		ExtClient:       extClient,
+		EnableAnalytics: enableAnalytics,
+		SyncPeriod:      time.Minute * 2,
 	}
 	if icingaSecretName == "" {
 		log.Fatalln("Missing icinga secret")
@@ -76,6 +84,11 @@ func run() {
 
 	log.Infoln("Starting Searchlight operator...")
 	go w.Run()
+
+	if enableAnalytics {
+		analytics.Enable()
+	}
+	analytics.SendEvent(docker.ImageOperator, "started", Version)
 
 	http.Handle("/metrics", promhttp.Handler())
 	log.Infoln("Listening on", address)
