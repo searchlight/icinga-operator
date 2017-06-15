@@ -10,8 +10,8 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
 	"github.com/spf13/cobra"
-	kapi "k8s.io/kubernetes/pkg/api"
-	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
+	clientset "k8s.io/client-go/kubernetes"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 	"k8s.io/kubernetes/pkg/client/unversioned/remotecommand"
 	remotecommandserver "k8s.io/kubernetes/pkg/kubelet/server/remotecommand"
 	utilexec "k8s.io/kubernetes/pkg/util/exec"
@@ -74,14 +74,14 @@ func CheckKubeExec(req *Request) (util.IcingaState, interface{}) {
 		SubResource("exec").
 		Param("container", req.Container)
 
-	execRequest.VersionedParams(&kapi.PodExecOptions{
+	execRequest.VersionedParams(&apiv1.PodExecOptions{
 		Container: req.Container,
 		Command:   []string{req.Command},
 		Stdin:     true,
 		Stdout:    false,
 		Stderr:    false,
 		TTY:       false,
-	}, kapi.ParameterCodec)
+	}, apiv1.ParameterCodec)
 
 	exec, err := remotecommand.NewExecutor(kubeConfig, "POST", execRequest.URL())
 	if err != nil {

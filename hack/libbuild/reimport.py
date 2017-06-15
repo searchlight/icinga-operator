@@ -62,6 +62,7 @@ PKG_MAP = {
     'k8s.io/kubernetes/pkg/util/strategicpatch': ['k8s.io/apimachinery/pkg/util/strategicpatch'],
     'k8s.io/kubernetes/pkg/util/wait': ['k8s.io/apimachinery/pkg/util/wait'],
     'k8s.io/kubernetes/pkg/watch': ['k8s.io/apimachinery/pkg/watch'],
+    'k8s.io/kubernetes/pkg/selection': ['k8s.io/apimachinery/pkg/selection'],
 }
 
 def _detect_pkg_alias(line):

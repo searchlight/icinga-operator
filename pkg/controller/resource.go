@@ -7,7 +7,7 @@ import (
 	"github.com/appscode/log"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	"github.com/appscode/searchlight/pkg/events"
-	kapi "k8s.io/kubernetes/pkg/api"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
 func (b *IcingaController) IsObjectExists() error {
@@ -41,7 +41,7 @@ func (b *IcingaController) IsObjectExists() error {
 }
 
 func (b *IcingaController) getParentsForPod(o interface{}) []*types.Ancestors {
-	pod := o.(*kapi.Pod)
+	pod := o.(*apiv1.Pod)
 	result := make([]*types.Ancestors, 0)
 
 	svc, err := b.ctx.Storage.ServiceStore.GetPodServices(pod)

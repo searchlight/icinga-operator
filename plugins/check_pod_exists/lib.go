@@ -10,8 +10,8 @@ import (
 	"github.com/appscode/searchlight/pkg/controller/host"
 	"github.com/appscode/searchlight/util"
 	"github.com/spf13/cobra"
-	kapi "k8s.io/kubernetes/pkg/api"
-	"k8s.io/kubernetes/pkg/labels"
+	"k8s.io/apimachinery/pkg/labels"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
 type Request struct {
@@ -57,7 +57,7 @@ func CheckPodExists(req *Request, isCountSet bool) (util.IcingaState, interface{
 
 		podList, err := kubeClient.Client.Core().
 			Pods(req.Namespace).List(
-			kapi.ListOptions{
+			apiv1.ListOptions{
 				LabelSelector: labelSelector,
 			},
 		)

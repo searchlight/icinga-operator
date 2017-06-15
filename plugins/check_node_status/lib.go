@@ -9,7 +9,7 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
 	"github.com/spf13/cobra"
-	kapi "k8s.io/kubernetes/pkg/api"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
 type Request struct {
@@ -32,7 +32,7 @@ func CheckNodeStatus(req *Request) (util.IcingaState, interface{}) {
 	}
 
 	for _, condition := range node.Status.Conditions {
-		if condition.Type == kapi.NodeReady && condition.Status == kapi.ConditionFalse {
+		if condition.Type == apiv1.NodeReady && condition.Status == apiv1.ConditionFalse {
 			return util.Critical, "Node is not Ready"
 		}
 	}

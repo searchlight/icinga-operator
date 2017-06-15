@@ -14,7 +14,7 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
 	"github.com/spf13/cobra"
-	rest "k8s.io/kubernetes/pkg/client/restclient"
+	"k8s.io/client-go/rest"
 )
 
 type Request struct {

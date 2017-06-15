@@ -9,11 +9,11 @@ import (
 	"github.com/appscode/log"
 	"github.com/appscode/searchlight/pkg/client/icinga"
 	"github.com/appscode/searchlight/pkg/controller/types"
-	kapi "k8s.io/kubernetes/pkg/api"
-	"k8s.io/kubernetes/pkg/api/unversioned"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
-func (b *IcingaController) Acknowledge(event *kapi.Event) error {
+func (b *IcingaController) Acknowledge(event *apiv1.Event) error {
 	icingaService := b.ctx.Resource.Name
 
 	var message types.AlertEventMessage
@@ -33,7 +33,7 @@ func (b *IcingaController) Acknowledge(event *kapi.Event) error {
 		event.Annotations = make(map[string]string)
 	}
 
-	timestamp := unversioned.NewTime(time.Now().UTC())
+	timestamp := metav1.NewTime(time.Now().UTC())
 	event.Annotations[types.AcknowledgeTimestamp] = timestamp.String()
 
 	if _, err = b.ctx.KubeClient.Core().Events(event.Namespace).Update(event); err != nil {

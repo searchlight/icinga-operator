@@ -11,7 +11,7 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
 	"github.com/spf13/cobra"
-	kapi "k8s.io/kubernetes/pkg/api"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
 const (
@@ -37,7 +37,7 @@ const (
 	vsphereVolumePluginName        = "kubernetes.io~vsphere-volume"
 )
 
-func getVolumePluginName(volumeSource *kapi.VolumeSource) string {
+func getVolumePluginName(volumeSource *apiv1.VolumeSource) string {
 	if volumeSource.AWSElasticBlockStore != nil {
 		return awsElasticBlockStorePluginName
 	} else if volumeSource.AzureDisk != nil {
@@ -82,7 +82,7 @@ func getVolumePluginName(volumeSource *kapi.VolumeSource) string {
 	return ""
 }
 
-func getPersistentVolumePluginName(volumeSource *kapi.PersistentVolumeSource) string {
+func getPersistentVolumePluginName(volumeSource *apiv1.PersistentVolumeSource) string {
 	if volumeSource.AWSElasticBlockStore != nil {
 		return awsElasticBlockStorePluginName
 	} else if volumeSource.AzureDisk != nil {
@@ -256,7 +256,7 @@ func checkNodeDiskStat(req *Request) (util.IcingaState, interface{}) {
 
 	hostIP := ""
 	for _, address := range node.Status.Addresses {
-		if address.Type == kapi.NodeInternalIP {
+		if address.Type == apiv1.NodeInternalIP {
 			hostIP = address.Address
 		}
 	}

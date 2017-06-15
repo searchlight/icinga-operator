@@ -1,14 +1,14 @@
 package api
 
 import (
-	schema "k8s.io/kubernetes/pkg/api/unversioned"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/kubernetes/pkg/api/v1"
-	"k8s.io/kubernetes/pkg/runtime"
 	versionedwatch "k8s.io/kubernetes/pkg/watch/versioned"
 )
 
 // SchemeGroupVersion is group version used to register these objects
-var V1alpha1SchemeGroupVersion = schema.GroupVersion{Group: GroupName, Version: "v1alpha1"}
+var V1alpha1SchemeGroupVersion = metav1.GroupVersion{Group: GroupName, Version: "v1alpha1"}
 
 var (
 	v1alpha1SchemeBuilder = runtime.NewSchemeBuilder(v1addKnownTypes)

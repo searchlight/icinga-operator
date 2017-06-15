@@ -4,11 +4,11 @@ import (
 	"github.com/appscode/log"
 	aci "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/events"
-	kapi "k8s.io/kubernetes/pkg/api"
-	"k8s.io/kubernetes/pkg/apis/apps"
-	ext "k8s.io/kubernetes/pkg/apis/extensions"
-	"k8s.io/kubernetes/pkg/client/cache"
-	"k8s.io/kubernetes/pkg/util/wait"
+	"k8s.io/apimachinery/pkg/util/wait"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
+	apps "k8s.io/client-go/pkg/apis/apps/v1beta1"
+	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
+	"k8s.io/client-go/tools/cache"
 )
 
 func (w *Watcher) Namespace() {
@@ -17,7 +17,7 @@ func (w *Watcher) Namespace() {
 		ListFunc:  NamespaceListFunc(w.KubeClient),
 		WatchFunc: NamespaceWatchFunc(w.KubeClient),
 	}
-	_, controller := w.Cache(events.Namespace, &kapi.Namespace{}, lw)
+	_, controller := w.Cache(events.Namespace, &apiv1.Namespace{}, lw)
 	go controller.Run(wait.NeverStop)
 }
 
@@ -27,7 +27,7 @@ func (w *Watcher) Pod() {
 		ListFunc:  PodListFunc(w.KubeClient),
 		WatchFunc: PodWatchFunc(w.KubeClient),
 	}
-	indexer, controller := w.CacheIndexer(events.Pod, &kapi.Pod{}, lw, nil)
+	indexer, controller := w.CacheIndexer(events.Pod, &apiv1.Pod{}, lw, nil)
 	go controller.Run(wait.NeverStop)
 	w.Storage.PodStore = cache.StoreToPodLister{indexer}
 }
@@ -38,7 +38,7 @@ func (w *Watcher) Service() {
 		ListFunc:  ServiceListFunc(w.KubeClient),
 		WatchFunc: ServiceWatchFunc(w.KubeClient),
 	}
-	indexer, controller := w.CacheIndexer(events.Service, &kapi.Service{}, lw, nil)
+	indexer, controller := w.CacheIndexer(events.Service, &apiv1.Service{}, lw, nil)
 	go controller.Run(wait.NeverStop)
 	w.Storage.ServiceStore = cache.StoreToServiceLister{indexer}
 }
@@ -49,7 +49,7 @@ func (w *Watcher) RC() {
 		ListFunc:  ReplicationControllerListFunc(w.KubeClient),
 		WatchFunc: ReplicationControllerWatchFunc(w.KubeClient),
 	}
-	indexer, controller := w.CacheIndexer(events.RC, &kapi.ReplicationController{}, lw, nil)
+	indexer, controller := w.CacheIndexer(events.RC, &apiv1.ReplicationController{}, lw, nil)
 	go controller.Run(wait.NeverStop)
 	w.Storage.RcStore = cache.StoreToReplicationControllerLister{indexer}
 }
@@ -60,7 +60,7 @@ func (w *Watcher) ReplicaSet() {
 		ListFunc:  ReplicaSetListFunc(w.KubeClient),
 		WatchFunc: ReplicaSetWatchFunc(w.KubeClient),
 	}
-	indexer, controller := w.CacheIndexer(events.ReplicaSet, &ext.ReplicaSet{}, lw, nil)
+	indexer, controller := w.CacheIndexer(events.ReplicaSet, &extensions.ReplicaSet{}, lw, nil)
 	go controller.Run(wait.NeverStop)
 	w.Storage.ReplicaSetStore = cache.StoreToReplicaSetLister{indexer}
 }
@@ -82,7 +82,7 @@ func (w *Watcher) DaemonSet() {
 		ListFunc:  DaemonSetListFunc(w.KubeClient),
 		WatchFunc: DaemonSetWatchFunc(w.KubeClient),
 	}
-	indexer, controller := w.CacheIndexer(events.DaemonSet, &ext.DaemonSet{}, lw, nil)
+	indexer, controller := w.CacheIndexer(events.DaemonSet, &extensions.DaemonSet{}, lw, nil)
 	go controller.Run(wait.NeverStop)
 	w.Storage.DaemonSetStore = cache.StoreToDaemonSetLister{indexer}
 }
@@ -93,7 +93,7 @@ func (w *Watcher) Endpoint() {
 		ListFunc:  EndpointListFunc(w.KubeClient),
 		WatchFunc: EndpointWatchFunc(w.KubeClient),
 	}
-	store, controller := w.CacheStore(events.Endpoint, &kapi.Endpoints{}, lw)
+	store, controller := w.CacheStore(events.Endpoint, &apiv1.Endpoints{}, lw)
 	go controller.Run(wait.NeverStop)
 	w.Storage.EndpointStore = cache.StoreToEndpointsLister{store}
 }
@@ -104,7 +104,7 @@ func (w *Watcher) Node() {
 		ListFunc:  NodeListFunc(w.KubeClient),
 		WatchFunc: NodeWatchFunc(w.KubeClient),
 	}
-	_, controller := w.CacheStore(events.Node, &kapi.Node{}, lw)
+	_, controller := w.CacheStore(events.Node, &apiv1.Node{}, lw)
 	go controller.Run(wait.NeverStop)
 }
 
@@ -124,7 +124,7 @@ func (w *Watcher) AlertEvent() {
 		ListFunc:  AlertEventListFunc(w.KubeClient),
 		WatchFunc: AlertEventWatchFunc(w.KubeClient),
 	}
-	_, controller := w.Cache(events.AlertEvent, &kapi.Event{}, lw)
+	_, controller := w.Cache(events.AlertEvent, &apiv1.Event{}, lw)
 	go controller.Run(wait.NeverStop)
 }
 
@@ -134,7 +134,7 @@ func (w *Watcher) Deployment() {
 		ListFunc:  DeploymentListFunc(w.KubeClient),
 		WatchFunc: DeploymentWatchFunc(w.KubeClient),
 	}
-	indexer, controller := w.CacheIndexer(events.Deployments, &ext.Deployment{}, lw, nil)
+	indexer, controller := w.CacheIndexer(events.Deployments, &extensions.Deployment{}, lw, nil)
 	go controller.Run(wait.NeverStop)
 	w.Storage.DeploymentStore = cache.StoreToDeploymentLister{indexer}
 }

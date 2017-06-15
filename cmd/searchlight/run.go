@@ -15,10 +15,10 @@ import (
 	"github.com/k8sdb/apimachinery/pkg/docker"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
-	kapi "k8s.io/kubernetes/pkg/api"
-	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
+	clientset "k8s.io/client-go/kubernetes"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
+	"k8s.io/client-go/tools/clientcmd"
 	_ "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset/fake"
-	"k8s.io/kubernetes/pkg/client/unversioned/clientcmd"
 )
 
 var (
@@ -26,7 +26,7 @@ var (
 	kubeconfigPath string
 
 	icingaSecretName      string
-	icingaSecretNamespace string = kapi.NamespaceDefault
+	icingaSecretNamespace string = apiv1.NamespaceDefault
 
 	address string = ":8080"
 

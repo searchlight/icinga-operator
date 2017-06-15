@@ -8,11 +8,11 @@ import (
 	acs "github.com/appscode/searchlight/client/clientset"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	"github.com/appscode/searchlight/pkg/events"
-	kapi "k8s.io/kubernetes/pkg/api"
-	clientset "k8s.io/kubernetes/pkg/client/clientset_generated/internalclientset"
-	"k8s.io/kubernetes/pkg/labels"
-	"k8s.io/kubernetes/pkg/selection"
-	"k8s.io/kubernetes/pkg/util/sets"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/selection"
+	"k8s.io/apimachinery/pkg/util/sets"
+	clientset "k8s.io/client-go/kubernetes"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
 const (
@@ -91,7 +91,7 @@ func GetPodList(client clientset.Interface, namespace, objectType, objectName st
 		return nil, errors.New().WithCause(err).Err()
 	}
 
-	pods, err := client.Core().Pods(namespace).List(kapi.ListOptions{LabelSelector: label})
+	pods, err := client.Core().Pods(namespace).List(apiv1.ListOptions{LabelSelector: label})
 	if err != nil {
 		return nil, errors.New().WithCause(err).Err()
 	}
@@ -115,7 +115,7 @@ func GetPod(client clientset.Interface, namespace, objectType, objectName, podNa
 
 func GetNodeList(client clientset.Interface, alertNamespace string) ([]*KubeObjectInfo, error) {
 	var nodeList []*KubeObjectInfo
-	nodes, err := client.Core().Nodes().List(kapi.ListOptions{LabelSelector: labels.Everything()})
+	nodes, err := client.Core().Nodes().List(apiv1.ListOptions{LabelSelector: labels.Everything()})
 	if err != nil {
 		return nodeList, errors.New().WithCause(err).Err()
 	}
@@ -134,7 +134,7 @@ func GetNodeList(client clientset.Interface, alertNamespace string) ([]*KubeObje
 
 func GetNode(client clientset.Interface, nodeName, alertNamespace string) ([]*KubeObjectInfo, error) {
 	var nodeList []*KubeObjectInfo
-	node := &kapi.Node{}
+	node := &apiv1.Node{}
 	node, err := client.Core().Nodes().Get(nodeName)
 	if err != nil {
 		return nodeList, errors.New().WithCause(err).Err()
@@ -153,7 +153,7 @@ func GetNode(client clientset.Interface, nodeName, alertNamespace string) ([]*Ku
 func GetAlertList(acExtClient acs.ExtensionInterface, kubeClient clientset.Interface, namespace string, ls labels.Selector) ([]aci.Alert, error) {
 	alerts := make([]aci.Alert, 0)
 	if namespace != "" {
-		alertList, err := acExtClient.Alert(namespace).List(kapi.ListOptions{LabelSelector: ls})
+		alertList, err := acExtClient.Alert(namespace).List(apiv1.ListOptions{LabelSelector: ls})
 		if err != nil {
 			return nil, errors.New().WithCause(err).Err()
 		}
@@ -161,7 +161,7 @@ func GetAlertList(acExtClient acs.ExtensionInterface, kubeClient clientset.Inter
 			alerts = append(alerts, alertList.Items...)
 		}
 	} else {
-		alertList, err := acExtClient.Alert(kapi.NamespaceAll).List(kapi.ListOptions{LabelSelector: ls})
+		alertList, err := acExtClient.Alert(apiv1.NamespaceAll).List(apiv1.ListOptions{LabelSelector: ls})
 		if err != nil {
 			return nil, errors.New().WithCause(err).Err()
 		}
