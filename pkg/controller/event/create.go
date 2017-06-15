@@ -17,7 +17,7 @@ import (
 func CreateAlertEvent(kubeClient clientset.Interface, alert *aci.Alert, reason types.EventReason, additionalMessage ...string) {
 	timestamp := metav1.NewTime(time.Now().UTC())
 	event := &apiv1.Event{
-		ObjectMeta: apiv1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name:      rand.WithUniqSuffix("alert"),
 			Namespace: alert.Namespace,
 		},

@@ -14,7 +14,7 @@ import (
 
 func TestDefaultGroupVersion(t *testing.T) {
 	i := &aci.Alert{
-		ObjectMeta: apiv1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name:      "foo",
 			Namespace: "bar",
 		},

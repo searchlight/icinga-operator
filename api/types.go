@@ -10,7 +10,7 @@ type Alert struct {
 	metav1.TypeMeta `json:",inline"`
 	// Standard object's metadata.
 	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#metadata
-	apiv1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// Spec is the desired state of the Alert.
 	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#spec-and-status

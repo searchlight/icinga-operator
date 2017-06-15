@@ -12,7 +12,7 @@ var V1alpha1SchemeGroupVersion = metav1.GroupVersion{Group: GroupName, Version: 
 
 var (
 	v1alpha1SchemeBuilder = runtime.NewSchemeBuilder(v1addKnownTypes)
-	V1betaAddToScheme     = v1alpha1SchemeBuilder.AddToScheme
+	V1alpha1AddToScheme   = v1alpha1SchemeBuilder.AddToScheme
 )
 
 // Adds the list of known types to api.Scheme.

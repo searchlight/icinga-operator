@@ -78,7 +78,7 @@ func (w *Watcher) ensureThirdPartyResource() error {
 			APIVersion: "extensions/v1beta1",
 			Kind:       "ThirdPartyResource",
 		},
-		ObjectMeta: apiv1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name: resourceName,
 		},
 		Versions: []extensions.APIVersion{
