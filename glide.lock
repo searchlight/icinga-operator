@@ -1,5 +1,5 @@
 hash: cbcc856eba9ca14cee8194fc5b3ef9695cc3f119fa60d7104dcf455cccd87747
-updated: 2017-06-15T07:55:33.788314571-07:00
+updated: 2017-06-15T08:09:07.935719921-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -324,6 +324,7 @@ imports:
   - pkg/apimachinery
   - pkg/apimachinery/announced
   - pkg/apimachinery/registered
+  - pkg/apis/meta/internalversion
   - pkg/apis/meta/v1
   - pkg/apis/meta/v1/unstructured
   - pkg/conversion

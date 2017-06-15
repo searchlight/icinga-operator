@@ -10,6 +10,7 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
 	"github.com/spf13/cobra"
+	"k8s.io/apimachinery/pkg/apis/meta/internalversion"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
@@ -82,7 +83,7 @@ func CheckKubeExec(req *Request) (util.IcingaState, interface{}) {
 		Stdout:    false,
 		Stderr:    false,
 		TTY:       false,
-	}, apiv1.ParameterCodec)
+	}, internalversion.ParameterCodec)
 
 	exec, err := remotecommand.NewExecutor(kubeConfig, "POST", execRequest.URL())
 	if err != nil {
