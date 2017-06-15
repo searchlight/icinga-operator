@@ -10,6 +10,7 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
 	"github.com/spf13/cobra"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 	"k8s.io/kubernetes/pkg/client/unversioned/remotecommand"
@@ -46,7 +47,7 @@ func CheckKubeExec(req *Request) (util.IcingaState, interface{}) {
 		return util.Unknown, err
 	}
 
-	pod, err := kubeClient.Core().Pods(req.Namespace).Get(req.Pod)
+	pod, err := kubeClient.CoreV1().Pods(req.Namespace).Get(req.Pod, metav1.GetOptions{})
 	if err != nil {
 		return util.Unknown, err
 	}
