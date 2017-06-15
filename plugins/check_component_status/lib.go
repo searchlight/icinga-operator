@@ -7,6 +7,7 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
 	"github.com/spf13/cobra"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
@@ -27,11 +28,9 @@ func CheckComponentStatus() (util.IcingaState, interface{}) {
 		return util.Unknown, err
 	}
 
-	components, err := kubeClient.Client.Core().
-		ComponentStatuses().List(
-		apiv1.ListOptions{
-			LabelSelector: labels.Everything(),
-		},
+	components, err := kubeClient.Client.CoreV1().ComponentStatuses().List(metav1.ListOptions{
+		LabelSelector: labels.Everything().String(),
+	},
 	)
 	if err != nil {
 		return util.Unknown, err

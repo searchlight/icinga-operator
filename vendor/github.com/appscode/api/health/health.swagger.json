@@ -1,0 +1,147 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "health.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/_appscode/api/health/json": {
+      "get": {
+        "operationId": "Status",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/healthStatusResponse"
+            }
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "dtypesVoidRequest": {
+      "type": "object",
+      "description": "Void Requests and response to use with other types."
+    },
+    "healthMetadata": {
+      "type": "object",
+      "properties": {
+        "env": {
+          "type": "string"
+        },
+        "team_id": {
+          "type": "string"
+        },
+        "net_config": {
+          "$ref": "#/definitions/healthNetConfig"
+        }
+      }
+    },
+    "healthNetConfig": {
+      "type": "object",
+      "properties": {
+        "team_addr": {
+          "type": "string"
+        },
+        "public_urls": {
+          "$ref": "#/definitions/healthURLBase"
+        },
+        "team_urls": {
+          "$ref": "#/definitions/healthURLBase"
+        },
+        "cluster_urls": {
+          "$ref": "#/definitions/healthURLBase"
+        },
+        "in_cluster_urls": {
+          "$ref": "#/definitions/healthURLBase"
+        },
+        "URL_shortener_urls": {
+          "$ref": "#/definitions/healthURLBase"
+        },
+        "file_urls": {
+          "$ref": "#/definitions/healthURLBase"
+        }
+      }
+    },
+    "healthStatusResponse": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "$ref": "#/definitions/versionVersion"
+        },
+        "metadata": {
+          "$ref": "#/definitions/healthMetadata"
+        }
+      }
+    },
+    "healthURLBase": {
+      "type": "object",
+      "properties": {
+        "scheme": {
+          "type": "string"
+        },
+        "base_addr": {
+          "type": "string"
+        }
+      }
+    },
+    "versionVersion": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "version_strategy": {
+          "type": "string"
+        },
+        "os": {
+          "type": "string"
+        },
+        "arch": {
+          "type": "string"
+        },
+        "commit_hash": {
+          "type": "string"
+        },
+        "git_branch": {
+          "type": "string"
+        },
+        "git_tag": {
+          "type": "string"
+        },
+        "commit_timestamp": {
+          "type": "string"
+        },
+        "build_timestamp": {
+          "type": "string"
+        },
+        "build_host": {
+          "type": "string"
+        },
+        "build_host_os": {
+          "type": "string"
+        },
+        "build_host_arch": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

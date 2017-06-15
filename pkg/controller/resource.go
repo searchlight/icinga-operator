@@ -7,6 +7,7 @@ import (
 	"github.com/appscode/log"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	"github.com/appscode/searchlight/pkg/events"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
@@ -17,21 +18,21 @@ func (b *IcingaController) IsObjectExists() error {
 	var err error
 	switch b.ctx.ObjectType {
 	case events.Service.String():
-		_, err = b.ctx.KubeClient.Core().Services(b.ctx.Resource.Namespace).Get(b.ctx.ObjectName)
+		_, err = b.ctx.KubeClient.CoreV1().Services(b.ctx.Resource.Namespace).Get(b.ctx.ObjectName, metav1.GetOptions{})
 	case events.RC.String():
-		_, err = b.ctx.KubeClient.Core().ReplicationControllers(b.ctx.Resource.Namespace).Get(b.ctx.ObjectName)
+		_, err = b.ctx.KubeClient.CoreV1().ReplicationControllers(b.ctx.Resource.Namespace).Get(b.ctx.ObjectName, metav1.GetOptions{})
 	case events.DaemonSet.String():
-		_, err = b.ctx.KubeClient.Extensions().DaemonSets(b.ctx.Resource.Namespace).Get(b.ctx.ObjectName)
+		_, err = b.ctx.KubeClient.ExtensionsV1beta1().DaemonSets(b.ctx.Resource.Namespace).Get(b.ctx.ObjectName, metav1.GetOptions{})
 	case events.Deployments.String():
-		_, err = b.ctx.KubeClient.Extensions().Deployments(b.ctx.Resource.Namespace).Get(b.ctx.ObjectName)
+		_, err = b.ctx.KubeClient.ExtensionsV1beta1().Deployments(b.ctx.Resource.Namespace).Get(b.ctx.ObjectName, metav1.GetOptions{})
 	case events.StatefulSet.String():
-		_, err = b.ctx.KubeClient.Apps().StatefulSets(b.ctx.Resource.Namespace).Get(b.ctx.ObjectName)
+		_, err = b.ctx.KubeClient.AppsV1beta1().StatefulSets(b.ctx.Resource.Namespace).Get(b.ctx.ObjectName, metav1.GetOptions{})
 	case events.ReplicaSet.String():
-		_, err = b.ctx.KubeClient.Extensions().ReplicaSets(b.ctx.Resource.Namespace).Get(b.ctx.ObjectName)
+		_, err = b.ctx.KubeClient.ExtensionsV1beta1().ReplicaSets(b.ctx.Resource.Namespace).Get(b.ctx.ObjectName, metav1.GetOptions{})
 	case events.Pod.String():
-		_, err = b.ctx.KubeClient.Core().Pods(b.ctx.Resource.Namespace).Get(b.ctx.ObjectName)
+		_, err = b.ctx.KubeClient.CoreV1().Pods(b.ctx.Resource.Namespace).Get(b.ctx.ObjectName, metav1.GetOptions{})
 	case events.Node.String():
-		_, err = b.ctx.KubeClient.Core().Nodes().Get(b.ctx.ObjectName)
+		_, err = b.ctx.KubeClient.CoreV1().Nodes().Get(b.ctx.ObjectName, metav1.GetOptions{})
 	case events.Cluster.String():
 		err = nil
 	default:
@@ -120,7 +121,7 @@ func (b *IcingaController) checkIcingaAvailability() bool {
 
 func (b *IcingaController) checkPodIPAvailability(podName, namespace string) (bool, error) {
 	log.Debugln("Checking pod IP")
-	pod, err := b.ctx.KubeClient.Core().Pods(namespace).Get(podName)
+	pod, err := b.ctx.KubeClient.CoreV1().Pods(namespace).Get(podName, metav1.GetOptions{})
 	if err != nil {
 		return false, errors.New().WithCause(err).Err()
 	}

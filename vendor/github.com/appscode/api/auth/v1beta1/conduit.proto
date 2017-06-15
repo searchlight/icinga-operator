@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package appscode.auth.v1beta1;
+
+option go_package = "v1beta1";
+
+option java_multiple_files = true;
+option java_outer_classname = "ConduitProto";
+option java_package = "com.appscode.api.auth.v1beta1";
+
+import "google/api/annotations.proto";
+import "appscode/api/annotations.proto";
+import "appscode/api/dtypes/types.proto";
+
+service Conduit {
+  // This rpc is used to check a valid user from other applications.
+  rpc WhoAmI(dtypes.VoidRequest) returns (ConduitWhoAmIResponse) {
+    option (google.api.http) = {
+      get : "/_appscode/api/auth/v1beta1/conduit/whoami/json"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+}
+
+  // appctl used this to validates the user token with phabricator.
+  rpc Users(dtypes.VoidRequest) returns (ConduitUsersResponse) {
+    option (google.api.http) = {
+      get: "/_appscode/api/auth/v1beta1/conduit/users/json"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+}
+
+message ConduitWhoAmIResponse {
+  ConduitUser user = 1;
+}
+
+message ConduitUsersResponse {
+  repeated ConduitUser users = 1;
+}
+
+message ConduitUser {
+  string phid = 1;
+  string user_name = 2;
+  string real_name = 3;
+  string image = 4;
+  string uri = 5;
+  repeated string roles = 6;
+  string primary_email = 7;
+  Preferences preferences = 8;
+  bool is_bot = 9;
+  bool is_disabled = 10;
+  bool is_admin = 11;
+  bool is_email_verified = 12;
+  bool is_approved = 13;
+  bool is_mailing_list = 14;
+}
+
+message Preferences {
+  string time_zone = 1;
+  string time_format = 2;
+  string date_formate = 3;
+}

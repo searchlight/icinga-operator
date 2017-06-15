@@ -1,0 +1,62 @@
+{
+  "definitions": {
+    "v1beta1CertificateDeleteRequest": {
+      "properties": {
+        "uid": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1CertificateDeployRequest": {
+      "properties": {
+        "cluster_name": {
+          "maxLength": 63,
+          "pattern": "^[a-z0-9](?:[a-z0-9\\-]{0,61}[a-z0-9])?$",
+          "type": "string"
+        },
+        "namespace": {
+          "maxLength": 63,
+          "pattern": "^[a-z0-9](?:[a-z0-9\\-]{0,61}[a-z0-9])?$",
+          "type": "string"
+        },
+        "secret_name": {
+          "maxLength": 63,
+          "pattern": "^[a-z0-9](?:[a-z0-9\\-]{0,61}[a-z0-9])?$",
+          "type": "string"
+        },
+        "uid": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1CertificateDescribeRequest": {
+      "properties": {
+        "uid": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1CertificateListRequest": {
+      "type": "object"
+    },
+    "v1beta1CertificateLoadRequest": {
+      "properties": {
+        "cert_data": {
+          "type": "string"
+        },
+        "key_data": {
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 63,
+          "pattern": "^[a-z0-9](?:[a-z0-9\\-]{0,61}[a-z0-9])?$",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  }
+}

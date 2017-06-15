@@ -1,0 +1,27 @@
+# Configurations for APIEndpoints. APIServer will
+# act on individual methods upon the configurations
+# provided.
+
+type: "InterceptorConfig"
+validationInterceptor:
+  order: 1
+  noValidation:
+    - "/appscode.health.Health/Status"
+authenticationInterceptor:
+  order: 2
+  unauthenticatedEndpoint:
+    - "/appscode.health.Health/Status"
+    - "/appscode.auth.v1beta1.Authentication/Login"
+    - "/appscode.kubernetes.v1beta1.Clusters/StartupConfig"
+    - "/appscode.kubernetes.v1beta1.Clusters/InstanceByIP"
+    - "/appscode.mailinglist.v1beta1.MailingList/SendEmail"
+    - "/appscode.mailinglist.v1beta1.MailingList/Subscribe"
+    - "/appscode.mailinglist.v1beta1.MailingList/Unsubscribe"
+    - "/appscode.namespace.v1beta1.Teams/Create"
+    - "/appscode.namespace.v1beta1.Teams/Get"
+    - "/appscode.namespace.v1beta1.Teams/IsAvailable"
+    - "/appscode.namespace.v1beta1.Billing/ClientToken"
+  namespaceAdminAuthenticatedEndpoint:
+    - "/appscode.ci.v1beta1.Agents/Create"
+    - "/appscode.ci.v1beta1.Agents/Delete"
+    - "/appscode.namespace.v1beta1.Billing/Subscribe"

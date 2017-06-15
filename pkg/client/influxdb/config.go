@@ -9,6 +9,7 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	influxdb "github.com/influxdata/influxdb/client"
 	ini "github.com/vaughan0/go-ini"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
@@ -36,7 +37,7 @@ func GetInfluxDBSecretData(secretName, namespace string) (*AuthInfo, error) {
 		return nil, err
 	}
 
-	secret, err := kubeClient.Client.Core().Secrets(namespace).Get(secretName)
+	secret, err := kubeClient.Client.CoreV1().Secrets(namespace).Get(secretName, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}

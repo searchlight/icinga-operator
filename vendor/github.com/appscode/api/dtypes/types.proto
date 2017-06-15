@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package appscode.dtypes;
+
+option go_package = "dtypes";
+
+option java_multiple_files = true;
+option java_outer_classname = "TypeProto";
+option java_package = "com.appscode.api.dtypes";
+
+// Basic Error details message to send in response. Application specific
+// error messages can be provided.
+message ErrorDetails {
+    string cause = 1;
+    message StackTrace {
+        repeated string frames = 1;
+    }
+    StackTrace stack_trace = 2;
+}
+
+// Types for long running operation. usually called as jobs.
+// Next Id = 3
+message LongRunningResponse {
+    string operation_phid = 1;
+}
+
+// Void Requests and response to use with other types.
+message VoidRequest{}
+
+message VoidResponse {
+}
+
+// Response/Output only
+message Uid {
+    string phid = 1;
+    string name = 2;
+}

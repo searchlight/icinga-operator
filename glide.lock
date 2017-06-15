@@ -1,5 +1,5 @@
 hash: cbcc856eba9ca14cee8194fc5b3ef9695cc3f119fa60d7104dcf455cccd87747
-updated: 2017-06-15T06:41:05.387090474-07:00
+updated: 2017-06-15T07:19:11.37293211-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -390,6 +390,7 @@ imports:
   - kubernetes/typed/settings/v1alpha1
   - kubernetes/typed/storage/v1
   - kubernetes/typed/storage/v1beta1
+  - listers/extensions/v1beta1
   - pkg/api
   - pkg/api/install
   - pkg/api/v1

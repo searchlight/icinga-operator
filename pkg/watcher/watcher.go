@@ -15,12 +15,12 @@ import (
 	"github.com/appscode/searchlight/pkg/stash"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientset "k8s.io/client-go/kubernetes"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 	"k8s.io/client-go/tools/cache"
-	"k8s.io/kubernetes/pkg/fields"
 )
 
 type Watcher struct {
@@ -68,7 +68,7 @@ func (w *Watcher) setup() {
 func (w *Watcher) ensureThirdPartyResource() error {
 	resourceName := "alert" + "." + aci.V1alpha1SchemeGroupVersion.Group
 
-	_, err := w.KubeClient.Extensions().ThirdPartyResources().Get(resourceName)
+	_, err := w.KubeClient.ExtensionsV1beta1().ThirdPartyResources().Get(resourceName, metav1.GetOptions{})
 	if !kerr.IsNotFound(err) {
 		return err
 	}
@@ -104,12 +104,12 @@ func (w *Watcher) Dispatch(e *events.Event) error {
 	return nil
 }
 
-func (w *Watcher) Cache(resource events.ObjectType, object runtime.Object, lw *cache.ListWatch) (cache.Store, *cache.Controller) {
+func (w *Watcher) Cache(resource events.ObjectType, object runtime.Object, lw *cache.ListWatch) (cache.Store, cache.Controller) {
 	var listWatch *cache.ListWatch
 	if lw != nil {
 		listWatch = lw
 	} else {
-		listWatch = cache.NewListWatchFromClient(w.KubeClient.Core().RESTClient(), resource.String(), apiv1.NamespaceAll, fields.Everything())
+		listWatch = cache.NewListWatchFromClient(w.KubeClient.CoreV1().RESTClient(), resource.String(), apiv1.NamespaceAll, fields.Everything())
 	}
 
 	return cache.NewInformer(
@@ -120,9 +120,9 @@ func (w *Watcher) Cache(resource events.ObjectType, object runtime.Object, lw *c
 	)
 }
 
-func (w *Watcher) CacheStore(resource events.ObjectType, object runtime.Object, lw *cache.ListWatch) (cache.Store, *cache.Controller) {
+func (w *Watcher) CacheStore(resource events.ObjectType, object runtime.Object, lw *cache.ListWatch) (cache.Store, cache.Controller) {
 	if lw == nil {
-		lw = cache.NewListWatchFromClient(w.KubeClient.Core().RESTClient(), resource.String(), apiv1.NamespaceAll, fields.Everything())
+		lw = cache.NewListWatchFromClient(w.KubeClient.CoreV1().RESTClient(), resource.String(), apiv1.NamespaceAll, fields.Everything())
 	}
 
 	return stash.NewInformerPopulated(
@@ -133,9 +133,9 @@ func (w *Watcher) CacheStore(resource events.ObjectType, object runtime.Object, 
 	)
 }
 
-func (w *Watcher) CacheIndexer(resource events.ObjectType, object runtime.Object, lw *cache.ListWatch, indexers cache.Indexers) (cache.Indexer, *cache.Controller) {
+func (w *Watcher) CacheIndexer(resource events.ObjectType, object runtime.Object, lw *cache.ListWatch, indexers cache.Indexers) (cache.Indexer, cache.Controller) {
 	if lw == nil {
-		lw = cache.NewListWatchFromClient(w.KubeClient.Core().RESTClient(), resource.String(), apiv1.NamespaceAll, fields.Everything())
+		lw = cache.NewListWatchFromClient(w.KubeClient.CoreV1().RESTClient(), resource.String(), apiv1.NamespaceAll, fields.Everything())
 	}
 	if indexers == nil {
 		indexers = cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}

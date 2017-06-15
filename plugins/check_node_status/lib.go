@@ -9,6 +9,7 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
 	"github.com/spf13/cobra"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
@@ -22,7 +23,7 @@ func CheckNodeStatus(req *Request) (util.IcingaState, interface{}) {
 		return util.Unknown, err
 	}
 
-	node, err := kubeClient.Client.Core().Nodes().Get(req.Name)
+	node, err := kubeClient.Client.CoreV1().Nodes().Get(req.Name, metav1.GetOptions{})
 	if err != nil {
 		return util.Unknown, err
 	}

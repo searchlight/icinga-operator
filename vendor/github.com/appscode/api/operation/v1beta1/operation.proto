@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package appscode.operation.v1beta1;
+
+option go_package = "v1beta1";
+
+option java_multiple_files = true;
+option java_outer_classname = "OperationProto";
+option java_package = "com.appscode.api.operation.v1beta1";
+
+import "google/api/annotations.proto";
+import "appscode/api/annotations.proto";
+import "appscode/api/kubernetes/v1beta1/cluster.proto";
+import "appscode/api/namespace/v1beta1/team.proto";
+
+service Operations {
+  rpc Describe(DescribeRequest) returns (DescribeResponse) {
+    option (google.api.http) = {
+      get: "/_appscode/api/operation/v1beta1/operations/{phid}/json"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+  rpc DescribeLog(LogDescribeRequest) returns (LogDescribeResponse) {
+    option (google.api.http) = {
+      get: "/_appscode/api/operation/v1beta1/operations/{phid}/logs/{log_id}/json"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+}
+
+message Log {
+  string id = 1;
+  int64 timestamp = 2;
+  string message = 3;
+}
+
+message DescribeRequest {
+  string phid = 1;
+  int64 timestamp = 2;
+}
+
+message DescribeResponse {
+  Operation op = 1;
+  repeated Log logs = 2;
+}
+
+message LogDescribeRequest {
+  string phid = 1;
+  string log_id = 2;
+}
+
+message LogDescribeResponse {
+  Log log = 1;
+}
+
+message Auth {
+  string namespace = 1;
+  string username = 2;
+  string secret = 3;
+  string auth_type = 4;
+}
+
+// Metadata holds other on request or operation specific data
+// that could be used inside that operation.
+// An welldefined message instead of a map is used
+// so that the data fields can be explicitly defined with
+// its own data type. Resolves data convertions.
+message Metadata {
+  // Contains PurchasePHID is this is a purchase request.
+  repeated string purchase_phids = 1;
+
+  // PHID of the user who requested this operation.
+  string author_phid = 2;
+  string author_name = 3;
+}
+
+// Next Id: 18
+enum OperationType {
+  UNKNOWN = 0;
+  CLUSTER_CREATE = 1;
+  CLUSTER_DELETE = 3;
+  CLUSTER_RECONFIGURE = 4;
+  NAMESPACE_CREATE = 11;
+}
+
+// Next Id: 22
+message Operation {
+  oneof request {
+    kubernetes.v1beta1.ClusterCreateRequest cluster_create_request = 1;
+    kubernetes.v1beta1.ClusterDeleteRequest cluster_delete_request = 3;
+    kubernetes.v1beta1.ClusterReconfigureRequest cluster_reconfigure_request = 4;
+    namespace.v1beta1.CreateRequest namespace_create_request = 11;
+  }
+  OperationType type = 14;
+  string phid = 15;
+  Auth auth = 16;
+  Metadata metadata = 17;
+}

@@ -1,0 +1,10 @@
+jobs:
+  - name: build-binary
+    docker:
+      image: appscode/protoc-agent:3.0.0-beta-4
+    script: |
+      mkdir -p $GOPATH/src/github.com/appscode/api
+      cp -a . $GOPATH/src/github.com/appscode/api
+      cd $GOPATH/src/github.com/appscode/api
+      python ./hack/schema.py deps
+      ./hack/gen.sh

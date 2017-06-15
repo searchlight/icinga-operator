@@ -1,0 +1,196 @@
+{
+  "basePath": "/",
+  "consumes": [
+    "application/json"
+  ],
+  "definitions": {
+    "v1beta1BucketListRequest": {
+      "properties": {
+        "cloud_credential": {
+          "type": "string"
+        },
+        "cluster_uid": {
+          "type": "string"
+        },
+        "gce_project": {
+          "type": "string"
+        },
+        "secret_name": {
+          "type": "string"
+        },
+        "secret_namespace": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1BucketListResponse": {
+      "properties": {
+        "names": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1RegionListRequest": {
+      "properties": {
+        "cloud_credential": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1RegionListResponse": {
+      "properties": {
+        "regions": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1ZoneListRequest": {
+      "properties": {
+        "cloud_credential": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1ZoneListResponse": {
+      "properties": {
+        "zones": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "host": "api.appscode.com",
+  "info": {
+    "title": "metadata.proto",
+    "version": "1beta1"
+  },
+  "paths": {
+    "/_appscode/api/cloud/v1beta1/buckets/json": {
+      "get": {
+        "operationId": "ListBuckets",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "cloud_credential",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "gce_project",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "cluster_uid",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "secret_namespace",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "secret_name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/v1beta1BucketListResponse"
+            }
+          }
+        },
+        "tags": [
+          "Metadata"
+        ]
+      }
+    },
+    "/_appscode/api/cloud/v1beta1/regions/json": {
+      "get": {
+        "operationId": "ListRegions",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "cloud_credential",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/v1beta1RegionListResponse"
+            }
+          }
+        },
+        "tags": [
+          "Metadata"
+        ]
+      }
+    },
+    "/_appscode/api/cloud/v1beta1/regions/{region}/zones/json": {
+      "get": {
+        "operationId": "ListZones",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "region",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "cloud_credential",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ZoneListResponse"
+            }
+          }
+        },
+        "tags": [
+          "Metadata"
+        ]
+      }
+    }
+  },
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "swagger": "2.0"
+}

@@ -231,7 +231,9 @@ func (b *IcingaController) handleIcingaPod() {
 	}
 
 	icingaUp := false
-	alertList, err := b.ctx.ExtClient.Alert(apiv1.NamespaceAll).List(apiv1.ListOptions{LabelSelector: labels.Everything()})
+	alertList, err := b.ctx.ExtClient.Alert(apiv1.NamespaceAll).List(metav1.ListOptions{
+		LabelSelector: labels.Everything().String(),
+	})
 	if err != nil {
 		log.Errorln(err)
 		return
@@ -323,8 +325,8 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 				return errors.New().WithCause(err).Err()
 			}
 
-			alertList, err := b.ctx.ExtClient.Alert(namespace).List(apiv1.ListOptions{
-				LabelSelector: lb,
+			alertList, err := b.ctx.ExtClient.Alert(namespace).List(metav1.ListOptions{
+				LabelSelector: lb.String(),
 			})
 			if err != nil {
 				return errors.New().WithCause(err).Err()
@@ -409,8 +411,8 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 		return nil
 	}
 
-	alertList, err := b.ctx.ExtClient.Alert(apiv1.NamespaceAll).List(apiv1.ListOptions{
-		LabelSelector: lb,
+	alertList, err := b.ctx.ExtClient.Alert(apiv1.NamespaceAll).List(metav1.ListOptions{
+		LabelSelector: lb.String(),
 	})
 	if err != nil {
 		return errors.New().WithCause(err).Err()
@@ -448,7 +450,7 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 func (b *IcingaController) handleService(e *events.Event) error {
 	if e.EventType.IsAdded() {
 		if checkIcingaService(e.MetaData.Name, e.MetaData.Namespace) {
-			service, err := b.ctx.KubeClient.Core().Services(e.MetaData.Namespace).Get(e.MetaData.Name)
+			service, err := b.ctx.KubeClient.CoreV1().Services(e.MetaData.Namespace).Get(e.MetaData.Name, metav1.GetOptions{})
 			if err != nil {
 				return errors.New().WithCause(err).Err()
 			}

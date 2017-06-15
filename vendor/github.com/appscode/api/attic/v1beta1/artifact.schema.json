@@ -1,0 +1,23 @@
+{
+  "definitions": {
+    "v1beta1ArtifactListRequest": {
+      "properties": {
+        "type": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1ArtifactSearchRequest": {
+      "properties": {
+        "query": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  }
+}

@@ -1,0 +1,431 @@
+{
+  "basePath": "/",
+  "consumes": [
+    "application/json"
+  ],
+  "definitions": {
+    "v1beta1Address": {
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "country_code_numeric": {
+          "title": "Ref https://developers.braintreepayments.com/reference/general/countries/ruby",
+          "type": "string"
+        },
+        "extended_address": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "locality": {
+          "type": "string"
+        },
+        "postal_code": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "street_address": {
+          "type": "string"
+        }
+      },
+      "title": "Example\nresult = Braintree::Address.create(\n  :first_name          => 'Jenna',\n  :last_name           => 'Smith',\n  :company             => 'Braintree',\n  :street_address      => '1 E Main St',\n  :extended_address    => 'Suite 403',\n  :locality            => 'Chicago',\n  :region              => 'Illinois',\n  :postal_code         => '60622',\n  :country_code_numeric => '840'\n)",
+      "type": "object"
+    },
+    "v1beta1Auth": {
+      "properties": {
+        "auth_type": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "secret": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1ClusterCreateRequest": {
+      "properties": {
+        "cloud_credential": {
+          "type": "string"
+        },
+        "cloud_credential_data": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "default_access_level": {
+          "title": "Default access level is to allow permission to the cluster\nwhen no Role matched for that specif user or group. This can\nset as\n  - kubernetes:team-admin\n  - kubernetes:cluster-admin\n  - kubernetes:admin\n  - kubernetes:editor\n  - kubernetes:viewer\n  - deny-access\nIf not set this will set \"\"",
+          "type": "string"
+        },
+        "do_not_delete": {
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "gce_project": {
+          "type": "string"
+        },
+        "hostfacts_version": {
+          "type": "string"
+        },
+        "kube_starter_version": {
+          "type": "string"
+        },
+        "kubelet_version": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "node_groups": {
+          "items": {
+            "$ref": "#/definitions/v1beta1InstanceGroup"
+          },
+          "type": "array"
+        },
+        "node_set": {
+          "additionalProperties": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "saltbase_version": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "zone": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1ClusterDeleteRequest": {
+      "properties": {
+        "delete_dynamic_volumes": {
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "force": {
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "keep_lodabalancers": {
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "release_reserved_ip": {
+          "format": "boolean",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1ClusterReconfigureRequest": {
+      "properties": {
+        "apply_to_master": {
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "count": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "hostfacts_version": {
+          "type": "string"
+        },
+        "kube_starter_version": {
+          "type": "string"
+        },
+        "kubelet_version": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "saltbase_version": {
+          "type": "string"
+        },
+        "sku": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1CreateRequest": {
+      "properties": {
+        "billing_address": {
+          "$ref": "#/definitions/v1beta1Address"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "initial_units": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "invite_emails": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "name": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "payment_method_nonce": {
+          "type": "string"
+        },
+        "subscription": {
+          "type": "string"
+        },
+        "user_name": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1DescribeRequest": {
+      "properties": {
+        "phid": {
+          "type": "string"
+        },
+        "timestamp": {
+          "format": "int64",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1DescribeResponse": {
+      "properties": {
+        "logs": {
+          "items": {
+            "$ref": "#/definitions/v1beta1Log"
+          },
+          "type": "array"
+        },
+        "op": {
+          "$ref": "#/definitions/v1beta1Operation"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1InstanceGroup": {
+      "properties": {
+        "count": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "sku": {
+          "type": "string"
+        },
+        "use_spot_instances": {
+          "format": "boolean",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1Log": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "timestamp": {
+          "format": "int64",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1LogDescribeRequest": {
+      "properties": {
+        "log_id": {
+          "type": "string"
+        },
+        "phid": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1LogDescribeResponse": {
+      "properties": {
+        "log": {
+          "$ref": "#/definitions/v1beta1Log"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1Metadata": {
+      "description": "Metadata holds other on request or operation specific data\nthat could be used inside that operation.\nAn welldefined message instead of a map is used\nso that the data fields can be explicitly defined with\nits own data type. Resolves data convertions.",
+      "properties": {
+        "author_name": {
+          "type": "string"
+        },
+        "author_phid": {
+          "description": "PHID of the user who requested this operation.",
+          "type": "string"
+        },
+        "purchase_phids": {
+          "description": "Contains PurchasePHID is this is a purchase request.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1Operation": {
+      "properties": {
+        "auth": {
+          "$ref": "#/definitions/v1beta1Auth"
+        },
+        "cluster_create_request": {
+          "$ref": "#/definitions/v1beta1ClusterCreateRequest"
+        },
+        "cluster_delete_request": {
+          "$ref": "#/definitions/v1beta1ClusterDeleteRequest"
+        },
+        "cluster_reconfigure_request": {
+          "$ref": "#/definitions/v1beta1ClusterReconfigureRequest"
+        },
+        "metadata": {
+          "$ref": "#/definitions/v1beta1Metadata"
+        },
+        "namespace_create_request": {
+          "$ref": "#/definitions/v1beta1CreateRequest"
+        },
+        "phid": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/v1beta1OperationType"
+        }
+      },
+      "title": "Next Id: 22",
+      "type": "object"
+    },
+    "v1beta1OperationType": {
+      "default": "UNKNOWN",
+      "enum": [
+        "UNKNOWN",
+        "CLUSTER_CREATE",
+        "CLUSTER_DELETE",
+        "CLUSTER_RECONFIGURE",
+        "NAMESPACE_CREATE"
+      ],
+      "title": "Next Id: 18",
+      "type": "string"
+    }
+  },
+  "host": "api.appscode.com",
+  "info": {
+    "title": "operation.proto",
+    "version": "1beta1"
+  },
+  "paths": {
+    "/_appscode/api/operation/v1beta1/operations/{phid}/json": {
+      "get": {
+        "operationId": "Describe",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "phid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "format": "int64",
+            "in": "query",
+            "name": "timestamp",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/v1beta1DescribeResponse"
+            }
+          }
+        },
+        "tags": [
+          "Operations"
+        ]
+      }
+    },
+    "/_appscode/api/operation/v1beta1/operations/{phid}/logs/{log_id}/json": {
+      "get": {
+        "operationId": "DescribeLog",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "phid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "log_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/v1beta1LogDescribeResponse"
+            }
+          }
+        },
+        "tags": [
+          "Operations"
+        ]
+      }
+    }
+  },
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "swagger": "2.0"
+}

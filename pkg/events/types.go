@@ -7,6 +7,7 @@ import (
 
 	"github.com/appscode/log"
 	aci "github.com/appscode/searchlight/api"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 	apps "k8s.io/client-go/pkg/apis/apps/v1beta1"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"

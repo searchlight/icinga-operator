@@ -8,6 +8,7 @@ import (
 	acs "github.com/appscode/searchlight/client/clientset"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	"github.com/appscode/searchlight/pkg/events"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
 	"k8s.io/apimachinery/pkg/util/sets"
@@ -31,38 +32,38 @@ func getLabels(client clientset.Interface, namespace, objectType, objectName str
 	label := labels.NewSelector()
 	labelsMap := make(map[string]string, 0)
 	if objectType == TypeServices {
-		service, err := client.Core().Services(namespace).Get(objectName)
+		service, err := client.CoreV1().Services(namespace).Get(objectName, metav1.GetOptions{})
 		if err != nil {
 			return nil, errors.New().WithCause(err).Err()
 		}
 		labelsMap = service.Spec.Selector
 
 	} else if objectType == TypeReplicationcontrollers {
-		rc, err := client.Core().ReplicationControllers(namespace).Get(objectName)
+		rc, err := client.CoreV1().ReplicationControllers(namespace).Get(objectName, metav1.GetOptions{})
 		if err != nil {
 			return nil, errors.New().WithCause(err).Err()
 		}
 		labelsMap = rc.Spec.Selector
 	} else if objectType == TypeDaemonsets {
-		daemonSet, err := client.Extensions().DaemonSets(namespace).Get(objectName)
+		daemonSet, err := client.ExtensionsV1beta1().DaemonSets(namespace).Get(objectName, metav1.GetOptions{})
 		if err != nil {
 			return nil, errors.New().WithCause(err).Err()
 		}
 		labelsMap = daemonSet.Spec.Selector.MatchLabels
 	} else if objectType == TypeReplicasets {
-		replicaSet, err := client.Extensions().ReplicaSets(namespace).Get(objectName)
+		replicaSet, err := client.ExtensionsV1beta1().ReplicaSets(namespace).Get(objectName, metav1.GetOptions{})
 		if err != nil {
 			return nil, errors.New().WithCause(err).Err()
 		}
 		labelsMap = replicaSet.Spec.Selector.MatchLabels
 	} else if objectType == TypeStatefulSet {
-		statefulSet, err := client.Apps().StatefulSets(namespace).Get(objectName)
+		statefulSet, err := client.Apps().StatefulSets(namespace).Get(objectName, metav1.GetOptions{})
 		if err != nil {
 			return nil, errors.New().WithCause(err).Err()
 		}
 		labelsMap = statefulSet.Spec.Selector.MatchLabels
 	} else if objectType == TypeDeployments {
-		deployment, err := client.Extensions().Deployments(namespace).Get(objectName)
+		deployment, err := client.ExtensionsV1beta1().Deployments(namespace).Get(objectName, metav1.GetOptions{})
 		if err != nil {
 			return nil, errors.New().WithCause(err).Err()
 		}
@@ -91,7 +92,7 @@ func GetPodList(client clientset.Interface, namespace, objectType, objectName st
 		return nil, errors.New().WithCause(err).Err()
 	}
 
-	pods, err := client.Core().Pods(namespace).List(apiv1.ListOptions{LabelSelector: label})
+	pods, err := client.CoreV1().Pods(namespace).List(metav1.ListOptions{LabelSelector: label.String()})
 	if err != nil {
 		return nil, errors.New().WithCause(err).Err()
 	}
@@ -105,7 +106,7 @@ func GetPodList(client clientset.Interface, namespace, objectType, objectName st
 
 func GetPod(client clientset.Interface, namespace, objectType, objectName, podName string) ([]*KubeObjectInfo, error) {
 	var podList []*KubeObjectInfo
-	pod, err := client.Core().Pods(namespace).Get(podName)
+	pod, err := client.CoreV1().Pods(namespace).Get(podName, metav1.GetOptions{})
 	if err != nil {
 		return nil, errors.New().WithCause(err).Err()
 	}
@@ -115,7 +116,7 @@ func GetPod(client clientset.Interface, namespace, objectType, objectName, podNa
 
 func GetNodeList(client clientset.Interface, alertNamespace string) ([]*KubeObjectInfo, error) {
 	var nodeList []*KubeObjectInfo
-	nodes, err := client.Core().Nodes().List(apiv1.ListOptions{LabelSelector: labels.Everything()})
+	nodes, err := client.CoreV1().Nodes().List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
 	if err != nil {
 		return nodeList, errors.New().WithCause(err).Err()
 	}
@@ -135,7 +136,7 @@ func GetNodeList(client clientset.Interface, alertNamespace string) ([]*KubeObje
 func GetNode(client clientset.Interface, nodeName, alertNamespace string) ([]*KubeObjectInfo, error) {
 	var nodeList []*KubeObjectInfo
 	node := &apiv1.Node{}
-	node, err := client.Core().Nodes().Get(nodeName)
+	node, err := client.CoreV1().Nodes().Get(nodeName, metav1.GetOptions{})
 	if err != nil {
 		return nodeList, errors.New().WithCause(err).Err()
 	}
@@ -153,7 +154,7 @@ func GetNode(client clientset.Interface, nodeName, alertNamespace string) ([]*Ku
 func GetAlertList(acExtClient acs.ExtensionInterface, kubeClient clientset.Interface, namespace string, ls labels.Selector) ([]aci.Alert, error) {
 	alerts := make([]aci.Alert, 0)
 	if namespace != "" {
-		alertList, err := acExtClient.Alert(namespace).List(apiv1.ListOptions{LabelSelector: ls})
+		alertList, err := acExtClient.Alert(namespace).List(metav1.ListOptions{LabelSelector: ls.String()})
 		if err != nil {
 			return nil, errors.New().WithCause(err).Err()
 		}
@@ -161,7 +162,7 @@ func GetAlertList(acExtClient acs.ExtensionInterface, kubeClient clientset.Inter
 			alerts = append(alerts, alertList.Items...)
 		}
 	} else {
-		alertList, err := acExtClient.Alert(apiv1.NamespaceAll).List(apiv1.ListOptions{LabelSelector: ls})
+		alertList, err := acExtClient.Alert(apiv1.NamespaceAll).List(metav1.ListOptions{LabelSelector: ls.String()})
 		if err != nil {
 			return nil, errors.New().WithCause(err).Err()
 		}

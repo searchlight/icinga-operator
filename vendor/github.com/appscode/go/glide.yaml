@@ -1,0 +1,17 @@
+package: github.com/appscode/go
+import:
+- package: github.com/cenkalti/backoff
+  version: v1.0.0
+- package: github.com/codeskyblue/go-sh
+  version: master
+- package: github.com/flosch/pongo2
+  version: master
+- package: github.com/ghodss/yaml
+- package: github.com/google/go-querystring
+- package: github.com/mikespook/golib
+- package: github.com/spf13/cobra
+- package: github.com/spf13/pflag
+- package: golang.org/x/crypto
+testImport:
+- package: github.com/stretchr/testify
+  version: v1.1.4

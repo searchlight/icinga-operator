@@ -7,8 +7,8 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
 	"github.com/spf13/cobra"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
-	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
 type Request struct {
@@ -21,11 +21,9 @@ func CheckNodeCount(req *Request) (util.IcingaState, interface{}) {
 		return util.Unknown, err
 	}
 
-	nodeList, err := kubeClient.Client.Core().
-		Nodes().List(
-		apiv1.ListOptions{
-			LabelSelector: labels.Everything(),
-		},
+	nodeList, err := kubeClient.Client.CoreV1().Nodes().List(metav1.ListOptions{
+		LabelSelector: labels.Everything().String(),
+	},
 	)
 	if err != nil {
 		return util.Unknown, err

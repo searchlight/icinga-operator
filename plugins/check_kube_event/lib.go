@@ -9,8 +9,10 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
 	"github.com/spf13/cobra"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/fields"
+	"k8s.io/client-go/pkg/api"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
-	"k8s.io/kubernetes/pkg/fields"
 )
 
 type eventInfo struct {
@@ -34,14 +36,13 @@ func CheckKubeEvent(req *Request) (util.IcingaState, interface{}) {
 	}
 
 	eventInfoList := make([]*eventInfo, 0)
-	field := fields.OneTermEqualSelector(apiv1.EventTypeField, apiv1.EventTypeWarning)
+	field := fields.OneTermEqualSelector(api.EventTypeField, apiv1.EventTypeWarning)
 
 	checkTime := time.Now().Add(-(req.CheckInterval + req.ClockSkew))
 
-	eventList, err := kubeClient.Client.Core().Events(apiv1.NamespaceAll).List(
-		apiv1.ListOptions{
-			FieldSelector: field,
-		},
+	eventList, err := kubeClient.Client.CoreV1().Events(apiv1.NamespaceAll).List(metav1.ListOptions{
+		FieldSelector: field.String(),
+	},
 	)
 	if err != nil {
 		return util.Unknown, err

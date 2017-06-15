@@ -10,8 +10,8 @@ import (
 	"github.com/appscode/searchlight/pkg/controller/host"
 	"github.com/appscode/searchlight/util"
 	"github.com/spf13/cobra"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
-	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
 type Request struct {
@@ -40,7 +40,7 @@ func CheckPodExists(req *Request, isCountSet bool) (util.IcingaState, interface{
 
 	total_pod := 0
 	if req.ObjectType == host.TypePods {
-		pod, err := kubeClient.Client.Core().Pods(req.Namespace).Get(req.ObjectName)
+		pod, err := kubeClient.Client.CoreV1().Pods(req.Namespace).Get(req.ObjectName, metav1.GetOptions{})
 		if err != nil {
 			return util.Unknown, err
 		}
@@ -55,11 +55,9 @@ func CheckPodExists(req *Request, isCountSet bool) (util.IcingaState, interface{
 			}
 		}
 
-		podList, err := kubeClient.Client.Core().
-			Pods(req.Namespace).List(
-			apiv1.ListOptions{
-				LabelSelector: labelSelector,
-			},
+		podList, err := kubeClient.Client.CoreV1().Pods(req.Namespace).List(metav1.ListOptions{
+			LabelSelector: labelSelector.String(),
+		},
 		)
 		if err != nil {
 			return util.Unknown, err

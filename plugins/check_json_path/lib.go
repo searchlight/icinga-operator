@@ -14,6 +14,7 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/util"
 	"github.com/spf13/cobra"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
 )
 
@@ -55,7 +56,7 @@ func getData(req *Request) (string, error) {
 		name := req.Secret
 		namespace := req.Namespace
 
-		secret, err := kubeClient.Client.Core().Secrets(namespace).Get(name)
+		secret, err := kubeClient.Client.CoreV1().Secrets(namespace).Get(name, metav1.GetOptions{})
 		if err != nil {
 			return "", err
 		}

@@ -1,0 +1,294 @@
+syntax = "proto3";
+
+package appscode.kubernetes.v1beta1;
+
+option go_package = "v1beta1";
+
+option java_multiple_files = true;
+option java_outer_classname = "ClusterProto";
+option java_package = "com.appscode.api.kubernetes.v1beta1";
+
+import "google/api/annotations.proto";
+import "appscode/api/annotations.proto";
+import "appscode/api/dtypes/types.proto";
+
+service Clusters {
+  rpc List(ClusterListRequest) returns (ClusterListResponse) {
+    option (google.api.http) = {
+      get : "/_appscode/api/kubernetes/v1beta1/clusters/json"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+
+  rpc Describe(ClusterDescribeRequest) returns (ClusterDescribeResponse) {
+    option (google.api.http) = {
+      get : "/_appscode/api/kubernetes/v1beta1/clusters/{uid}/json"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+
+  rpc Create(ClusterCreateRequest) returns (dtypes.LongRunningResponse) {
+    option (google.api.http) = {
+      post: "/_appscode/api/kubernetes/v1beta1/clusters/json"
+      body: "*"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+
+  rpc Update(ClusterUpdateRequest) returns (dtypes.VoidResponse) {
+    option (google.api.http) = {
+      put: "/_appscode/api/kubernetes/v1beta1/clusters/{name}/json"
+      body: "*"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+
+  rpc Reconfigure(ClusterReconfigureRequest) returns (dtypes.LongRunningResponse) {
+    option (google.api.http) = {
+       put: "/_appscode/api/kubernetes/v1beta1/clusters/{name}/actions/reconfigure/json"
+       body: "*"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+
+  rpc Delete(ClusterDeleteRequest) returns (dtypes.LongRunningResponse) {
+    option (google.api.http) = {
+      delete : "/_appscode/api/kubernetes/v1beta1/clusters/{name}/json"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+
+  rpc ClientConfig(ClusterClientConfigRequest) returns (ClusterClientConfigResponse) {
+    option (google.api.http) = {
+      get : "/_appscode/api/kubernetes/v1beta1/clusters/{name}/client-config/json"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+
+  rpc StartupConfig(ClusterStartupConfigRequest) returns (ClusterStartupConfigResponse) {
+    option (google.api.http) = {
+      get : "/_appscode/api/kubernetes/v1beta1/clusters/{uid}/startup-config/{role}/context-versions/{context_version}/json"
+      additional_bindings {
+        get : "/_appscode/api/kubernetes/v1beta1/clusters/{uid}/startup-config/{role}/context-versions/{context_version}"
+      }
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+
+  rpc InstanceByIP(ClusterInstanceByIPRequest) returns (ClusterInstanceByIPResponse) {
+    option (google.api.http) = {
+      get : "/_appscode/api/kubernetes/v1beta1/clusters/{phid}/instance-by-ip/{external_ip}/json"
+      additional_bindings {
+        get : "/_appscode/api/kubernetes/v1beta1/clusters/{phid}/instance-by-ip/{external_ip}"
+      }
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+}
+
+message ClusterSettings {
+  string log_index_prefix = 1;
+  // Number of secs logs will be stored in ElasticSearch
+  int64 log_storage_lifetime = 2;
+  // Number of secs logs will be stored in InfluxDB
+  int64 monitoring_storage_lifetime = 3;
+}
+
+message Cluster {
+  string phid = 1;
+  string name = 2;
+  string provider = 3;
+  string os = 4;
+  string region = 5;
+  string zone = 6;
+  int64 created_at = 7;
+  map<string, string> links = 8;
+  bool do_not_delete = 9;
+  string status = 10;
+  string status_cause = 11;
+  string gce_project = 12;
+  string kubelet_version = 13;
+  string saltbase_version = 14;
+  string kube_starter_version = 15;
+
+  int32 node_count = 16;
+  string api_server_url = 17;
+  string kube_user = 18;
+  string kube_password = 19;
+  string ca_cert = 20;
+  string kube_bearer_token = 21;
+
+  ClusterSettings settings = 22;
+
+  string instance_root_password = 23;
+  string version = 24;
+  string sku = 25;
+  string created_by = 26;
+  string default_access_level = 27;
+}
+
+message ClusterDescribeRequest {
+  string uid = 1;
+}
+
+message ClusterDescribeResponse {
+  Cluster cluster = 1;
+
+  message ClusterSpec {
+    int32 container_count = 1;
+    int32 pod_count = 2;
+    int32 service_count = 3;
+    int32 rc_count = 4;
+
+    int64 total_cpu = 5;
+    int64 total_memory = 6;
+  }
+  ClusterSpec spec = 2;
+  string operation_phid = 3;
+}
+
+message ClusterListRequest {
+  repeated string status = 1;
+}
+
+message ClusterListResponse {
+  repeated Cluster clusters = 1;
+}
+
+message InstanceGroup {
+  string sku = 1;
+  int64 count = 2;
+  bool use_spot_instances = 3;
+}
+
+message ClusterCreateRequest {
+  string name = 1;
+  string provider = 2;
+  string zone = 3;
+  string cloud_credential = 4;
+  map<string, string> cloud_credential_data = 5;
+  map<string, int64> node_set = 6 [deprecated = true];
+  repeated InstanceGroup node_groups = 14;
+  string saltbase_version = 7;
+  string kube_starter_version = 8;
+  string kubelet_version = 9;
+  bool do_not_delete = 10;
+  string hostfacts_version = 11;
+  string version = 12;
+  // Default access level is to allow permission to the cluster
+  // when no Role matched for that specif user or group. This can
+  // set as
+  //   - kubernetes:team-admin
+  //   - kubernetes:cluster-admin
+  //   - kubernetes:admin
+  //   - kubernetes:editor
+  //   - kubernetes:viewer
+  //   - deny-access
+  // If not set this will set ""
+  string default_access_level = 13;
+  string gce_project = 15;
+}
+
+message ClusterDeleteRequest {
+  string name = 1;
+  bool release_reserved_ip = 2;
+  bool force = 3;
+  bool keep_lodabalancers = 4;
+  bool delete_dynamic_volumes = 5;
+}
+
+message ClusterStartupConfigRequest {
+  string uid = 1;
+  string role = 2;
+  int64 context_version = 3;
+}
+
+message ClusterStartupConfigResponse {
+  string configuration = 1;
+  string sku = 2;
+}
+
+message ClusterInstanceByIPRequest {
+  string phid = 1;
+  string external_ip = 2;
+}
+
+message ClusterInstanceByIPResponse {
+  ClusterInstance instance = 1;
+}
+
+message ClusterClientConfigRequest {
+  string name = 1;
+}
+
+message ClusterClientConfigResponse {
+  string cluster_domain = 1;
+  string ca_cert = 2;
+  string api_server_url = 3;
+  string cluster_user_name = 4;
+  string user_cert = 5;
+  string user_key = 6;
+  string context_name = 7;
+  string user_token = 8;
+  string password = 9;
+}
+
+message ClusterClientContainerRequest {
+  string name = 1;
+  string disk_name = 2;
+}
+
+message ClusterInstance {
+  string phid = 1;
+  string external_id = 2;
+  string name = 3;
+  string external_ip = 4;
+  string internal_ip = 5;
+  string sku = 6;
+}
+
+message ClusterUpdateRequest {
+  string name = 1;
+  bool do_not_delete = 2;
+  ClusterSettings settings = 3;
+  // Default access level is to allow permission to the cluster
+  // when no Role matched for that specif user or group. This can
+  // set as
+  //   - kubernetes:team-admin
+  //   - kubernetes:cluster-admin
+  //   - kubernetes:admin
+  //   - kubernetes:editor
+  //   - kubernetes:viewer
+  //   - deny-access
+  string default_access_level = 4;
+}
+
+message ClusterReconfigureRequest {
+  string name = 1;
+  bool apply_to_master = 2;
+  string sku = 3;
+  int64 count = 4;
+  string version = 5;
+  string saltbase_version = 6;
+  string kube_starter_version = 7;
+  string kubelet_version = 8;
+  string hostfacts_version = 9;
+}

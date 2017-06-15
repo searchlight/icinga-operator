@@ -1,0 +1,23 @@
+{
+  "definitions": {
+    "v1beta1SSHGetRequest": {
+      "properties": {
+        "cluster_name": {
+          "maxLength": 63,
+          "pattern": "^[a-z0-9](?:[a-z0-9\\-]{0,61}[a-z0-9])?$",
+          "type": "string"
+        },
+        "instance_name": {
+          "type": "string"
+        },
+        "namespace": {
+          "maxLength": 63,
+          "pattern": "^[a-z0-9](?:[a-z0-9\\-]{0,61}[a-z0-9])?$",
+          "type": "string"
+        }
+      },
+      "title": "Use specific requests for protos",
+      "type": "object"
+    }
+  }
+}

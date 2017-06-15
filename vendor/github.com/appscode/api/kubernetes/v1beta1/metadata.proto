@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package appscode.kubernetes.v1beta1;
+
+option go_package = "v1beta1";
+
+option java_multiple_files = true;
+option java_outer_classname = "MetadataProto";
+option java_package = "com.appscode.api.kubernetes.v1beta1";
+
+import "google/api/annotations.proto";
+import "appscode/api/annotations.proto";
+
+service Metadata {
+  rpc ListRegions(RegionListRequest) returns (RegionListResponse) {
+    option (google.api.http) = {
+      get : "/_appscode/api/cloud/v1beta1/regions/json"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+
+  rpc ListZones(ZoneListRequest) returns (ZoneListResponse) {
+    option (google.api.http) = {
+      get : "/_appscode/api/cloud/v1beta1/regions/{region}/zones/json"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+
+  rpc ListBuckets(BucketListRequest) returns (BucketListResponse) {
+    option (google.api.http) = {
+      get: "/_appscode/api/cloud/v1beta1/buckets/json"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+}
+
+message RegionListRequest {
+  string cloud_credential = 1; // name or phid
+}
+
+message RegionListResponse {
+  repeated string regions = 1;
+}
+
+message ZoneListRequest {
+  string cloud_credential = 1; // name or phid
+  string region = 2;
+}
+
+message ZoneListResponse {
+  repeated string zones = 1;
+}
+
+message BucketListRequest {
+  string cloud_credential = 1; // name or phid
+  string gce_project = 2;
+  string cluster_uid = 3;
+  string secret_namespace = 4;
+  string secret_name = 5;
+}
+
+message BucketListResponse {
+  repeated string names = 1;
+}

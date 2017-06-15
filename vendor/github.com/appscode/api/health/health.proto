@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package appscode.health;
+
+option go_package = "health";
+
+option java_multiple_files = true;
+option java_outer_classname = "HealthProto";
+option java_package = "com.appscode.api.health";
+
+import "google/api/annotations.proto";
+import "appscode/api/annotations.proto";
+import "appscode/api/dtypes/types.proto";
+import "appscode/api/version/version.proto";
+
+service Health {
+  rpc Status(dtypes.VoidRequest) returns (StatusResponse) {
+    option (google.api.http) = {
+      get : "/_appscode/api/health/json"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+}
+
+message StatusResponse {
+  version.Version version = 1;
+  Metadata metadata = 2;
+}
+
+message URLBase {
+  string scheme = 1;
+  string base_addr = 2;
+}
+
+message NetConfig {
+  string team_addr = 1;
+  URLBase public_urls = 2;
+  URLBase team_urls = 3;
+  URLBase cluster_urls = 4;
+  URLBase in_cluster_urls = 5;
+  URLBase URL_shortener_urls = 6;
+  URLBase file_urls = 7;
+}
+
+message Metadata {
+  string env = 1;
+  string team_id = 2;
+  NetConfig net_config = 3;
+}

@@ -1,0 +1,365 @@
+{
+  "basePath": "/",
+  "consumes": [
+    "application/json"
+  ],
+  "definitions": {
+    "IncidentEvent": {
+      "properties": {
+        "comment": {
+          "type": "string"
+        },
+        "reported_at": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "state": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/dtypesUid"
+        }
+      },
+      "type": "object"
+    },
+    "dtypesUid": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "phid": {
+          "type": "string"
+        }
+      },
+      "title": "Response/Output only",
+      "type": "object"
+    },
+    "dtypesVoidResponse": {
+      "type": "object"
+    },
+    "v1beta1Incident": {
+      "properties": {
+        "acknowledged_at": {
+          "format": "int64",
+          "title": "Timestamp of first acknowledgement",
+          "type": "integer"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/definitions/IncidentEvent"
+          },
+          "type": "array"
+        },
+        "icinga_host": {
+          "type": "string"
+        },
+        "icinga_service": {
+          "type": "string"
+        },
+        "icingaweb_url": {
+          "type": "string"
+        },
+        "kubernetes_alert_name": {
+          "type": "string"
+        },
+        "kubernetes_cluster": {
+          "$ref": "#/definitions/dtypesUid"
+        },
+        "kubernetes_namespace": {
+          "type": "string"
+        },
+        "kubernetes_object_name": {
+          "type": "string"
+        },
+        "kubernetes_object_type": {
+          "type": "string"
+        },
+        "phid": {
+          "type": "string"
+        },
+        "recovered_at": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "reported_at": {
+          "format": "int64",
+          "title": "Timestamp of first reported event",
+          "type": "integer"
+        },
+        "state": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/dtypesUid"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1IncidentDescribeRequest": {
+      "properties": {
+        "phid": {
+          "type": "string"
+        }
+      },
+      "title": "Next Id: 2",
+      "type": "object"
+    },
+    "v1beta1IncidentDescribeResponse": {
+      "properties": {
+        "incident": {
+          "$ref": "#/definitions/v1beta1Incident"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1IncidentEventCreateRequest": {
+      "properties": {
+        "acknowledge": {
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "comment": {
+          "type": "string"
+        },
+        "phid": {
+          "title": "Incident PHID",
+          "type": "string"
+        }
+      },
+      "title": "Next Id: 4",
+      "type": "object"
+    },
+    "v1beta1IncidentListRequest": {
+      "properties": {
+        "kubernetes_cluster": {
+          "type": "string"
+        },
+        "kubernetes_namespace": {
+          "type": "string"
+        },
+        "kubernetes_object_name": {
+          "type": "string"
+        },
+        "kubernetes_object_type": {
+          "type": "string"
+        },
+        "states": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "title": "Next Id: 6",
+      "type": "object"
+    },
+    "v1beta1IncidentListResponse": {
+      "properties": {
+        "incidents": {
+          "items": {
+            "$ref": "#/definitions/v1beta1Incident"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "v1beta1IncidentNotifyRequest": {
+      "properties": {
+        "alert_phid": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "comment": {
+          "type": "string"
+        },
+        "host_name": {
+          "type": "string"
+        },
+        "kubernetes_alert_name": {
+          "type": "string"
+        },
+        "kubernetes_cluster": {
+          "type": "string"
+        },
+        "output": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "time": {
+          "description": "The time object is used in icinga to send request. This\nindicates detection time from icinga.",
+          "format": "int64",
+          "type": "integer"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "title": "Next Id: 12",
+      "type": "object"
+    }
+  },
+  "host": "api.appscode.com",
+  "info": {
+    "title": "incident.proto",
+    "version": "1beta1"
+  },
+  "paths": {
+    "/_appscode/api/kubernetes/v1beta1/clusters/{kubernetes_cluster}/actions/notify-incident/json": {
+      "post": {
+        "operationId": "Notify",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "kubernetes_cluster",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1beta1IncidentNotifyRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/dtypesVoidResponse"
+            }
+          }
+        },
+        "tags": [
+          "Incidents"
+        ]
+      }
+    },
+    "/_appscode/api/kubernetes/v1beta1/incidents/json": {
+      "get": {
+        "operationId": "List",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "kubernetes_cluster",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "kubernetes_namespace",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "kubernetes_object_type",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "kubernetes_object_name",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "states",
+            "required": false,
+            "type": "array"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/v1beta1IncidentListResponse"
+            }
+          }
+        },
+        "tags": [
+          "Incidents"
+        ]
+      }
+    },
+    "/_appscode/api/kubernetes/v1beta1/incidents/{phid}/events/json": {
+      "post": {
+        "operationId": "CreateEvent",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "phid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1beta1IncidentEventCreateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/dtypesVoidResponse"
+            }
+          }
+        },
+        "tags": [
+          "Incidents"
+        ]
+      }
+    },
+    "/_appscode/api/kubernetes/v1beta1/incidents/{phid}/json": {
+      "get": {
+        "operationId": "Describe",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "phid",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/v1beta1IncidentDescribeResponse"
+            }
+          }
+        },
+        "tags": [
+          "Incidents"
+        ]
+      }
+    }
+  },
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "swagger": "2.0"
+}

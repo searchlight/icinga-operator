@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+package appscode.namespace.v1beta1;
+
+option go_package = "v1beta1";
+
+option java_multiple_files = true;
+option java_outer_classname = "TeamProto";
+option java_package = "com.appscode.api.namespace.v1beta1";
+
+import "google/api/annotations.proto";
+import "appscode/api/annotations.proto";
+import "appscode/api/dtypes/types.proto";
+
+// no authentication required, but rate limited apis.
+service Teams {
+  // Creates a new namespace, if name is valid and no namespace with same name exists.
+  rpc Create(CreateRequest) returns (dtypes.VoidResponse) {
+    option (google.api.http) = {
+    post: "/_appscode/api/namespace/v1beta1/teams/json"
+      body: "*"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+
+  // Gets a namespace, if exists. This can be used to check existence of a namespace.
+  rpc Get(GetRequest) returns (GetResponse) {
+    option (google.api.http) = {
+      get: "/_appscode/api/namespace/v1beta1/teams/{name}/json"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+
+  // Check if a namespace name is available meaning name is valid and no namespace with same name exists.
+  rpc IsAvailable(IsAvailableRequest) returns (dtypes.VoidResponse) {
+    option (google.api.http) = {
+      get : "/_appscode/api/namespace/v1beta1/teams/{name}/is-available/json"
+    };
+    option (appscode.api.cors) = {
+      enable: true
+    };
+  }
+}
+
+message CreateRequest {
+  string name = 1;
+  string display_name = 2;
+  string email = 3;
+  string user_name = 4;
+  string password = 5;
+  repeated string invite_emails = 6;
+  string subscription = 7;
+  int64 initial_units = 8;
+  string payment_method_nonce = 9;
+  Address billing_address = 10;
+}
+
+message GetRequest {
+  string name = 1;
+}
+
+message GetResponse {
+  string phid = 1;
+}
+
+message IsAvailableRequest {
+  string name = 1;
+}
+
+// Example
+// result = Braintree::Address.create(
+//   :first_name          => 'Jenna',
+//   :last_name           => 'Smith',
+//   :company             => 'Braintree',
+//   :street_address      => '1 E Main St',
+//   :extended_address    => 'Suite 403',
+//   :locality            => 'Chicago',
+//   :region              => 'Illinois',
+//   :postal_code         => '60622',
+//   :country_code_numeric => '840'
+// )
+message Address {
+    string first_name = 1;
+    string last_name = 2;
+    string company = 3;
+    string street_address = 4;
+    string extended_address = 5;
+    string locality = 6;
+    string region = 7;
+    string postal_code = 8;
+    // Ref https://developers.braintreepayments.com/reference/general/countries/ruby
+    string country_code_numeric = 9;
+}
