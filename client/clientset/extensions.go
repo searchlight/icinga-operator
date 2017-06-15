@@ -3,7 +3,7 @@ package clientset
 import (
 	"fmt"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/pkg/api"
 	"k8s.io/client-go/rest"
 )
@@ -26,8 +26,8 @@ type ExtensionClient struct {
 
 var _ ExtensionInterface = &ExtensionClient{}
 
-func (a *ExtensionClient) Alert(namespace string) AlertInterface {
-	return newAlert(a, namespace)
+func (c *ExtensionClient) Alert(namespace string) AlertInterface {
+	return newAlert(c, namespace)
 }
 
 // NewForConfig creates a new ExtensionClient for the given config. This client
@@ -64,12 +64,12 @@ func New(c rest.Interface) *ExtensionClient {
 }
 
 func setExtensionsDefaults(config *rest.Config) error {
-	gv, err := metav1.ParseGroupVersion("monitoring.appscode.com/v1alpha1")
+	gv, err := schema.ParseGroupVersion("monitoring.appscode.com/v1alpha1")
 	if err != nil {
 		return err
 	}
 	// if monitoring.appscode.com/v1alpha1 is not enabled, return an error
-	if !api.IsEnabledVersion(gv) {
+	if !api.Registry.IsEnabledVersion(gv) {
 		return fmt.Errorf("monitoring.appscode.com/v1alpha1 is not enabled")
 	}
 	config.APIPath = defaultAPIPath
@@ -78,7 +78,7 @@ func setExtensionsDefaults(config *rest.Config) error {
 	}
 
 	if config.GroupVersion == nil || config.GroupVersion.Group != "monitoring.appscode.com" {
-		g, err := api.Group("monitoring.appscode.com")
+		g, err := api.Registry.Group("monitoring.appscode.com")
 		if err != nil {
 			return err
 		}

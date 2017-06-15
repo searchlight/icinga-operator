@@ -1,5 +1,5 @@
 hash: cbcc856eba9ca14cee8194fc5b3ef9695cc3f119fa60d7104dcf455cccd87747
-updated: 2017-06-15T04:53:46.288893921-07:00
+updated: 2017-06-15T06:32:18.814669959-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -31,6 +31,7 @@ imports:
   version: 5eabd32a8a0fe824b5e12c37dc53a0afea8507c9
   subpackages:
   - crypto/rand
+  - encoding/json/types
   - env
   - flags
   - io
@@ -183,6 +184,7 @@ imports:
 - name: github.com/k8sdb/apimachinery
   version: bcd2da9ca0416e20b6305129a6eb6cfb808b69a3
   subpackages:
+  - api
   - pkg/docker
 - name: github.com/kelseyhightower/envconfig
   version: 9aca109c9aec4633fced9717c4a09ecab3d33111
@@ -475,7 +477,6 @@ imports:
   subpackages:
   - pkg/api
   - pkg/api/install
-  - pkg/api/meta
   - pkg/api/unversioned
   - pkg/api/v1
   - pkg/apis/apps
@@ -554,13 +555,11 @@ imports:
   - pkg/kubelet/types
   - pkg/labels
   - pkg/master/ports
-  - pkg/runtime/serializer/json
   - pkg/util
   - pkg/util/exec
   - pkg/util/interrupt
   - pkg/util/parsers
   - pkg/util/term
-  - pkg/watch/versioned
 testImports:
 - name: github.com/pmezard/go-difflib
   version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
