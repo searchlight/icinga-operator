@@ -12,7 +12,6 @@ import (
 	"github.com/appscode/searchlight/pkg/analytics"
 	"github.com/appscode/searchlight/pkg/client/icinga"
 	acw "github.com/appscode/searchlight/pkg/watcher"
-	"github.com/k8sdb/apimachinery/pkg/docker"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 	clientset "k8s.io/client-go/kubernetes"
@@ -88,7 +87,7 @@ func run() {
 	if enableAnalytics {
 		analytics.Enable()
 	}
-	analytics.SendEvent(docker.ImageOperator, "started", Version)
+	analytics.SendEvent("", "started", Version)
 
 	http.Handle("/metrics", promhttp.Handler())
 	log.Infoln("Listening on", address)
