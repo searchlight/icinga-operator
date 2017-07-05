@@ -19,7 +19,7 @@ ICINGA_IDO_USER=icingaido
 ICINGA_IDO_PASSWORD=$(cat /dev/urandom | base64 | tr -d "=+/" | dd bs=16 count=1 2> /dev/null)
 ICINGA_API_USER=icingaapi
 ICINGA_API_PASSWORD=$(cat /dev/urandom | base64 | tr -d "=+/" | dd bs=16 count=1 2> /dev/null)
-ICINGA_ADDRESS=searchlight.kube-system
+ICINGA_ADDRESS=searchlight-operator.kube-system
 EOF
 
 
