@@ -1,3 +1,42 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: searchlight-operator
+  namespace: kube-system
+  labels:
+    app: searchlight
+type: Opaque
+data:
+  .env: $ICINGA_SECRET_ENV
+  ca.crt: $ICINGA_CA_CERT
+  icinga.key: $ICINGA_SERVER_KEY
+  icinga.crt: $ICINGA_SERVER_CERT
+  notify_via: $NOTIFY_VIA
+  hipchat_auth_token: $HIPCHAT_AUTH_TOKEN
+  hipchat_to: $HIPCHAT_TO
+  mailgun_domain: $MAILGUN_DOMAIN
+  mailgun_api_key: $MAILGUN_API_KEY
+  mailgun_public_api_key: $MAILGUN_PUBLIC_API_KEY
+  mailgun_from: $MAILGUN_FROM
+  mailgun_to: $MAILGUN_TO
+  smtp_host: $SMTP_HOST
+  smtp_port: $SMTP_PORT
+  smtp_insecure_skip_verify: $SMTP_INSECURE_SKIP_VERIFY
+  smtp_username: $SMTP_USERNAME
+  smtp_password: $SMTP_PASSWORD
+  smtp_from: $SMTP_FROM
+  smtp_to: $SMTP_TO
+  twilio_account_sid: $TWILIO_ACCOUNT_SID
+  twilio_auth_token: $TWILIO_AUTH_TOKEN
+  twilio_from: $TWILIO_FROM
+  twilio_to: $TWILIO_TO
+  slack_auth_token: $SLACK_AUTH_TOKEN
+  slack_channel: $SLACK_CHANNEL
+  plivo_auth_id: $PLIVO_AUTH_ID
+  plivo_auth_token: $PLIVO_AUTH_TOKEN
+  plivo_from: $PLIVO_FROM
+  plivo_to: $PLIVO_TO
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -62,3 +101,24 @@ spec:
         - name: icingaconfig
           secret:
             secretName: searchlight-operator
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: searchlight-operator
+  namespace: kube-system
+  labels:
+    app: searchlight
+spec:
+  ports:
+  - name: web
+    port: 80
+    targetPort: web
+  - name: api
+    port: 5665
+    targetPort: api
+  - name: http
+    port: 56790
+    targetPort: web
+  selector:
+    app: searchlight
