@@ -7,9 +7,6 @@ metadata:
     app: searchlight
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app: searchlight
   template:
     metadata:
       labels:
