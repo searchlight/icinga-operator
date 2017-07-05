@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: searchlight
+  name: searchlight-operator
   namespace: kube-system
   labels:
     app: searchlight

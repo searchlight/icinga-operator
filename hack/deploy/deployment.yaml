@@ -1,26 +1,26 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: searchlight-icinga
+  name: searchlight-operator
   namespace: kube-system
   labels:
-    app: searchlight-icinga
+    app: searchlight
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: searchlight-icinga
+      app: searchlight
   template:
     metadata:
       labels:
-        app: searchlight-icinga
+        app: searchlight
     spec:
       containers:
       - name: operator
         image: appscode/searchlight:1.5.9
         args:
         - run
-        - --icinga-secret-name=searchlight-icinga
+        - --icinga-secret-name=searchlight-operator
         - --icinga-secret-namespace=kube-system
         - --v=3
         ports:
@@ -41,7 +41,7 @@ spec:
             mountPath: /var/pv
           - name: script-volume
             mountPath: /var/db-script
-          - name: searchlight-icinga
+          - name: icingaconfig
             mountPath: /srv/icinga2/secrets
       - image: appscode/postgres:9.5-v3-db
         name: ido
@@ -62,6 +62,6 @@ spec:
           emptyDir: {}
         - name: script-volume
           emptyDir: {}
-        - name: searchlight-icinga
+        - name: icingaconfig
           secret:
-            secretName: searchlight-icinga
+            secretName: searchlight-operator
