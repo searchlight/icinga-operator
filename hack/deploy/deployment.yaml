@@ -16,6 +16,17 @@ spec:
         app: searchlight-icinga
     spec:
       containers:
+      - name: operator
+        image: appscode/searchlight:1.5.9
+        args:
+        - run
+        - --icinga-secret-name=searchlight-icinga
+        - --icinga-secret-namespace=kube-system
+        - --v=3
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP     
       - image: appscode/icinga:1.5.9-k8s
         name: icinga
         ports:
