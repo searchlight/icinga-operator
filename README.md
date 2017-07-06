@@ -50,18 +50,14 @@ Searchlight can send alert notification via following notifiers:
 5. [Slack](docs/notifier/slack.md)
 6. [Plivo](docs/notifier/plivo.md)
 
-## User Guide
+## Supported Versions
+Kubernetes 1.5+
 
-To deploy Searchlight in Kubernetes cluster, follow this [guide](docs/deployment-guide.md).
-This guide will walk you through following three steps:
+## Installation
+To install Searchlight, please follow the guide [here](/docs/install.md).
 
-1. Creating Third Party Resource
-2. Deploying Icinga2
-3. Deploying Searchlight Controller
-
-## Architectural Design
-
-If you want to know how Searchlight Controller is working, read this [doc](docs/design/controller.md).
+## Using Searchlight
+Want to learn how to use Searchlight? Please start [here](/docs/alert.md).
 
 ## Contribution guidelines
 Want to help improve Searchlight? Please start [here](/CONTRIBUTING.md).

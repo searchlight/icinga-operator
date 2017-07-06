@@ -6,6 +6,9 @@ We have a [Developer Guide](/docs/developer-guide/README.md) that outlines every
 dev environment to how to build and test Searchlight. If you find something undocumented or incorrect along the way,
 please feel free to send a Pull Request.
 
+## Design Docs
+If you want to know how Searchlight translates Alert TPRs into Icinga parlance, read the [design doc](docs/design/README.md).
+
 ## Getting Help
 If you have a question about Searchlight or having problem using it, you can contact us on our public Slack channel. Follow [this link](https://slack.appscode.com) to get invitation to our Slack channel.
 
