@@ -2,7 +2,7 @@
 
 # searchlight
 
-<img src="cover.jpg">
+<img src="/cover.jpg">
 
 Searchlight is an Alert Management project.
 It has a Controller to watch Kubernetes Objects. Alert objects are consumed by Searchlight Controller to create Icinga2 hosts, services and notifications.
