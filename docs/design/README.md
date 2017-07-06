@@ -1,13 +1,36 @@
-# Architecture
+# Searchlight Design
 
 This guide will walk you through the architectural design of Searchlight Controller.
 
 ## Searchlight Controller
 
-Searchlight Controller collects all information from a watcher.
-This Watcher watches all Kubernetes objects.
+Searchlight Controller collects all information via a watcher. Searchlight Watcher watches following Kubernetes objects:
 
-See details [here](watcher.md).
+* Service
+* StatefulSet
+* DaemonSet
+* ReplicaSet
+* ReplicationController
+* Pod
+* Alert
+* Node
+
+Events on following objects are detected by Searchlight Controller:
+
+* [Alert](../alert.md) (The Third Party Resource)
+* Pod
+* Node
+* Service
+
+Other objects are watched only to find ancestors of pods.
+
+Keep in Mind:
+
+1. When Searchlight Controller starts or restarts, it starts with empty cache.
+2. Watcher starts watching and caching all Kubernetes objects.
+3. Controller detects all objects of Kubernetes type Alert, Pod, Node and Service.
+4. And finally all alerts are reassigned.
+
 
 Controller detects following ResourceEventType:
 
