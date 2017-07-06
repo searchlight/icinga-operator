@@ -90,10 +90,11 @@ how we can improve it. To disable stats collection, run the operator with the fl
 
 ---
 
+## Acknowledgement
+ - Many thanks to [Icinga](https://www.icinga.com/) project.
+
 ## Support
 If you have any questions, you can reach out to us.
-
 * [Slack](https://slack.appscode.com)
-* [Forum](https://discuss.appscode.com)
 * [Twitter](https://twitter.com/AppsCodeHQ)
 * [Website](https://appscode.com)
