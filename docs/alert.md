@@ -72,15 +72,15 @@ This object will do the followings:
 
 We currently supports following CheckCommands:
 
-* [component_status](check-command/component_status.md) - To check Kubernetes components.
-* [influx_query](check-command/influx_query.md) - To check InfluxDB query result.
-* [json_path](check-command/json_path.md) - To check any API response by parsing JSON using JQ queries.
-* [node_count](check-command/node_count.md) - To check total number of Kubernetes node.
-* [node_status](check-command/node_status.md) - To check Kubernetes Node status.
-* [pod_exists](check-command/pod_exists.md) - To check Kubernetes pod existence.
-* [pod_status](check-command/pod_status.md) - To check Kubernetes pod status.
-* [prometheus_metric](check-command/prometheus_metric.md) - To check Prometheus query result.
-* [node_disk](check-command/node_disk.md) - To check Node Disk stat.
-* [volume](check-command/volume.md) - To check Pod volume stat.
-* [kube_event](check-command/kube_event.md) - To check Kubernetes events for all Warning TYPE happened in last 'c' seconds.
-* [kube_exec](check-command/kube_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
+* [component_status](check_component_status.md) - To check Kubernetes components.
+* [influx_query](check_influx_query.md) - To check InfluxDB query result.
+* [json_path](check_json_path.md) - To check any API response by parsing JSON using JQ queries.
+* [node_count](check_node_count.md) - To check total number of Kubernetes node.
+* [node_status](check_node_status.md) - To check Kubernetes Node status.
+* [pod_exists](check_pod_exists.md) - To check Kubernetes pod existence.
+* [pod_status](check_pod_status.md) - To check Kubernetes pod status.
+* [prometheus_metric](check_prometheus_metric.md) - To check Prometheus query result.
+* [node_disk](check_node_disk.md) - To check Node Disk stat.
+* [volume](check_volume.md) - To check Pod volume stat.
+* [kube_event](check_kube_event.md) - To check Kubernetes events for all Warning TYPE happened in last 'c' seconds.
+* [kube_exec](check_kube_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL

@@ -25,18 +25,18 @@ Searchlight supports additional custom plugins. Followings are currently added
 
 | Check Command                                                           | Plugin                  | Details                                                                                       |
 | :---                                                                    | :---                    | :---                                                                                          |
-| [component_status](docs/check-command/component_status.md)   | check_component_status  | To check Kubernetes components                                                                |
-| [influx_query](docs/check-command/influx_query.md)           | check_influx_query      | To check InfluxDB query result                                                                |
-| [json_path](docs/check-command/json_path.md)                 | check_json_path         | To check any API response by parsing JSON using JQ queries                                    |
-| [node_count](docs/check-command/node_count.md)               | check_node_count        | To check total number of Kubernetes node                                                      |
-| [node_status](docs/check-command/node_status.md)             | check_node_status       | To check Kubernetes Node status                                                               |
-| [pod_exists](docs/check-command/pod_exists.md)               | check_pod_exists        | To check Kubernetes pod existence                                                             |
-| [pod_status](docs/check-command/pod_status.md)               | check_pod_status        | To check Kubernetes pod status                                                                |
-| [prometheus_metric](docs/check-command/prometheus_metric.md) | check_prometheus_metric | To check Prometheus query result                                                              |
-| [node_disk](docs/check-command/node_disk.md)                 | check_node_disk         | To check Node Disk stat                                                                       |
-| [volume](docs/check-command/volume.md)                       | check_volume            | To check Pod volume stat                                                                      |
-| [kube_event](docs/check-command/kube_event.md)               | check_kube_event        | To check all Kubernetes Warning events happened in last `c` seconds                           |
-| [kube_exec](docs/check-command/kube_exec.md)                 | check_kube_exec         | To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL|
+| [component_status](docs/check_component_status.md)   | check_component_status  | To check Kubernetes components                                                                |
+| [influx_query](docs/check_influx_query.md)           | check_influx_query      | To check InfluxDB query result                                                                |
+| [json_path](docs/check_json_path.md)                 | check_json_path         | To check any API response by parsing JSON using JQ queries                                    |
+| [node_count](docs/check_node_count.md)               | check_node_count        | To check total number of Kubernetes node                                                      |
+| [node_status](docs/check_node_status.md)             | check_node_status       | To check Kubernetes Node status                                                               |
+| [pod_exists](docs/check_pod_exists.md)               | check_pod_exists        | To check Kubernetes pod existence                                                             |
+| [pod_status](docs/check_pod_status.md)               | check_pod_status        | To check Kubernetes pod status                                                                |
+| [prometheus_metric](docs/check_prometheus_metric.md) | check_prometheus_metric | To check Prometheus query result                                                              |
+| [node_disk](docs/check_node_disk.md)                 | check_node_disk         | To check Node Disk stat                                                                       |
+| [volume](docs/check_volume.md)                       | check_volume            | To check Pod volume stat                                                                      |
+| [kube_event](docs/check_kube_event.md)               | check_kube_event        | To check all Kubernetes Warning events happened in last `c` seconds                           |
+| [kube_exec](docs/check_kube_exec.md)                 | check_kube_exec         | To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL|
 
 > Note: All of these plugins are combined into a single plugin called `hyperalert`
 
