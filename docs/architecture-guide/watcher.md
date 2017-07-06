@@ -13,7 +13,7 @@ Searchlight Watcher watches following Kubernetes objects:
 
 Events on following objects are detected by Searchlight Controller:
 
-* [Alert](../user-guide/alert-object.md) (The Third Party Resource)
+* [Alert](../alert.md) (The Third Party Resource)
 * Pod
 * Node
 * Service

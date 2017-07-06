@@ -18,7 +18,7 @@ icinga:
   tag: 1.5.9-k8s
 
 ## Icinga configaration
-## https://github.com/appscode/searchlight/blob/master/docs/user-guide/icinga2/deployment.md#create-deployment
+## https://github.com/appscode/searchlight/blob/master/docs/icinga2/deployment.md#create-deployment
 ##
 
   env: |-
@@ -37,7 +37,7 @@ icinga:
     ICINGA_API_PASSWORD=12345678
 
 ## user must provide caCrt, icingaKey, icingaCrt
-## Details https://github.com/appscode/searchlight/blob/master/docs/user-guide/icinga2/certificate.md
+## Details https://github.com/appscode/searchlight/blob/master/docs/icinga2/certificate.md
 ##
 
 # caCrt:
@@ -45,19 +45,19 @@ icinga:
 # icingaCrt:
 
 ##
-## Add notifyVia example: https://github.com/appscode/searchlight/blob/master/docs/user-guide/notifier/mailgun.md#configure
+## Add notifyVia example: https://github.com/appscode/searchlight/blob/master/docs/notifier/mailgun.md#configure
 
 # notifyVia:
 
 ## Hipchat notifier
-## ref https://github.com/appscode/searchlight/blob/master/docs/user-guide/notifier/hipchat.md#set-environment-variables
+## ref https://github.com/appscode/searchlight/blob/master/docs/notifier/hipchat.md#set-environment-variables
 ##
 
 # hipchatAuthToken:
 # hipchatTo:
 
 ## Mailgun notifier
-## ref: https://github.com/appscode/searchlight/blob/master/docs/user-guide/notifier/mailgun.md#configure
+## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/mailgun.md#configure
 ##
 
 # mailgunDomain:
@@ -67,7 +67,7 @@ icinga:
 # mailgunTo:
 
 ## SMTP notifier
-## ref: https://github.com/appscode/searchlight/blob/master/docs/user-guide/notifier/smtp.md#configure
+## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/smtp.md#configure
 ##
 
 # smtpHost:
@@ -79,7 +79,7 @@ icinga:
 # smtpTo:
 
 ## Twilio notifier
-## ref: https://github.com/appscode/searchlight/blob/master/docs/user-guide/notifier/twilio.md
+## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/twilio.md
 ##
 
 # twilioAccountSid:
@@ -88,14 +88,14 @@ icinga:
 # twilioTo:
 
 ## Slack notifier.
-## ref: https://github.com/appscode/searchlight/blob/master/docs/user-guide/notifier/slack.md
+## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/slack.md
 ##
 
 # slackAuthToken:
 # slackChannel:
 
 ## Plivo notifier
-## ref: https://github.com/appscode/searchlight/blob/master/docs/user-guide/notifier/plivo.md
+## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/plivo.md
 ##
 
 # plivoAuthId:

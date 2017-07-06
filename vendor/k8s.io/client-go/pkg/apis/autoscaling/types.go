@@ -53,7 +53,7 @@ type ScaleStatus struct {
 	// label query over pods that should match the replicas count. This is same
 	// as the label selector but in the string format to avoid introspection
 	// by clients. The string will be in the same format as the query-param syntax.
-	// More info: http://kubernetes.io/docs/user-guide/labels#label-selectors
+	// More info: http://kubernetes.io/docs/labels#label-selectors
 	// +optional
 	Selector string
 }
@@ -62,7 +62,7 @@ type ScaleStatus struct {
 type CrossVersionObjectReference struct {
 	// Kind of the referent; More info: http://releases.k8s.io/HEAD/docs/devel/api-conventions.md#types-kinds"
 	Kind string
-	// Name of the referent; More info: http://kubernetes.io/docs/user-guide/identifiers#names
+	// Name of the referent; More info: http://kubernetes.io/docs/identifiers#names
 	Name string
 	// API version of the referent
 	// +optional
