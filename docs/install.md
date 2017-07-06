@@ -12,7 +12,7 @@ This guide will walk you through deploying the Searchlight which includes Icinga
 
 #### Create the Third Party Resource
 
-The `Searchlight` is driven by [Kubernetes Alert Objects](alert-object.md). `Alert` is not a core Kubernetes kind, but can be enabled with following Third Party Resource.
+The `Searchlight` is driven by [Kubernetes Alert Objects](alert.md). `Alert` is not a core Kubernetes kind, but can be enabled with following Third Party Resource.
 ```yaml
 # Third Party Resource `Alert`
 metadata:
@@ -44,7 +44,7 @@ curl https://raw.githubusercontent.com/appscode/searchlight/1.5.9/hack/deploy/ic
 
 #### Deploy Searchlight Controller
 
-Searchlight Controller is used to communicate with Icinga2 API. To set an alert, create [Kubernetes Alert Objects](alert-object.md) with relevant information. Controller will consume that alert object.
+Searchlight Controller is used to communicate with Icinga2 API. To set an alert, create [Kubernetes Alert Objects](alert.md) with relevant information. Controller will consume that alert object.
  
 ```sh
 # Create Deployment
