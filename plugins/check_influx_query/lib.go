@@ -221,7 +221,7 @@ func NewCmd() *cobra.Command {
 	}
 
 	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
-	c.Flags().StringVar(&req.Host, "influx_host",  "", "URL of InfluxDB host to query")
+	c.Flags().StringVar(&req.Host, "influx_host", "", "URL of InfluxDB host to query")
 	c.Flags().StringVarP(&req.Secret, "secret", "s", "", `Kubernetes secret name`)
 	c.Flags().StringVar(&req.A, "A", "", "InfluxDB query A")
 	c.Flags().StringVar(&req.B, "B", "", "InfluxDB query B")

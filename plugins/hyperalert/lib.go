@@ -18,8 +18,8 @@ import (
 
 func NewCmd() *cobra.Command {
 	c := &cobra.Command{
-		Use:     "hyperalert",
-		Short:   "AppsCode Icinga2 plugin",
+		Use:   "hyperalert",
+		Short: "AppsCode Icinga2 plugin",
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Help()
 		},
