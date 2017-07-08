@@ -19,13 +19,13 @@ func (b *IcingaController) Delete(specificObject ...string) error {
 	}
 
 	alertSpec := b.ctx.Resource.Spec
-	command, found := b.ctx.IcingaData[alertSpec.CheckCommand]
+	command, found := b.ctx.IcingaData[alertSpec.Check]
 	if !found {
-		return errors.Newf("check_command [%s] not found", alertSpec.CheckCommand).Err()
+		return errors.Newf("check_command [%s] not found", alertSpec.Check).Err()
 	}
 	hostType, found := command.HostType[b.ctx.ObjectType]
 	if !found {
-		return errors.Newf("check_command [%s] is not applicable to %s", alertSpec.CheckCommand, b.ctx.ObjectType).Err()
+		return errors.Newf("check_command [%s] is not applicable to %s", alertSpec.Check, b.ctx.ObjectType).Err()
 	}
 	p := extpoints.IcingaHostTypes.Lookup(hostType)
 	if p == nil {

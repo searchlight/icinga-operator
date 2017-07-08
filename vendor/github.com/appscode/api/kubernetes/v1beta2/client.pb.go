@@ -5563,9 +5563,9 @@ func (m *Alert) GetStatus() *Alert_AlertStatus {
 }
 
 type Alert_AlertSpec struct {
-	IcingaParam    *Alert_AlertSpec_IcingaParam     `protobuf:"bytes,1,opt,name=icinga_param,json=icingaParam" json:"icinga_param,omitempty"`
-	CheckCommand   string                           `protobuf:"bytes,2,opt,name=check_command,json=checkCommand" json:"check_command,omitempty"`
-	NotifierParams []*Alert_AlertSpec_NotifierParam `protobuf:"bytes,3,rep,name=notifier_params,json=notifierParams" json:"notifier_params,omitempty"`
+	IcingaParam    *Alert_AlertSpec_IcingaParam     `protobuf:"bytes,1,opt,name=icinga_param,json=intervals" json:"icinga_param,omitempty"`
+	CheckCommand   string                           `protobuf:"bytes,2,opt,name=check_command,json=check" json:"check_command,omitempty"`
+	NotifierParams []*Alert_AlertSpec_NotifierParam `protobuf:"bytes,3,rep,name=notifier_params,json=receivers" json:"notifier_params,omitempty"`
 	Vars           map[string]string                `protobuf:"bytes,4,rep,name=vars" json:"vars,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 }
 
@@ -5603,8 +5603,8 @@ func (m *Alert_AlertSpec) GetVars() map[string]string {
 }
 
 type Alert_AlertSpec_IcingaParam struct {
-	CheckIntervalSec int64 `protobuf:"varint,1,opt,name=check_interval_sec,json=checkIntervalSec" json:"check_interval_sec,omitempty"`
-	AlertIntervalSec int64 `protobuf:"varint,2,opt,name=alert_interval_sec,json=alertIntervalSec" json:"alert_interval_sec,omitempty"`
+	checkInterval int64 `protobuf:"varint,1,opt,name=check_interval_sec,json=checkInterval" json:"check_interval_sec,omitempty"`
+	alertInterval int64 `protobuf:"varint,2,opt,name=alert_interval_sec,json=alertInterval" json:"alert_interval_sec,omitempty"`
 }
 
 func (m *Alert_AlertSpec_IcingaParam) Reset()         { *m = Alert_AlertSpec_IcingaParam{} }
@@ -5614,16 +5614,16 @@ func (*Alert_AlertSpec_IcingaParam) Descriptor() ([]byte, []int) {
 	return fileDescriptor0, []int{43, 0, 1}
 }
 
-func (m *Alert_AlertSpec_IcingaParam) GetCheckIntervalSec() int64 {
+func (m *Alert_AlertSpec_IcingaParam) GetcheckInterval() int64 {
 	if m != nil {
-		return m.CheckIntervalSec
+		return m.checkInterval
 	}
 	return 0
 }
 
-func (m *Alert_AlertSpec_IcingaParam) GetAlertIntervalSec() int64 {
+func (m *Alert_AlertSpec_IcingaParam) GetalertInterval() int64 {
 	if m != nil {
-		return m.AlertIntervalSec
+		return m.alertInterval
 	}
 	return 0
 }

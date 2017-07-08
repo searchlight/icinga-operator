@@ -49,8 +49,8 @@ metadata:
 spec:
   CheckCommand: pod_exists
   IcingaParam:
-    AlertIntervalSec: 120
-    CheckIntervalSec: 60
+    alertInterval: 120
+    checkInterval: 60
   NotifierParams:
   - Method: EMAIL
     State: CRITICAL

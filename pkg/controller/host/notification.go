@@ -15,7 +15,7 @@ func CreateIcingaNotification(icingaClient *icinga.IcingaClient, alert *aci.Aler
 		var obj IcingaObject
 		obj.Templates = []string{"icinga2-notifier-template"}
 		mp := make(map[string]interface{})
-		mp["interval"] = alertSpec.IcingaParam.AlertIntervalSec
+		mp["interval"] = alertSpec.AlertInterval
 		mp["users"] = []string{"appscode_user"}
 		obj.Attrs = mp
 
@@ -45,7 +45,7 @@ func UpdateIcingaNotification(icingaClient *icinga.IcingaClient, alert *aci.Aler
 	for _, object := range objectList {
 		var obj IcingaObject
 		mp := make(map[string]interface{})
-		mp["interval"] = alert.Spec.IcingaParam.AlertIntervalSec
+		mp["interval"] = alert.Spec.AlertInterval
 		obj.Attrs = mp
 		jsonStr, err := json.Marshal(obj)
 		if err != nil {

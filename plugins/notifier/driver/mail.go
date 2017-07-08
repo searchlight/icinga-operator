@@ -63,7 +63,7 @@ func RenderMail(alert *aci.Alert, req *api.IncidentNotifyRequest) (string, error
 		"kubernetesObjectName": objectName,
 		"IcingaHostName":       req.HostName,
 		"IcingaServiceName":    alert.Name,
-		"CheckCommand":         alert.Spec.CheckCommand,
+		"CheckCommand":         alert.Spec.Check,
 		"IcingaType":           req.Type,
 		"IcingaState":          req.State,
 		"IcingaOutput":         req.Output,

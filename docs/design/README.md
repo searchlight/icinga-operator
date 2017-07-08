@@ -84,7 +84,7 @@ Controller detects following ResourceEventType:
 
     Important:
 
-    1. Every checkCommand can be set on selected Kubernetes objects.
+    1. Every check can be set on selected Kubernetes objects.
     2. Controller will automatically create multiple Icinga2 host if necessary.
     3. All informations are provided in [icinga.json](../../data/files/icinga.json).
     4. For any invalid information provided in Alert object, controller will skip to create Icinga2 objects

@@ -88,7 +88,7 @@ func getAlert(namespace string) *aci.Alert {
 	return fakeAlert
 }
 
-func CreateAlert(watcher *watcher.Watcher, namespace string, labelMap map[string]string, checkCommand string) (*aci.Alert, error) {
+func CreateAlert(watcher *watcher.Watcher, namespace string, labelMap map[string]string, check string) (*aci.Alert, error) {
 	// Add Alert ThirdPartyResource
 	if err := createAlertThirdPartyResource(watcher); err != nil {
 		return nil, err
@@ -96,10 +96,8 @@ func CreateAlert(watcher *watcher.Watcher, namespace string, labelMap map[string
 
 	alert := getAlert(namespace)
 	alert.Spec = aci.AlertSpec{
-		CheckCommand: checkCommand,
-		IcingaParam: &aci.IcingaParam{
-			CheckIntervalSec: 30,
-		},
+		Check:         check,
+		CheckInterval: metav1.Duration{Duration: 30 * time.Second},
 	}
 
 	for key, val := range labelMap {

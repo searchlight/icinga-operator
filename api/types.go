@@ -24,20 +24,20 @@ type AlertStatus struct {
 	Reason       string       `json:"reason,omitempty"`
 }
 
-type IcingaParam struct {
+type Intervals struct {
 	// How frequently Icinga Service will be checked
-	CheckIntervalSec int64 `json:"checkIntervalSec,omitempty"`
+	CheckInterval int64 `json:"checkInterval,omitempty"`
 
 	// How frequently notifications will be send
-	AlertIntervalSec int64 `json:"alertIntervalSec,omitempty"`
+	AlertInterval int64 `json:"alertInterval,omitempty"`
 }
 
-type NotifierParam struct {
+type Receiver struct {
 	// For which state notification will be sent
 	State string `json:"state,omitempty"`
 
 	// To whom notification will be sent
-	UserUid string `json:"userUid,omitempty"`
+	UserUID string `json:"userUid,omitempty"`
 
 	// How this notification will be sent
 	Method string `json:"method,omitempty"`

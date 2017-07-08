@@ -37,8 +37,8 @@ metadata:
 spec:
   CheckCommand: component_status
   IcingaParam:
-    AlertIntervalSec: 300
-    CheckIntervalSec: 60
+    alertInterval: 300
+    checkInterval: 60
   NotifierParams:
   - Method: EMAIL
     State: CRITICAL

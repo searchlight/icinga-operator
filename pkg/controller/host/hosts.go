@@ -71,7 +71,7 @@ func DeleteIcingaHost(icingaClient *icinga.IcingaClient, host string) error {
 	return nil
 }
 
-func GetObjectList(kubeClient clientset.Interface, checkCommand, hostType, namespace, objectType, objectName, specificObject string) ([]*KubeObjectInfo, error) {
+func GetObjectList(kubeClient clientset.Interface, check, hostType, namespace, objectType, objectName, specificObject string) ([]*KubeObjectInfo, error) {
 	switch hostType {
 	case HostTypePod:
 		switch objectType {
@@ -101,7 +101,7 @@ func GetObjectList(kubeClient clientset.Interface, checkCommand, hostType, names
 			return nil, errors.New("Invalid object type").Err()
 		}
 	case HostTypeLocalhost:
-		hostName := checkCommand
+		hostName := check
 		if objectType != TypeCluster {
 			hostName = objectType + "|" + objectName
 		}

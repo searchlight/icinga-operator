@@ -41,12 +41,12 @@ func (p *icingaHost) DeleteAlert(ctx *types.Context, specificObject string) erro
 func (b *biblio) create(specificObject string) error {
 	alertSpec := b.Resource.Spec
 
-	if alertSpec.CheckCommand == "" {
+	if alertSpec.Check == "" {
 		return errors.New("Invalid request").Err()
 	}
 
 	// Get Icinga Host Info
-	objectList, err := host.GetObjectList(b.KubeClient, alertSpec.CheckCommand, host.HostTypePod, b.Resource.Namespace, b.ObjectType, b.ObjectName, specificObject)
+	objectList, err := host.GetObjectList(b.KubeClient, alertSpec.Check, host.HostTypePod, b.Resource.Namespace, b.ObjectType, b.ObjectName, specificObject)
 	if err != nil {
 		return errors.New().WithCause(err).Err()
 	}
@@ -97,12 +97,12 @@ func (b *biblio) createIcingaService(objectList []*host.KubeObjectInfo) error {
 	alertSpec := b.Resource.Spec
 
 	mp := make(map[string]interface{})
-	mp["check_command"] = alertSpec.CheckCommand
-	if alertSpec.IcingaParam != nil && alertSpec.IcingaParam.CheckIntervalSec > int64(0) {
-		mp["check_interval"] = alertSpec.IcingaParam.CheckIntervalSec
+	mp["check_command"] = alertSpec.Check
+	if alertSpec.CheckInterval.Seconds() > 0 {
+		mp["check_interval"] = alertSpec.CheckInterval.Seconds()
 	}
 
-	commandVars := b.IcingaData[alertSpec.CheckCommand].VarInfo
+	commandVars := b.IcingaData[alertSpec.Check].VarInfo
 	for key, val := range alertSpec.Vars {
 		if v, found := commandVars[key]; found {
 			if v.Parameterized {
@@ -129,7 +129,7 @@ func (b *biblio) update() error {
 	alertSpec := b.Resource.Spec
 
 	// Get Icinga Host Info
-	objectList, err := host.GetObjectList(b.KubeClient, alertSpec.CheckCommand, host.HostTypePod, b.Resource.Namespace, b.ObjectType, b.ObjectName, "")
+	objectList, err := host.GetObjectList(b.KubeClient, alertSpec.Check, host.HostTypePod, b.Resource.Namespace, b.ObjectType, b.ObjectName, "")
 	if err != nil {
 		return errors.New().WithCause(err).Err()
 	}
@@ -148,11 +148,11 @@ func (b *biblio) updateIcingaService(objectList []*host.KubeObjectInfo) error {
 	alertSpec := b.Resource.Spec
 
 	mp := make(map[string]interface{})
-	if alertSpec.IcingaParam != nil && alertSpec.IcingaParam.CheckIntervalSec > int64(0) {
-		mp["check_interval"] = alertSpec.IcingaParam.CheckIntervalSec
+	if alertSpec.CheckInterval.Seconds() > 0 {
+		mp["check_interval"] = alertSpec.CheckInterval.Seconds()
 	}
 
-	commandVars := b.IcingaData[alertSpec.CheckCommand].VarInfo
+	commandVars := b.IcingaData[alertSpec.Check].VarInfo
 	for key, val := range alertSpec.Vars {
 		if v, found := commandVars[key]; found {
 			if v.Parameterized {
@@ -183,7 +183,7 @@ func (b *biblio) delete(specificObject string) error {
 	} else {
 		// Get Icinga Host Info
 		var err error
-		objectList, err = host.GetObjectList(b.KubeClient, alertSpec.CheckCommand, host.HostTypePod,
+		objectList, err = host.GetObjectList(b.KubeClient, alertSpec.Check, host.HostTypePod,
 			b.Resource.Namespace, b.ObjectType, b.ObjectName, specificObject)
 		if err != nil {
 			return errors.New().WithCause(err).Err()

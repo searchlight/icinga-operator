@@ -37,19 +37,24 @@ type NodeAlertList struct {
 	Items []NodeAlert `json:"items"`
 }
 
+type NodeAlertCheck string
+
 // NodeAlertSpec describes the NodeAlert the user wishes to create.
 type NodeAlertSpec struct {
 	Selector map[string]string `json:"selector,omitempty"`
 
-	// IcingaParam contains parameters for Icinga config
-	IcingaParam *IcingaParam `json:"icingaParam,omitempty"`
-
 	// Icinga CheckCommand name
-	CheckCommand string `json:"checkCommand,omitempty"`
+	Check string `json:"check,omitempty"`
+
+	// How frequently Icinga Service will be checked
+	CheckInterval metav1.Duration `json:"checkInterval,omitempty"`
+
+	// How frequently notifications will be send
+	AlertInterval metav1.Duration `json:"alertInterval,omitempty"`
 
 	// NotifierParams contains information to send notifications for Incident
 	// State, UserUid, Method
-	NotifierParams []NotifierParam `json:"notifierParams,omitempty"`
+	Receivers []Receiver `json:"receivers,omitempty"`
 
 	// Vars contains Icinga Service variables to be used in CheckCommand
 	Vars map[string]interface{} `json:"vars,omitempty"`

@@ -115,14 +115,14 @@ func countIcingaHost(w *watcher.Watcher, objectList []*host.KubeObjectInfo, expe
 
 func GetIcingaHostList(w *watcher.Watcher, alert *aci.Alert) ([]*host.KubeObjectInfo, error) {
 	objectType, objectName := host.GetObjectInfo(alert.Labels)
-	checkCommand := alert.Spec.CheckCommand
+	check := alert.Spec.Check
 
 	// create all alerts for pod_status
-	hostType, err := getIcingaHostType(checkCommand, objectType)
+	hostType, err := getIcingaHostType(check, objectType)
 	if err != nil {
 		return nil, err
 	}
-	objectList, err := host.GetObjectList(w.KubeClient, checkCommand, hostType, alert.Namespace, objectType, objectName, "")
+	objectList, err := host.GetObjectList(w.KubeClient, check, hostType, alert.Namespace, objectType, objectName, "")
 	if err != nil {
 		return nil, err
 	}

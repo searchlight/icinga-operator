@@ -338,7 +338,7 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 				}
 				icingaUp = true
 
-				if command, found := b.ctx.IcingaData[alert.Spec.CheckCommand]; found {
+				if command, found := b.ctx.IcingaData[alert.Spec.Check]; found {
 					if hostType, found := command.HostType[b.ctx.ObjectType]; found {
 						if hostType != host.HostTypePod {
 							continue
@@ -424,7 +424,7 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 		}
 		icingaUp = true
 
-		if command, found := b.ctx.IcingaData[alert.Spec.CheckCommand]; found {
+		if command, found := b.ctx.IcingaData[alert.Spec.Check]; found {
 			if hostType, found := command.HostType[b.ctx.ObjectType]; found {
 				if hostType != host.HostTypeNode {
 					continue

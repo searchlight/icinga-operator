@@ -235,7 +235,7 @@ func CheckAlertConfig(oldConfig, newConfig *aci.Alert) error {
 		return errors.New("Kubernetes ObjectName mismatch")
 	}
 
-	if newConfig.Spec.CheckCommand != oldConfig.Spec.CheckCommand {
+	if newConfig.Spec.Check != oldConfig.Spec.Check {
 		return errors.New("CheckCommand mismatch")
 	}
 

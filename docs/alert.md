@@ -19,8 +19,8 @@ metadata:
 spec:
   CheckCommand: volume
   IcingaParam:
-    CheckIntervalSec: 60
-    AlertIntervalSec: 300
+    checkInterval: 60
+    alertInterval: 300
   Vars:
     name: disk
     warning: 60.0
@@ -45,16 +45,16 @@ This object will do the followings:
 * metadata.name - The name of the Alert object.
 * metadata.namespace - The namespace of the Alert object
 * metadata.labels - The Kubernetes object labels. This labels are used to determine for which object this alert will be set.
-* spec.checkCommand - Icinga CheckCommand name
-* spec.icingaParam - IcingaParam contains parameters for Icinga config
-* spec.notifierParams - NotifierParams contains array of information to send notifications for Incident
+* spec.check - Icinga CheckCommand name
+* spec.intervals - IcingaParam contains parameters for Icinga config
+* spec.receivers - NotifierParams contains array of information to send notifications for Incident
 * spec.vars - Vars contains array of Icinga Service variables to be used in CheckCommand.
 
 
 #### IcingaParam Fields
 
-* checkIntervalSec - How frequently Icinga Service will be checked
-* alertIntervalSec - How frequently notifications will be send
+* checkInterval - How frequently Icinga Service will be checked
+* alertInterval - How frequently notifications will be send
 
 #### NotifierParam Fields
 
