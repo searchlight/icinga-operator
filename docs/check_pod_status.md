@@ -58,13 +58,12 @@ metadata:
     alert.appscode.com/objectType: cluster
 spec:
   check: pod_status
-  IcingaParam:
-    alertInterval: 120
-    checkInterval: 60
+  alertInterval: 2m
+  checkInterval: 1m
   receivers:
-  - Method: EMAIL
-    State: CRITICAL
-    UserUid: system-admin
+  - method: EMAIL
+    state: CRITICAL
+    to: system-admin
 
 
 # To check for others kubernetes objects, set following labels

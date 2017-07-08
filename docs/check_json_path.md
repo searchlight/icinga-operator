@@ -46,14 +46,13 @@ metadata:
     alert.appscode.com/objectType: cluster
 spec:
   check: json_path
-  IcingaParam:
-    alertInterval: 120
-    checkInterval: 60
+  alertInterval: 2m
+  checkInterval: 1m
   receivers:
-  - Method: EMAIL
-    State: CRITICAL
-    UserUid: system-admin
-  Vars:
+  - method: EMAIL
+    state: CRITICAL
+    to: system-admin
+  vars:
     query: ".status"
     url: https://api.appscode.com/health
     critical: .status!="OK"

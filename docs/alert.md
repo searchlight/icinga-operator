@@ -18,9 +18,8 @@ metadata:
     alert.appscode.com/objectName: elasticsearch-logging-v1
 spec:
   check: volume
-  IcingaParam:
-    checkInterval: 60
-    alertInterval: 300
+  checkInterval: 1m
+  alertInterval: 5m
   Vars:
     name: disk
     warning: 60.0
@@ -46,15 +45,10 @@ This object will do the followings:
 * metadata.namespace - The namespace of the Alert object
 * metadata.labels - The Kubernetes object labels. This labels are used to determine for which object this alert will be set.
 * spec.check - Icinga CheckCommand name
-* spec.intervals - IcingaParam contains parameters for Icinga config
+* spec.checkInterval - How frequently Icinga Service will be checked
+* spec.alertInterval - How frequently notifications will be send
 * spec.receivers - NotifierParams contains array of information to send notifications for Incident
 * spec.vars - Vars contains array of Icinga Service variables to be used in CheckCommand.
-
-
-#### IcingaParam Fields
-
-* checkInterval - How frequently Icinga Service will be checked
-* alertInterval - How frequently notifications will be send
 
 #### NotifierParam Fields
 

@@ -48,13 +48,12 @@ metadata:
     alert.appscode.com/objectType: cluster
 spec:
   check: pod_exists
-  IcingaParam:
-    alertInterval: 120
-    checkInterval: 60
+  alertInterval: 2m
+  checkInterval: 1m
   receivers:
-  - Method: EMAIL
-    State: CRITICAL
-    UserUid: system-admin
+  - method: EMAIL
+    state: CRITICAL
+    to: system-admin
 
 # To check with expected pod number, suppose 8, add following in spec.vars
 # vars:

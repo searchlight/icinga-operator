@@ -67,13 +67,12 @@ metadata:
     alert.appscode.com/objectName: monitoring-influxdb
 spec:
   check: volume
-  IcingaParam:
-    alertInterval: 120
-    checkInterval: 60
+  alertInterval: 2m
+  checkInterval: 1m
   receivers:
-  - Method: EMAIL
-    State: CRITICAL
-    UserUid: system-admin
+  - method: EMAIL
+    state: CRITICAL
+    to: system-admin
   vars:
     volume_name: influxdb-persistent-storage
     warning: 70

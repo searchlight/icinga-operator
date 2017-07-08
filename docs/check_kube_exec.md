@@ -49,13 +49,12 @@ metadata:
     alert.appscode.com/objectName: monitoring-influxdb-0.12.2-n3lo2
 spec:
   check: kube_exec
-  IcingaParam:
-    alertInterval: 120
-    checkInterval: 60
+  alertInterval: 2m
+  checkInterval: 1m
   receivers:
-  - Method: EMAIL
-    State: CRITICAL
-    UserUid: system-admin
+  - method: EMAIL
+    state: CRITICAL
+    to: system-admin
   vars:
     argv: ls /var/influxdb/token.ini
 ```
