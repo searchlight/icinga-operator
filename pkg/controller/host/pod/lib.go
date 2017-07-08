@@ -75,7 +75,7 @@ func (b *biblio) create(specificObject string) error {
 	return nil
 }
 
-func setParameterizedVariables(alertSpec aci.AlertSpec, objectName string, commandVars map[string]data.CommandVar, mp map[string]interface{}) (map[string]interface{}, error) {
+func setParameterizedVariables(alertSpec aci.PodAlertSpec, objectName string, commandVars map[string]data.CommandVar, mp map[string]interface{}) (map[string]interface{}, error) {
 	for key, val := range alertSpec.Vars {
 		if v, found := commandVars[key]; found {
 			if !v.Parameterized {

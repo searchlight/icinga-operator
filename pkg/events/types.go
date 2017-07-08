@@ -169,7 +169,7 @@ func detectObjectType(o interface{}) ObjectType {
 		return ConfigMap
 	case apiv1.Endpoints, *apiv1.Endpoints:
 		return Endpoint
-	case aci.Alert, *aci.Alert:
+	case aci.PodAlert, *aci.PodAlert:
 		return Alert
 	case apiv1.Event, *apiv1.Event:
 		return AlertEvent
@@ -202,7 +202,7 @@ func objectMetadata(o interface{}, t ObjectType) metav1.ObjectMeta {
 	case AlertEvent:
 		return o.(*apiv1.Event).ObjectMeta
 	case Alert:
-		return o.(*aci.Alert).ObjectMeta
+		return o.(*aci.PodAlert).ObjectMeta
 	case ReplicaSet:
 		return o.(*extensions.ReplicaSet).ObjectMeta
 	case StatefulSet:

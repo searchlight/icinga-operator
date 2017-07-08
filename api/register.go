@@ -29,8 +29,8 @@ var (
 // Adds the list of known types to apiv1.Scheme.
 func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
-		&Alert{},
-		&AlertList{},
+		&PodAlert{},
+		&PodAlertList{},
 
 		&NodeAlert{},
 		&NodeAlertList{},
@@ -41,8 +41,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	return nil
 }
 
-func (obj *Alert) GetObjectKind() schema.ObjectKind     { return &obj.TypeMeta }
-func (obj *AlertList) GetObjectKind() schema.ObjectKind { return &obj.TypeMeta }
+func (obj *PodAlert) GetObjectKind() schema.ObjectKind     { return &obj.TypeMeta }
+func (obj *PodAlertList) GetObjectKind() schema.ObjectKind { return &obj.TypeMeta }
 
 func (obj *NodeAlert) GetObjectKind() schema.ObjectKind     { return &obj.TypeMeta }
 func (obj *NodeAlertList) GetObjectKind() schema.ObjectKind { return &obj.TypeMeta }

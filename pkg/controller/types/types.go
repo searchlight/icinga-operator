@@ -46,7 +46,7 @@ const (
 	AcknowledgeTimestamp string = "acknowledgement_timestamp"
 )
 
-type IcingaData struct {
+type IcingaCommands struct {
 	HostType map[string]string
 	VarInfo  map[string]data.CommandVar
 }
@@ -57,9 +57,9 @@ type Option struct {
 	ExtClient  acs.ExtensionInterface
 
 	IcingaClient *icinga.IcingaClient
-	IcingaData   map[string]*IcingaData
+	IcingaData   map[string]*IcingaCommands
 
-	Resource   *aci.Alert
+	Resource   *aci.PodAlert
 	ObjectType string
 	ObjectName string
 

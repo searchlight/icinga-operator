@@ -151,10 +151,10 @@ func GetNode(client clientset.Interface, nodeName, alertNamespace string) ([]*Ku
 	return nodeList, nil
 }
 
-func GetAlertList(acExtClient acs.ExtensionInterface, kubeClient clientset.Interface, namespace string, ls labels.Selector) ([]aci.Alert, error) {
-	alerts := make([]aci.Alert, 0)
+func GetAlertList(acExtClient acs.ExtensionInterface, kubeClient clientset.Interface, namespace string, ls labels.Selector) ([]aci.PodAlert, error) {
+	alerts := make([]aci.PodAlert, 0)
 	if namespace != "" {
-		alertList, err := acExtClient.Alerts(namespace).List(metav1.ListOptions{LabelSelector: ls.String()})
+		alertList, err := acExtClient.PodAlerts(namespace).List(metav1.ListOptions{LabelSelector: ls.String()})
 		if err != nil {
 			return nil, errors.New().WithCause(err).Err()
 		}
@@ -162,7 +162,7 @@ func GetAlertList(acExtClient acs.ExtensionInterface, kubeClient clientset.Inter
 			alerts = append(alerts, alertList.Items...)
 		}
 	} else {
-		alertList, err := acExtClient.Alerts(apiv1.NamespaceAll).List(metav1.ListOptions{LabelSelector: ls.String()})
+		alertList, err := acExtClient.PodAlerts(apiv1.NamespaceAll).List(metav1.ListOptions{LabelSelector: ls.String()})
 		if err != nil {
 			return nil, errors.New().WithCause(err).Err()
 		}
@@ -174,8 +174,8 @@ func GetAlertList(acExtClient acs.ExtensionInterface, kubeClient clientset.Inter
 	return alerts, nil
 }
 
-func GetAlert(acExtClient acs.ExtensionInterface, namespace, name string) (*aci.Alert, error) {
-	return acExtClient.Alerts(namespace).Get(name)
+func GetAlert(acExtClient acs.ExtensionInterface, namespace, name string) (*aci.PodAlert, error) {
+	return acExtClient.PodAlerts(namespace).Get(name)
 }
 
 const (
@@ -223,7 +223,7 @@ func GetObjectInfo(label map[string]string) (objectType string, objectName strin
 	return
 }
 
-func CheckAlertConfig(oldConfig, newConfig *aci.Alert) error {
+func CheckAlertConfig(oldConfig, newConfig *aci.PodAlert) error {
 	oldOpts := labelMap(oldConfig.ObjectMeta.Labels)
 	newOpts := labelMap(newConfig.ObjectMeta.Labels)
 

@@ -11,7 +11,7 @@ import (
 )
 
 func TestSetParameterizedVariables(t *testing.T) {
-	alertSpec := aci.AlertSpec{
+	alertSpec := aci.PodAlertSpec{
 		Vars: map[string]interface{}{
 			"A": `Fake Query for nodename   =  '?'`,
 			"B": `Fake Query for nodename='?'`,

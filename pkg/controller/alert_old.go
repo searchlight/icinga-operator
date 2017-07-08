@@ -8,7 +8,6 @@ import (
 	"github.com/appscode/errors"
 	"github.com/appscode/log"
 	aci "github.com/appscode/searchlight/api"
-	"github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/analytics"
 	"github.com/appscode/searchlight/pkg/controller/event"
 	"github.com/appscode/searchlight/pkg/controller/host"
@@ -55,13 +54,13 @@ func (c *Controller) handleAlert(e *events.Event) error {
 		}
 
 		var err error
-		_alert := alert[0].(*aci.Alert)
+		_alert := alert[0].(*aci.PodAlert)
 		if _alert.Status.CreationTime == nil {
 			// Set Status
 			t := metav1.Now()
 			_alert.Status.CreationTime = &t
 			_alert.Status.Phase = aci.AlertPhaseCreating
-			_alert, err = c.opt.ExtClient.Alerts(_alert.Namespace).Update(_alert)
+			_alert, err = c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert)
 			if err != nil {
 				return errors.New().WithCause(err).Err()
 			}
@@ -75,7 +74,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 			_alert.Status.UpdateTime = &t
 			_alert.Status.Phase = aci.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
-			if _, err := c.opt.ExtClient.Alerts(_alert.Namespace).Update(_alert); err != nil {
+			if _, err := c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert); err != nil {
 				return errors.New().WithCause(err).Err()
 			}
 			if kerr.IsNotFound(err) {
@@ -95,7 +94,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 			_alert.Status.UpdateTime = &t
 			_alert.Status.Phase = aci.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
-			if _, err := c.opt.ExtClient.Alerts(_alert.Namespace).Update(_alert); err != nil {
+			if _, err := c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert); err != nil {
 				return errors.New().WithCause(err).Err()
 			}
 
@@ -107,7 +106,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 		_alert.Status.UpdateTime = &t
 		_alert.Status.Phase = aci.AlertPhaseCreated
 		_alert.Status.Reason = ""
-		if _, err = c.opt.ExtClient.Alerts(_alert.Namespace).Update(_alert); err != nil {
+		if _, err = c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert); err != nil {
 			return errors.New().WithCause(err).Err()
 		}
 		event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulCreate)
@@ -116,8 +115,8 @@ func (c *Controller) handleAlert(e *events.Event) error {
 			return errors.New("Missing alert data").Err()
 		}
 
-		oldConfig := alert[0].(*aci.Alert)
-		newConfig := alert[1].(*aci.Alert)
+		oldConfig := alert[0].(*aci.PodAlert)
+		newConfig := alert[1].(*aci.PodAlert)
 
 		if reflect.DeepEqual(oldConfig.Spec, newConfig.Spec) {
 			return nil
@@ -150,7 +149,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 		_alert := c.opt.Resource
 		t := metav1.Now()
 		_alert.Status.UpdateTime = &t
-		if _, err := c.opt.ExtClient.Alerts(_alert.Namespace).Update(_alert); err != nil {
+		if _, err := c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert); err != nil {
 			return errors.New().WithCause(err).Err()
 		}
 		event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulUpdate)
@@ -159,7 +158,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 			return errors.New("Missing alert data").Err()
 		}
 
-		c.opt.Resource = alert[0].(*aci.Alert)
+		c.opt.Resource = alert[0].(*aci.PodAlert)
 		event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonDeleting)
 
 		c.parseAlertOptions()
@@ -205,7 +204,7 @@ func (c *Controller) handleIcingaPod() {
 	}
 
 	icingaUp := false
-	alertList, err := c.opt.ExtClient.Alerts(apiv1.NamespaceAll).List(metav1.ListOptions{
+	alertList, err := c.opt.ExtClient.PodAlerts(apiv1.NamespaceAll).List(metav1.ListOptions{
 		LabelSelector: labels.Everything().String(),
 	})
 	if err != nil {
@@ -243,7 +242,7 @@ func (c *Controller) handleRegularPod(e *events.Event, ancestors []*types.Ancest
 		Names: []string{e.MetaData.Name},
 	}
 
-	syncAlert := func(alert aci.Alert) error {
+	syncAlert := func(alert aci.PodAlert) error {
 		if e.EventType.IsAdded() {
 			// Waiting for POD IP to use as Icinga Host IP
 			then := time.Now()
@@ -299,7 +298,7 @@ func (c *Controller) handleRegularPod(e *events.Event, ancestors []*types.Ancest
 				return errors.New().WithCause(err).Err()
 			}
 
-			alertList, err := c.opt.ExtClient.Alerts(namespace).List(metav1.ListOptions{
+			alertList, err := c.opt.ExtClient.PodAlerts(namespace).List(metav1.ListOptions{
 				LabelSelector: lb.String(),
 			})
 			if err != nil {
@@ -329,7 +328,7 @@ func (c *Controller) handleRegularPod(e *events.Event, ancestors []*types.Ancest
 
 				t := metav1.Now()
 				alert.Status.UpdateTime = &t
-				c.opt.ExtClient.Alerts(alert.Namespace).Update(&alert)
+				c.opt.ExtClient.PodAlerts(alert.Namespace).Update(&alert)
 			}
 		}
 	}
@@ -355,7 +354,7 @@ func (c *Controller) handleNode(e *events.Event) error {
 
 	icingaUp := false
 
-	syncAlert := func(alert aci.Alert) error {
+	syncAlert := func(alert aci.PodAlert) error {
 		if e.EventType.IsAdded() {
 			c.opt.Resource = &alert
 
@@ -385,7 +384,7 @@ func (c *Controller) handleNode(e *events.Event) error {
 		return nil
 	}
 
-	alertList, err := c.opt.ExtClient.Alerts(apiv1.NamespaceAll).List(metav1.ListOptions{
+	alertList, err := c.opt.ExtClient.PodAlerts(apiv1.NamespaceAll).List(metav1.ListOptions{
 		LabelSelector: lb.String(),
 	})
 	if err != nil {
@@ -415,7 +414,7 @@ func (c *Controller) handleNode(e *events.Event) error {
 
 		t := metav1.Now()
 		alert.Status.UpdateTime = &t
-		c.opt.ExtClient.Alerts(alert.Namespace).Update(&alert)
+		c.opt.ExtClient.PodAlerts(alert.Namespace).Update(&alert)
 	}
 
 	return nil
@@ -460,7 +459,7 @@ func (c *Controller) handleAlertEvent(e *events.Event) error {
 		eventRefObjNamespace := alertEvent.InvolvedObject.Namespace
 		eventRefObjName := alertEvent.InvolvedObject.Name
 
-		alert, err := c.opt.ExtClient.Alerts(eventRefObjNamespace).Get(eventRefObjName)
+		alert, err := c.opt.ExtClient.PodAlerts(eventRefObjNamespace).Get(eventRefObjName)
 		if err != nil {
 			return errors.New().WithCause(err).Err()
 		}
@@ -469,27 +468,6 @@ func (c *Controller) handleAlertEvent(e *events.Event) error {
 		return c.Acknowledge(alertEvent)
 	}
 	return nil
-}
-
-func getIcingaDataMap() (map[string]*types.IcingaData, error) {
-	icingaData, err := data.LoadIcingaData()
-	if err != nil {
-		return nil, errors.New().WithCause(err).Err()
-	}
-
-	icingaDataMap := make(map[string]*types.IcingaData)
-	for _, command := range icingaData.Command {
-		varsMap := make(map[string]data.CommandVar)
-		for _, v := range command.Vars {
-			varsMap[v.Name] = v
-		}
-
-		icingaDataMap[command.Name] = &types.IcingaData{
-			HostType: command.ObjectToHost,
-			VarInfo:  varsMap,
-		}
-	}
-	return icingaDataMap, nil
 }
 
 func sendEventForAlert(eventType events.EventType, err error) {

@@ -1,15 +1,15 @@
 package pod_status
 
 import (
+	"github.com/appscode/searchlight/pkg/controller"
 	"github.com/appscode/searchlight/pkg/controller/host"
-	"github.com/appscode/searchlight/pkg/watcher"
 	"github.com/appscode/searchlight/test/plugin"
 	"github.com/appscode/searchlight/util"
 	"k8s.io/apimachinery/pkg/labels"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
-func getStatusCodeForPodStatus(w *watcher.Watcher, objectType, objectName, namespace string) (util.IcingaState, error) {
+func getStatusCodeForPodStatus(w *controller.Controller, objectType, objectName, namespace string) (util.IcingaState, error) {
 	var err error
 	if objectType == host.TypePods {
 		pod, err := w.Storage.PodStore.Pods(namespace).Get(objectName)
@@ -43,7 +43,7 @@ func getStatusCodeForPodStatus(w *watcher.Watcher, objectType, objectName, names
 	return util.Ok, nil
 }
 
-func GetTestData(watcher *watcher.Watcher, objectType, objectName, namespace string) ([]plugin.TestData, error) {
+func GetTestData(watcher *controller.Controller, objectType, objectName, namespace string) ([]plugin.TestData, error) {
 	expectedStatusCode, err := getStatusCodeForPodStatus(watcher, objectType, objectName, namespace)
 	if err != nil {
 		return nil, err

@@ -20,10 +20,10 @@ func (c *Controller) WatchNodes() {
 
 	lw := &cache.ListWatch{
 		ListFunc: func(opts metav1.ListOptions) (runtime.Object, error) {
-			return c.kubeClient.CoreV1().Nodes().List(metav1.ListOptions{})
+			return c.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{})
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-			return c.kubeClient.CoreV1().Nodes().Watch(metav1.ListOptions{})
+			return c.KubeClient.CoreV1().Nodes().Watch(metav1.ListOptions{})
 		},
 	}
 	_, ctrl := cache.NewInformer(

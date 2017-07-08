@@ -8,11 +8,11 @@ import (
 	"github.com/appscode/searchlight/pkg/client/k8s"
 )
 
-func GetAlertInfo(namespace, alertName string) (*aci.Alert, error) {
+func GetAlertInfo(namespace, alertName string) (*aci.PodAlert, error) {
 	kubeClient, err := k8s.NewClient()
 	if err != nil {
 		log.Errorln(err)
 		os.Exit(1)
 	}
-	return kubeClient.ExtClient.Alerts(namespace).Get(alertName)
+	return kubeClient.ExtClient.PodAlerts(namespace).Get(alertName)
 }

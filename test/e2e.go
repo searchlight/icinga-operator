@@ -8,7 +8,7 @@ import (
 
 	"github.com/appscode/searchlight/pkg/client/icinga"
 	"github.com/appscode/searchlight/pkg/client/k8s"
-	"github.com/appscode/searchlight/pkg/watcher"
+	"github.com/appscode/searchlight/pkg/controller"
 	"github.com/appscode/searchlight/test/mini"
 	"github.com/appscode/searchlight/util"
 	"k8s.io/client-go/pkg/api"
@@ -100,13 +100,13 @@ func getIcingaClient() (icingaClient *icinga.IcingaClient, err error) {
 type kubeWatcher struct {
 	isWatcherSet     bool
 	isIcingaIncluded bool
-	watcher          *watcher.Watcher
+	watcher          *controller.Controller
 	once             sync.Once
 }
 
 var e2eWatcher = kubeWatcher{isWatcherSet: false}
 
-func runKubeD(setIcingaClient bool) (w *watcher.Watcher, err error) {
+func runKubeD(setIcingaClient bool) (w *controller.Controller, err error) {
 	// Watcher is already running.. Want to Add IcingaClient
 	if e2eWatcher.isWatcherSet && setIcingaClient {
 		// IcingaClient is already added in watcher
@@ -141,7 +141,7 @@ func runKubeD(setIcingaClient bool) (w *watcher.Watcher, err error) {
 				return
 			}
 
-			w = &watcher.Watcher{
+			w = &controller.Controller{
 				KubeClient: kubeClient.Client,
 				ExtClient:  kubeClient.ExtClient,
 				SyncPeriod: time.Minute * 2,

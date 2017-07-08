@@ -22,10 +22,10 @@ func (c *Controller) WatchNodeAlerts() {
 
 	lw := &cache.ListWatch{
 		ListFunc: func(opts metav1.ListOptions) (runtime.Object, error) {
-			return c.extClient.NodeAlerts(apiv1.NamespaceAll).List(metav1.ListOptions{})
+			return c.ExtClient.NodeAlerts(apiv1.NamespaceAll).List(metav1.ListOptions{})
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-			return c.extClient.NodeAlerts(apiv1.NamespaceAll).Watch(metav1.ListOptions{})
+			return c.ExtClient.NodeAlerts(apiv1.NamespaceAll).Watch(metav1.ListOptions{})
 		},
 	}
 	_, ctrl := cache.NewInformer(lw,

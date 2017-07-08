@@ -37,7 +37,7 @@ type NodeAlertList struct {
 	Items []NodeAlert `json:"items"`
 }
 
-type NodeAlertCheck string
+type CheckNode string
 
 // NodeAlertSpec describes the NodeAlert the user wishes to create.
 type NodeAlertSpec struct {

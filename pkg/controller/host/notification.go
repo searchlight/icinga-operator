@@ -9,7 +9,7 @@ import (
 	"github.com/appscode/searchlight/pkg/client/icinga"
 )
 
-func CreateIcingaNotification(icingaClient *icinga.IcingaClient, alert *aci.Alert, objectList []*KubeObjectInfo) error {
+func CreateIcingaNotification(icingaClient *icinga.IcingaClient, alert *aci.PodAlert, objectList []*KubeObjectInfo) error {
 	alertSpec := alert.Spec
 	for _, object := range objectList {
 		var obj IcingaObject
@@ -40,7 +40,7 @@ func CreateIcingaNotification(icingaClient *icinga.IcingaClient, alert *aci.Aler
 	return nil
 }
 
-func UpdateIcingaNotification(icingaClient *icinga.IcingaClient, alert *aci.Alert, objectList []*KubeObjectInfo) error {
+func UpdateIcingaNotification(icingaClient *icinga.IcingaClient, alert *aci.PodAlert, objectList []*KubeObjectInfo) error {
 	icignaService := alert.Name
 	for _, object := range objectList {
 		var obj IcingaObject

@@ -14,7 +14,7 @@ const (
 	EventTypeRecovery        = "RECOVERY"
 )
 
-func RenderSMS(alert *aci.Alert, req *api.IncidentNotifyRequest) (string, error) {
+func RenderSMS(alert *aci.PodAlert, req *api.IncidentNotifyRequest) (string, error) {
 	clusterInfo := ""
 	if req.KubernetesCluster != "" {
 		clusterInfo = fmt.Sprintf(`Cluster: %s.\n`, req.KubernetesCluster)

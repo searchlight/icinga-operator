@@ -7,7 +7,7 @@ import (
 
 	"github.com/appscode/go/crypto/rand"
 	aci "github.com/appscode/searchlight/api"
-	"github.com/appscode/searchlight/pkg/watcher"
+	"github.com/appscode/searchlight/pkg/controller"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
@@ -20,7 +20,7 @@ type alertThirdPartyResource struct {
 
 var alertResource = alertThirdPartyResource{}
 
-func createAlertThirdPartyResource(w *watcher.Watcher) (err error) {
+func createAlertThirdPartyResource(w *controller.Controller) (err error) {
 	alertResource.once.Do(
 		func() {
 			_, err = w.KubeClient.ExtensionsV1beta1().ThirdPartyResources().Get("alert.monitoring.appscode.com", metav1.GetOptions{})
@@ -50,7 +50,7 @@ func createAlertThirdPartyResource(w *watcher.Watcher) (err error) {
 
 			try := 0
 			for {
-				_, err = w.ExtClient.Alerts(apiv1.NamespaceDefault).List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
+				_, err = w.ExtClient.PodAlerts(apiv1.NamespaceDefault).List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
 
 				if err != nil {
 					fmt.Println(err.Error())
@@ -70,8 +70,8 @@ func createAlertThirdPartyResource(w *watcher.Watcher) (err error) {
 	return
 }
 
-func getAlert(namespace string) *aci.Alert {
-	fakeAlert := &aci.Alert{
+func getAlert(namespace string) *aci.PodAlert {
+	fakeAlert := &aci.PodAlert{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Alert",
 			APIVersion: "monitoring.appscode.com/v1alpha1",
@@ -83,19 +83,19 @@ func getAlert(namespace string) *aci.Alert {
 				"alert.appscode.com/objectType": "cluster",
 			},
 		},
-		Spec: aci.AlertSpec{},
+		Spec: aci.PodAlertSpec{},
 	}
 	return fakeAlert
 }
 
-func CreateAlert(watcher *watcher.Watcher, namespace string, labelMap map[string]string, check string) (*aci.Alert, error) {
+func CreateAlert(watcher *controller.Controller, namespace string, labelMap map[string]string, check string) (*aci.PodAlert, error) {
 	// Add Alert ThirdPartyResource
 	if err := createAlertThirdPartyResource(watcher); err != nil {
 		return nil, err
 	}
 
 	alert := getAlert(namespace)
-	alert.Spec = aci.AlertSpec{
+	alert.Spec = aci.PodAlertSpec{
 		Check:         check,
 		CheckInterval: metav1.Duration{Duration: 30 * time.Second},
 	}
@@ -105,16 +105,16 @@ func CreateAlert(watcher *watcher.Watcher, namespace string, labelMap map[string
 	}
 
 	// Create Fake 1st Alert
-	if _, err := watcher.ExtClient.Alerts(alert.Namespace).Create(alert); err != nil {
+	if _, err := watcher.ExtClient.PodAlerts(alert.Namespace).Create(alert); err != nil {
 		return nil, err
 	}
 
 	return alert, nil
 }
 
-func DeleteAlert(watcher *watcher.Watcher, alert *aci.Alert) error {
+func DeleteAlert(watcher *controller.Controller, alert *aci.PodAlert) error {
 	// Delete Alert
-	if err := watcher.ExtClient.Alerts(alert.Namespace).Delete(alert.Name); err != nil {
+	if err := watcher.ExtClient.PodAlerts(alert.Namespace).Delete(alert.Name); err != nil {
 		return err
 	}
 	return nil

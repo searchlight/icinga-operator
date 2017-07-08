@@ -17,33 +17,33 @@ import (
 )
 
 // Blocks caller. Intended to be called as a Go routine.
-func (c *Controller) WatchAlerts() {
+func (c *Controller) WatchPodAlerts() {
 	defer acrt.HandleCrash()
 
 	lw := &cache.ListWatch{
 		ListFunc: func(opts metav1.ListOptions) (runtime.Object, error) {
-			return c.extClient.Alerts(apiv1.NamespaceAll).List(metav1.ListOptions{})
+			return c.ExtClient.PodAlerts(apiv1.NamespaceAll).List(metav1.ListOptions{})
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-			return c.extClient.Alerts(apiv1.NamespaceAll).Watch(metav1.ListOptions{})
+			return c.ExtClient.PodAlerts(apiv1.NamespaceAll).Watch(metav1.ListOptions{})
 		},
 	}
 	_, ctrl := cache.NewInformer(lw,
-		&tapi.Alert{},
+		&tapi.PodAlert{},
 		c.syncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
-				if resource, ok := obj.(*tapi.Alert); ok {
+				if resource, ok := obj.(*tapi.PodAlert); ok {
 					fmt.Println(resource.Name)
 				}
 			},
 			UpdateFunc: func(old, new interface{}) {
-				oldObj, ok := old.(*tapi.Alert)
+				oldObj, ok := old.(*tapi.PodAlert)
 				if !ok {
 					log.Errorln(errors.New("Invalid Alert object"))
 					return
 				}
-				newObj, ok := new.(*tapi.Alert)
+				newObj, ok := new.(*tapi.PodAlert)
 				if !ok {
 					log.Errorln(errors.New("Invalid Alert object"))
 					return
@@ -52,7 +52,7 @@ func (c *Controller) WatchAlerts() {
 				}
 			},
 			DeleteFunc: func(obj interface{}) {
-				if resource, ok := obj.(*tapi.Alert); ok {
+				if resource, ok := obj.(*tapi.PodAlert); ok {
 					fmt.Println(resource.Name)
 				}
 			},

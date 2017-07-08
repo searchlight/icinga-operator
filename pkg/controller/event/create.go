@@ -14,7 +14,7 @@ import (
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
-func CreateAlertEvent(kubeClient clientset.Interface, alert *aci.Alert, reason types.EventReason, additionalMessage ...string) {
+func CreateAlertEvent(kubeClient clientset.Interface, alert *aci.PodAlert, reason types.EventReason, additionalMessage ...string) {
 	timestamp := metav1.NewTime(time.Now().UTC())
 	event := &apiv1.Event{
 		ObjectMeta: metav1.ObjectMeta{

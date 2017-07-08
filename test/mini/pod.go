@@ -4,12 +4,12 @@ import (
 	"errors"
 	"time"
 
-	"github.com/appscode/searchlight/pkg/watcher"
+	"github.com/appscode/searchlight/pkg/controller"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
-func checkPod(w *watcher.Watcher, pod *apiv1.Pod) (*apiv1.Pod, error) {
+func checkPod(w *controller.Controller, pod *apiv1.Pod) (*apiv1.Pod, error) {
 	check := 0
 	for {
 		time.Sleep(time.Second * 30)
@@ -28,7 +28,7 @@ func checkPod(w *watcher.Watcher, pod *apiv1.Pod) (*apiv1.Pod, error) {
 	}
 }
 
-func CreatePod(w *watcher.Watcher, namespace string) (*apiv1.Pod, error) {
+func CreatePod(w *controller.Controller, namespace string) (*apiv1.Pod, error) {
 	pod := &apiv1.Pod{}
 	pod.Namespace = namespace
 	if err := CreateKubernetesObject(w.KubeClient, pod); err != nil {
@@ -38,7 +38,7 @@ func CreatePod(w *watcher.Watcher, namespace string) (*apiv1.Pod, error) {
 	return checkPod(w, pod)
 }
 
-func ReCreatePod(w *watcher.Watcher, pod *apiv1.Pod) (*apiv1.Pod, error) {
+func ReCreatePod(w *controller.Controller, pod *apiv1.Pod) (*apiv1.Pod, error) {
 	newPod := &apiv1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      pod.Name,
@@ -52,7 +52,7 @@ func ReCreatePod(w *watcher.Watcher, pod *apiv1.Pod) (*apiv1.Pod, error) {
 	return checkPod(w, newPod)
 }
 
-func DeletePod(w *watcher.Watcher, pod *apiv1.Pod) error {
+func DeletePod(w *controller.Controller, pod *apiv1.Pod) error {
 	// Delete Pod
 	if err := w.KubeClient.CoreV1().Pods(pod.Namespace).Delete(pod.Name, nil); err != nil {
 		return err

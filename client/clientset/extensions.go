@@ -14,7 +14,7 @@ const (
 
 type ExtensionInterface interface {
 	RESTClient() rest.Interface
-	AlertGetter
+	PodAlertGetter
 	NodeAlertGetter
 	ClusterAlertGetter
 }
@@ -28,8 +28,8 @@ type ExtensionClient struct {
 
 var _ ExtensionInterface = &ExtensionClient{}
 
-func (c *ExtensionClient) Alerts(namespace string) AlertInterface {
-	return newAlert(c, namespace)
+func (c *ExtensionClient) PodAlerts(namespace string) PodAlertInterface {
+	return newPodAlert(c, namespace)
 }
 
 func (c *ExtensionClient) NodeAlerts(namespace string) NodeAlertInterface {

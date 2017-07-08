@@ -4,13 +4,13 @@ import (
 	"errors"
 	"time"
 
+	"github.com/appscode/searchlight/pkg/controller"
 	"github.com/appscode/searchlight/pkg/controller/host"
-	"github.com/appscode/searchlight/pkg/watcher"
 	"github.com/appscode/searchlight/util"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
-func CreateDaemonSet(w *watcher.Watcher, namespace string) (*extensions.DaemonSet, error) {
+func CreateDaemonSet(w *controller.Controller, namespace string) (*extensions.DaemonSet, error) {
 	daemonSet := &extensions.DaemonSet{}
 	daemonSet.Namespace = namespace
 	if err := CreateKubernetesObject(w.KubeClient, daemonSet); err != nil {
@@ -36,7 +36,7 @@ func CreateDaemonSet(w *watcher.Watcher, namespace string) (*extensions.DaemonSe
 	}
 }
 
-func DeleteDaemonSet(watcher *watcher.Watcher, daemonSet *extensions.DaemonSet) error {
+func DeleteDaemonSet(watcher *controller.Controller, daemonSet *extensions.DaemonSet) error {
 	labelSelector, err := util.GetLabels(watcher.KubeClient, daemonSet.Namespace, host.TypeDaemonsets, daemonSet.Name)
 	if err != nil {
 		return err

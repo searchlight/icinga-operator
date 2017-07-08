@@ -33,8 +33,8 @@ func NewFakeExtensionClient(objects ...runtime.Object) *FakeExtensionClient {
 	return &FakeExtensionClient{&fakePtr}
 }
 
-func (c *FakeExtensionClient) Alerts(namespace string) clientset.AlertInterface {
-	return &FakeAlert{c.Fake, namespace}
+func (c *FakeExtensionClient) PodAlerts(namespace string) clientset.PodAlertInterface {
+	return &FakePodAlert{c.Fake, namespace}
 }
 
 func (c *FakeExtensionClient) NodeAlerts(namespace string) clientset.NodeAlertInterface {

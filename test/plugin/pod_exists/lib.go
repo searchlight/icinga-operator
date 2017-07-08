@@ -1,12 +1,12 @@
 package pod_exists
 
 import (
-	"github.com/appscode/searchlight/pkg/watcher"
+	"github.com/appscode/searchlight/pkg/controller"
 	"github.com/appscode/searchlight/test/plugin"
 	"k8s.io/apimachinery/pkg/labels"
 )
 
-func GetPodCount(w *watcher.Watcher, namespace string) (int, error) {
+func GetPodCount(w *controller.Controller, namespace string) (int, error) {
 	podList, err := w.Storage.PodStore.Pods(namespace).List(labels.Everything())
 	if err != nil {
 		return 0, err

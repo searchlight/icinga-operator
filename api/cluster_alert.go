@@ -37,7 +37,7 @@ type ClusterAlertList struct {
 	Items []ClusterAlert `json:"items"`
 }
 
-type ClusterAlertCheck string
+type CheckCluster string
 
 // ClusterAlertSpec describes the ClusterAlert the user wishes to create.
 type ClusterAlertSpec struct {

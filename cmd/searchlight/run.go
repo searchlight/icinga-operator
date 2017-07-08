@@ -11,7 +11,7 @@ import (
 	_ "github.com/appscode/searchlight/client/clientset/fake"
 	"github.com/appscode/searchlight/pkg/analytics"
 	"github.com/appscode/searchlight/pkg/client/icinga"
-	acw "github.com/appscode/searchlight/pkg/watcher"
+	acw "github.com/appscode/searchlight/pkg/controller"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 	clientset "k8s.io/client-go/kubernetes"
@@ -38,11 +38,50 @@ func NewCmdRun() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "run",
 		Short: "Run operator",
-		Run: func(cmd *cobra.Command, args []string) {
-			run()
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if enableAnalytics {
+				analytics.Enable()
+			}
+			analytics.SendEvent("operator", "started", Version)
 		},
 		PostRun: func(cmd *cobra.Command, args []string) {
 			analytics.SendEvent("operator", "stopped", Version)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			config, err := clientcmd.BuildConfigFromFlags(masterURL, kubeconfigPath)
+			if err != nil {
+				log.Fatalf("Could not get Kubernetes config: %s", err)
+			}
+
+			kubeClient = clientset.NewForConfigOrDie(config)
+			extClient = acs.NewForConfigOrDie(config)
+
+			w := &acw.Watcher{
+				KubeClient:      kubeClient,
+				ExtClient:       extClient,
+				EnableAnalytics: enableAnalytics,
+				SyncPeriod:      time.Minute * 2,
+			}
+			if icingaSecretName == "" {
+				log.Fatalln("Missing icinga secret")
+			}
+			icingaClient, err := icinga.NewIcingaClient(w.KubeClient, icingaSecretName, icingaSecretNamespace)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			w.IcingaClient = icingaClient
+
+			log.Infoln("Starting Searchlight operator...")
+			go w.Run()
+
+			if enableAnalytics {
+				analytics.Enable()
+			}
+			analytics.SendEvent("operator", "started", Version)
+
+			http.Handle("/metrics", promhttp.Handler())
+			log.Infoln("Listening on", address)
+			log.Fatal(http.ListenAndServe(address, nil))
 		},
 	}
 
@@ -57,41 +96,4 @@ func NewCmdRun() *cobra.Command {
 	cmd.Flags().BoolVar(&enableAnalytics, "analytics", enableAnalytics, "Send analytical event to Google Analytics")
 
 	return cmd
-}
-
-func run() {
-	config, err := clientcmd.BuildConfigFromFlags(masterURL, kubeconfigPath)
-	if err != nil {
-		log.Fatalf("Could not get Kubernetes config: %s", err)
-	}
-
-	kubeClient = clientset.NewForConfigOrDie(config)
-	extClient = acs.NewForConfigOrDie(config)
-
-	w := &acw.Watcher{
-		KubeClient:      kubeClient,
-		ExtClient:       extClient,
-		EnableAnalytics: enableAnalytics,
-		SyncPeriod:      time.Minute * 2,
-	}
-	if icingaSecretName == "" {
-		log.Fatalln("Missing icinga secret")
-	}
-	icingaClient, err := icinga.NewIcingaClient(w.KubeClient, icingaSecretName, icingaSecretNamespace)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	w.IcingaClient = icingaClient
-
-	log.Infoln("Starting Searchlight operator...")
-	go w.Run()
-
-	if enableAnalytics {
-		analytics.Enable()
-	}
-	analytics.SendEvent("operator", "started", Version)
-
-	http.Handle("/metrics", promhttp.Handler())
-	log.Infoln("Listening on", address)
-	log.Fatal(http.ListenAndServe(address, nil))
 }

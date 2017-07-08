@@ -5,14 +5,14 @@ import (
 	"time"
 
 	"github.com/appscode/go/types"
+	"github.com/appscode/searchlight/pkg/controller"
 	"github.com/appscode/searchlight/pkg/controller/host"
-	"github.com/appscode/searchlight/pkg/watcher"
 	"github.com/appscode/searchlight/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
-func CreateDeployment(w *watcher.Watcher, namespace string) (*extensions.Deployment, error) {
+func CreateDeployment(w *controller.Controller, namespace string) (*extensions.Deployment, error) {
 	deployment := &extensions.Deployment{}
 	deployment.Namespace = namespace
 	if err := CreateKubernetesObject(w.KubeClient, deployment); err != nil {
@@ -38,7 +38,7 @@ func CreateDeployment(w *watcher.Watcher, namespace string) (*extensions.Deploym
 	}
 }
 
-func DeleteDeployment(w *watcher.Watcher, deployment *extensions.Deployment) error {
+func DeleteDeployment(w *controller.Controller, deployment *extensions.Deployment) error {
 	deployment, err := w.KubeClient.ExtensionsV1beta1().Deployments(deployment.Namespace).Get(deployment.Name, metav1.GetOptions{})
 	if err != nil {
 		return err
