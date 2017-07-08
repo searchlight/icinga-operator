@@ -48,11 +48,11 @@ metadata:
     alert.appscode.com/objectType: pods
     alert.appscode.com/objectName: monitoring-influxdb-0.12.2-n3lo2
 spec:
-  CheckCommand: kube_exec
+  check: kube_exec
   IcingaParam:
     alertInterval: 120
     checkInterval: 60
-  NotifierParams:
+  receivers:
   - Method: EMAIL
     State: CRITICAL
     UserUid: system-admin

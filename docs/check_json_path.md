@@ -45,11 +45,11 @@ metadata:
   labels:
     alert.appscode.com/objectType: cluster
 spec:
-  CheckCommand: json_path
+  check: json_path
   IcingaParam:
     alertInterval: 120
     checkInterval: 60
-  NotifierParams:
+  receivers:
   - Method: EMAIL
     State: CRITICAL
     UserUid: system-admin

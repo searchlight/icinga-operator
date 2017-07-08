@@ -35,11 +35,11 @@ metadata:
   labels:
     alert.appscode.com/objectType: cluster
 spec:
-  CheckCommand: component_status
+  check: component_status
   IcingaParam:
     alertInterval: 300
     checkInterval: 60
-  NotifierParams:
+  receivers:
   - Method: EMAIL
     State: CRITICAL
     UserUid: system-admin

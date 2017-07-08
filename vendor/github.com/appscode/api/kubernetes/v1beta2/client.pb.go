@@ -5630,7 +5630,7 @@ func (m *Alert_AlertSpec_IcingaParam) GetalertInterval() int64 {
 
 type Alert_AlertSpec_NotifierParam struct {
 	State   string `protobuf:"bytes,1,opt,name=state" json:"state,omitempty"`
-	UserUid string `protobuf:"bytes,2,opt,name=user_uid,json=userUid" json:"user_uid,omitempty"`
+	UserUid string `protobuf:"bytes,2,opt,name=user_uid,json=to" json:"user_uid,omitempty"`
 	Method  string `protobuf:"bytes,3,opt,name=method" json:"method,omitempty"`
 }
 

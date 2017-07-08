@@ -66,11 +66,11 @@ metadata:
     alert.appscode.com/objectType: services
     alert.appscode.com/objectName: monitoring-influxdb
 spec:
-  CheckCommand: volume
+  check: volume
   IcingaParam:
     alertInterval: 120
     checkInterval: 60
-  NotifierParams:
+  receivers:
   - Method: EMAIL
     State: CRITICAL
     UserUid: system-admin

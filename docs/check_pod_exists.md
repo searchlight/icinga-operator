@@ -47,11 +47,11 @@ metadata:
   labels:
     alert.appscode.com/objectType: cluster
 spec:
-  CheckCommand: pod_exists
+  check: pod_exists
   IcingaParam:
     alertInterval: 120
     checkInterval: 60
-  NotifierParams:
+  receivers:
   - Method: EMAIL
     State: CRITICAL
     UserUid: system-admin

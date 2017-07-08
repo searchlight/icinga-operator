@@ -17,7 +17,7 @@ metadata:
     alert.appscode.com/objectType: replicationcontrollers
     alert.appscode.com/objectName: elasticsearch-logging-v1
 spec:
-  CheckCommand: volume
+  check: volume
   IcingaParam:
     checkInterval: 60
     alertInterval: 300
@@ -59,7 +59,7 @@ This object will do the followings:
 #### NotifierParam Fields
 
 * state - For which state notification will be sent
-* userUid - To whom notification will be sent
+* to - To whom notification will be sent
 * method - How this notification will be sent
 
 > `NotifierParams` is only used when notification is sent via `AppsCode`.
