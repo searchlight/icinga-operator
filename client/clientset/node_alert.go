@@ -11,12 +11,6 @@ type NodeAlertGetter interface {
 	NodeAlerts(namespace string) NodeAlertInterface
 }
 
-const (
-	ResourceKindNodeAlert = "NodeAlert"
-	ResourceNameNodeAlert = "nodealert"
-	ResourceTypeNodeAlert = "nodealerts"
-)
-
 type NodeAlertInterface interface {
 	List(opts metav1.ListOptions) (*aci.NodeAlertList, error)
 	Get(name string) (*aci.NodeAlert, error)
@@ -42,7 +36,7 @@ func (c *NodeAlertImpl) List(opts metav1.ListOptions) (result *aci.NodeAlertList
 	result = &aci.NodeAlertList{}
 	err = c.r.Get().
 		Namespace(c.ns).
-		Resource(ResourceTypeNodeAlert).
+		Resource(aci.ResourceTypeNodeAlert).
 		VersionedParams(&opts, ExtendedCodec).
 		Do().
 		Into(result)
@@ -53,7 +47,7 @@ func (c *NodeAlertImpl) Get(name string) (result *aci.NodeAlert, err error) {
 	result = &aci.NodeAlert{}
 	err = c.r.Get().
 		Namespace(c.ns).
-		Resource(ResourceTypeNodeAlert).
+		Resource(aci.ResourceTypeNodeAlert).
 		Name(name).
 		Do().
 		Into(result)
@@ -64,7 +58,7 @@ func (c *NodeAlertImpl) Create(alert *aci.NodeAlert) (result *aci.NodeAlert, err
 	result = &aci.NodeAlert{}
 	err = c.r.Post().
 		Namespace(c.ns).
-		Resource(ResourceTypeNodeAlert).
+		Resource(aci.ResourceTypeNodeAlert).
 		Body(alert).
 		Do().
 		Into(result)
@@ -75,7 +69,7 @@ func (c *NodeAlertImpl) Update(alert *aci.NodeAlert) (result *aci.NodeAlert, err
 	result = &aci.NodeAlert{}
 	err = c.r.Put().
 		Namespace(c.ns).
-		Resource(ResourceTypeNodeAlert).
+		Resource(aci.ResourceTypeNodeAlert).
 		Name(alert.Name).
 		Body(alert).
 		Do().
@@ -86,7 +80,7 @@ func (c *NodeAlertImpl) Update(alert *aci.NodeAlert) (result *aci.NodeAlert, err
 func (c *NodeAlertImpl) Delete(name string) (err error) {
 	return c.r.Delete().
 		Namespace(c.ns).
-		Resource(ResourceTypeNodeAlert).
+		Resource(aci.ResourceTypeNodeAlert).
 		Name(name).
 		Do().
 		Error()
@@ -96,7 +90,7 @@ func (c *NodeAlertImpl) Watch(opts metav1.ListOptions) (watch.Interface, error) 
 	return c.r.Get().
 		Prefix("watch").
 		Namespace(c.ns).
-		Resource(ResourceTypeNodeAlert).
+		Resource(aci.ResourceTypeNodeAlert).
 		VersionedParams(&opts, ExtendedCodec).
 		Watch()
 }
@@ -105,7 +99,7 @@ func (c *NodeAlertImpl) UpdateStatus(alert *aci.NodeAlert) (result *aci.NodeAler
 	result = &aci.NodeAlert{}
 	err = c.r.Put().
 		Namespace(c.ns).
-		Resource(ResourceTypeNodeAlert).
+		Resource(aci.ResourceTypeNodeAlert).
 		Name(alert.Name).
 		SubResource("status").
 		Body(alert).

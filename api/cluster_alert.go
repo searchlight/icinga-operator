@@ -4,6 +4,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const (
+	ResourceKindClusterAlert = "ClusterAlert"
+	ResourceNameClusterAlert = "clusteralert"
+	ResourceTypeClusterAlert = "clusteralerts"
+)
+
 // ClusterAlert types for appscode.
 type ClusterAlert struct {
 	metav1.TypeMeta `json:",inline"`

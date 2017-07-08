@@ -11,12 +11,6 @@ type ClusterAlertGetter interface {
 	ClusterAlerts(namespace string) ClusterAlertInterface
 }
 
-const (
-	ResourceKindClusterAlert = "ClusterAlert"
-	ResourceNameClusterAlert = "clusteralert"
-	ResourceTypeClusterAlert = "clusteralerts"
-)
-
 type ClusterAlertInterface interface {
 	List(opts metav1.ListOptions) (*aci.ClusterAlertList, error)
 	Get(name string) (*aci.ClusterAlert, error)
@@ -42,7 +36,7 @@ func (c *ClusterAlertImpl) List(opts metav1.ListOptions) (result *aci.ClusterAle
 	result = &aci.ClusterAlertList{}
 	err = c.r.Get().
 		Namespace(c.ns).
-		Resource(ResourceTypeClusterAlert).
+		Resource(aci.ResourceTypeClusterAlert).
 		VersionedParams(&opts, ExtendedCodec).
 		Do().
 		Into(result)
@@ -53,7 +47,7 @@ func (c *ClusterAlertImpl) Get(name string) (result *aci.ClusterAlert, err error
 	result = &aci.ClusterAlert{}
 	err = c.r.Get().
 		Namespace(c.ns).
-		Resource(ResourceTypeClusterAlert).
+		Resource(aci.ResourceTypeClusterAlert).
 		Name(name).
 		Do().
 		Into(result)
@@ -64,7 +58,7 @@ func (c *ClusterAlertImpl) Create(alert *aci.ClusterAlert) (result *aci.ClusterA
 	result = &aci.ClusterAlert{}
 	err = c.r.Post().
 		Namespace(c.ns).
-		Resource(ResourceTypeClusterAlert).
+		Resource(aci.ResourceTypeClusterAlert).
 		Body(alert).
 		Do().
 		Into(result)
@@ -75,7 +69,7 @@ func (c *ClusterAlertImpl) Update(alert *aci.ClusterAlert) (result *aci.ClusterA
 	result = &aci.ClusterAlert{}
 	err = c.r.Put().
 		Namespace(c.ns).
-		Resource(ResourceTypeClusterAlert).
+		Resource(aci.ResourceTypeClusterAlert).
 		Name(alert.Name).
 		Body(alert).
 		Do().
@@ -86,7 +80,7 @@ func (c *ClusterAlertImpl) Update(alert *aci.ClusterAlert) (result *aci.ClusterA
 func (c *ClusterAlertImpl) Delete(name string) (err error) {
 	return c.r.Delete().
 		Namespace(c.ns).
-		Resource(ResourceTypeClusterAlert).
+		Resource(aci.ResourceTypeClusterAlert).
 		Name(name).
 		Do().
 		Error()
@@ -96,7 +90,7 @@ func (c *ClusterAlertImpl) Watch(opts metav1.ListOptions) (watch.Interface, erro
 	return c.r.Get().
 		Prefix("watch").
 		Namespace(c.ns).
-		Resource(ResourceTypeClusterAlert).
+		Resource(aci.ResourceTypeClusterAlert).
 		VersionedParams(&opts, ExtendedCodec).
 		Watch()
 }
@@ -105,7 +99,7 @@ func (c *ClusterAlertImpl) UpdateStatus(alert *aci.ClusterAlert) (result *aci.Cl
 	result = &aci.ClusterAlert{}
 	err = c.r.Put().
 		Namespace(c.ns).
-		Resource(ResourceTypeClusterAlert).
+		Resource(aci.ResourceTypeClusterAlert).
 		Name(alert.Name).
 		SubResource("status").
 		Body(alert).

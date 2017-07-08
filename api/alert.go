@@ -4,6 +4,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const (
+	ResourceKindAlert = "Alert"
+	ResourceNameAlert = "alert"
+	ResourceTypeAlert = "alerts"
+)
+
 // Alert types for appscode.
 type Alert struct {
 	metav1.TypeMeta `json:",inline"`

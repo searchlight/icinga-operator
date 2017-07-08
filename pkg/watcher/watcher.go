@@ -54,18 +54,24 @@ func (w *Watcher) Run() {
 
 func (w *Watcher) setup() {
 	log.Infoln("Ensuring ThirdPartyResource")
-	if err := w.ensureThirdPartyResource(); err != nil {
+
+	if err := w.ensureThirdPartyResource(aci.ResourceNameAlert + "." + aci.V1alpha1SchemeGroupVersion.Group); err != nil {
 		log.Fatalln(err)
 	}
+	if err := w.ensureThirdPartyResource(aci.ResourceNameNodeAlert + "." + aci.V1alpha1SchemeGroupVersion.Group); err != nil {
+		log.Fatalln(err)
+	}
+	if err := w.ensureThirdPartyResource(aci.ResourceNameClusterAlert + "." + aci.V1alpha1SchemeGroupVersion.Group); err != nil {
+		log.Fatalln(err)
+	}
+
 	// Enable analytics
 	if w.EnableAnalytics {
 		analytics.Enable()
 	}
 }
 
-func (w *Watcher) ensureThirdPartyResource() error {
-	resourceName := "alert" + "." + aci.V1alpha1SchemeGroupVersion.Group
-
+func (w *Watcher) ensureThirdPartyResource(resourceName string) error {
 	_, err := w.KubeClient.ExtensionsV1beta1().ThirdPartyResources().Get(resourceName, metav1.GetOptions{})
 	if !kerr.IsNotFound(err) {
 		return err

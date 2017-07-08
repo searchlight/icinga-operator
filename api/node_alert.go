@@ -4,6 +4,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const (
+	ResourceKindNodeAlert = "NodeAlert"
+	ResourceNameNodeAlert = "nodealert"
+	ResourceTypeNodeAlert = "nodealerts"
+)
+
 // NodeAlert types for appscode.
 type NodeAlert struct {
 	metav1.TypeMeta `json:",inline"`
