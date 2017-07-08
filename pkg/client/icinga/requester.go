@@ -10,35 +10,35 @@ import (
 	"strings"
 )
 
-func (r *IcingaApiRequest) Do() *IcingaApiResponse {
-	if r.Err != nil {
+func (ic *IcingaApiRequest) Do() *IcingaApiResponse {
+	if ic.Err != nil {
 		return &IcingaApiResponse{
-			Err: r.Err,
+			Err: ic.Err,
 		}
 	}
-	r.req.Header.Set("Accept", "application/json")
+	ic.req.Header.Set("Accept", "application/json")
 
-	if r.userName != "" && r.password != "" {
-		r.req.SetBasicAuth(r.userName, r.password)
+	if ic.userName != "" && ic.password != "" {
+		ic.req.SetBasicAuth(ic.userName, ic.password)
 	}
 
-	r.resp, r.Err = r.client.Do(r.req)
-	if r.Err != nil {
+	ic.resp, ic.Err = ic.client.Do(ic.req)
+	if ic.Err != nil {
 		return &IcingaApiResponse{
-			Err: r.Err,
+			Err: ic.Err,
 		}
 	}
 
-	r.Status = r.resp.StatusCode
-	r.ResponseBody, r.Err = ioutil.ReadAll(r.resp.Body)
-	if r.Err != nil {
+	ic.Status = ic.resp.StatusCode
+	ic.ResponseBody, ic.Err = ioutil.ReadAll(ic.resp.Body)
+	if ic.Err != nil {
 		return &IcingaApiResponse{
-			Err: r.Err,
+			Err: ic.Err,
 		}
 	}
 	return &IcingaApiResponse{
-		Status:       r.Status,
-		ResponseBody: r.ResponseBody,
+		Status:       ic.Status,
+		ResponseBody: ic.ResponseBody,
 	}
 }
 
@@ -78,7 +78,7 @@ func (c *IcingaClient) newIcingaRequest(path string) *IcingaApiRequest {
 	}
 }
 
-func (c *IcingaApiRequest) newRequest(method, urlStr string, body io.Reader) (*http.Request, error) {
+func (ic *IcingaApiRequest) newRequest(method, urlStr string, body io.Reader) (*http.Request, error) {
 	if strings.HasSuffix(urlStr, "/") {
 		urlStr = strings.TrimRight(urlStr, "/")
 	}

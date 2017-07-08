@@ -97,39 +97,39 @@ func addUri(uri string, name []string) string {
 	return uri
 }
 
-func (r *IcingaApiRequest) Get(name []string, jsonBody ...string) *IcingaApiRequest {
+func (ic *IcingaApiRequest) Get(name []string, jsonBody ...string) *IcingaApiRequest {
 	if len(jsonBody) == 0 {
-		r.req, r.Err = r.newRequest("GET", addUri(r.uri, name), nil)
+		ic.req, ic.Err = ic.newRequest("GET", addUri(ic.uri, name), nil)
 	} else if len(jsonBody) == 1 {
-		r.req, r.Err = r.newRequest("GET", addUri(r.uri, name), bytes.NewBuffer([]byte(jsonBody[0])))
+		ic.req, ic.Err = ic.newRequest("GET", addUri(ic.uri, name), bytes.NewBuffer([]byte(jsonBody[0])))
 	} else {
-		r.Err = errors.New("Invalid request")
+		ic.Err = errors.New("Invalid request")
 	}
-	return r
+	return ic
 }
 
-func (r *IcingaApiRequest) Create(name []string, jsonBody string) *IcingaApiRequest {
-	r.req, r.Err = r.newRequest("PUT", addUri(r.uri, name), bytes.NewBuffer([]byte(jsonBody)))
-	return r
+func (ic *IcingaApiRequest) Create(name []string, jsonBody string) *IcingaApiRequest {
+	ic.req, ic.Err = ic.newRequest("PUT", addUri(ic.uri, name), bytes.NewBuffer([]byte(jsonBody)))
+	return ic
 }
 
-func (r *IcingaApiRequest) Update(name []string, jsonBody string) *IcingaApiRequest {
-	r.req, r.Err = r.newRequest("POST", addUri(r.uri, name), bytes.NewBuffer([]byte(jsonBody)))
-	return r
+func (ic *IcingaApiRequest) Update(name []string, jsonBody string) *IcingaApiRequest {
+	ic.req, ic.Err = ic.newRequest("POST", addUri(ic.uri, name), bytes.NewBuffer([]byte(jsonBody)))
+	return ic
 }
 
-func (r *IcingaApiRequest) Delete(name []string, jsonBody string) *IcingaApiRequest {
-	r.req, r.Err = r.newRequest("DELETE", addUri(r.uri, name), bytes.NewBuffer([]byte(jsonBody)))
-	return r
+func (ic *IcingaApiRequest) Delete(name []string, jsonBody string) *IcingaApiRequest {
+	ic.req, ic.Err = ic.newRequest("DELETE", addUri(ic.uri, name), bytes.NewBuffer([]byte(jsonBody)))
+	return ic
 }
 
-func (r *IcingaApiRequest) Params(param map[string]string) *IcingaApiRequest {
-	p := r.req.URL.Query()
+func (ic *IcingaApiRequest) Params(param map[string]string) *IcingaApiRequest {
+	p := ic.req.URL.Query()
 	for k, v := range param {
 		p.Add(k, v)
 	}
-	r.req.URL.RawQuery = p.Encode()
-	return r
+	ic.req.URL.RawQuery = p.Encode()
+	return ic
 }
 
 func NewIcingaClient(kubeClient clientset.Interface, secretName, secretNamespace string) (*IcingaClient, error) {
