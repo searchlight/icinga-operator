@@ -40,12 +40,12 @@ func (c *Controller) WatchPodAlerts() {
 			UpdateFunc: func(old, new interface{}) {
 				oldObj, ok := old.(*tapi.PodAlert)
 				if !ok {
-					log.Errorln(errors.New("Invalid Alert object"))
+					log.Errorln(errors.New("Invalid PodAlert object"))
 					return
 				}
 				newObj, ok := new.(*tapi.PodAlert)
 				if !ok {
-					log.Errorln(errors.New("Invalid Alert object"))
+					log.Errorln(errors.New("Invalid PodAlert object"))
 					return
 				}
 				if !reflect.DeepEqual(oldObj, newObj) {

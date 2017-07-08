@@ -47,8 +47,9 @@ const (
 )
 
 type IcingaCommands struct {
-	HostType map[string]string
-	VarInfo  map[string]data.CommandVar
+	Name   string
+	Vars   map[string]data.CommandVar
+	States []string
 }
 
 type Option struct {

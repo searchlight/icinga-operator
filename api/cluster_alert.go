@@ -42,7 +42,7 @@ type CheckCluster string
 // ClusterAlertSpec describes the ClusterAlert the user wishes to create.
 type ClusterAlertSpec struct {
 	// Icinga CheckCommand name
-	Check string `json:"check,omitempty"`
+	Check CheckCluster `json:"check,omitempty"`
 
 	// How frequently Icinga Service will be checked
 	CheckInterval metav1.Duration `json:"checkInterval,omitempty"`

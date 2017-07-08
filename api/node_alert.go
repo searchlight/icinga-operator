@@ -44,7 +44,7 @@ type NodeAlertSpec struct {
 	Selector map[string]string `json:"selector,omitempty"`
 
 	// Icinga CheckCommand name
-	Check string `json:"check,omitempty"`
+	Check CheckNode `json:"check,omitempty"`
 
 	// How frequently Icinga Service will be checked
 	CheckInterval metav1.Duration `json:"checkInterval,omitempty"`

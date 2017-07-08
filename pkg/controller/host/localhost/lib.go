@@ -81,7 +81,7 @@ func (b *biblio) createIcingaService(objectList []*host.KubeObjectInfo) error {
 		mp["check_interval"] = alertSpec.CheckInterval.Seconds()
 	}
 
-	commandVars := b.IcingaData[alertSpec.Check].VarInfo
+	commandVars := b.IcingaData[alertSpec.Check].Vars
 
 	for key, val := range alertSpec.Vars {
 		if _, found := commandVars[key]; found {
@@ -119,7 +119,7 @@ func (b *biblio) updateIcingaService(objectList []*host.KubeObjectInfo) error {
 		mp["check_interval"] = alertSpec.CheckInterval.Seconds()
 	}
 
-	commandVars := b.IcingaData[alertSpec.Check].VarInfo
+	commandVars := b.IcingaData[alertSpec.Check].Vars
 	for key, val := range alertSpec.Vars {
 		if _, found := commandVars[key]; found {
 			mp[host.IVar(key)] = val

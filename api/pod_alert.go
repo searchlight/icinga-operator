@@ -68,7 +68,7 @@ type PodAlertSpec struct {
 	Selector metav1.LabelSelector `json:"selector,omitempty"`
 
 	// Icinga CheckCommand name
-	Check string `json:"check,omitempty"`
+	Check CheckPod `json:"check,omitempty"`
 
 	// How frequently Icinga Service will be checked
 	CheckInterval metav1.Duration `json:"checkInterval,omitempty"`

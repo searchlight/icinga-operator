@@ -3,17 +3,14 @@ package controller
 import (
 	"time"
 
-	"github.com/appscode/errors"
 	"github.com/appscode/log"
 	aci "github.com/appscode/searchlight/api"
 	acs "github.com/appscode/searchlight/client/clientset"
 	"github.com/appscode/searchlight/data"
-	"github.com/appscode/searchlight/pkg/client/icinga"
 	_ "github.com/appscode/searchlight/pkg/controller/host/localhost"
 	_ "github.com/appscode/searchlight/pkg/controller/host/node"
 	_ "github.com/appscode/searchlight/pkg/controller/host/pod"
 	"github.com/appscode/searchlight/pkg/controller/types"
-	"github.com/appscode/searchlight/pkg/stash"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
@@ -26,26 +23,8 @@ type Controller struct {
 
 	opt *types.Option
 
-	CommandList map[string]*types.IcingaCommands
-	syncPeriod  time.Duration
-}
-
-func New2(kubeClient clientset.Interface,
-	icingaClient *icinga.IcingaClient,
-	extClient acs.ExtensionInterface,
-	storage stash.Storage) *Controller {
-	data, err := getIcingaDataMap()
-	if err != nil {
-		log.Errorln("Icinga data not found")
-	}
-	ctx := &types.Option{
-		KubeClient:   kubeClient,
-		ExtClient:    extClient,
-		IcingaData:   data,
-		IcingaClient: icingaClient,
-		Storage:      storage,
-	}
-	return &Controller{opt: ctx}
+	Commands   map[string]*types.IcingaCommands
+	syncPeriod time.Duration
 }
 
 func New(kubeClient clientset.Interface, extClient acs.ExtensionInterface) (*Controller, error) {
@@ -54,44 +33,23 @@ func New(kubeClient clientset.Interface, extClient acs.ExtensionInterface) (*Con
 		ExtClient:  extClient,
 		syncPeriod: 5 * time.Minute,
 	}
-	data, err := data.LoadIcingaData()
+	cmdList, err := data.LoadIcingaData()
 	if err != nil {
 		return nil, err
 	}
-	ctrl.CommandList = make(map[string]*types.IcingaCommands)
-	for _, command := range data.Command {
-		varsMap := make(map[string]data.CommandVar)
-		for _, v := range command.Vars {
-			varsMap[v.Name] = v
+	ctrl.Commands = make(map[string]*types.IcingaCommands)
+	for _, cmd := range cmdList.Command {
+		vars := make(map[string]data.CommandVar)
+		for _, v := range cmd.Vars {
+			vars[v.Name] = v
 		}
-
-		ctrl.CommandList[command.Name] = &types.IcingaCommands{
-			HostType: command.ObjectToHost,
-			VarInfo:  varsMap,
+		ctrl.Commands[cmd.Name] = &types.IcingaCommands{
+			Name:   cmd.Name,
+			Vars:   vars,
+			States: cmd.States,
 		}
 	}
 	return ctrl, nil
-}
-
-func getIcingaDataMap() (map[string]*types.IcingaCommands, error) {
-	data, err := data.LoadIcingaData()
-	if err != nil {
-		return nil, errors.FromErr(err).Err()
-	}
-
-	m := make(map[string]*types.IcingaCommands)
-	for _, command := range data.Command {
-		varsMap := make(map[string]data.CommandVar)
-		for _, v := range command.Vars {
-			varsMap[v.Name] = v
-		}
-
-		m[command.Name] = &types.IcingaCommands{
-			HostType: command.ObjectToHost,
-			VarInfo:  varsMap,
-		}
-	}
-	return m, nil
 }
 
 func (c *Controller) Setup() {
