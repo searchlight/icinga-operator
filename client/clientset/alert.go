@@ -7,9 +7,15 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-type AlertNamespacer interface {
-	Alert(namespace string) AlertInterface
+type AlertGetter interface {
+	Alerts(namespace string) AlertInterface
 }
+
+const (
+	ResourceKindAlert = "Alert"
+	ResourceNameAlert = "alert"
+	ResourceTypeAlert = "alerts"
+)
 
 type AlertInterface interface {
 	List(opts metav1.ListOptions) (*aci.AlertList, error)
@@ -36,7 +42,7 @@ func (c *AlertImpl) List(opts metav1.ListOptions) (result *aci.AlertList, err er
 	result = &aci.AlertList{}
 	err = c.r.Get().
 		Namespace(c.ns).
-		Resource("alerts").
+		Resource(ResourceTypeAlert).
 		VersionedParams(&opts, ExtendedCodec).
 		Do().
 		Into(result)
@@ -47,7 +53,7 @@ func (c *AlertImpl) Get(name string) (result *aci.Alert, err error) {
 	result = &aci.Alert{}
 	err = c.r.Get().
 		Namespace(c.ns).
-		Resource("alerts").
+		Resource(ResourceTypeAlert).
 		Name(name).
 		Do().
 		Into(result)
@@ -58,7 +64,7 @@ func (c *AlertImpl) Create(alert *aci.Alert) (result *aci.Alert, err error) {
 	result = &aci.Alert{}
 	err = c.r.Post().
 		Namespace(c.ns).
-		Resource("alerts").
+		Resource(ResourceTypeAlert).
 		Body(alert).
 		Do().
 		Into(result)
@@ -69,7 +75,7 @@ func (c *AlertImpl) Update(alert *aci.Alert) (result *aci.Alert, err error) {
 	result = &aci.Alert{}
 	err = c.r.Put().
 		Namespace(c.ns).
-		Resource("alerts").
+		Resource(ResourceTypeAlert).
 		Name(alert.Name).
 		Body(alert).
 		Do().
@@ -80,7 +86,7 @@ func (c *AlertImpl) Update(alert *aci.Alert) (result *aci.Alert, err error) {
 func (c *AlertImpl) Delete(name string) (err error) {
 	return c.r.Delete().
 		Namespace(c.ns).
-		Resource("alerts").
+		Resource(ResourceTypeAlert).
 		Name(name).
 		Do().
 		Error()
@@ -90,7 +96,7 @@ func (c *AlertImpl) Watch(opts metav1.ListOptions) (watch.Interface, error) {
 	return c.r.Get().
 		Prefix("watch").
 		Namespace(c.ns).
-		Resource("alerts").
+		Resource(ResourceTypeAlert).
 		VersionedParams(&opts, ExtendedCodec).
 		Watch()
 }
@@ -99,7 +105,7 @@ func (c *AlertImpl) UpdateStatus(alert *aci.Alert) (result *aci.Alert, err error
 	result = &aci.Alert{}
 	err = c.r.Put().
 		Namespace(c.ns).
-		Resource("alerts").
+		Resource(ResourceTypeAlert).
 		Name(alert.Name).
 		SubResource("status").
 		Body(alert).

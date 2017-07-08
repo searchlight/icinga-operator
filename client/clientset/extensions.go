@@ -14,7 +14,9 @@ const (
 
 type ExtensionInterface interface {
 	RESTClient() rest.Interface
-	AlertNamespacer
+	AlertGetter
+	NodeAlertGetter
+	ClusterAlertGetter
 }
 
 // AppsCodeExtensionsClient is used to interact with experimental Kubernetes features.
@@ -26,8 +28,16 @@ type ExtensionClient struct {
 
 var _ ExtensionInterface = &ExtensionClient{}
 
-func (c *ExtensionClient) Alert(namespace string) AlertInterface {
+func (c *ExtensionClient) Alerts(namespace string) AlertInterface {
 	return newAlert(c, namespace)
+}
+
+func (c *ExtensionClient) NodeAlerts(namespace string) NodeAlertInterface {
+	return newNodeAlert(c, namespace)
+}
+
+func (c *ExtensionClient) ClusterAlerts(namespace string) ClusterAlertInterface {
+	return newClusterAlert(c, namespace)
 }
 
 // NewForConfig creates a new ExtensionClient for the given config. This client

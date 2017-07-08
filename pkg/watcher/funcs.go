@@ -50,13 +50,13 @@ func StatefulSetWatchFunc(c clientset.Interface) func(options metav1.ListOptions
 
 func AlertListFunc(c acs.ExtensionInterface) func(metav1.ListOptions) (runtime.Object, error) {
 	return func(opts metav1.ListOptions) (runtime.Object, error) {
-		return c.Alert(apiv1.NamespaceAll).List(opts)
+		return c.Alerts(apiv1.NamespaceAll).List(opts)
 	}
 }
 
 func AlertWatchFunc(c acs.ExtensionInterface) func(options metav1.ListOptions) (watch.Interface, error) {
 	return func(options metav1.ListOptions) (watch.Interface, error) {
-		return c.Alert(apiv1.NamespaceAll).Watch(options)
+		return c.Alerts(apiv1.NamespaceAll).Watch(options)
 	}
 }
 

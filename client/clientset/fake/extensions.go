@@ -33,8 +33,16 @@ func NewFakeExtensionClient(objects ...runtime.Object) *FakeExtensionClient {
 	return &FakeExtensionClient{&fakePtr}
 }
 
-func (a *FakeExtensionClient) Alert(namespace string) clientset.AlertInterface {
-	return &FakeAlert{a.Fake, namespace}
+func (c *FakeExtensionClient) Alerts(namespace string) clientset.AlertInterface {
+	return &FakeAlert{c.Fake, namespace}
+}
+
+func (c *FakeExtensionClient) NodeAlerts(namespace string) clientset.NodeAlertInterface {
+	return &FakeNodeAlert{c.Fake, namespace}
+}
+
+func (c *FakeExtensionClient) ClusterAlerts(namespace string) clientset.ClusterAlertInterface {
+	return &FakeClusterAlert{c.Fake, namespace}
 }
 
 // RESTClient returns a RESTClient that is used to communicate

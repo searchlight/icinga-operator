@@ -154,7 +154,7 @@ func GetNode(client clientset.Interface, nodeName, alertNamespace string) ([]*Ku
 func GetAlertList(acExtClient acs.ExtensionInterface, kubeClient clientset.Interface, namespace string, ls labels.Selector) ([]aci.Alert, error) {
 	alerts := make([]aci.Alert, 0)
 	if namespace != "" {
-		alertList, err := acExtClient.Alert(namespace).List(metav1.ListOptions{LabelSelector: ls.String()})
+		alertList, err := acExtClient.Alerts(namespace).List(metav1.ListOptions{LabelSelector: ls.String()})
 		if err != nil {
 			return nil, errors.New().WithCause(err).Err()
 		}
@@ -162,7 +162,7 @@ func GetAlertList(acExtClient acs.ExtensionInterface, kubeClient clientset.Inter
 			alerts = append(alerts, alertList.Items...)
 		}
 	} else {
-		alertList, err := acExtClient.Alert(apiv1.NamespaceAll).List(metav1.ListOptions{LabelSelector: ls.String()})
+		alertList, err := acExtClient.Alerts(apiv1.NamespaceAll).List(metav1.ListOptions{LabelSelector: ls.String()})
 		if err != nil {
 			return nil, errors.New().WithCause(err).Err()
 		}
@@ -175,7 +175,7 @@ func GetAlertList(acExtClient acs.ExtensionInterface, kubeClient clientset.Inter
 }
 
 func GetAlert(acExtClient acs.ExtensionInterface, namespace, name string) (*aci.Alert, error) {
-	return acExtClient.Alert(namespace).Get(name)
+	return acExtClient.Alerts(namespace).Get(name)
 }
 
 const (
