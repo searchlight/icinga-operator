@@ -1,7 +1,6 @@
 package mini
 
 import (
-	"github.com/appscode/searchlight/pkg/testing"
 	"github.com/appscode/searchlight/pkg/watcher"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
@@ -16,7 +15,7 @@ func CreateService(w *watcher.Watcher, namespace string, selector map[string]str
 			Selector: selector,
 		},
 	}
-	if err := testing.CreateKubernetesObject(w.KubeClient, service); err != nil {
+	if err := CreateKubernetesObject(w.KubeClient, service); err != nil {
 		return nil, err
 	}
 	return service, nil

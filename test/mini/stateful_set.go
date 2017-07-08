@@ -6,7 +6,6 @@ import (
 
 	"github.com/appscode/go/types"
 	"github.com/appscode/searchlight/pkg/controller/host"
-	"github.com/appscode/searchlight/pkg/testing"
 	"github.com/appscode/searchlight/pkg/watcher"
 	"github.com/appscode/searchlight/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -30,7 +29,7 @@ func CreateStatefulSet(w *watcher.Watcher, namespace string) (*apps.StatefulSet,
 		},
 	}
 
-	if err := testing.CreateKubernetesObject(w.KubeClient, statefulSet); err != nil {
+	if err := CreateKubernetesObject(w.KubeClient, statefulSet); err != nil {
 		return nil, err
 	}
 

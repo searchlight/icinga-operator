@@ -14,5 +14,5 @@ func GetAlertInfo(namespace, alertName string) (*aci.Alert, error) {
 		log.Errorln(err)
 		os.Exit(1)
 	}
-	return kubeClient.ExtClient.Alert(namespace).Get(alertName)
+	return kubeClient.ExtClient.Alerts(namespace).Get(alertName)
 }

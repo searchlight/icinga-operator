@@ -6,7 +6,6 @@ import (
 
 	"github.com/appscode/go/types"
 	"github.com/appscode/searchlight/pkg/controller/host"
-	"github.com/appscode/searchlight/pkg/testing"
 	"github.com/appscode/searchlight/pkg/watcher"
 	"github.com/appscode/searchlight/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -16,7 +15,7 @@ import (
 func CreateDeployment(w *watcher.Watcher, namespace string) (*extensions.Deployment, error) {
 	deployment := &extensions.Deployment{}
 	deployment.Namespace = namespace
-	if err := testing.CreateKubernetesObject(w.KubeClient, deployment); err != nil {
+	if err := CreateKubernetesObject(w.KubeClient, deployment); err != nil {
 		return nil, err
 	}
 

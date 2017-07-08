@@ -1,0 +1,29 @@
+metadata:
+  name: alert.monitoring.appscode.com
+  labels:
+    app: searchlight  
+apiVersion: extensions/v1beta1
+kind: ThirdPartyResource
+description: "Searchlight by AppsCode - Alerts for Kubernetes"
+versions:
+  - name: v1alpha1
+---
+metadata:
+  name: nodealert.monitoring.appscode.com
+  labels:
+    app: searchlight
+apiVersion: extensions/v1beta1
+kind: ThirdPartyResource
+description: "Searchlight by AppsCode - Node Alerts for Kubernetes"
+versions:
+  - name: v1alpha1
+---
+metadata:
+  name: clusteralert.monitoring.appscode.com
+  labels:
+    app: searchlight
+apiVersion: extensions/v1beta1
+kind: ThirdPartyResource
+description: "Searchlight by AppsCode - Cluster Alerts for Kubernetes"
+versions:
+  - name: v1alpha1

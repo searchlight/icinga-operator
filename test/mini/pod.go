@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/appscode/searchlight/pkg/testing"
 	"github.com/appscode/searchlight/pkg/watcher"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
@@ -32,7 +31,7 @@ func checkPod(w *watcher.Watcher, pod *apiv1.Pod) (*apiv1.Pod, error) {
 func CreatePod(w *watcher.Watcher, namespace string) (*apiv1.Pod, error) {
 	pod := &apiv1.Pod{}
 	pod.Namespace = namespace
-	if err := testing.CreateKubernetesObject(w.KubeClient, pod); err != nil {
+	if err := CreateKubernetesObject(w.KubeClient, pod); err != nil {
 		return nil, err
 	}
 
@@ -46,7 +45,7 @@ func ReCreatePod(w *watcher.Watcher, pod *apiv1.Pod) (*apiv1.Pod, error) {
 			Namespace: pod.Namespace,
 		},
 	}
-	if err := testing.CreateKubernetesObject(w.KubeClient, newPod); err != nil {
+	if err := CreateKubernetesObject(w.KubeClient, newPod); err != nil {
 		return nil, err
 	}
 

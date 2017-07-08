@@ -31,9 +31,21 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
 		&Alert{},
 		&AlertList{},
+
+		&NodeAlert{},
+		&NodeAlertList{},
+
+		&ClusterAlert{},
+		&ClusterAlertList{},
 	)
 	return nil
 }
 
 func (obj *Alert) GetObjectKind() schema.ObjectKind     { return &obj.TypeMeta }
 func (obj *AlertList) GetObjectKind() schema.ObjectKind { return &obj.TypeMeta }
+
+func (obj *NodeAlert) GetObjectKind() schema.ObjectKind     { return &obj.TypeMeta }
+func (obj *NodeAlertList) GetObjectKind() schema.ObjectKind { return &obj.TypeMeta }
+
+func (obj *ClusterAlert) GetObjectKind() schema.ObjectKind     { return &obj.TypeMeta }
+func (obj *ClusterAlertList) GetObjectKind() schema.ObjectKind { return &obj.TypeMeta }

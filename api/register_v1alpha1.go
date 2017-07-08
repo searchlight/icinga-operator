@@ -19,6 +19,12 @@ func v1addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(V1alpha1SchemeGroupVersion,
 		&Alert{},
 		&AlertList{},
+
+		&NodeAlert{},
+		&NodeAlertList{},
+
+		&ClusterAlert{},
+		&ClusterAlertList{},
 	)
 	metav1.AddToGroupVersion(scheme, V1alpha1SchemeGroupVersion)
 	return nil

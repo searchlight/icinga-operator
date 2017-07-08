@@ -50,7 +50,7 @@ func createAlertThirdPartyResource(w *watcher.Watcher) (err error) {
 
 			try := 0
 			for {
-				_, err = w.ExtClient.Alert(apiv1.NamespaceDefault).List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
+				_, err = w.ExtClient.Alerts(apiv1.NamespaceDefault).List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
 
 				if err != nil {
 					fmt.Println(err.Error())
@@ -107,7 +107,7 @@ func CreateAlert(watcher *watcher.Watcher, namespace string, labelMap map[string
 	}
 
 	// Create Fake 1st Alert
-	if _, err := watcher.ExtClient.Alert(alert.Namespace).Create(alert); err != nil {
+	if _, err := watcher.ExtClient.Alerts(alert.Namespace).Create(alert); err != nil {
 		return nil, err
 	}
 
@@ -116,7 +116,7 @@ func CreateAlert(watcher *watcher.Watcher, namespace string, labelMap map[string
 
 func DeleteAlert(watcher *watcher.Watcher, alert *aci.Alert) error {
 	// Delete Alert
-	if err := watcher.ExtClient.Alert(alert.Namespace).Delete(alert.Name); err != nil {
+	if err := watcher.ExtClient.Alerts(alert.Namespace).Delete(alert.Name); err != nil {
 		return err
 	}
 	return nil

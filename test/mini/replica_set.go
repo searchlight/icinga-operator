@@ -6,7 +6,6 @@ import (
 
 	"github.com/appscode/go/types"
 	"github.com/appscode/searchlight/pkg/controller/host"
-	"github.com/appscode/searchlight/pkg/testing"
 	"github.com/appscode/searchlight/pkg/watcher"
 	"github.com/appscode/searchlight/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -37,7 +36,7 @@ func checkReplicaSet(w *watcher.Watcher, replicaSet *extensions.ReplicaSet) (*ex
 func CreateReplicaSet(w *watcher.Watcher, namespace string) (*extensions.ReplicaSet, error) {
 	replicaSet := &extensions.ReplicaSet{}
 	replicaSet.Namespace = namespace
-	if err := testing.CreateKubernetesObject(w.KubeClient, replicaSet); err != nil {
+	if err := CreateKubernetesObject(w.KubeClient, replicaSet); err != nil {
 		return nil, err
 	}
 
@@ -54,7 +53,7 @@ func ReCreateReplicaSet(w *watcher.Watcher, replicaSet *extensions.ReplicaSet) (
 			Replicas: replicaSet.Spec.Replicas,
 		},
 	}
-	if err := testing.CreateKubernetesObject(w.KubeClient, newReplicaSet); err != nil {
+	if err := CreateKubernetesObject(w.KubeClient, newReplicaSet); err != nil {
 		return nil, err
 	}
 
