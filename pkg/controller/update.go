@@ -6,25 +6,25 @@ import (
 	"github.com/appscode/searchlight/pkg/controller/host/extpoints"
 )
 
-func (b *IcingaController) Update() error {
-	if !b.checkIcingaAvailability() {
+func (c *Controller) Update() error {
+	if !c.checkIcingaAvailability() {
 		return errors.New("Icinga is down").Err()
 	}
 
-	log.Debugln("Starting updating alert", b.ctx.Resource.ObjectMeta)
+	log.Debugln("Starting updating alert", c.opt.Resource.ObjectMeta)
 
-	alertSpec := b.ctx.Resource.Spec
-	command, found := b.ctx.IcingaData[alertSpec.Check]
+	alertSpec := c.opt.Resource.Spec
+	command, found := c.opt.IcingaData[alertSpec.Check]
 	if !found {
 		return errors.Newf("check_command [%s] not found", alertSpec.Check).Err()
 	}
-	hostType, found := command.HostType[b.ctx.ObjectType]
+	hostType, found := command.HostType[c.opt.ObjectType]
 	if !found {
-		return errors.Newf("check_command [%s] is not applicable to %s", alertSpec.Check, b.ctx.ObjectType).Err()
+		return errors.Newf("check_command [%s] is not applicable to %s", alertSpec.Check, c.opt.ObjectType).Err()
 	}
 	p := extpoints.IcingaHostTypes.Lookup(hostType)
 	if p == nil {
 		return errors.Newf("IcingaHostType %v is unknown", hostType).Err()
 	}
-	return p.UpdateAlert(b.ctx)
+	return p.UpdateAlert(c.opt)
 }

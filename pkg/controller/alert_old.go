@@ -8,10 +8,8 @@ import (
 	"github.com/appscode/errors"
 	"github.com/appscode/log"
 	aci "github.com/appscode/searchlight/api"
-	acs "github.com/appscode/searchlight/client/clientset"
 	"github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/analytics"
-	"github.com/appscode/searchlight/pkg/client/icinga"
 	"github.com/appscode/searchlight/pkg/controller/event"
 	"github.com/appscode/searchlight/pkg/controller/host"
 	_ "github.com/appscode/searchlight/pkg/controller/host/localhost"
@@ -19,50 +17,26 @@ import (
 	_ "github.com/appscode/searchlight/pkg/controller/host/pod"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	"github.com/appscode/searchlight/pkg/events"
-	"github.com/appscode/searchlight/pkg/stash"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
-	clientset "k8s.io/client-go/kubernetes"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
-type IcingaController struct {
-	ctx *types.Context
-}
-
-func New(kubeClient clientset.Interface,
-	icingaClient *icinga.IcingaClient,
-	extClient acs.ExtensionInterface,
-	storage stash.Storage) *IcingaController {
-	data, err := getIcingaDataMap()
-	if err != nil {
-		log.Errorln("Icinga data not found")
-	}
-	ctx := &types.Context{
-		KubeClient:   kubeClient,
-		ExtClient:    extClient,
-		IcingaData:   data,
-		IcingaClient: icingaClient,
-		Storage:      storage,
-	}
-	return &IcingaController{ctx: ctx}
-}
-
-func (b *IcingaController) Handle(e *events.Event) error {
+func (c *Controller) Handle(e *events.Event) error {
 	var err error
 	switch e.ResourceType {
 	case events.Alert:
-		err = b.handleAlert(e)
+		err = c.handleAlert(e)
 		sendEventForAlert(e.EventType, err)
 	case events.Pod:
-		err = b.handlePod(e)
+		err = c.handlePod(e)
 	case events.Node:
-		err = b.handleNode(e)
+		err = c.handleNode(e)
 	case events.Service:
-		err = b.handleService(e)
+		err = c.handleService(e)
 	case events.AlertEvent:
-		err = b.handleAlertEvent(e)
+		err = c.handleAlertEvent(e)
 	}
 
 	if err != nil {
@@ -72,7 +46,7 @@ func (b *IcingaController) Handle(e *events.Event) error {
 	return nil
 }
 
-func (b *IcingaController) handleAlert(e *events.Event) error {
+func (c *Controller) handleAlert(e *events.Event) error {
 	alert := e.RuntimeObj
 
 	if e.EventType.IsAdded() {
@@ -87,45 +61,45 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			t := metav1.Now()
 			_alert.Status.CreationTime = &t
 			_alert.Status.Phase = aci.AlertPhaseCreating
-			_alert, err = b.ctx.ExtClient.Alerts(_alert.Namespace).Update(_alert)
+			_alert, err = c.opt.ExtClient.Alerts(_alert.Namespace).Update(_alert)
 			if err != nil {
 				return errors.New().WithCause(err).Err()
 			}
 		}
 
-		b.ctx.Resource = _alert
+		c.opt.Resource = _alert
 
-		if err := b.IsObjectExists(); err != nil {
+		if err := c.IsObjectExists(); err != nil {
 			// Update Status
 			t := metav1.Now()
 			_alert.Status.UpdateTime = &t
 			_alert.Status.Phase = aci.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
-			if _, err := b.ctx.ExtClient.Alerts(_alert.Namespace).Update(_alert); err != nil {
+			if _, err := c.opt.ExtClient.Alerts(_alert.Namespace).Update(_alert); err != nil {
 				return errors.New().WithCause(err).Err()
 			}
 			if kerr.IsNotFound(err) {
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonNotFound, err.Error())
+				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonNotFound, err.Error())
 				return nil
 			} else {
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToProceed, err.Error())
+				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToProceed, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
 		}
 
-		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonCreating)
+		event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonCreating)
 
-		if err := b.Create(); err != nil {
+		if err := c.Create(); err != nil {
 			// Update Status
 			t := metav1.Now()
 			_alert.Status.UpdateTime = &t
 			_alert.Status.Phase = aci.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
-			if _, err := b.ctx.ExtClient.Alerts(_alert.Namespace).Update(_alert); err != nil {
+			if _, err := c.opt.ExtClient.Alerts(_alert.Namespace).Update(_alert); err != nil {
 				return errors.New().WithCause(err).Err()
 			}
 
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToCreate, err.Error())
+			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToCreate, err.Error())
 			return errors.New().WithCause(err).Err()
 		}
 
@@ -133,10 +107,10 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 		_alert.Status.UpdateTime = &t
 		_alert.Status.Phase = aci.AlertPhaseCreated
 		_alert.Status.Reason = ""
-		if _, err = b.ctx.ExtClient.Alerts(_alert.Namespace).Update(_alert); err != nil {
+		if _, err = c.opt.ExtClient.Alerts(_alert.Namespace).Update(_alert); err != nil {
 			return errors.New().WithCause(err).Err()
 		}
-		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulCreate)
+		event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulCreate)
 	} else if e.EventType.IsUpdated() {
 		if len(alert) == 0 {
 			return errors.New("Missing alert data").Err()
@@ -153,73 +127,73 @@ func (b *IcingaController) handleAlert(e *events.Event) error {
 			return errors.New().WithCause(err).Err()
 		}
 
-		b.ctx.Resource = newConfig
+		c.opt.Resource = newConfig
 
-		if err := b.IsObjectExists(); err != nil {
+		if err := c.IsObjectExists(); err != nil {
 			if kerr.IsNotFound(err) {
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonNotFound, err.Error())
+				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonNotFound, err.Error())
 				return nil
 			} else {
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToProceed, err.Error())
+				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToProceed, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
 		}
 
-		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonUpdating)
+		event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonUpdating)
 
-		if err := b.Update(); err != nil {
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToUpdate, err.Error())
+		if err := c.Update(); err != nil {
+			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToUpdate, err.Error())
 			return errors.New().WithCause(err).Err()
 		}
 
 		// Set Status
-		_alert := b.ctx.Resource
+		_alert := c.opt.Resource
 		t := metav1.Now()
 		_alert.Status.UpdateTime = &t
-		if _, err := b.ctx.ExtClient.Alerts(_alert.Namespace).Update(_alert); err != nil {
+		if _, err := c.opt.ExtClient.Alerts(_alert.Namespace).Update(_alert); err != nil {
 			return errors.New().WithCause(err).Err()
 		}
-		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulUpdate)
+		event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulUpdate)
 	} else if e.EventType.IsDeleted() {
 		if len(alert) == 0 {
 			return errors.New("Missing alert data").Err()
 		}
 
-		b.ctx.Resource = alert[0].(*aci.Alert)
-		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonDeleting)
+		c.opt.Resource = alert[0].(*aci.Alert)
+		event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonDeleting)
 
-		b.parseAlertOptions()
-		if err := b.Delete(); err != nil {
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToDelete, err.Error())
+		c.parseAlertOptions()
+		if err := c.Delete(); err != nil {
+			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToDelete, err.Error())
 			return errors.New().WithCause(err).Err()
 		}
-		event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulDelete)
+		event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulDelete)
 	}
 	return nil
 }
 
-func (b *IcingaController) handlePod(e *events.Event) error {
+func (c *Controller) handlePod(e *events.Event) error {
 	if !(e.EventType.IsAdded() || e.EventType.IsDeleted()) {
 		return nil
 	}
-	ancestors := b.getParentsForPod(e.RuntimeObj[0])
+	ancestors := c.getParentsForPod(e.RuntimeObj[0])
 	if host.IsIcingaApp(ancestors, e.MetaData.Namespace) {
 		if e.EventType.IsAdded() {
-			go b.handleIcingaPod()
+			go c.handleIcingaPod()
 		}
 	} else {
-		return b.handleRegularPod(e, ancestors)
+		return c.handleRegularPod(e, ancestors)
 	}
 
 	return nil
 }
 
-func (b *IcingaController) handleIcingaPod() {
+func (c *Controller) handleIcingaPod() {
 	log.Debugln("Icinga pod is created...")
 	then := time.Now()
 	for {
 		log.Debugln("Waiting for Icinga to UP")
-		if b.checkIcingaAvailability() {
+		if c.checkIcingaAvailability() {
 			break
 		}
 		now := time.Now()
@@ -231,7 +205,7 @@ func (b *IcingaController) handleIcingaPod() {
 	}
 
 	icingaUp := false
-	alertList, err := b.ctx.ExtClient.Alerts(apiv1.NamespaceAll).List(metav1.ListOptions{
+	alertList, err := c.opt.ExtClient.Alerts(apiv1.NamespaceAll).List(metav1.ListOptions{
 		LabelSelector: labels.Everything().String(),
 	})
 	if err != nil {
@@ -240,7 +214,7 @@ func (b *IcingaController) handleIcingaPod() {
 	}
 
 	for _, alert := range alertList.Items {
-		if !icingaUp && !b.checkIcingaAvailability() {
+		if !icingaUp && !c.checkIcingaAvailability() {
 			log.Debugln("Icinga is down...")
 			return
 		}
@@ -253,7 +227,7 @@ func (b *IcingaController) handleIcingaPod() {
 		}
 		fakeEvent.RuntimeObj = append(fakeEvent.RuntimeObj, &alert)
 
-		if err := b.handleAlert(fakeEvent); err != nil {
+		if err := c.handleAlert(fakeEvent); err != nil {
 			log.Debugln(err)
 		}
 	}
@@ -261,7 +235,7 @@ func (b *IcingaController) handleIcingaPod() {
 	return
 }
 
-func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.Ancestors) error {
+func (c *Controller) handleRegularPod(e *events.Event, ancestors []*types.Ancestors) error {
 	namespace := e.MetaData.Namespace
 	icingaUp := false
 	ancestorItself := &types.Ancestors{
@@ -274,7 +248,7 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 			// Waiting for POD IP to use as Icinga Host IP
 			then := time.Now()
 			for {
-				hasPodIP, err := b.checkPodIPAvailability(e.MetaData.Name, namespace)
+				hasPodIP, err := c.checkPodIPAvailability(e.MetaData.Name, namespace)
 				if err != nil {
 					return errors.New().WithCause(err).Err()
 				}
@@ -289,29 +263,29 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 				time.Sleep(time.Second * 30)
 			}
 
-			b.ctx.Resource = &alert
+			c.opt.Resource = &alert
 
 			additionalMessage := fmt.Sprintf(`pod "%v.%v"`, e.MetaData.Name, e.MetaData.Namespace)
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSync, additionalMessage)
-			b.parseAlertOptions()
+			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSync, additionalMessage)
+			c.parseAlertOptions()
 
-			if err := b.Create(e.MetaData.Name); err != nil {
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
+			if err := c.Create(e.MetaData.Name); err != nil {
+				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulSync, additionalMessage)
+			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 		} else if e.EventType.IsDeleted() {
-			b.ctx.Resource = &alert
+			c.opt.Resource = &alert
 
 			additionalMessage := fmt.Sprintf(`pod "%v.%v"`, e.MetaData.Name, e.MetaData.Namespace)
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSync, additionalMessage)
-			b.parseAlertOptions()
+			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSync, additionalMessage)
+			c.parseAlertOptions()
 
-			if err := b.Delete(e.MetaData.Name); err != nil {
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
+			if err := c.Delete(e.MetaData.Name); err != nil {
+				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulSync, additionalMessage)
+			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 		}
 		return nil
 	}
@@ -325,7 +299,7 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 				return errors.New().WithCause(err).Err()
 			}
 
-			alertList, err := b.ctx.ExtClient.Alerts(namespace).List(metav1.ListOptions{
+			alertList, err := c.opt.ExtClient.Alerts(namespace).List(metav1.ListOptions{
 				LabelSelector: lb.String(),
 			})
 			if err != nil {
@@ -333,13 +307,13 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 			}
 
 			for _, alert := range alertList.Items {
-				if !icingaUp && !b.checkIcingaAvailability() {
+				if !icingaUp && !c.checkIcingaAvailability() {
 					return errors.New("Icinga is down").Err()
 				}
 				icingaUp = true
 
-				if command, found := b.ctx.IcingaData[alert.Spec.Check]; found {
-					if hostType, found := command.HostType[b.ctx.ObjectType]; found {
+				if command, found := c.opt.IcingaData[alert.Spec.Check]; found {
+					if hostType, found := command.HostType[c.opt.ObjectType]; found {
 						if hostType != host.HostTypePod {
 							continue
 						}
@@ -355,14 +329,14 @@ func (b *IcingaController) handleRegularPod(e *events.Event, ancestors []*types.
 
 				t := metav1.Now()
 				alert.Status.UpdateTime = &t
-				b.ctx.ExtClient.Alerts(alert.Namespace).Update(&alert)
+				c.opt.ExtClient.Alerts(alert.Namespace).Update(&alert)
 			}
 		}
 	}
 	return nil
 }
 
-func (b *IcingaController) handleNode(e *events.Event) error {
+func (c *Controller) handleNode(e *events.Event) error {
 	if !(e.EventType.IsAdded() || e.EventType.IsDeleted()) {
 		return nil
 	}
@@ -383,35 +357,35 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 
 	syncAlert := func(alert aci.Alert) error {
 		if e.EventType.IsAdded() {
-			b.ctx.Resource = &alert
+			c.opt.Resource = &alert
 
 			additionalMessage := fmt.Sprintf(`node "%v"`, e.MetaData.Name)
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSync, additionalMessage)
-			b.parseAlertOptions()
+			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSync, additionalMessage)
+			c.parseAlertOptions()
 
-			if err := b.Create(e.MetaData.Name); err != nil {
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
+			if err := c.Create(e.MetaData.Name); err != nil {
+				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulSync, additionalMessage)
+			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 
 		} else if e.EventType.IsDeleted() {
-			b.ctx.Resource = &alert
+			c.opt.Resource = &alert
 
 			additionalMessage := fmt.Sprintf(`node "%v"`, e.MetaData.Name)
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSync, additionalMessage)
-			b.parseAlertOptions()
+			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSync, additionalMessage)
+			c.parseAlertOptions()
 
-			if err := b.Delete(e.MetaData.Name); err != nil {
-				event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
+			if err := c.Delete(e.MetaData.Name); err != nil {
+				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
-			event.CreateAlertEvent(b.ctx.KubeClient, b.ctx.Resource, types.EventReasonSuccessfulSync, additionalMessage)
+			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 		}
 		return nil
 	}
 
-	alertList, err := b.ctx.ExtClient.Alerts(apiv1.NamespaceAll).List(metav1.ListOptions{
+	alertList, err := c.opt.ExtClient.Alerts(apiv1.NamespaceAll).List(metav1.ListOptions{
 		LabelSelector: lb.String(),
 	})
 	if err != nil {
@@ -419,13 +393,13 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 	}
 
 	for _, alert := range alertList.Items {
-		if !icingaUp && !b.checkIcingaAvailability() {
+		if !icingaUp && !c.checkIcingaAvailability() {
 			return errors.New("Icinga is down").Err()
 		}
 		icingaUp = true
 
-		if command, found := b.ctx.IcingaData[alert.Spec.Check]; found {
-			if hostType, found := command.HostType[b.ctx.ObjectType]; found {
+		if command, found := c.opt.IcingaData[alert.Spec.Check]; found {
+			if hostType, found := command.HostType[c.opt.ObjectType]; found {
 				if hostType != host.HostTypeNode {
 					continue
 				}
@@ -441,27 +415,27 @@ func (b *IcingaController) handleNode(e *events.Event) error {
 
 		t := metav1.Now()
 		alert.Status.UpdateTime = &t
-		b.ctx.ExtClient.Alerts(alert.Namespace).Update(&alert)
+		c.opt.ExtClient.Alerts(alert.Namespace).Update(&alert)
 	}
 
 	return nil
 }
 
-func (b *IcingaController) handleService(e *events.Event) error {
+func (c *Controller) handleService(e *events.Event) error {
 	if e.EventType.IsAdded() {
 		if checkIcingaService(e.MetaData.Name, e.MetaData.Namespace) {
-			service, err := b.ctx.KubeClient.CoreV1().Services(e.MetaData.Namespace).Get(e.MetaData.Name, metav1.GetOptions{})
+			service, err := c.opt.KubeClient.CoreV1().Services(e.MetaData.Namespace).Get(e.MetaData.Name, metav1.GetOptions{})
 			if err != nil {
 				return errors.New().WithCause(err).Err()
 			}
 			endpoint := fmt.Sprintf("https://%v:5665/v1", service.Spec.ClusterIP)
-			b.ctx.IcingaClient = b.ctx.IcingaClient.SetEndpoint(endpoint)
+			c.opt.IcingaClient = c.opt.IcingaClient.SetEndpoint(endpoint)
 		}
 	}
 	return nil
 }
 
-func (b *IcingaController) handleAlertEvent(e *events.Event) error {
+func (c *Controller) handleAlertEvent(e *events.Event) error {
 	var alertEvents []interface{}
 	if e.ResourceType == events.AlertEvent {
 		alertEvents = e.RuntimeObj
@@ -486,13 +460,13 @@ func (b *IcingaController) handleAlertEvent(e *events.Event) error {
 		eventRefObjNamespace := alertEvent.InvolvedObject.Namespace
 		eventRefObjName := alertEvent.InvolvedObject.Name
 
-		alert, err := b.ctx.ExtClient.Alerts(eventRefObjNamespace).Get(eventRefObjName)
+		alert, err := c.opt.ExtClient.Alerts(eventRefObjNamespace).Get(eventRefObjName)
 		if err != nil {
 			return errors.New().WithCause(err).Err()
 		}
 
-		b.ctx.Resource = alert
-		return b.Acknowledge(alertEvent)
+		c.opt.Resource = alert
+		return c.Acknowledge(alertEvent)
 	}
 	return nil
 }

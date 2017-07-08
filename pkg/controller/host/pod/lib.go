@@ -20,18 +20,18 @@ type icingaHost struct {
 }
 
 type biblio struct {
-	*types.Context
+	*types.Option
 }
 
-func (p *icingaHost) CreateAlert(ctx *types.Context, specificObject string) error {
+func (p *icingaHost) CreateAlert(ctx *types.Option, specificObject string) error {
 	return (&biblio{ctx}).create(specificObject)
 }
 
-func (p *icingaHost) UpdateAlert(ctx *types.Context) error {
+func (p *icingaHost) UpdateAlert(ctx *types.Option) error {
 	return (&biblio{ctx}).update()
 }
 
-func (p *icingaHost) DeleteAlert(ctx *types.Context, specificObject string) error {
+func (p *icingaHost) DeleteAlert(ctx *types.Option, specificObject string) error {
 	return (&biblio{ctx}).delete(specificObject)
 }
 

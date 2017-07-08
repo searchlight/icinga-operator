@@ -6,30 +6,30 @@ import (
 	"github.com/appscode/searchlight/pkg/controller/host/extpoints"
 )
 
-func (b *IcingaController) Delete(specificObject ...string) error {
-	if !b.checkIcingaAvailability() {
+func (c *Controller) Delete(specificObject ...string) error {
+	if !c.checkIcingaAvailability() {
 		return errors.New("Icinga is down").Err()
 	}
 
-	log.Debugln("Starting deleting alert", b.ctx.Resource.ObjectMeta)
+	log.Debugln("Starting deleting alert", c.opt.Resource.ObjectMeta)
 
 	object := ""
 	if len(specificObject) > 0 {
 		object = specificObject[0]
 	}
 
-	alertSpec := b.ctx.Resource.Spec
-	command, found := b.ctx.IcingaData[alertSpec.Check]
+	alertSpec := c.opt.Resource.Spec
+	command, found := c.opt.IcingaData[alertSpec.Check]
 	if !found {
 		return errors.Newf("check_command [%s] not found", alertSpec.Check).Err()
 	}
-	hostType, found := command.HostType[b.ctx.ObjectType]
+	hostType, found := command.HostType[c.opt.ObjectType]
 	if !found {
-		return errors.Newf("check_command [%s] is not applicable to %s", alertSpec.Check, b.ctx.ObjectType).Err()
+		return errors.Newf("check_command [%s] is not applicable to %s", alertSpec.Check, c.opt.ObjectType).Err()
 	}
 	p := extpoints.IcingaHostTypes.Lookup(hostType)
 	if p == nil {
 		return errors.Newf("IcingaHostType %v is unknown", hostType).Err()
 	}
-	return p.DeleteAlert(b.ctx, object)
+	return p.DeleteAlert(c.opt, object)
 }

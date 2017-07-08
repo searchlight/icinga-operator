@@ -51,7 +51,7 @@ type IcingaData struct {
 	VarInfo  map[string]data.CommandVar
 }
 
-type Context struct {
+type Option struct {
 	// kubernetes client
 	KubeClient clientset.Interface
 	ExtClient  acs.ExtensionInterface
