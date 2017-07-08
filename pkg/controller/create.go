@@ -11,7 +11,7 @@ func (b *IcingaController) Create(specificObject ...string) error {
 		return errors.New("Icinga is down").Err()
 	}
 
-	log.Debugln("Starting createing alert", b.ctx.Resource.ObjectMeta)
+	log.Debugln("Starting creating alert", b.ctx.Resource.ObjectMeta)
 
 	object := ""
 	if len(specificObject) > 0 {
