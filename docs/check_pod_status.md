@@ -50,12 +50,10 @@ CRITICAL: {
 ```yaml
 # This will check all pod status in default namespace
 apiVersion: monitoring.appscode.com/v1alpha1
-kind: Alert
+kind: PodAlert
 metadata:
   name: check-pod-status
   namespace: default
-  labels:
-    alert.appscode.com/objectType: cluster
 spec:
   check: pod_status
   alertInterval: 2m

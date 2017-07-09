@@ -40,12 +40,10 @@ OK: Found all pods
 ```yaml
 # This will check if any pod exists in default namespace
 apiVersion: monitoring.appscode.com/v1alpha1
-kind: Alert
+kind: ClusterAlert
 metadata:
   name: check-pod-exist-1
   namespace: default
-  labels:
-    alert.appscode.com/objectType: cluster
 spec:
   check: pod_exists
   alertInterval: 2m

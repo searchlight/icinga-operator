@@ -43,7 +43,7 @@ See Hostfacts [deployment guide](hostfacts.md)
 ##### Configure Alert Object
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
-kind: Alert
+kind: NodeAlert
 metadata:
   name: check-node-disk
   namespace: default
@@ -59,7 +59,6 @@ spec:
     to: system-admin
 
 # To set alert on specific node, set following labels
-# labels:
-#   alert.appscode.com/objectType: nodes
-#   alert.appscode.com/objectName: ip-172-20-0-9.ec2.internal
+#  selector:
+#    kubernetes.io/hostname: ip-172-20-0-9.ec2.internal
 ```

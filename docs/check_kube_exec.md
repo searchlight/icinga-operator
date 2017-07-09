@@ -40,7 +40,7 @@ CRITICAL: Exit Code: 2
 ##### Configure Alert Object
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
-kind: Alert
+kind: PodAlert
 metadata:
   name: check-kube-exec
   namespace: kube-system

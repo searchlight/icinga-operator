@@ -30,12 +30,10 @@ OK: Node is Ready
 ```yaml
 # This alert will be set to all nodes individually
 apiVersion: monitoring.appscode.com/v1alpha1
-kind: Alert
+kind: NodeAlert
 metadata:
   name: check-node-status
   namespace: default
-  labels:
-    alert.appscode.com/objectType: cluster
 spec:
   check: node_status
   alertInterval: 2m
