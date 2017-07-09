@@ -30,6 +30,26 @@ func (h *NodeHost) GetObject(alert tapi.NodeAlert, node apiv1.Node) KHost {
 	return KHost{Name: node.Name + "@" + alert.Namespace, IP: nodeIP}
 }
 
+func (h *NodeHost) expandVars(alertSpec tapi.NodeAlertSpec, kh KHost, attrs map[string]interface{}) error {
+	commandVars := tapi.NodeCommands[alertSpec.Check].Vars
+	for key, val := range alertSpec.Vars {
+		if v, found := commandVars[key]; found {
+			if v.Parameterized {
+				reg, err := regexp.Compile("nodename[ ]*=[ ]*'[?]'")
+				if err != nil {
+					return err
+				}
+				attrs[IVar(key)] = reg.ReplaceAllString(val.(string), fmt.Sprintf("nodename='%s'", kh.Name))
+			} else {
+				attrs[IVar(key)] = val
+			}
+		} else {
+			return errors.Newf("variable %v not found", key).Err()
+		}
+	}
+	return nil
+}
+
 // set Alert in Icinga LocalHost
 func (h *NodeHost) Create(alert tapi.NodeAlert, node apiv1.Node) error {
 	alertSpec := alert.Spec
@@ -56,26 +76,6 @@ func (h *NodeHost) Create(alert tapi.NodeAlert, node apiv1.Node) error {
 	}
 
 	return h.CreateIcingaNotification(alert, kh)
-}
-
-func (h *NodeHost) expandVars(alertSpec tapi.NodeAlertSpec, kh KHost, attrs map[string]interface{}) error {
-	commandVars := tapi.NodeCommands[alertSpec.Check].Vars
-	for key, val := range alertSpec.Vars {
-		if v, found := commandVars[key]; found {
-			if v.Parameterized {
-				reg, err := regexp.Compile("nodename[ ]*=[ ]*'[?]'")
-				if err != nil {
-					return err
-				}
-				attrs[IVar(key)] = reg.ReplaceAllString(val.(string), fmt.Sprintf("nodename='%s'", kh.Name))
-			} else {
-				attrs[IVar(key)] = val
-			}
-		} else {
-			return errors.Newf("variable %v not found", key).Err()
-		}
-	}
-	return nil
 }
 
 func (h *NodeHost) Update(alert tapi.NodeAlert, node apiv1.Node) error {
