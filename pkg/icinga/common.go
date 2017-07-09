@@ -9,12 +9,6 @@ import (
 	tapi "github.com/appscode/searchlight/api"
 )
 
-const (
-	HostTypeLocalhost = "localhost"
-	HostTypeNode      = "node"
-	HostTypePod       = "pod"
-)
-
 type commonHost struct {
 	IcingaClient *Client
 }
