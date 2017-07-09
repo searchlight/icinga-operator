@@ -7,7 +7,6 @@ import (
 	"github.com/appscode/errors"
 	tapi "github.com/appscode/searchlight/api"
 	tcs "github.com/appscode/searchlight/client/clientset"
-	"github.com/appscode/searchlight/data"
 	clientset "k8s.io/client-go/kubernetes"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
