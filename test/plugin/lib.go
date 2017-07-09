@@ -4,12 +4,13 @@ import (
 	"errors"
 	"reflect"
 	"strings"
+	"github.com/appscode/searchlight/pkg/icinga"
 )
 
 func GetKubeObjectInfo(hostname string) (objectType string, objectName string, namespace string, err error) {
 	parts := strings.Split(hostname, "@")
 	if len(parts) != 2 {
-		err = errors.New("Invalid icinga host.name")
+		err = errors.New("Invalid icinga icinga.name")
 		return
 	}
 	name := parts[0]
@@ -17,16 +18,16 @@ func GetKubeObjectInfo(hostname string) (objectType string, objectName string, n
 
 	objectType = ""
 	objectName = ""
-	if name != host.CheckCommandPodExists && name != host.CheckCommandPodStatus {
+	if name != icinga.CheckCommandPodExists && name != icinga.CheckCommandPodStatus {
 		parts = strings.Split(name, "|")
 		if len(parts) == 1 {
-			objectType = host.TypePods
+			objectType = icinga.TypePods
 			objectName = parts[0]
 		} else if len(parts) == 2 {
 			objectType = parts[0]
 			objectName = parts[1]
 		} else {
-			err = errors.New("Invalid icinga host.name")
+			err = errors.New("Invalid icinga icinga.name")
 			return
 		}
 	}

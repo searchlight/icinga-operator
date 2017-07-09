@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 	"time"
-
 	aci "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/controller"
+	"github.com/appscode/searchlight/pkg/icinga"
 )
 
 func getIcingaHostType(commandName, objectType string) (string, error) {
@@ -27,20 +27,20 @@ func getIcingaHostType(commandName, objectType string) (string, error) {
 	return "", errors.New("Icinga host_type not found")
 }
 
-func icingaHostSearchQuery(objectList []*host.KHost) string {
+func icingaHostSearchQuery(objectList []*icinga.KHost) string {
 	matchHost := ""
 	for id, object := range objectList {
 		if id > 0 {
 			matchHost = matchHost + "||"
 		}
-		matchHost = matchHost + fmt.Sprintf(`match(\"%s\",host.name)`, object.Name)
+		matchHost = matchHost + fmt.Sprintf(`match(\"%s\",icinga.name)`, object.Name)
 	}
 	return fmt.Sprintf(`{"filter": "(%s)"}`, matchHost)
 }
 
-func countIcingaService(w *controller.Controller, objectList []*host.KHost, serviceName string, expectZero bool) error {
-	in := host.IcingaServiceSearchQuery(serviceName, objectList)
-	var respService host.ResponseObject
+func countIcingaService(w *controller.Controller, objectList []*icinga.KHost, serviceName string, expectZero bool) error {
+	in := icinga.IcingaServiceSearchQuery(serviceName, objectList)
+	var respService icinga.ResponseObject
 
 	try := 0
 	for {
@@ -75,9 +75,9 @@ func countIcingaService(w *controller.Controller, objectList []*host.KHost, serv
 	return nil
 }
 
-func countIcingaHost(w *controller.Controller, objectList []*host.KHost, expectZero bool) error {
+func countIcingaHost(w *controller.Controller, objectList []*icinga.KHost, expectZero bool) error {
 	in := icingaHostSearchQuery(objectList)
-	var respHost host.ResponseObject
+	var respHost icinga.ResponseObject
 
 	try := 0
 	for {
@@ -112,8 +112,8 @@ func countIcingaHost(w *controller.Controller, objectList []*host.KHost, expectZ
 	return nil
 }
 
-func GetIcingaHostList(w *controller.Controller, alert *aci.PodAlert) ([]*host.KHost, error) {
-	objectType, objectName := host.GetObjectInfo(alert.Labels)
+func GetIcingaHostList(w *controller.Controller, alert *aci.PodAlert) ([]*icinga.KHost, error) {
+	objectType, objectName := icinga.GetObjectInfo(alert.Labels)
 	check := alert.Spec.Check
 
 	// create all alerts for pod_status
@@ -121,7 +121,7 @@ func GetIcingaHostList(w *controller.Controller, alert *aci.PodAlert) ([]*host.K
 	if err != nil {
 		return nil, err
 	}
-	objectList, err := host.GetObjectList(w.KubeClient, check, hostType, alert.Namespace, objectType, objectName, "")
+	objectList, err := icinga.GetObjectList(w.KubeClient, check, hostType, alert.Namespace, objectType, objectName, "")
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +151,7 @@ func CheckIcingaObjectsForAlert(w *controller.Controller, alert *aci.PodAlert, e
 	return
 }
 
-func CheckIcingaObjects(w *controller.Controller, alert *aci.PodAlert, objectList []*host.KHost, expectZeroHost, expectZeroService bool) (err error) {
+func CheckIcingaObjects(w *controller.Controller, alert *aci.PodAlert, objectList []*icinga.KHost, expectZeroHost, expectZeroService bool) (err error) {
 	// Count Icinga Host in Icinga2. Should be found
 	fmt.Println("----> Counting Icinga Host")
 	if err = countIcingaHost(w, objectList, expectZeroHost); err != nil {
@@ -172,14 +172,14 @@ func CheckIcingaObjectsForPod(w *controller.Controller, podName, namespace strin
 	// Count Icinga Host in Icinga2. Should be found
 	fmt.Println("----> Counting Icinga Service")
 
-	objectList := []*host.KHost{
+	objectList := []*icinga.KHost{
 		{
 			Name: fmt.Sprintf("%v@%v", podName, namespace),
 		},
 	}
 
 	in := icingaHostSearchQuery(objectList)
-	var respService host.ResponseObject
+	var respService icinga.ResponseObject
 
 	try := 0
 	for {

@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/appscode/searchlight/pkg/controller"
-	"github.com/appscode/searchlight/util"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
@@ -36,7 +35,7 @@ func CreateDaemonSet(w *controller.Controller, namespace string) (*extensions.Da
 }
 
 func DeleteDaemonSet(watcher *controller.Controller, daemonSet *extensions.DaemonSet) error {
-	labelSelector, err := util.GetLabels(watcher.KubeClient, daemonSet.Namespace, host.TypeDaemonsets, daemonSet.Name)
+	labelSelector, err := icinga.GetLabels(watcher.KubeClient, daemonSet.Namespace, icinga.TypeDaemonsets, daemonSet.Name)
 	if err != nil {
 		return err
 	}

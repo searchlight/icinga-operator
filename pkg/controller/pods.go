@@ -30,7 +30,7 @@ func (c *Controller) WatchPods() {
 	}
 	_, ctrl := cache.NewInformer(lw,
 		&apiv1.Pod{},
-		c.syncPeriod,
+		c.SyncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				if pod, ok := obj.(*apiv1.Pod); ok {

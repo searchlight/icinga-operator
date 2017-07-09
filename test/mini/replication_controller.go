@@ -6,7 +6,6 @@ import (
 
 	"github.com/appscode/go/types"
 	"github.com/appscode/searchlight/pkg/controller"
-	"github.com/appscode/searchlight/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
@@ -49,7 +48,7 @@ func DeleteReplicationController(w *controller.Controller, replicationController
 		return err
 	}
 
-	labelSelector, err := util.GetLabels(w.KubeClient, replicationController.Namespace, host.TypeReplicationcontrollers, replicationController.Name)
+	labelSelector, err := icinga.GetLabels(w.KubeClient, replicationController.Namespace, icinga.TypeReplicationcontrollers, replicationController.Name)
 	if err != nil {
 		return err
 	}

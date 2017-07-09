@@ -12,7 +12,7 @@ import (
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/net/httpclient"
 	"github.com/appscode/searchlight/pkg/client/k8s"
-	"github.com/appscode/searchlight/util"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
@@ -128,10 +128,10 @@ func checkResult(evalDataString, checkQuery string) (bool, error) {
 	return result.(bool), nil
 }
 
-func CheckJsonPath(req *Request) (util.IcingaState, interface{}) {
+func CheckJsonPath(req *Request) (icinga.State, interface{}) {
 	jsonData, err := getData(req)
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 
 	}
 
@@ -142,12 +142,12 @@ func CheckJsonPath(req *Request) (util.IcingaState, interface{}) {
 
 	evalData, err := jqData.eval()
 	if err != nil {
-		return util.Unknown, "Invalid query. No data found"
+		return icinga.UNKNOWN, "Invalid query. No data found"
 	}
 
 	evalDataByte, err := json.Marshal(evalData)
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 
 	}
 
@@ -155,22 +155,22 @@ func CheckJsonPath(req *Request) (util.IcingaState, interface{}) {
 	if req.Critical != "" {
 		isCritical, err := checkResult(evalDataString, req.Critical)
 		if err != nil {
-			return util.Unknown, err
+			return icinga.UNKNOWN, err
 		}
 		if isCritical {
-			return util.Critical, fmt.Sprintf("%v", req.Critical)
+			return icinga.CRITICAL, fmt.Sprintf("%v", req.Critical)
 		}
 	}
 	if req.Warning != "" {
 		isWarning, err := checkResult(evalDataString, req.Warning)
 		if err != nil {
-			return util.Unknown, err
+			return icinga.UNKNOWN, err
 		}
 		if isWarning {
-			return util.Warning, fmt.Sprintf("%v", req.Warning)
+			return icinga.WARNING, fmt.Sprintf("%v", req.Warning)
 		}
 	}
-	return util.Ok, "Response looks good"
+	return icinga.OK, "Response looks good"
 }
 
 func NewCmd() *cobra.Command {
@@ -187,14 +187,14 @@ func NewCmd() *cobra.Command {
 
 			parts := strings.Split(icingaHost, "@")
 			if len(parts) != 2 {
-				fmt.Fprintln(os.Stdout, util.State[3], "Invalid icinga host.name")
+				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
 				os.Exit(3)
 			}
 			req.Namespace = parts[1]
 
 			flags.EnsureRequiredFlags(cmd, "url", "query")
 			flags.EnsureAlterableFlags(cmd, "warning", "critical")
-			util.Output(CheckJsonPath(&req))
+			icinga.Output(CheckJsonPath(&req))
 		},
 	}
 

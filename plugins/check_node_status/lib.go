@@ -7,7 +7,7 @@ import (
 
 	"github.com/appscode/go/flags"
 	"github.com/appscode/searchlight/pkg/client/k8s"
-	"github.com/appscode/searchlight/util"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
@@ -17,28 +17,28 @@ type Request struct {
 	Name string
 }
 
-func CheckNodeStatus(req *Request) (util.IcingaState, interface{}) {
+func CheckNodeStatus(req *Request) (icinga.State, interface{}) {
 	kubeClient, err := k8s.NewClient()
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	node, err := kubeClient.Client.CoreV1().Nodes().Get(req.Name, metav1.GetOptions{})
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	if node == nil {
-		return util.Critical, "Node not found"
+		return icinga.CRITICAL, "Node not found"
 	}
 
 	for _, condition := range node.Status.Conditions {
 		if condition.Type == apiv1.NodeReady && condition.Status == apiv1.ConditionFalse {
-			return util.Critical, "Node is not Ready"
+			return icinga.CRITICAL, "Node is not Ready"
 		}
 	}
 
-	return util.Ok, "Node is Ready"
+	return icinga.OK, "Node is Ready"
 }
 
 func NewCmd() *cobra.Command {
@@ -53,12 +53,12 @@ func NewCmd() *cobra.Command {
 			flags.EnsureRequiredFlags(cmd, "host")
 			parts := strings.Split(icingaHost, "@")
 			if len(parts) != 2 {
-				fmt.Fprintln(os.Stdout, util.State[3], "Invalid icinga host.name")
+				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
 				os.Exit(3)
 			}
 
 			req.Name = parts[0]
-			util.Output(CheckNodeStatus(&req))
+			icinga.Output(CheckNodeStatus(&req))
 		},
 	}
 

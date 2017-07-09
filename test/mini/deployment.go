@@ -6,7 +6,6 @@ import (
 
 	"github.com/appscode/go/types"
 	"github.com/appscode/searchlight/pkg/controller"
-	"github.com/appscode/searchlight/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
@@ -48,7 +47,7 @@ func DeleteDeployment(w *controller.Controller, deployment *extensions.Deploymen
 		return err
 	}
 
-	labelSelector, err := util.GetLabels(w.KubeClient, deployment.Namespace, host.TypeDeployments, deployment.Name)
+	labelSelector, err := icinga.GetLabels(w.KubeClient, deployment.Namespace, icinga.TypeDeployments, deployment.Name)
 	if err != nil {
 		return err
 	}

@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/appscode/go/flags"
-	"github.com/appscode/searchlight/util"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/prometheus/client_golang/api/prometheus"
 	"github.com/prometheus/common/model"
 	"github.com/spf13/cobra"
@@ -55,36 +55,36 @@ func checkResult(method string, valueToCheck, result int64) bool {
 	return false
 }
 
-func CheckPrometheusMetric(req *Request) (util.IcingaState, interface{}) {
+func CheckPrometheusMetric(req *Request) (icinga.State, interface{}) {
 	config := prometheus.Config{
 		Address: req.Host,
 	}
 	client, err := prometheus.New(config)
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 	queryApi := prometheus.NewQueryAPI(client)
 
 	result, err := queryApi.Query(context.Background(), req.Query, time.Now())
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	vector := result.(model.Vector)
 
 	if len(vector) == 0 {
 		if req.AcceptNan {
-			return util.Ok, errors.New("NaN")
+			return icinga.OK, errors.New("NaN")
 		}
-		return util.Unknown, errors.New("No data found")
+		return icinga.UNKNOWN, errors.New("No data found")
 	} else if len(vector) > 1 {
-		return util.Unknown, errors.New("Invalid query.\nQuery should return single float or int")
+		return icinga.UNKNOWN, errors.New("Invalid query.\nQuery should return single float or int")
 	}
 
 	value := vector[0].Value.String()
 	val, err := strconv.ParseFloat(value, 64)
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	valInt64 := int64(val)
@@ -94,13 +94,13 @@ func CheckPrometheusMetric(req *Request) (util.IcingaState, interface{}) {
 	}
 
 	if checkResult(req.Method, req.Critical, valInt64) {
-		return util.Critical, outputStr
+		return icinga.CRITICAL, outputStr
 	}
 	if checkResult(req.Method, req.Warning, valInt64) {
-		return util.Warning, outputStr
+		return icinga.WARNING, outputStr
 	}
 
-	return util.Ok, outputStr
+	return icinga.OK, outputStr
 }
 
 func NewCmd() *cobra.Command {
@@ -113,11 +113,11 @@ func NewCmd() *cobra.Command {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			if req.Host == "" {
-				fmt.Fprintln(os.Stdout, util.State[3], errors.New("No prometheus host found"))
+				fmt.Fprintln(os.Stdout, icinga.WARNING, errors.New("No prometheus host found"))
 				os.Exit(3)
 			}
 			flags.EnsureRequiredFlags(cmd, "query", "warning", "critical")
-			util.Output(CheckPrometheusMetric(&req))
+			icinga.Output(CheckPrometheusMetric(&req))
 		},
 	}
 

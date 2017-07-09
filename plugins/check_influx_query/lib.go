@@ -12,7 +12,7 @@ import (
 	"github.com/Knetic/govaluate"
 	"github.com/appscode/go/flags"
 	"github.com/appscode/searchlight/pkg/client/influxdb"
-	"github.com/appscode/searchlight/util"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/influxdata/influxdb/client"
 	"github.com/spf13/cobra"
 )
@@ -69,12 +69,11 @@ func getInfluxdbData(con *client.Client, command, db, queryName string) (float64
 }
 
 func getValue(con *client.Client, db string, req *Request) (map[string]interface{}, error) {
-
 	valMap := make(map[string]interface{})
 
 	defer func() {
 		if e := recover(); e != nil {
-			fmt.Fprintln(os.Stdout, util.State[3], e)
+			fmt.Fprintln(os.Stdout, icinga.WARNING, e)
 			os.Exit(3)
 		}
 	}()
@@ -139,59 +138,59 @@ func checkResult(checkQuery string, valueMap map[string]interface{}) (bool, erro
 	return false, nil
 }
 
-func CheckInfluxQuery(req *Request) (util.IcingaState, interface{}) {
+func CheckInfluxQuery(req *Request) (icinga.State, interface{}) {
 	authData, err := influxdb.GetInfluxDBSecretData(req.Secret, req.Namespace)
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	if req.Host != "" {
 		authData.Host = req.Host
 	}
 	if authData.Host == "" {
-		return util.Unknown, "No InfluxDB host found"
+		return icinga.UNKNOWN, "No InfluxDB host found"
 	}
 	client, err := getInfluxDBClient(authData)
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	valMap, err := getValue(client, authData.Database, req)
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	expression, err := govaluate.NewEvaluableExpression(req.R)
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	if valMap["R"], err = expression.Evaluate(valMap); err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 	valMap["R"] = trunc(valMap["R"].(float64))
 
 	if req.Critical != "" {
 		isCritical, err := checkResult(req.Critical, valMap)
 		if err != nil {
-			return util.Unknown, err.Error()
+			return icinga.UNKNOWN, err.Error()
 		}
 		if isCritical {
-			return util.Critical, nil
+			return icinga.CRITICAL, nil
 		}
 	}
 
 	if req.Warning != "" {
 		isWarning, err := checkResult(req.Warning, valMap)
 		if err != nil {
-			return util.Unknown, err
+			return icinga.UNKNOWN, err
 		}
 		if isWarning {
-			return util.Warning, nil
+			return icinga.WARNING, nil
 		}
 	}
 
-	return util.Ok, "Fine"
+	return icinga.OK, "Fine"
 }
 
 func NewCmd() *cobra.Command {
@@ -208,7 +207,7 @@ func NewCmd() *cobra.Command {
 
 			parts := strings.Split(icingaHost, "@")
 			if len(parts) != 2 {
-				fmt.Fprintln(os.Stdout, util.State[3], "Invalid icinga host.name")
+				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
 				os.Exit(3)
 			}
 			req.Namespace = parts[1]
@@ -216,7 +215,7 @@ func NewCmd() *cobra.Command {
 			flags.EnsureRequiredFlags(cmd, "secret", "R")
 			flags.EnsureAlterableFlags(cmd, "A", "B", "C", "D", "E")
 			flags.EnsureAlterableFlags(cmd, "warning", "critical")
-			util.Output(CheckInfluxQuery(&req))
+			icinga.Output(CheckInfluxQuery(&req))
 		},
 	}
 

@@ -6,14 +6,14 @@ import (
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/test/plugin"
-	"github.com/appscode/searchlight/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/client-go/pkg/api"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
+	"github.com/appscode/searchlight/pkg/icinga"
 )
 
-func getStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Duration) (util.IcingaState, error) {
+func getStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Duration) (icinga.State, error) {
 
 	now := time.Now()
 	// Create some fake event
@@ -27,7 +27,7 @@ func getStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clock
 			LastTimestamp:  metav1.NewTime(now),
 		})
 		if err != nil {
-			return util.Unknown, err
+			return icinga.UNKNOWN, err
 		}
 	}
 
@@ -38,7 +38,7 @@ func getStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clock
 		FieldSelector: field.String(),
 	})
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	for _, event := range eventList.Items {
@@ -48,9 +48,9 @@ func getStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clock
 	}
 
 	if count > 0 {
-		return util.Warning, nil
+		return icinga.WARNING, nil
 	}
-	return util.Ok, nil
+	return icinga.OK, nil
 }
 
 func GetTestData(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Duration) ([]plugin.TestData, error) {

@@ -2,9 +2,10 @@ package kube_exec
 
 import (
 	"github.com/appscode/searchlight/test/plugin"
+	"github.com/appscode/searchlight/pkg/icinga"
 )
 
-func GetTestData(objectList []*host.KHost) ([]plugin.TestData, error) {
+func GetTestData(objectList []*icinga.KHost) ([]plugin.TestData, error) {
 	testDataList := make([]plugin.TestData, 0)
 	for _, object := range objectList {
 		_, objectName, namespace, err := plugin.GetKubeObjectInfo(object.Name)

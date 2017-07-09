@@ -6,7 +6,6 @@ import (
 
 	"github.com/appscode/go/types"
 	"github.com/appscode/searchlight/pkg/controller"
-	"github.com/appscode/searchlight/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
@@ -93,7 +92,7 @@ func DeleteReplicaSet(w *controller.Controller, replicaSet *extensions.ReplicaSe
 		return err
 	}
 
-	labelSelector, err := util.GetLabels(w.KubeClient, replicaSet.Namespace, host.TypeReplicasets, replicaSet.Name)
+	labelSelector, err := icinga.GetLabels(w.KubeClient, replicaSet.Namespace, icinga.TypeReplicasets, replicaSet.Name)
 	if err != nil {
 		return err
 	}

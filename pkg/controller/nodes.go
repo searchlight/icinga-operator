@@ -30,7 +30,7 @@ func (c *Controller) WatchNodes() {
 	}
 	_, ctrl := cache.NewInformer(lw,
 		&apiv1.Node{},
-		c.syncPeriod,
+		c.SyncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				if resource, ok := obj.(*apiv1.Node); ok {

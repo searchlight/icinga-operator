@@ -9,7 +9,7 @@ import (
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/net/httpclient"
 	"github.com/appscode/searchlight/pkg/client/k8s"
-	"github.com/appscode/searchlight/util"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
@@ -205,54 +205,54 @@ func getUsage(authInfo *authInfo, hostIP, path string) (*usageStat, error) {
 	return usages[0], nil
 }
 
-func checkResult(field string, warning, critical, result float64) (util.IcingaState, interface{}) {
+func checkResult(field string, warning, critical, result float64) (icinga.State, interface{}) {
 	if result >= critical {
-		return util.Critical, fmt.Sprintf("%v used more than %v%%", field, critical)
+		return icinga.CRITICAL, fmt.Sprintf("%v used more than %v%%", field, critical)
 	}
 	if result >= warning {
-		return util.Warning, fmt.Sprintf("%v used more than %v%%", field, warning)
+		return icinga.WARNING, fmt.Sprintf("%v used more than %v%%", field, warning)
 	}
-	return util.Ok, "(Disk & Inodes)"
+	return icinga.OK, "(Disk & Inodes)"
 }
 
-func checkDiskStat(kubeClient *k8s.KubeClient, req *Request, nodeIP, path string) (util.IcingaState, interface{}) {
+func checkDiskStat(kubeClient *k8s.KubeClient, req *Request, nodeIP, path string) (icinga.State, interface{}) {
 	authInfo := getHostfactsSecretData(kubeClient, req.SecretName, req.SecretNamespace)
 
 	usage, err := getUsage(authInfo, nodeIP, path)
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	warning := req.Warning
 	critical := req.Critical
 	state, message := checkResult("Disk", warning, critical, usage.UsedPercent)
-	if state != util.Ok {
+	if state != icinga.OK {
 		return state, message
 	}
 	state, message = checkResult("Inodes", warning, critical, usage.InodesUsedPercent)
 	return state, message
 }
 
-func checkNodeDiskStat(req *Request) (util.IcingaState, interface{}) {
+func checkNodeDiskStat(req *Request) (icinga.State, interface{}) {
 	host := req.Host
 	parts := strings.Split(host, "@")
 	if len(parts) != 2 {
-		return util.Unknown, "Invalid icinga host.name"
+		return icinga.UNKNOWN, "Invalid icinga host.name"
 	}
 
 	kubeClient, err := k8s.NewClient()
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	node_name := parts[0]
 	node, err := kubeClient.Client.CoreV1().Nodes().Get(node_name, metav1.GetOptions{})
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	if node == nil {
-		return util.Unknown, "Node not found"
+		return icinga.UNKNOWN, "Node not found"
 	}
 
 	hostIP := ""
@@ -263,29 +263,29 @@ func checkNodeDiskStat(req *Request) (util.IcingaState, interface{}) {
 	}
 
 	if hostIP == "" {
-		return util.Unknown, "Node InternalIP not found"
+		return icinga.UNKNOWN, "Node InternalIP not found"
 	}
 	return checkDiskStat(kubeClient, req, hostIP, "/")
 }
 
-func checkPodVolumeStat(req *Request) (util.IcingaState, interface{}) {
+func checkPodVolumeStat(req *Request) (icinga.State, interface{}) {
 	host := req.Host
 	name := req.VolumeName
 	parts := strings.Split(host, "@")
 	if len(parts) != 2 {
-		return util.Unknown, "Invalid icinga host.name"
+		return icinga.UNKNOWN, "Invalid icinga host.name"
 	}
 
 	kubeClient, err := k8s.NewClient()
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	pod_name := parts[0]
 	namespace := parts[1]
 	pod, err := kubeClient.Client.CoreV1().Pods(namespace).Get(pod_name, metav1.GetOptions{})
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	var volumeSourcePluginName = ""
@@ -295,12 +295,12 @@ func checkPodVolumeStat(req *Request) (util.IcingaState, interface{}) {
 			if volume.PersistentVolumeClaim != nil {
 				claim, err := kubeClient.Client.CoreV1().PersistentVolumeClaims(namespace).Get(volume.PersistentVolumeClaim.ClaimName, metav1.GetOptions{})
 				if err != nil {
-					return util.Unknown, err
+					return icinga.UNKNOWN, err
 
 				}
 				volume, err := kubeClient.Client.CoreV1().PersistentVolumes().Get(claim.Spec.VolumeName, metav1.GetOptions{})
 				if err != nil {
-					return util.Unknown, err
+					return icinga.UNKNOWN, err
 				}
 				volumeSourcePluginName = getPersistentVolumePluginName(&volume.Spec.PersistentVolumeSource)
 				volumeSourceName = volume.Name
@@ -314,7 +314,7 @@ func checkPodVolumeStat(req *Request) (util.IcingaState, interface{}) {
 	}
 
 	if volumeSourcePluginName == "" {
-		return util.Unknown, errors.New("Invalid volume source")
+		return icinga.UNKNOWN, errors.New("Invalid volume source")
 	}
 
 	path := fmt.Sprintf("/var/lib/kubelet/pods/%v/volumes/%v/%v", pod.UID, volumeSourcePluginName, volumeSourceName)
@@ -335,10 +335,10 @@ func NewCmd() *cobra.Command {
 				flags.EnsureRequiredFlags(cmd, "secret_namespace")
 			}
 			if req.NodeStat {
-				util.Output(checkNodeDiskStat(&req))
+				icinga.Output(checkNodeDiskStat(&req))
 			} else {
 				flags.EnsureRequiredFlags(cmd, "volume_name")
-				util.Output(checkPodVolumeStat(&req))
+				icinga.Output(checkPodVolumeStat(&req))
 			}
 		},
 	}

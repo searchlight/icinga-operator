@@ -8,7 +8,7 @@ import (
 
 	"github.com/appscode/go/flags"
 	"github.com/appscode/searchlight/pkg/client/k8s"
-	"github.com/appscode/searchlight/util"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/spf13/cobra"
 	"k8s.io/apimachinery/pkg/apis/meta/internalversion"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -37,20 +37,20 @@ func newStringReader(ss []string) io.Reader {
 	return reader
 }
 
-func CheckKubeExec(req *Request) (util.IcingaState, interface{}) {
+func CheckKubeExec(req *Request) (icinga.State, interface{}) {
 	kubeConfig, err := k8s.GetKubeConfig()
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	kubeClient, err := clientset.NewForConfig(kubeConfig)
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	pod, err := kubeClient.CoreV1().Pods(req.Namespace).Get(req.Pod, metav1.GetOptions{})
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	foundContainer := false
@@ -66,7 +66,7 @@ func CheckKubeExec(req *Request) (util.IcingaState, interface{}) {
 	}
 
 	if !foundContainer {
-		return util.Unknown, fmt.Sprintf(`Container "%v" not found`, req.Container)
+		return icinga.UNKNOWN, fmt.Sprintf(`Container "%v" not found`, req.Container)
 	}
 
 	execRequest := kubeClient.Core().RESTClient().Post().
@@ -87,7 +87,7 @@ func CheckKubeExec(req *Request) (util.IcingaState, interface{}) {
 
 	exec, err := remotecommand.NewExecutor(kubeConfig, "POST", execRequest.URL())
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	stdIn := newStringReader([]string{"-c", req.Arg})
@@ -109,7 +109,7 @@ func CheckKubeExec(req *Request) (util.IcingaState, interface{}) {
 		if exitErr, ok := err.(utilexec.ExitError); ok && exitErr.Exited() {
 			exitCode = exitErr.ExitStatus()
 		} else {
-			return util.Unknown, "Failed to find exit code."
+			return icinga.UNKNOWN, "Failed to find exit code."
 		}
 	}
 
@@ -118,7 +118,7 @@ func CheckKubeExec(req *Request) (util.IcingaState, interface{}) {
 		exitCode = 2
 	}
 
-	return util.IcingaState(exitCode), output
+	return icinga.State(exitCode), output
 }
 
 type Request struct {
@@ -142,12 +142,12 @@ func NewCmd() *cobra.Command {
 
 			parts := strings.Split(host, "@")
 			if len(parts) != 2 {
-				fmt.Fprintln(os.Stdout, util.State[3], "Invalid icinga host.name")
+				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
 				os.Exit(3)
 			}
 			req.Pod = parts[0]
 			req.Namespace = parts[1]
-			util.Output(CheckKubeExec(&req))
+			icinga.Output(CheckKubeExec(&req))
 		},
 	}
 

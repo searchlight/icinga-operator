@@ -1,8 +1,8 @@
 package plugin
 
-import "github.com/appscode/searchlight/util"
+import "github.com/appscode/searchlight/pkg/icinga"
 
 type TestData struct {
 	Data                map[string]interface{}
-	ExpectedIcingaState util.IcingaState
+	ExpectedIcingaState icinga.State
 }

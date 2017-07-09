@@ -7,7 +7,7 @@ import (
 
 	"github.com/appscode/go/flags"
 	"github.com/appscode/searchlight/pkg/client/k8s"
-	"github.com/appscode/searchlight/util"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -29,10 +29,10 @@ type serviceOutput struct {
 	Message string       `json:"message,omitempty"`
 }
 
-func CheckKubeEvent(req *Request) (util.IcingaState, interface{}) {
+func CheckKubeEvent(req *Request) (icinga.State, interface{}) {
 	kubeClient, err := k8s.NewClient()
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	eventInfoList := make([]*eventInfo, 0)
@@ -45,7 +45,7 @@ func CheckKubeEvent(req *Request) (util.IcingaState, interface{}) {
 	},
 	)
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	for _, event := range eventList.Items {
@@ -64,7 +64,7 @@ func CheckKubeEvent(req *Request) (util.IcingaState, interface{}) {
 	}
 
 	if len(eventInfoList) == 0 {
-		return util.Ok, "All events look Normal"
+		return icinga.OK, "All events look Normal"
 	} else {
 		output := &serviceOutput{
 			Events:  eventInfoList,
@@ -72,9 +72,9 @@ func CheckKubeEvent(req *Request) (util.IcingaState, interface{}) {
 		}
 		outputByte, err := json.MarshalIndent(output, "", "  ")
 		if err != nil {
-			return util.Unknown, err
+			return icinga.UNKNOWN, err
 		}
-		return util.Warning, outputByte
+		return icinga.WARNING, outputByte
 	}
 }
 
@@ -93,7 +93,7 @@ func NewCmd() *cobra.Command {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "check_interval")
-			util.Output(CheckKubeEvent(&req))
+			icinga.Output(CheckKubeEvent(&req))
 		},
 	}
 

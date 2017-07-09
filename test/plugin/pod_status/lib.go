@@ -3,43 +3,43 @@ package pod_status
 import (
 	"github.com/appscode/searchlight/pkg/controller"
 	"github.com/appscode/searchlight/test/plugin"
-	"github.com/appscode/searchlight/util"
 	"k8s.io/apimachinery/pkg/labels"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
+	"github.com/appscode/searchlight/pkg/icinga"
 )
 
-func getStatusCodeForPodStatus(w *controller.Controller, objectType, objectName, namespace string) (util.IcingaState, error) {
+func getStatusCodeForPodStatus(w *controller.Controller, objectType, objectName, namespace string) (icinga.State, error) {
 	var err error
-	if objectType == host.TypePods {
+	if objectType == icinga.TypePods {
 		pod, err := w.Storage.PodStore.Pods(namespace).Get(objectName)
 		if err != nil {
-			return util.Unknown, err
+			return icinga.UNKNOWN, err
 		}
 		if !(pod.Status.Phase == apiv1.PodSucceeded || pod.Status.Phase == apiv1.PodRunning) {
-			return util.Critical, nil
+			return icinga.CRITICAL, nil
 		}
 
 	} else {
 		labelSelector := labels.Everything()
 		if objectType != "" {
-			labelSelector, err = util.GetLabels(w.KubeClient, namespace, objectType, objectName)
+			labelSelector, err = icinga.GetLabels(w.KubeClient, namespace, objectType, objectName)
 			if err != nil {
-				return util.Unknown, err
+				return icinga.UNKNOWN, err
 			}
 		}
 
 		podList, err := w.Storage.PodStore.Pods(namespace).List(labelSelector)
 		if err != nil {
-			return util.Unknown, err
+			return icinga.UNKNOWN, err
 		}
 
 		for _, pod := range podList {
 			if !(pod.Status.Phase == apiv1.PodSucceeded || pod.Status.Phase == apiv1.PodRunning) {
-				return util.Critical, nil
+				return icinga.CRITICAL, nil
 			}
 		}
 	}
-	return util.Ok, nil
+	return icinga.OK, nil
 }
 
 func GetTestData(watcher *controller.Controller, objectType, objectName, namespace string) ([]plugin.TestData, error) {

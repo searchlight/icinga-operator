@@ -183,13 +183,13 @@ def version():
 
 
 def fmt():
-    libbuild.ungroup_go_imports('api', 'client', 'cmd', 'data', 'pkg', 'plugins', 'test', 'util')
-    die(call('goimports -w api client cmd data pkg plugins test util'))
-    call('gofmt -s -w api client cmd data pkg plugins test util')
+    libbuild.ungroup_go_imports('api', 'client', 'cmd', 'data', 'pkg', 'plugins', 'test')
+    die(call('goimports -w api client cmd data pkg plugins test'))
+    call('gofmt -s -w api client cmd data pkg plugins test')
 
 
 def vet():
-    call('go vet ./api/... ./client/... ./cmd/... ./data/... ./pkg/... ./plugins/... ./test/... ./util/...')
+    call('go vet ./api/... ./client/... ./cmd/... ./data/... ./pkg/... ./plugins/... ./test/...')
 
 
 def lint():
@@ -200,7 +200,6 @@ def lint():
     call('golint ./pkg/...')
     call('golint ./plugins/...')
     call('golint ./test/...')
-    call('golint ./util/...')
 
 
 def gen_assets():

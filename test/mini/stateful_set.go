@@ -6,7 +6,6 @@ import (
 
 	"github.com/appscode/go/types"
 	"github.com/appscode/searchlight/pkg/controller"
-	"github.com/appscode/searchlight/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 	apps "k8s.io/client-go/pkg/apis/apps/v1beta1"
@@ -60,7 +59,7 @@ func DeleteStatefulSet(w *controller.Controller, statefulSet *apps.StatefulSet) 
 		return err
 	}
 
-	labelSelector, err := util.GetLabels(w.KubeClient, statefulSet.Namespace, host.TypeStatefulSet, statefulSet.Name)
+	labelSelector, err := icinga.GetLabels(w.KubeClient, statefulSet.Namespace, icinga.TypeStatefulSet, statefulSet.Name)
 	if err != nil {
 		return err
 	}

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/appscode/searchlight/pkg/client/k8s"
-	"github.com/appscode/searchlight/util"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -22,10 +22,10 @@ type serviceOutput struct {
 	Message string        `json:"message,omitempty"`
 }
 
-func CheckComponentStatus() (util.IcingaState, interface{}) {
+func CheckComponentStatus() (icinga.State, interface{}) {
 	kubeClient, err := k8s.NewClient()
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	components, err := kubeClient.Client.CoreV1().ComponentStatuses().List(metav1.ListOptions{
@@ -33,7 +33,7 @@ func CheckComponentStatus() (util.IcingaState, interface{}) {
 	},
 	)
 	if err != nil {
-		return util.Unknown, err
+		return icinga.UNKNOWN, err
 	}
 
 	objectInfoList := make([]*objectInfo, 0)
@@ -51,7 +51,7 @@ func CheckComponentStatus() (util.IcingaState, interface{}) {
 	}
 
 	if len(objectInfoList) == 0 {
-		return util.Ok, "All components are healthy"
+		return icinga.OK, "All components are healthy"
 	} else {
 		output := &serviceOutput{
 			Objects: objectInfoList,
@@ -59,9 +59,9 @@ func CheckComponentStatus() (util.IcingaState, interface{}) {
 		}
 		outputByte, err := json.MarshalIndent(output, "", "  ")
 		if err != nil {
-			return util.Unknown, err
+			return icinga.UNKNOWN, err
 		}
-		return util.Critical, outputByte
+		return icinga.CRITICAL, outputByte
 	}
 }
 
@@ -72,7 +72,7 @@ func NewCmd() *cobra.Command {
 		Example: "",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			util.Output(CheckComponentStatus())
+			icinga.Output(CheckComponentStatus())
 
 		},
 	}

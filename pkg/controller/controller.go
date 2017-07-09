@@ -26,7 +26,7 @@ type Controller struct {
 	podHost     *icinga.PodHost
 	recorder    record.EventRecorder
 	opt         *types.Context
-	syncPeriod  time.Duration
+	SyncPeriod  time.Duration
 }
 
 func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface) *Controller {
@@ -37,7 +37,7 @@ func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface) *Cont
 		nodeHost:    icinga.NewNodeHost(kubeClient, extClient, nil),
 		podHost:     icinga.NewPodHost(kubeClient, extClient, nil),
 		recorder:    eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
-		syncPeriod:  5 * time.Minute,
+		SyncPeriod:  5 * time.Minute,
 	}
 }
 

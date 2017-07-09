@@ -49,7 +49,7 @@ const (
 	UNKNOWN               // 3
 )
 
-func (i State) Output(message interface{}) {
-	fmt.Fprintln(os.Stdout, i, ":", message)
-	os.Exit(int(i))
+func Output(s State, message interface{}) {
+	fmt.Fprintln(os.Stdout, s, ":", message)
+	os.Exit(int(s))
 }

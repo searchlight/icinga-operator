@@ -7,6 +7,7 @@ import (
 	"github.com/appscode/searchlight/test/mini"
 	"github.com/appscode/searchlight/test/util"
 	"github.com/stretchr/testify/assert"
+	"github.com/appscode/searchlight/pkg/icinga"
 )
 
 func TestMultipleAlerts(t *testing.T) {
@@ -29,30 +30,30 @@ func TestMultipleAlerts(t *testing.T) {
 
 	fmt.Println("--> Creating 1st Alert on ReplicaSet")
 	labelMap := map[string]string{
-		"objectType": host.TypeReplicasets,
+		"objectType": icinga.TypeReplicasets,
 		"objectName": replicaSet.Name,
 	}
-	firstAlert, err := mini.CreateAlert(watcher, replicaSet.Namespace, labelMap, host.CheckCommandVolume)
+	firstAlert, err := mini.CreateAlert(watcher, replicaSet.Namespace, labelMap, icinga.CheckCommandVolume)
 	if !assert.Nil(t, err) {
 		return
 	}
 
 	// Check Icinga Objects for 1st Alert.
 	fmt.Println("----> Checking Icinga Objects for 1st Alert")
-	if err := util.CheckIcingaObjectsForAlert(watcher, firstAlert, false, false); !assert.Nil(t, err) {
+	if err := icinga.CheckIcingaObjectsForAlert(watcher, firstAlert, false, false); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
 
 	fmt.Println("--> Creating 2nd Alert on ReplicaSet")
-	secondAlert, err := mini.CreateAlert(watcher, replicaSet.Namespace, labelMap, host.CheckCommandVolume)
+	secondAlert, err := mini.CreateAlert(watcher, replicaSet.Namespace, labelMap, icinga.CheckCommandVolume)
 	if !assert.Nil(t, err) {
 		return
 	}
 
 	// Check Icinga Objects for 2nd Alert.
 	fmt.Println("----> Checking Icinga Objects for 2nd Alert")
-	if err := util.CheckIcingaObjectsForAlert(watcher, secondAlert, false, false); !assert.Nil(t, err) {
+	if err := icinga.CheckIcingaObjectsForAlert(watcher, secondAlert, false, false); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
@@ -73,7 +74,7 @@ func TestMultipleAlerts(t *testing.T) {
 
 	// Checking Icinga Objects for This Pod
 	fmt.Println("----> Checking Icinga Objects for last Pod")
-	if err = util.CheckIcingaObjectsForPod(watcher, lastPod.Name, lastPod.Namespace, 2); !assert.Nil(t, err) {
+	if err = icinga.CheckIcingaObjectsForPod(watcher, lastPod.Name, lastPod.Namespace, 2); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
@@ -86,7 +87,7 @@ func TestMultipleAlerts(t *testing.T) {
 
 	// Check Icinga Objects for 2nd Alert.
 	fmt.Println("----> Checking Icinga Objects for 1st Alert")
-	if err := util.CheckIcingaObjectsForAlert(watcher, firstAlert, false, true); !assert.Nil(t, err) {
+	if err := icinga.CheckIcingaObjectsForAlert(watcher, firstAlert, false, true); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
@@ -99,7 +100,7 @@ func TestMultipleAlerts(t *testing.T) {
 
 	// Check Icinga Objects for 2nd Alert.
 	fmt.Println("----> Checking Icinga Objects for 2nd Alert")
-	if err := util.CheckIcingaObjectsForAlert(watcher, secondAlert, true, true); !assert.Nil(t, err) {
+	if err := icinga.CheckIcingaObjectsForAlert(watcher, secondAlert, true, true); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
@@ -138,17 +139,17 @@ func TestMultipleAlertsOnMultipleObjects(t *testing.T) {
 	// Create 1st Alert
 	fmt.Println("--> Creating 1st Alert on ReplicaSet")
 	labelMap := map[string]string{
-		"objectType": host.TypeReplicasets,
+		"objectType": icinga.TypeReplicasets,
 		"objectName": replicaSet.Name,
 	}
-	firstAlert, err := mini.CreateAlert(watcher, replicaSet.Namespace, labelMap, host.CheckCommandVolume)
+	firstAlert, err := mini.CreateAlert(watcher, replicaSet.Namespace, labelMap, icinga.CheckCommandVolume)
 	if !assert.Nil(t, err) {
 		return
 	}
 
 	// Check Icinga Objects for 1st Alert.
 	fmt.Println("----> Checking Icinga Objects for 1st Alert")
-	if err := util.CheckIcingaObjectsForAlert(watcher, firstAlert, false, false); !assert.Nil(t, err) {
+	if err := icinga.CheckIcingaObjectsForAlert(watcher, firstAlert, false, false); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
@@ -156,17 +157,17 @@ func TestMultipleAlertsOnMultipleObjects(t *testing.T) {
 	// Create 2nd Alert
 	fmt.Println("--> Creating 2nd Alert on Service")
 	labelMap = map[string]string{
-		"objectType": host.TypeServices,
+		"objectType": icinga.TypeServices,
 		"objectName": service.Name,
 	}
-	secondAlert, err := mini.CreateAlert(watcher, service.Namespace, labelMap, host.CheckCommandVolume)
+	secondAlert, err := mini.CreateAlert(watcher, service.Namespace, labelMap, icinga.CheckCommandVolume)
 	if !assert.Nil(t, err) {
 		return
 	}
 
 	// Check Icinga Objects for 2nd Alert.
 	fmt.Println("----> Checking Icinga Objects for 2nd Alert")
-	if err := util.CheckIcingaObjectsForAlert(watcher, secondAlert, false, false); !assert.Nil(t, err) {
+	if err := icinga.CheckIcingaObjectsForAlert(watcher, secondAlert, false, false); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
@@ -180,7 +181,7 @@ func TestMultipleAlertsOnMultipleObjects(t *testing.T) {
 
 	// Checking Icinga Objects for Pod
 	fmt.Println("----> Checking Icinga Objects for Pod")
-	if err = util.CheckIcingaObjectsForPod(watcher, pod.Name, pod.Namespace, 2); !assert.Nil(t, err) {
+	if err = icinga.CheckIcingaObjectsForPod(watcher, pod.Name, pod.Namespace, 2); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
@@ -193,13 +194,13 @@ func TestMultipleAlertsOnMultipleObjects(t *testing.T) {
 
 	// Checking Icinga Objects for Pod
 	fmt.Println("----> Checking Icinga Objects for Pod")
-	if err = util.CheckIcingaObjectsForPod(watcher, pod.Name, pod.Namespace, 0); !assert.Nil(t, err) {
+	if err = icinga.CheckIcingaObjectsForPod(watcher, pod.Name, pod.Namespace, 0); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
 
 	// Getting ReplicaSetObjectList
-	replicaSetObjectList, err := util.GetIcingaHostList(watcher, firstAlert)
+	replicaSetObjectList, err := icinga.GetIcingaHostList(watcher, firstAlert)
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -212,7 +213,7 @@ func TestMultipleAlertsOnMultipleObjects(t *testing.T) {
 
 	// Check Icinga Objects for 1st Alert.
 	fmt.Println("----> Checking Icinga Objects for 1st Alert")
-	if err := util.CheckIcingaObjects(watcher, firstAlert, replicaSetObjectList, true, true); !assert.Nil(t, err) {
+	if err := icinga.CheckIcingaObjects(watcher, firstAlert, replicaSetObjectList, true, true); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
@@ -255,23 +256,23 @@ func TestAlertWhileReCreateKubeObject(t *testing.T) {
 
 	fmt.Println("--> Creating Alert on ReplicaSet")
 	labelMap := map[string]string{
-		"objectType": host.TypeReplicasets,
+		"objectType": icinga.TypeReplicasets,
 		"objectName": replicaSet.Name,
 	}
-	alert, err := mini.CreateAlert(watcher, replicaSet.Namespace, labelMap, host.CheckCommandVolume)
+	alert, err := mini.CreateAlert(watcher, replicaSet.Namespace, labelMap, icinga.CheckCommandVolume)
 	if !assert.Nil(t, err) {
 		return
 	}
 
 	// Check Icinga Objects for Alert.
 	fmt.Println("----> Checking Icinga Objects for Alert")
-	if err := util.CheckIcingaObjectsForAlert(watcher, alert, false, false); !assert.Nil(t, err) {
+	if err := icinga.CheckIcingaObjectsForAlert(watcher, alert, false, false); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
 
 	// Getting ReplicaSetObjectList
-	replicaSetObjectList, err := util.GetIcingaHostList(watcher, alert)
+	replicaSetObjectList, err := icinga.GetIcingaHostList(watcher, alert)
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -284,7 +285,7 @@ func TestAlertWhileReCreateKubeObject(t *testing.T) {
 
 	// Check Icinga Objects for 1st Alert.
 	fmt.Println("----> Checking Icinga Objects for Alert")
-	if err := util.CheckIcingaObjects(watcher, alert, replicaSetObjectList, true, true); !assert.Nil(t, err) {
+	if err := icinga.CheckIcingaObjects(watcher, alert, replicaSetObjectList, true, true); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
@@ -298,7 +299,7 @@ func TestAlertWhileReCreateKubeObject(t *testing.T) {
 
 	// Check Icinga Objects for Alert.
 	fmt.Println("----> Checking Icinga Objects for Alert")
-	if err := util.CheckIcingaObjectsForAlert(watcher, alert, false, false); !assert.Nil(t, err) {
+	if err := icinga.CheckIcingaObjectsForAlert(watcher, alert, false, false); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
@@ -311,7 +312,7 @@ func TestAlertWhileReCreateKubeObject(t *testing.T) {
 
 	// Check Icinga Objects for 2nd Alert.
 	fmt.Println("----> Checking Icinga Objects for 1st Alert")
-	if err := util.CheckIcingaObjectsForAlert(watcher, alert, true, true); !assert.Nil(t, err) {
+	if err := icinga.CheckIcingaObjectsForAlert(watcher, alert, true, true); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
@@ -342,23 +343,23 @@ func TestAlertOnPod(t *testing.T) {
 
 	fmt.Println("--> Creating Alert on Pod")
 	labelMap := map[string]string{
-		"objectType": host.TypePods,
+		"objectType": icinga.TypePods,
 		"objectName": pod.Name,
 	}
-	alert, err := mini.CreateAlert(watcher, pod.Namespace, labelMap, host.CheckCommandVolume)
+	alert, err := mini.CreateAlert(watcher, pod.Namespace, labelMap, icinga.CheckCommandVolume)
 	if !assert.Nil(t, err) {
 		return
 	}
 
 	// Check Icinga Objects for Alert.
 	fmt.Println("----> Checking Icinga Objects for Alert")
-	if err := util.CheckIcingaObjectsForAlert(watcher, alert, false, false); !assert.Nil(t, err) {
+	if err := icinga.CheckIcingaObjectsForAlert(watcher, alert, false, false); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
 
 	// Getting PodObjectList
-	replicaSetObjectList, err := util.GetIcingaHostList(watcher, alert)
+	replicaSetObjectList, err := icinga.GetIcingaHostList(watcher, alert)
 	if !assert.Nil(t, err) {
 		return
 	}
@@ -371,7 +372,7 @@ func TestAlertOnPod(t *testing.T) {
 
 	// Check Icinga Objects for 1st Alert.
 	fmt.Println("----> Checking Icinga Objects for Alert")
-	if err := util.CheckIcingaObjects(watcher, alert, replicaSetObjectList, true, true); !assert.Nil(t, err) {
+	if err := icinga.CheckIcingaObjects(watcher, alert, replicaSetObjectList, true, true); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
@@ -385,7 +386,7 @@ func TestAlertOnPod(t *testing.T) {
 
 	// Check Icinga Objects for Alert.
 	fmt.Println("----> Checking Icinga Objects for Alert")
-	if err := util.CheckIcingaObjectsForAlert(watcher, alert, false, false); !assert.Nil(t, err) {
+	if err := icinga.CheckIcingaObjectsForAlert(watcher, alert, false, false); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
@@ -398,7 +399,7 @@ func TestAlertOnPod(t *testing.T) {
 
 	// Check Icinga Objects for 2nd Alert.
 	fmt.Println("----> Checking Icinga Objects for 1st Alert")
-	if err := util.CheckIcingaObjectsForAlert(watcher, alert, true, true); !assert.Nil(t, err) {
+	if err := icinga.CheckIcingaObjectsForAlert(watcher, alert, true, true); !assert.Nil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
@@ -429,17 +430,17 @@ func TestInvalidNamespace(t *testing.T) {
 
 	fmt.Println("--> Creating Alert on Pod")
 	labelMap := map[string]string{
-		"objectType": host.TypePods,
+		"objectType": icinga.TypePods,
 		"objectName": pod.Name,
 	}
-	alert, err := mini.CreateAlert(watcher, "default", labelMap, host.CheckCommandVolume)
+	alert, err := mini.CreateAlert(watcher, "default", labelMap, icinga.CheckCommandVolume)
 	if !assert.Nil(t, err) {
 		return
 	}
 
 	// Check Icinga Objects for Alert.
 	fmt.Println("----> Checking Icinga Objects for Alert")
-	if err := util.CheckIcingaObjectsForAlert(watcher, alert, false, false); !assert.NotNil(t, err) {
+	if err := icinga.CheckIcingaObjectsForAlert(watcher, alert, false, false); !assert.NotNil(t, err) {
 		return
 	}
 	fmt.Println("---->> Check Successful")
@@ -473,14 +474,14 @@ func TestAlertOnPodAncestors(t *testing.T) {
 			"objectType": objectType,
 			"objectName": objectName,
 		}
-		alert, err := mini.CreateAlert(watcher, namespace, labelMap, host.CheckCommandVolume)
+		alert, err := mini.CreateAlert(watcher, namespace, labelMap, icinga.CheckCommandVolume)
 		if err != nil {
 			return err
 		}
 
 		// Check Icinga Objects for 1st Alert.
 		fmt.Println("----> Checking Icinga Objects for Alert")
-		if err := util.CheckIcingaObjectsForAlert(watcher, alert, false, false); err != nil {
+		if err := icinga.CheckIcingaObjectsForAlert(watcher, alert, false, false); err != nil {
 			return err
 		}
 		fmt.Println("---->> Check Successful")
@@ -493,7 +494,7 @@ func TestAlertOnPodAncestors(t *testing.T) {
 
 		// Check Icinga Objects for Alert.
 		fmt.Println("----> Checking Icinga Objects for Alert")
-		if err := util.CheckIcingaObjectsForAlert(watcher, alert, true, true); err != nil {
+		if err := icinga.CheckIcingaObjectsForAlert(watcher, alert, true, true); err != nil {
 			return err
 		}
 		fmt.Println("---->> Check Successful")
@@ -509,7 +510,7 @@ func TestAlertOnPodAncestors(t *testing.T) {
 
 	// Test DaemonSet Ancestor
 	fmt.Println("--> Testing DaemonSet Ancestor")
-	if err := testAncestor(host.TypeDaemonsets, daemonSet.Name, daemonSet.Namespace); !assert.Nil(t, err) {
+	if err := testAncestor(icinga.TypeDaemonsets, daemonSet.Name, daemonSet.Namespace); !assert.Nil(t, err) {
 		return
 	}
 
@@ -528,7 +529,7 @@ func TestAlertOnPodAncestors(t *testing.T) {
 
 	// Test Deployment Ancestor
 	fmt.Println("--> Testing Deployment Ancestor")
-	if err := testAncestor(host.TypeDeployments, deployment.Name, deployment.Namespace); !assert.Nil(t, err) {
+	if err := testAncestor(icinga.TypeDeployments, deployment.Name, deployment.Namespace); !assert.Nil(t, err) {
 		return
 	}
 
@@ -547,7 +548,7 @@ func TestAlertOnPodAncestors(t *testing.T) {
 
 	// Test ReplicaSet Ancestor
 	fmt.Println("--> Testing ReplicaSet Ancestor")
-	if err := testAncestor(host.TypeReplicasets, replicaSet.Name, replicaSet.Namespace); !assert.Nil(t, err) {
+	if err := testAncestor(icinga.TypeReplicasets, replicaSet.Name, replicaSet.Namespace); !assert.Nil(t, err) {
 		return
 	}
 
@@ -566,7 +567,7 @@ func TestAlertOnPodAncestors(t *testing.T) {
 
 	// Test ReplicationController Ancestor
 	fmt.Println("--> Testing ReplicationController Ancestor")
-	if err := testAncestor(host.TypeReplicationcontrollers, rc.Name, rc.Namespace); !assert.Nil(t, err) {
+	if err := testAncestor(icinga.TypeReplicationcontrollers, rc.Name, rc.Namespace); !assert.Nil(t, err) {
 		return
 	}
 
@@ -585,7 +586,7 @@ func TestAlertOnPodAncestors(t *testing.T) {
 
 	// Test StatefulSet Ancestor
 	fmt.Println("--> Testing StatefulSet Ancestor")
-	if err := testAncestor(host.TypeStatefulSet, statefulSet.Name, statefulSet.Namespace); !assert.Nil(t, err) {
+	if err := testAncestor(icinga.TypeStatefulSet, statefulSet.Name, statefulSet.Namespace); !assert.Nil(t, err) {
 		return
 	}
 
