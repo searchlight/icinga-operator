@@ -4,6 +4,7 @@ import (
 	"github.com/appscode/errors"
 	tapi "github.com/appscode/searchlight/api"
 	tcs "github.com/appscode/searchlight/client/clientset"
+	icinga "github.com/appscode/searchlight/pkg/icinga/client"
 	clientset "k8s.io/client-go/kubernetes"
 )
 
@@ -12,6 +13,16 @@ type ClusterHost struct {
 
 	KubeClient clientset.Interface
 	ExtClient  tcs.ExtensionInterface
+}
+
+func NewClusterHost(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, IcingaClient *icinga.IcingaClient) *ClusterHost {
+	return &ClusterHost{
+		KubeClient: kubeClient,
+		ExtClient:  extClient,
+		commonHost: commonHost{
+			IcingaClient: IcingaClient,
+		},
+	}
 }
 
 func (h *ClusterHost) GetObject(alert tapi.ClusterAlert) KHost {

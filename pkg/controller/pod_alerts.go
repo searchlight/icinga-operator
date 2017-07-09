@@ -9,6 +9,7 @@ import (
 	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/eventer"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/apimachinery/pkg/watch"
@@ -34,7 +35,7 @@ func (c *Controller) WatchPodAlerts() {
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				if alert, ok := obj.(*tapi.PodAlert); ok {
-					if ok, err := alert.Spec.IsValid(); !ok {
+					if ok, err := alert.IsValid(); !ok {
 						c.recorder.Eventf(
 							alert,
 							apiv1.EventTypeWarning,
@@ -60,7 +61,7 @@ func (c *Controller) WatchPodAlerts() {
 					return
 				}
 				if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
-					if ok, err := newAlert.Spec.IsValid(); !ok {
+					if ok, err := newAlert.IsValid(); !ok {
 						c.recorder.Eventf(
 							newAlert,
 							apiv1.EventTypeWarning,
@@ -76,7 +77,7 @@ func (c *Controller) WatchPodAlerts() {
 			},
 			DeleteFunc: func(obj interface{}) {
 				if alert, ok := obj.(*tapi.PodAlert); ok {
-					if ok, err := alert.Spec.IsValid(); !ok {
+					if ok, err := alert.IsValid(); !ok {
 						c.recorder.Eventf(
 							alert,
 							apiv1.EventTypeWarning,
@@ -96,40 +97,49 @@ func (c *Controller) WatchPodAlerts() {
 }
 
 func (c *Controller) EnsurePodAlert(old, new *tapi.PodAlert) {
-	var oldOpt, newOpt *metav1.ListOptions
+	oldObjs := make(map[string]apiv1.Pod)
+
 	if old != nil {
-		oldSelector, err := metav1.LabelSelectorAsSelector(&old.Spec.Selector)
+		oldSel, err := metav1.LabelSelectorAsSelector(&old.Spec.Selector)
 		if err != nil {
 			return
 		}
-		oldOpt = &metav1.ListOptions{LabelSelector: oldSelector.String()}
-	}
-
-	newSelector, err := metav1.LabelSelectorAsSelector(&new.Spec.Selector)
-	if err != nil {
-		return
-	}
-	newOpt = &metav1.ListOptions{LabelSelector: newSelector.String()}
-
-	{
-		oldObjs := make(map[string]apiv1.Pod)
-		if oldOpt != nil {
-			if resources, err := c.KubeClient.CoreV1().Pods(new.Namespace).List(*oldOpt); err == nil {
+		if old.Spec.PodName != "" {
+			if resource, err := c.KubeClient.CoreV1().Pods(old.Namespace).Get(old.Spec.PodName, metav1.GetOptions{}); err == nil {
+				if oldSel.Matches(labels.Set(resource.Labels)) {
+					oldObjs[resource.Name] = *resource
+				}
+			}
+		} else {
+			if resources, err := c.KubeClient.CoreV1().Pods(old.Namespace).List(metav1.ListOptions{LabelSelector: oldSel.String()}); err == nil {
 				for _, resource := range resources.Items {
 					oldObjs[resource.Name] = resource
 				}
 			}
 		}
+	}
 
-		if resources, err := c.KubeClient.CoreV1().Pods(new.Namespace).List(*newOpt); err == nil {
+	newSel, err := metav1.LabelSelectorAsSelector(&new.Spec.Selector)
+	if err != nil {
+		return
+	}
+	if new.Spec.PodName != "" {
+		if resource, err := c.KubeClient.CoreV1().Pods(new.Namespace).Get(new.Spec.PodName, metav1.GetOptions{}); err == nil {
+			if newSel.Matches(labels.Set(resource.Labels)) {
+				delete(oldObjs, resource.Name)
+				go c.EnsurePod(resource, old, new)
+			}
+		}
+	} else {
+		if resources, err := c.KubeClient.CoreV1().Pods(new.Namespace).List(metav1.ListOptions{LabelSelector: newSel.String()}); err == nil {
 			for _, resource := range resources.Items {
 				delete(oldObjs, resource.Name)
 				go c.EnsurePod(&resource, old, new)
 			}
 		}
-		for _, resource := range oldObjs {
-			go c.EnsurePodDeleted(&resource, old)
-		}
+	}
+	for _, resource := range oldObjs {
+		go c.EnsurePodDeleted(&resource, old)
 	}
 }
 
@@ -138,11 +148,17 @@ func (c *Controller) EnsurePodAlertDeleted(alert *tapi.PodAlert) {
 	if err != nil {
 		return
 	}
-	opt := metav1.ListOptions{LabelSelector: sel.String()}
-
-	if resources, err := c.KubeClient.CoreV1().Pods(alert.Namespace).List(opt); err == nil {
-		for _, resource := range resources.Items {
-			go c.EnsurePodDeleted(&resource, alert)
+	if alert.Spec.PodName != "" {
+		if resource, err := c.KubeClient.CoreV1().Pods(alert.Namespace).Get(alert.Spec.PodName, metav1.GetOptions{}); err == nil {
+			if sel.Matches(labels.Set(resource.Labels)) {
+				go c.EnsurePodDeleted(resource, alert)
+			}
+		}
+	} else {
+		if resources, err := c.KubeClient.CoreV1().Pods(alert.Namespace).List(metav1.ListOptions{LabelSelector: sel.String()}); err == nil {
+			for _, resource := range resources.Items {
+				go c.EnsurePodDeleted(&resource, alert)
+			}
 		}
 	}
 }

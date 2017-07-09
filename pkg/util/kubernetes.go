@@ -18,7 +18,10 @@ func FindPodAlert(stashClient tcs.ExtensionInterface, obj metav1.ObjectMeta) ([]
 
 	result := make([]*tapi.PodAlert, 0)
 	for _, alert := range alerts.Items {
-		if ok, _ := alert.Spec.IsValid(); !ok {
+		if ok, _ := alert.IsValid(); !ok {
+			continue
+		}
+		if alert.Spec.PodName != "" && alert.Spec.PodName != obj.Name {
 			continue
 		}
 		if selector, err := metav1.LabelSelectorAsSelector(&alert.Spec.Selector); err == nil {
@@ -40,7 +43,10 @@ func FindNodeAlert(stashClient tcs.ExtensionInterface, obj metav1.ObjectMeta) ([
 
 	result := make([]*tapi.NodeAlert, 0)
 	for _, alert := range alerts.Items {
-		if ok, _ := alert.Spec.IsValid(); !ok {
+		if ok, _ := alert.IsValid(); !ok {
+			continue
+		}
+		if alert.Spec.NodeName != "" && alert.Spec.NodeName != obj.Name {
 			continue
 		}
 		selector := labels.SelectorFromSet(alert.Spec.Selector)

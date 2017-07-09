@@ -2,7 +2,6 @@ package controller
 
 import (
 	"time"
-
 	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/api"
 	tcs "github.com/appscode/searchlight/client/clientset"
@@ -14,6 +13,7 @@ import (
 	clientset "k8s.io/client-go/kubernetes"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 	"k8s.io/client-go/tools/record"
+	"github.com/appscode/searchlight/pkg/icinga/host"
 )
 
 type Controller struct {
@@ -21,16 +21,21 @@ type Controller struct {
 	ExtClient    tcs.ExtensionInterface
 	IcingaClient *icinga.IcingaClient // TODO: init
 
-	// Event Recorder
-	recorder   record.EventRecorder
-	opt        *types.Context
-	syncPeriod time.Duration
+	clusterHost *host.ClusterHost
+	nodeHost    *host.NodeHost
+	podHost     *host.PodHost
+	recorder    record.EventRecorder
+	opt         *types.Context
+	syncPeriod  time.Duration
 }
 
 func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface) *Controller {
 	return &Controller{
 		KubeClient: kubeClient,
 		ExtClient:  extClient,
+		clusterHost: host.NewClusterHost(kubeClient, extClient, nil),
+		nodeHost: host.NewNodeHost(kubeClient, extClient, nil),
+		podHost: host.NewPodHost(kubeClient, extClient, nil),
 		recorder:   eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
 		syncPeriod: 5 * time.Minute,
 	}

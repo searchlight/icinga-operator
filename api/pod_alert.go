@@ -44,6 +44,8 @@ type PodAlertList struct {
 type PodAlertSpec struct {
 	Selector metav1.LabelSelector `json:"selector,omitempty"`
 
+	PodName string `json:"podName,omitempty"`
+
 	// Icinga CheckCommand name
 	Check CheckPod `json:"check,omitempty"`
 

@@ -44,6 +44,8 @@ type NodeAlertList struct {
 type NodeAlertSpec struct {
 	Selector map[string]string `json:"selector,omitempty"`
 
+	NodeName string `json:"nodeName,omitempty"`
+
 	// Icinga CheckCommand name
 	Check CheckNode `json:"check,omitempty"`
 

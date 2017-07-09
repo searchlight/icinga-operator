@@ -41,10 +41,10 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	return nil
 }
 
-func (obj *PodAlert) GetObjectKind() schema.ObjectKind     { return &obj.TypeMeta }
+func (a *PodAlert) GetObjectKind() schema.ObjectKind       { return &a.TypeMeta }
 func (obj *PodAlertList) GetObjectKind() schema.ObjectKind { return &obj.TypeMeta }
 
-func (obj *NodeAlert) GetObjectKind() schema.ObjectKind     { return &obj.TypeMeta }
+func (a *NodeAlert) GetObjectKind() schema.ObjectKind       { return &a.TypeMeta }
 func (obj *NodeAlertList) GetObjectKind() schema.ObjectKind { return &obj.TypeMeta }
 
 func (a *ClusterAlert) GetObjectKind() schema.ObjectKind       { return &a.TypeMeta }

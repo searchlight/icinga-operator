@@ -34,7 +34,7 @@ func (c *Controller) WatchClusterAlerts() {
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				if alert, ok := obj.(*tapi.ClusterAlert); ok {
-					if ok, err := alert.Spec.IsValid(); !ok {
+					if ok, err := alert.IsValid(); !ok {
 						c.recorder.Eventf(
 							alert,
 							apiv1.EventTypeWarning,
@@ -60,7 +60,7 @@ func (c *Controller) WatchClusterAlerts() {
 					return
 				}
 				if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
-					if ok, err := newAlert.Spec.IsValid(); !ok {
+					if ok, err := newAlert.IsValid(); !ok {
 						c.recorder.Eventf(
 							newAlert,
 							apiv1.EventTypeWarning,
@@ -76,7 +76,7 @@ func (c *Controller) WatchClusterAlerts() {
 			},
 			DeleteFunc: func(obj interface{}) {
 				if alert, ok := obj.(*tapi.ClusterAlert); ok {
-					if ok, err := alert.Spec.IsValid(); !ok {
+					if ok, err := alert.IsValid(); !ok {
 						c.recorder.Eventf(
 							alert,
 							apiv1.EventTypeWarning,

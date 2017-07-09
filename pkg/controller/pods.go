@@ -33,47 +33,51 @@ func (c *Controller) WatchPods() {
 		c.syncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
-				if resource, ok := obj.(*apiv1.Pod); ok {
-					log.Infof("Pod %s@%s added", resource.Name, resource.Namespace)
+				if pod, ok := obj.(*apiv1.Pod); ok {
+					log.Infof("Pod %s@%s added", pod.Name, pod.Namespace)
+					if pod.Status.PodIP == "" {
+						log.Warningf("Skipping pod %s@%s, since it has no IP", pod.Name, pod.Namespace)
+						return
+					}
 
-					alerts, err := util.FindPodAlert(c.ExtClient, resource.ObjectMeta)
+					alerts, err := util.FindPodAlert(c.ExtClient, pod.ObjectMeta)
 					if err != nil {
-						log.Errorf("Error while searching PodAlert for Pod %s@%s.", resource.Name, resource.Namespace)
+						log.Errorf("Error while searching PodAlert for Pod %s@%s.", pod.Name, pod.Namespace)
 						return
 					}
 					if len(alerts) == 0 {
-						log.Errorf("No PodAlert found for Pod %s@%s.", resource.Name, resource.Namespace)
+						log.Errorf("No PodAlert found for Pod %s@%s.", pod.Name, pod.Namespace)
 						return
 					}
 					for _, alert := range alerts {
-						err = c.EnsurePod(resource, nil, alert)
+						err = c.EnsurePod(pod, nil, alert)
 						if err != nil {
-							log.Errorf("Failed to add icinga2 alert for Pod %s@%s.", resource.Name, resource.Namespace)
+							log.Errorf("Failed to add icinga2 alert for Pod %s@%s.", pod.Name, pod.Namespace)
 							// return
 						}
 					}
 				}
 			},
 			UpdateFunc: func(old, new interface{}) {
-				oldObj, ok := old.(*apiv1.Pod)
+				oldPod, ok := old.(*apiv1.Pod)
 				if !ok {
 					log.Errorln(errors.New("Invalid Pod object"))
 					return
 				}
-				newObj, ok := new.(*apiv1.Pod)
+				newPod, ok := new.(*apiv1.Pod)
 				if !ok {
 					log.Errorln(errors.New("Invalid Pod object"))
 					return
 				}
-				if !reflect.DeepEqual(oldObj.Labels, newObj.Labels) {
-					oldAlerts, err := util.FindPodAlert(c.ExtClient, oldObj.ObjectMeta)
+				if !reflect.DeepEqual(oldPod.Labels, newPod.Labels) {
+					oldAlerts, err := util.FindPodAlert(c.ExtClient, oldPod.ObjectMeta)
 					if err != nil {
-						log.Errorf("Error while searching PodAlert for Pod %s@%s.", oldObj.Name, oldObj.Namespace)
+						log.Errorf("Error while searching PodAlert for Pod %s@%s.", oldPod.Name, oldPod.Namespace)
 						return
 					}
-					newAlerts, err := util.FindPodAlert(c.ExtClient, newObj.ObjectMeta)
+					newAlerts, err := util.FindPodAlert(c.ExtClient, newPod.ObjectMeta)
 					if err != nil {
-						log.Errorf("Error while searching PodAlert for Pod %s@%s.", newObj.Name, newObj.Namespace)
+						log.Errorf("Error while searching PodAlert for Pod %s@%s.", newPod.Name, newPod.Namespace)
 						return
 					}
 
@@ -94,32 +98,32 @@ func (c *Controller) WatchPods() {
 					}
 					for _, ch := range diff {
 						if ch.old == nil && ch.new != nil {
-							c.EnsurePod(newObj, nil, ch.new)
+							c.EnsurePod(newPod, nil, ch.new)
 						} else if ch.old != nil && ch.new == nil {
-							c.EnsurePodDeleted(newObj, ch.old)
+							c.EnsurePodDeleted(newPod, ch.old)
 						} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
-							c.EnsurePod(newObj, ch.old, ch.new)
+							c.EnsurePod(newPod, ch.old, ch.new)
 						}
 					}
 				}
 			},
 			DeleteFunc: func(obj interface{}) {
-				if resource, ok := obj.(*apiv1.Pod); ok {
-					log.Infof("Pod %s@%s deleted", resource.Name, resource.Namespace)
+				if pod, ok := obj.(*apiv1.Pod); ok {
+					log.Infof("Pod %s@%s deleted", pod.Name, pod.Namespace)
 
-					alerts, err := util.FindPodAlert(c.ExtClient, resource.ObjectMeta)
+					alerts, err := util.FindPodAlert(c.ExtClient, pod.ObjectMeta)
 					if err != nil {
-						log.Errorf("Error while searching PodAlert for Pod %s@%s.", resource.Name, resource.Namespace)
+						log.Errorf("Error while searching PodAlert for Pod %s@%s.", pod.Name, pod.Namespace)
 						return
 					}
 					if len(alerts) == 0 {
-						log.Errorf("No PodAlert found for Pod %s@%s.", resource.Name, resource.Namespace)
+						log.Errorf("No PodAlert found for Pod %s@%s.", pod.Name, pod.Namespace)
 						return
 					}
 					for _, alert := range alerts {
-						err = c.EnsurePodDeleted(resource, alert)
+						err = c.EnsurePodDeleted(pod, alert)
 						if err != nil {
-							log.Errorf("Failed to delete icinga2 alert for Pod %s@%s.", resource.Name, resource.Namespace)
+							log.Errorf("Failed to delete icinga2 alert for Pod %s@%s.", pod.Name, pod.Namespace)
 							// return
 						}
 					}

@@ -35,7 +35,7 @@ func (c *Controller) WatchNodeAlerts() {
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				if alert, ok := obj.(*tapi.NodeAlert); ok {
-					if ok, err := alert.Spec.IsValid(); !ok {
+					if ok, err := alert.IsValid(); !ok {
 						c.recorder.Eventf(
 							alert,
 							apiv1.EventTypeWarning,
@@ -61,7 +61,7 @@ func (c *Controller) WatchNodeAlerts() {
 					return
 				}
 				if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
-					if ok, err := newAlert.Spec.IsValid(); !ok {
+					if ok, err := newAlert.IsValid(); !ok {
 						c.recorder.Eventf(
 							newAlert,
 							apiv1.EventTypeWarning,
@@ -77,7 +77,7 @@ func (c *Controller) WatchNodeAlerts() {
 			},
 			DeleteFunc: func(obj interface{}) {
 				if alert, ok := obj.(*tapi.NodeAlert); ok {
-					if ok, err := alert.Spec.IsValid(); !ok {
+					if ok, err := alert.IsValid(); !ok {
 						c.recorder.Eventf(
 							alert,
 							apiv1.EventTypeWarning,
@@ -97,41 +97,59 @@ func (c *Controller) WatchNodeAlerts() {
 }
 
 func (c *Controller) EnsureNodeAlert(old, new *tapi.NodeAlert) {
-	var oldOpt, newOpt *metav1.ListOptions
+	oldObjs := make(map[string]apiv1.Node)
+
 	if old != nil {
-		oldOpt = &metav1.ListOptions{LabelSelector: labels.SelectorFromSet(old.Spec.Selector).String()}
-	}
-
-	newOpt = &metav1.ListOptions{LabelSelector: labels.SelectorFromSet(new.Spec.Selector).String()}
-
-	{
-		oldObjs := make(map[string]apiv1.Node)
-		if oldOpt != nil {
-			if resources, err := c.KubeClient.CoreV1().Nodes().List(*oldOpt); err == nil {
+		oldSel := labels.SelectorFromSet(old.Spec.Selector)
+		if old.Spec.NodeName != "" {
+			if resource, err := c.KubeClient.CoreV1().Nodes().Get(old.Spec.NodeName, metav1.GetOptions{}); err == nil {
+				if oldSel.Matches(labels.Set(resource.Labels)) {
+					oldObjs[resource.Name] = *resource
+				}
+			}
+		} else {
+			if resources, err := c.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{LabelSelector: oldSel.String()}); err == nil {
 				for _, resource := range resources.Items {
 					oldObjs[resource.Name] = resource
 				}
 			}
 		}
+	}
 
-		if resources, err := c.KubeClient.CoreV1().Nodes().List(*newOpt); err == nil {
+	newSel := labels.SelectorFromSet(new.Spec.Selector)
+	if new.Spec.NodeName != "" {
+		if resource, err := c.KubeClient.CoreV1().Nodes().Get(new.Spec.NodeName, metav1.GetOptions{}); err == nil {
+			if newSel.Matches(labels.Set(resource.Labels)) {
+				delete(oldObjs, resource.Name)
+				go c.EnsureNode(resource, old, new)
+			}
+		}
+	} else {
+		if resources, err := c.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{LabelSelector: newSel.String()}); err == nil {
 			for _, resource := range resources.Items {
 				delete(oldObjs, resource.Name)
 				go c.EnsureNode(&resource, old, new)
 			}
 		}
-		for _, resource := range oldObjs {
-			go c.EnsureNodeDeleted(&resource, old)
-		}
+	}
+	for _, resource := range oldObjs {
+		go c.EnsureNodeDeleted(&resource, old)
 	}
 }
 
 func (c *Controller) EnsureNodeAlertDeleted(alert *tapi.NodeAlert) {
-	opt := metav1.ListOptions{LabelSelector: labels.SelectorFromSet(alert.Spec.Selector).String()}
-
-	if resources, err := c.KubeClient.CoreV1().Nodes().List(opt); err == nil {
-		for _, resource := range resources.Items {
-			go c.EnsureNodeDeleted(&resource, alert)
+	sel := labels.SelectorFromSet(alert.Spec.Selector)
+	if alert.Spec.NodeName != "" {
+		if resource, err := c.KubeClient.CoreV1().Nodes().Get(alert.Spec.NodeName, metav1.GetOptions{}); err == nil {
+			if sel.Matches(labels.Set(resource.Labels)) {
+				go c.EnsureNodeDeleted(resource, alert)
+			}
+		}
+	} else {
+		if resources, err := c.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{LabelSelector: sel.String()}); err == nil {
+			for _, resource := range resources.Items {
+				go c.EnsureNodeDeleted(&resource, alert)
+			}
 		}
 	}
 }

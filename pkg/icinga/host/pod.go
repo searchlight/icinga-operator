@@ -7,6 +7,7 @@ import (
 	"github.com/appscode/errors"
 	tapi "github.com/appscode/searchlight/api"
 	tcs "github.com/appscode/searchlight/client/clientset"
+	icinga "github.com/appscode/searchlight/pkg/icinga/client"
 	clientset "k8s.io/client-go/kubernetes"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
@@ -16,6 +17,16 @@ type PodHost struct {
 
 	KubeClient clientset.Interface
 	ExtClient  tcs.ExtensionInterface
+}
+
+func NewPodHost(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, IcingaClient *icinga.IcingaClient) *PodHost {
+	return &PodHost{
+		KubeClient: kubeClient,
+		ExtClient:  extClient,
+		commonHost: commonHost{
+			IcingaClient: IcingaClient,
+		},
+	}
 }
 
 func (h *PodHost) GetObject(alert tapi.PodAlert, pod apiv1.Pod) KHost {
