@@ -2,8 +2,8 @@ package host
 
 import (
 	"github.com/appscode/errors"
+	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/controller/types"
-	"github.com/appscode/searchlight/pkg/icinga/host"
 )
 
 type ClusterHost struct {
@@ -20,13 +20,13 @@ func (h *ClusterHost) Create() error {
 	}
 
 	// Get Icinga Host Info
-	objectList, err := host.GetObjectList(h.KubeClient, alertSpec.Check, host.HostTypeLocalhost, h.Resource.Namespace, h.ObjectType, h.ObjectName, "")
+	objectList, err := GetObjectList(h.KubeClient, alertSpec.Check, HostTypeLocalhost, h.Resource.Namespace, h.ObjectType, h.ObjectName, "")
 	if err != nil {
 		return errors.FromErr(err).Err()
 	}
 
 	var has bool
-	if has, err = host.CheckIcingaService(h.IcingaClient, h.Resource.Name, objectList); err != nil {
+	if has, err = CheckIcingaService(h.IcingaClient, h.Resource.Name, objectList); err != nil {
 		return errors.FromErr(err).Err()
 	}
 	if has {
@@ -34,7 +34,7 @@ func (h *ClusterHost) Create() error {
 	}
 
 	// Create Icinga Host
-	if err := host.CreateIcingaHost(h.IcingaClient, objectList, h.Resource.Namespace); err != nil {
+	if err := CreateIcingaHost(h.IcingaClient, objectList, h.Resource.Namespace); err != nil {
 		return errors.FromErr(err).Err()
 	}
 
@@ -42,14 +42,14 @@ func (h *ClusterHost) Create() error {
 		return errors.FromErr(err).Err()
 	}
 
-	if err := host.CreateIcingaNotification(h.IcingaClient, h.Resource, objectList); err != nil {
+	if err := CreateIcingaNotification(h.IcingaClient, h.Resource, objectList); err != nil {
 		return errors.FromErr(err).Err()
 	}
 
 	return nil
 }
 
-func (h *ClusterHost) createIcingaService(objectList []*host.KubeObjectInfo) error {
+func (h *ClusterHost) createIcingaService(objectList []*KubeObjectInfo) error {
 	alertSpec := h.Resource.Spec
 
 	mp := make(map[string]interface{})
@@ -58,22 +58,22 @@ func (h *ClusterHost) createIcingaService(objectList []*host.KubeObjectInfo) err
 		mp["check_interval"] = alertSpec.CheckInterval.Seconds()
 	}
 
-	commandVars := h.IcingaData[alertSpec.Check].Vars
+	commandVars := tapi.ClusterCommands[alertSpec.Check].Vars
 
 	for key, val := range alertSpec.Vars {
 		if _, found := commandVars[key]; found {
-			mp[host.IVar(key)] = val
+			mp[IVar(key)] = val
 		}
 	}
 
-	return host.CreateIcingaService(h.IcingaClient, mp, objectList[0], h.Resource.Name)
+	return CreateIcingaService(h.IcingaClient, mp, objectList[0], h.Resource.Name)
 }
 
 func (h *ClusterHost) Update() error {
 	alertSpec := h.Resource.Spec
 
 	// Get Icinga Host Info
-	objectList, err := host.GetObjectList(h.KubeClient, alertSpec.Check, host.HostTypeLocalhost, h.Resource.Namespace, h.ObjectType, h.ObjectName, "")
+	objectList, err := GetObjectList(h.KubeClient, alertSpec.Check, HostTypeLocalhost, h.Resource.Namespace, h.ObjectType, h.ObjectName, "")
 	if err != nil {
 		return errors.FromErr(err).Err()
 	}
@@ -82,13 +82,13 @@ func (h *ClusterHost) Update() error {
 		return errors.FromErr(err).Err()
 	}
 
-	if err := host.UpdateIcingaNotification(h.IcingaClient, h.Resource, objectList); err != nil {
+	if err := UpdateIcingaNotification(h.IcingaClient, h.Resource, objectList); err != nil {
 		return errors.FromErr(err).Err()
 	}
 	return nil
 }
 
-func (h *ClusterHost) updateIcingaService(objectList []*host.KubeObjectInfo) error {
+func (h *ClusterHost) updateIcingaService(objectList []*KubeObjectInfo) error {
 	alertSpec := h.Resource.Spec
 
 	mp := make(map[string]interface{})
@@ -96,15 +96,15 @@ func (h *ClusterHost) updateIcingaService(objectList []*host.KubeObjectInfo) err
 		mp["check_interval"] = alertSpec.CheckInterval.Seconds()
 	}
 
-	commandVars := h.IcingaData[alertSpec.Check].Vars
+	commandVars := tapi.ClusterCommands[alertSpec.Check].Vars
 	for key, val := range alertSpec.Vars {
 		if _, found := commandVars[key]; found {
-			mp[host.IVar(key)] = val
+			mp[IVar(key)] = val
 		}
 	}
 
 	for _, object := range objectList {
-		if err := host.UpdateIcingaService(h.IcingaClient, mp, object, h.Resource.Name); err != nil {
+		if err := UpdateIcingaService(h.IcingaClient, mp, object, h.Resource.Name); err != nil {
 			return errors.FromErr(err).Err()
 		}
 	}
@@ -114,17 +114,17 @@ func (h *ClusterHost) updateIcingaService(objectList []*host.KubeObjectInfo) err
 func (h *ClusterHost) Delete() error {
 	alertSpec := h.Resource.Spec
 
-	objectList, err := host.GetObjectList(h.KubeClient, alertSpec.Check, host.HostTypeLocalhost, h.Resource.Namespace, h.ObjectType, h.ObjectName, "")
+	objectList, err := GetObjectList(h.KubeClient, alertSpec.Check, HostTypeLocalhost, h.Resource.Namespace, h.ObjectType, h.ObjectName, "")
 	if err != nil {
 		return errors.FromErr(err).Err()
 	}
 
-	if err := host.DeleteIcingaService(h.IcingaClient, objectList, h.Resource.Name); err != nil {
+	if err := DeleteIcingaService(h.IcingaClient, objectList, h.Resource.Name); err != nil {
 		return errors.FromErr(err).Err()
 	}
 
 	for _, object := range objectList {
-		if err := host.DeleteIcingaHost(h.IcingaClient, object.Name); err != nil {
+		if err := DeleteIcingaHost(h.IcingaClient, object.Name); err != nil {
 			return errors.FromErr(err).Err()
 		}
 	}

@@ -4,14 +4,11 @@ import (
 	"time"
 
 	"github.com/appscode/log"
-	aci "github.com/appscode/searchlight/api"
-	acs "github.com/appscode/searchlight/client/clientset"
+	tapi "github.com/appscode/searchlight/api"
+	tcs "github.com/appscode/searchlight/client/clientset"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	"github.com/appscode/searchlight/pkg/eventer"
 	icinga "github.com/appscode/searchlight/pkg/icinga/client"
-	_ "github.com/appscode/searchlight/pkg/icinga/host/localhost"
-	_ "github.com/appscode/searchlight/pkg/icinga/host/node"
-	_ "github.com/appscode/searchlight/pkg/icinga/host/pod"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
@@ -21,7 +18,7 @@ import (
 
 type Controller struct {
 	KubeClient   clientset.Interface
-	ExtClient    acs.ExtensionInterface
+	ExtClient    tcs.ExtensionInterface
 	IcingaClient *icinga.IcingaClient // TODO: init
 
 	// Event Recorder
@@ -30,7 +27,7 @@ type Controller struct {
 	syncPeriod time.Duration
 }
 
-func New(kubeClient clientset.Interface, extClient acs.ExtensionInterface) *Controller {
+func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface) *Controller {
 	return &Controller{
 		KubeClient: kubeClient,
 		ExtClient:  extClient,
@@ -42,13 +39,13 @@ func New(kubeClient clientset.Interface, extClient acs.ExtensionInterface) *Cont
 func (c *Controller) Setup() {
 	log.Infoln("Ensuring ThirdPartyResource")
 
-	if err := c.ensureThirdPartyResource(aci.ResourceNamePodAlert + "." + aci.V1alpha1SchemeGroupVersion.Group); err != nil {
+	if err := c.ensureThirdPartyResource(tapi.ResourceNamePodAlert + "." + tapi.V1alpha1SchemeGroupVersion.Group); err != nil {
 		log.Fatalln(err)
 	}
-	if err := c.ensureThirdPartyResource(aci.ResourceNameNodeAlert + "." + aci.V1alpha1SchemeGroupVersion.Group); err != nil {
+	if err := c.ensureThirdPartyResource(tapi.ResourceNameNodeAlert + "." + tapi.V1alpha1SchemeGroupVersion.Group); err != nil {
 		log.Fatalln(err)
 	}
-	if err := c.ensureThirdPartyResource(aci.ResourceNameClusterAlert + "." + aci.V1alpha1SchemeGroupVersion.Group); err != nil {
+	if err := c.ensureThirdPartyResource(tapi.ResourceNameClusterAlert + "." + tapi.V1alpha1SchemeGroupVersion.Group); err != nil {
 		log.Fatalln(err)
 	}
 }
@@ -73,7 +70,7 @@ func (c *Controller) ensureThirdPartyResource(resourceName string) error {
 		Description: "Searchlight by AppsCode - Alerts for Kubernetes",
 		Versions: []extensions.APIVersion{
 			{
-				Name: aci.V1alpha1SchemeGroupVersion.Version,
+				Name: tapi.V1alpha1SchemeGroupVersion.Version,
 			},
 		},
 	}

@@ -6,7 +6,6 @@ import (
 
 	aci "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/data"
-	"github.com/appscode/searchlight/pkg/icinga/host"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,7 +31,7 @@ func TestSetParameterizedPodVariables(t *testing.T) {
 	assert.Nil(t, err)
 
 	for key := range alertSpec.Vars {
-		mpVal, found := mp[host.IVar(key)]
+		mpVal, found := mp[IVar(key)]
 		if assert.True(t, found) {
 			assert.EqualValues(t, mpVal, fmt.Sprintf(`Fake Query for pod_name='%v'`, fakePodName))
 		}
@@ -55,7 +54,7 @@ func TestSetParameterizedPodVariables(t *testing.T) {
 	assert.Nil(t, err)
 
 	for key := range alertSpec.Vars {
-		mpVal, found := mp[host.IVar(key)]
+		mpVal, found := mp[IVar(key)]
 		if assert.True(t, found) {
 			assert.NotEqual(t, mpVal, fmt.Sprintf(`Fake Query for pod_name='%v'`, fakePodName))
 		}

@@ -12,11 +12,6 @@ import (
 	"github.com/appscode/searchlight/pkg/analytics"
 	"github.com/appscode/searchlight/pkg/controller/eventer"
 	"github.com/appscode/searchlight/pkg/controller/types"
-	//	"github.com/appscode/searchlight/pkg/events"
-	"github.com/appscode/searchlight/pkg/icinga/host"
-	_ "github.com/appscode/searchlight/pkg/icinga/host/localhost"
-	_ "github.com/appscode/searchlight/pkg/icinga/host/node"
-	_ "github.com/appscode/searchlight/pkg/icinga/host/pod"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -123,7 +118,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 			return nil
 		}
 
-		if err := host.CheckAlertConfig(oldConfig, newConfig); err != nil {
+		if err := CheckAlertConfig(oldConfig, newConfig); err != nil {
 			return errors.FromErr(err).Err()
 		}
 
@@ -177,7 +172,7 @@ func (c *Controller) handlePod(e *events.Event) error {
 		return nil
 	}
 	ancestors := c.getParentsForPod(e.RuntimeObj[0])
-	if host.IsIcingaApp(ancestors, e.MetaData.Namespace) {
+	if IsIcingaApp(ancestors, e.MetaData.Namespace) {
 		if e.EventType.IsAdded() {
 			go c.handleIcingaPod()
 		}
@@ -294,7 +289,7 @@ func (c *Controller) handleRegularPod(e *events.Event, ancestors []*types.Ancest
 	for _, ancestor := range ancestors {
 		objectType := ancestor.Type
 		for _, objectName := range ancestor.Names {
-			lb, err := host.GetLabelSelector(objectType, objectName)
+			lb, err := GetLabelSelector(objectType, objectName)
 			if err != nil {
 				return errors.FromErr(err).Err()
 			}
@@ -314,7 +309,7 @@ func (c *Controller) handleRegularPod(e *events.Event, ancestors []*types.Ancest
 
 				if command, found := c.opt.IcingaData[alert.Spec.Check]; found {
 					if hostType, found := command.HostType[c.opt.ObjectType]; found {
-						if hostType != host.HostTypePod {
+						if hostType != HostTypePod {
 							continue
 						}
 					}
@@ -341,11 +336,11 @@ func (c *Controller) handleNode(e *events.Event) error {
 		return nil
 	}
 
-	lb, err := host.GetLabelSelector(events.Cluster.String(), "")
+	lb, err := GetLabelSelector(events.Cluster.String(), "")
 	if err != nil {
 		return errors.FromErr(err).Err()
 	}
-	lb1, err := host.GetLabelSelector(events.Node.String(), e.MetaData.Name)
+	lb1, err := GetLabelSelector(events.Node.String(), e.MetaData.Name)
 	if err != nil {
 		return errors.FromErr(err).Err()
 	}
@@ -400,7 +395,7 @@ func (c *Controller) handleNode(e *events.Event) error {
 
 		if command, found := c.opt.IcingaData[alert.Spec.Check]; found {
 			if hostType, found := command.HostType[c.opt.ObjectType]; found {
-				if hostType != host.HostTypeNode {
+				if hostType != HostTypeNode {
 					continue
 				}
 			}

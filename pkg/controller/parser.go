@@ -2,7 +2,6 @@ package controller
 
 import (
 	"github.com/appscode/log"
-	"github.com/appscode/searchlight/pkg/icinga/host"
 )
 
 func (c *Controller) parseAlertOptions() {
@@ -11,5 +10,5 @@ func (c *Controller) parseAlertOptions() {
 		return
 	}
 	log.Infoln("Parsing labels.")
-	c.opt.ObjectType, c.opt.ObjectName = host.GetObjectInfo(c.opt.Resource.ObjectMeta.Labels)
+	c.opt.ObjectType, c.opt.ObjectName = GetObjectInfo(c.opt.Resource.ObjectMeta.Labels)
 }
