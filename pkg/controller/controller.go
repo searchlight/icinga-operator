@@ -20,6 +20,9 @@ type Controller struct {
 	ExtClient    tcs.ExtensionInterface
 	IcingaClient *icinga.Client // TODO: init
 
+	ConfigSecretName string
+	ConfigNamespace  string
+
 	clusterHost *icinga.ClusterHost
 	nodeHost    *icinga.NodeHost
 	podHost     *icinga.PodHost
@@ -39,18 +42,19 @@ func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface) *Cont
 	}
 }
 
-func (c *Controller) Setup() {
+func (c *Controller) Setup() error {
 	log.Infoln("Ensuring ThirdPartyResource")
 
 	if err := c.ensureThirdPartyResource(tapi.ResourceNamePodAlert + "." + tapi.V1alpha1SchemeGroupVersion.Group); err != nil {
-		log.Fatalln(err)
+		return err
 	}
 	if err := c.ensureThirdPartyResource(tapi.ResourceNameNodeAlert + "." + tapi.V1alpha1SchemeGroupVersion.Group); err != nil {
-		log.Fatalln(err)
+		return err
 	}
 	if err := c.ensureThirdPartyResource(tapi.ResourceNameClusterAlert + "." + tapi.V1alpha1SchemeGroupVersion.Group); err != nil {
-		log.Fatalln(err)
+		return err
 	}
+	return nil
 }
 
 func (c *Controller) ensureThirdPartyResource(resourceName string) error {

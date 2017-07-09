@@ -3,15 +3,13 @@ package main
 import (
 	"net/http"
 	_ "net/http/pprof"
-	"time"
 
 	"github.com/appscode/log"
 	_ "github.com/appscode/searchlight/api/install"
-	acs "github.com/appscode/searchlight/client/clientset"
+	tcs "github.com/appscode/searchlight/client/clientset"
 	_ "github.com/appscode/searchlight/client/clientset/fake"
 	"github.com/appscode/searchlight/pkg/analytics"
-	acw "github.com/appscode/searchlight/pkg/controller"
-	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/pkg/controller"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 	clientset "k8s.io/client-go/kubernetes"
@@ -29,7 +27,7 @@ var (
 	address string = ":56790"
 
 	kubeClient clientset.Interface
-	extClient  acs.ExtensionInterface
+	extClient  tcs.ExtensionInterface
 
 	enableAnalytics bool = true
 )
@@ -54,25 +52,23 @@ func NewCmdRun() *cobra.Command {
 			}
 
 			kubeClient = clientset.NewForConfigOrDie(config)
-			extClient = acs.NewForConfigOrDie(config)
+			extClient = tcs.NewForConfigOrDie(config)
 
-			w := &acw.Watcher{
-				KubeClient:      kubeClient,
-				ExtClient:       extClient,
-				EnableAnalytics: enableAnalytics,
-				SyncPeriod:      time.Minute * 2,
-			}
-			if icingaSecretName == "" {
-				log.Fatalln("Missing icinga secret")
-			}
-			icingaClient, err := icinga.NewIcingaClient(w.KubeClient, icingaSecretName, icingaSecretNamespace)
-			if err != nil {
+			ctrl := controller.New(kubeClient, extClient)
+			if err := ctrl.Setup(); err != nil {
 				log.Fatalln(err)
 			}
-			w.IcingaClient = icingaClient
+			//if icingaSecretName == "" {
+			//	log.Fatalln("Missing icinga secret")
+			//}
+			//icingaClient, err := icinga.NewIcingaClient(w.KubeClient, icingaSecretName, icingaSecretNamespace)
+			//if err != nil {
+			//	log.Fatalln(err)
+			//}
+			//w.IcingaClient = icingaClient
 
 			log.Infoln("Starting Searchlight operator...")
-			go w.Run()
+			go ctrl.Run()
 
 			if enableAnalytics {
 				analytics.Enable()
