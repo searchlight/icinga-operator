@@ -11,7 +11,7 @@ import (
 	_ "github.com/appscode/searchlight/client/clientset/fake"
 	"github.com/appscode/searchlight/pkg/analytics"
 	acw "github.com/appscode/searchlight/pkg/controller"
-	icinga "github.com/appscode/searchlight/pkg/icinga/client"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 	clientset "k8s.io/client-go/kubernetes"

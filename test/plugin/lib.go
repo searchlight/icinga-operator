@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/appscode/searchlight/pkg/icinga/host"
+	"github.com/appscode/searchlight/pkg/icinga"
 )
 
 func GetKubeObjectInfo(hostname string) (objectType string, objectName string, namespace string, err error) {
