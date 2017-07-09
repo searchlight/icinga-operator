@@ -6,7 +6,6 @@ import (
 	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/api"
 	tcs "github.com/appscode/searchlight/client/clientset"
-	"github.com/appscode/searchlight/pkg/controller/types"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/icinga"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
@@ -25,7 +24,6 @@ type Controller struct {
 	nodeHost    *icinga.NodeHost
 	podHost     *icinga.PodHost
 	recorder    record.EventRecorder
-	opt         *types.Context
 	SyncPeriod  time.Duration
 }
 

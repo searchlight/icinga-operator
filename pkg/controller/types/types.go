@@ -1,16 +1,6 @@
 package types
 
-import (
-	"sync"
-
-	tapi "github.com/appscode/searchlight/api"
-	tcs "github.com/appscode/searchlight/client/clientset"
-	"github.com/appscode/searchlight/data"
-	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/voyager/pkg/stash"
-	//	"github.com/appscode/searchlight/pkg/stash"
-	clientset "k8s.io/client-go/kubernetes"
-)
+//	"github.com/appscode/searchlight/pkg/stash"
 
 //
 //type EventReason string
@@ -43,45 +33,3 @@ import (
 //func (r EventReason) String() string {
 //	return string(r)
 //}
-
-const (
-	AcknowledgeTimestamp string = "acknowledgement_timestamp"
-)
-
-type IcingaCommands struct {
-	Name   string
-	Vars   map[string]data.CommandVar
-	States []string
-}
-
-type Context struct {
-	// kubernetes client
-	KubeClient clientset.Interface
-	ExtClient  tcs.ExtensionInterface
-
-	IcingaClient *icinga.Client
-	IcingaData   map[string]*IcingaCommands
-
-	Resource   *tapi.PodAlert
-	ObjectType string
-	ObjectName string
-
-	Storage stash.Storage
-	sync.Mutex
-}
-
-type KubeOptions struct {
-	ObjectType string
-	ObjectName string
-}
-
-type Ancestors struct {
-	Type  string   `json:"type,omitempty"`
-	Names []string `json:"names,omitempty"`
-}
-
-type AlertEventMessage struct {
-	IncidentEventId int64  `json:"incident_event_id,omitempty"`
-	Comment         string `json:"comment,omitempty"`
-	UserName        string `json:"username,omitempty"`
-}
