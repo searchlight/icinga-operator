@@ -1,4 +1,4 @@
-package client
+package icinga
 
 import (
 	"errors"
@@ -78,13 +78,13 @@ func getIcingaSecretData(kubeClient clientset.Interface, secretName, secretNames
 	return nil, errors.New("Invalid Icinga secret")
 }
 
-func getIcingaConfig(kubeClient clientset.Interface, secretName, secretNamespace string) (*IcingaConfig, error) {
+func getIcingaConfig(kubeClient clientset.Interface, secretName, secretNamespace string) (*Config, error) {
 	authData, err := getIcingaSecretData(kubeClient, secretName, secretNamespace)
 	if err != nil {
 		return nil, err
 	}
 
-	icingaConfig := &IcingaConfig{
+	icingaConfig := &Config{
 		Endpoint: authData.Endpoint,
 		CaCert:   nil,
 	}

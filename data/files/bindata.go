@@ -206,8 +206,8 @@ type bintree struct {
 }
 
 var _bintree = &bintree{nil, map[string]*bintree{
-	"icinga.gen.json": &bintree{icingaGenJson, map[string]*bintree{}},
-	"icinga.json":     &bintree{icingaJson, map[string]*bintree{}},
+	"icinga.gen.json": {icingaGenJson, map[string]*bintree{}},
+	"icinga.json":     {icingaJson, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory

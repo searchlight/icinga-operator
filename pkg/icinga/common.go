@@ -1,4 +1,4 @@
-package host
+package icinga
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 
 	"github.com/appscode/errors"
 	tapi "github.com/appscode/searchlight/api"
-	icinga "github.com/appscode/searchlight/pkg/icinga/client"
+	"github.com/appscode/searchlight/pkg/icinga"
 )
 
 const (
@@ -17,7 +17,7 @@ const (
 )
 
 type commonHost struct {
-	IcingaClient *icinga.IcingaClient
+	IcingaClient *icinga.Client
 }
 
 func (h *commonHost) CreateIcingaHost(kh KHost) error {

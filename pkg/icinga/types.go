@@ -1,4 +1,4 @@
-package host
+package icinga
 
 const (
 	internalIP = "InternalIP"

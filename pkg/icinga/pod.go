@@ -1,4 +1,4 @@
-package host
+package icinga
 
 import (
 	"fmt"
@@ -7,21 +7,20 @@ import (
 	"github.com/appscode/errors"
 	tapi "github.com/appscode/searchlight/api"
 	tcs "github.com/appscode/searchlight/client/clientset"
-	icinga "github.com/appscode/searchlight/pkg/icinga/client"
+	"github.com/appscode/searchlight/pkg/icinga"
 	clientset "k8s.io/client-go/kubernetes"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
-type NodeHost struct {
+type PodHost struct {
 	commonHost
 
 	KubeClient clientset.Interface
 	ExtClient  tcs.ExtensionInterface
-	//*types.Context
 }
 
-func NewNodeHost(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, IcingaClient *icinga.IcingaClient) *NodeHost {
-	return &NodeHost{
+func NewPodHost(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, IcingaClient *icinga.Client) *PodHost {
+	return &PodHost{
 		KubeClient: kubeClient,
 		ExtClient:  extClient,
 		commonHost: commonHost{
@@ -30,27 +29,20 @@ func NewNodeHost(kubeClient clientset.Interface, extClient tcs.ExtensionInterfac
 	}
 }
 
-func (h *NodeHost) GetObject(alert tapi.NodeAlert, node apiv1.Node) KHost {
-	nodeIP := "127.0.0.1"
-	for _, ip := range node.Status.Addresses {
-		if ip.Type == internalIP {
-			nodeIP = ip.Address
-			break
-		}
-	}
-	return KHost{Name: node.Name + "@" + alert.Namespace, IP: nodeIP}
+func (h *PodHost) GetObject(alert tapi.PodAlert, pod apiv1.Pod) KHost {
+	return KHost{Name: pod.Name + "@" + alert.Namespace, IP: pod.Status.PodIP}
 }
 
-func (h *NodeHost) expandVars(alertSpec tapi.NodeAlertSpec, kh KHost, attrs map[string]interface{}) error {
-	commandVars := tapi.NodeCommands[alertSpec.Check].Vars
+func (h *PodHost) expandVars(alertSpec tapi.PodAlertSpec, kh KHost, attrs map[string]interface{}) error {
+	commandVars := tapi.PodCommands[alertSpec.Check].Vars
 	for key, val := range alertSpec.Vars {
 		if v, found := commandVars[key]; found {
 			if v.Parameterized {
-				reg, err := regexp.Compile("nodename[ ]*=[ ]*'[?]'")
+				reg, err := regexp.Compile("pod_name[ ]*=[ ]*'[?]'")
 				if err != nil {
 					return err
 				}
-				attrs[IVar(key)] = reg.ReplaceAllString(val.(string), fmt.Sprintf("nodename='%s'", kh.Name))
+				attrs[IVar(key)] = reg.ReplaceAllString(val.(string), fmt.Sprintf("pod_name='%s'", kh.Name))
 			} else {
 				attrs[IVar(key)] = val
 			}
@@ -61,10 +53,9 @@ func (h *NodeHost) expandVars(alertSpec tapi.NodeAlertSpec, kh KHost, attrs map[
 	return nil
 }
 
-// set Alert in Icinga LocalHost
-func (h *NodeHost) Create(alert tapi.NodeAlert, node apiv1.Node) error {
+func (h *PodHost) Create(alert tapi.PodAlert, pod apiv1.Pod, specificObject string) error {
 	alertSpec := alert.Spec
-	kh := h.GetObject(alert, node)
+	kh := h.GetObject(alert, pod)
 
 	if has, err := h.CheckIcingaService(alert.Name, kh); err != nil || has {
 		return err
@@ -89,9 +80,9 @@ func (h *NodeHost) Create(alert tapi.NodeAlert, node apiv1.Node) error {
 	return h.CreateIcingaNotification(alert, kh)
 }
 
-func (h *NodeHost) Update(alert tapi.NodeAlert, node apiv1.Node) error {
+func (h *PodHost) Update(alert tapi.PodAlert, pod apiv1.Pod) error {
 	alertSpec := alert.Spec
-	kh := h.GetObject(alert, node)
+	kh := h.GetObject(alert, pod)
 
 	attrs := make(map[string]interface{})
 	if alertSpec.CheckInterval.Seconds() > 0 {
@@ -107,8 +98,8 @@ func (h *NodeHost) Update(alert tapi.NodeAlert, node apiv1.Node) error {
 	return h.UpdateIcingaNotification(alert, kh)
 }
 
-func (h *NodeHost) Delete(alert tapi.NodeAlert, node apiv1.Node) error {
-	kh := h.GetObject(alert, node)
+func (h *PodHost) Delete(alert tapi.PodAlert, pod apiv1.Pod) error {
+	kh := h.GetObject(alert, pod)
 
 	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
 		return errors.FromErr(err).Err()

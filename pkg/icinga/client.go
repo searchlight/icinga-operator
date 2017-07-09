@@ -1,4 +1,4 @@
-package client
+package icinga
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	clientset "k8s.io/client-go/kubernetes"
 )
 
-type IcingaConfig struct {
+type Config struct {
 	Endpoint  string
 	BasicAuth struct {
 		Username string
@@ -18,12 +18,12 @@ type IcingaConfig struct {
 	CaCert []byte
 }
 
-type IcingaClient struct {
-	config     *IcingaConfig
+type Client struct {
+	config     *Config
 	pathPrefix string
 }
 
-type IcingaApiRequest struct {
+type APIRequest struct {
 	client *http.Client
 
 	uri      string
@@ -41,53 +41,53 @@ type IcingaApiRequest struct {
 	ResponseBody []byte
 }
 
-type IcingaApiResponse struct {
+type APIResponse struct {
 	Err          error
 	Status       int
 	ResponseBody []byte
 }
 
-func newClient(icingaConfig *IcingaConfig) *IcingaClient {
-	c := &IcingaClient{
+func newClient(icingaConfig *Config) *Client {
+	c := &Client{
 		config: icingaConfig,
 	}
 	return c
 }
 
-func (c *IcingaClient) SetEndpoint(endpoint string) *IcingaClient {
+func (c *Client) SetEndpoint(endpoint string) *Client {
 	c.config.Endpoint = endpoint
 	return c
 }
 
-func (c *IcingaClient) Objects() *IcingaClient {
+func (c *Client) Objects() *Client {
 	c.pathPrefix = "/objects"
 	return c
 }
 
-func (c *IcingaClient) Hosts(hostName string) *IcingaApiRequest {
-	return c.newIcingaRequest("/hosts/" + hostName)
+func (c *Client) Hosts(hostName string) *APIRequest {
+	return c.newRequest("/hosts/" + hostName)
 }
 
-func (c *IcingaClient) HostGroups(hostName string) *IcingaApiRequest {
-	return c.newIcingaRequest("/hostgroups/" + hostName)
+func (c *Client) HostGroups(hostName string) *APIRequest {
+	return c.newRequest("/hostgroups/" + hostName)
 }
 
-func (c *IcingaClient) Service(hostName string) *IcingaApiRequest {
-	return c.newIcingaRequest("/services/" + hostName)
+func (c *Client) Service(hostName string) *APIRequest {
+	return c.newRequest("/services/" + hostName)
 }
 
-func (c *IcingaClient) Actions(action string) *IcingaApiRequest {
+func (c *Client) Actions(action string) *APIRequest {
 	c.pathPrefix = ""
-	return c.newIcingaRequest("/actions/" + action)
+	return c.newRequest("/actions/" + action)
 }
 
-func (c *IcingaClient) Notifications(hostName string) *IcingaApiRequest {
-	return c.newIcingaRequest("/notifications/" + hostName)
+func (c *Client) Notifications(hostName string) *APIRequest {
+	return c.newRequest("/notifications/" + hostName)
 }
 
-func (c *IcingaClient) Check() *IcingaApiRequest {
+func (c *Client) Check() *APIRequest {
 	c.pathPrefix = ""
-	return c.newIcingaRequest("")
+	return c.newRequest("")
 }
 
 func addUri(uri string, name []string) string {
@@ -97,7 +97,7 @@ func addUri(uri string, name []string) string {
 	return uri
 }
 
-func (ic *IcingaApiRequest) Get(name []string, jsonBody ...string) *IcingaApiRequest {
+func (ic *APIRequest) Get(name []string, jsonBody ...string) *APIRequest {
 	if len(jsonBody) == 0 {
 		ic.req, ic.Err = ic.newRequest("GET", addUri(ic.uri, name), nil)
 	} else if len(jsonBody) == 1 {
@@ -108,22 +108,22 @@ func (ic *IcingaApiRequest) Get(name []string, jsonBody ...string) *IcingaApiReq
 	return ic
 }
 
-func (ic *IcingaApiRequest) Create(name []string, jsonBody string) *IcingaApiRequest {
+func (ic *APIRequest) Create(name []string, jsonBody string) *APIRequest {
 	ic.req, ic.Err = ic.newRequest("PUT", addUri(ic.uri, name), bytes.NewBuffer([]byte(jsonBody)))
 	return ic
 }
 
-func (ic *IcingaApiRequest) Update(name []string, jsonBody string) *IcingaApiRequest {
+func (ic *APIRequest) Update(name []string, jsonBody string) *APIRequest {
 	ic.req, ic.Err = ic.newRequest("POST", addUri(ic.uri, name), bytes.NewBuffer([]byte(jsonBody)))
 	return ic
 }
 
-func (ic *IcingaApiRequest) Delete(name []string, jsonBody string) *IcingaApiRequest {
+func (ic *APIRequest) Delete(name []string, jsonBody string) *APIRequest {
 	ic.req, ic.Err = ic.newRequest("DELETE", addUri(ic.uri, name), bytes.NewBuffer([]byte(jsonBody)))
 	return ic
 }
 
-func (ic *IcingaApiRequest) Params(param map[string]string) *IcingaApiRequest {
+func (ic *APIRequest) Params(param map[string]string) *APIRequest {
 	p := ic.req.URL.Query()
 	for k, v := range param {
 		p.Add(k, v)
@@ -132,7 +132,7 @@ func (ic *IcingaApiRequest) Params(param map[string]string) *IcingaApiRequest {
 	return ic
 }
 
-func NewIcingaClient(kubeClient clientset.Interface, secretName, secretNamespace string) (*IcingaClient, error) {
+func NewClient(kubeClient clientset.Interface, secretName, secretNamespace string) (*Client, error) {
 	config, err := getIcingaConfig(kubeClient, secretName, secretNamespace)
 	if err != nil {
 		return nil, err

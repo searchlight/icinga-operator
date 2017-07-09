@@ -1,4 +1,4 @@
-package client
+package icinga
 
 import (
 	"crypto/tls"
@@ -10,9 +10,9 @@ import (
 	"strings"
 )
 
-func (ic *IcingaApiRequest) Do() *IcingaApiResponse {
+func (ic *APIRequest) Do() *APIResponse {
 	if ic.Err != nil {
-		return &IcingaApiResponse{
+		return &APIResponse{
 			Err: ic.Err,
 		}
 	}
@@ -24,7 +24,7 @@ func (ic *IcingaApiRequest) Do() *IcingaApiResponse {
 
 	ic.resp, ic.Err = ic.client.Do(ic.req)
 	if ic.Err != nil {
-		return &IcingaApiResponse{
+		return &APIResponse{
 			Err: ic.Err,
 		}
 	}
@@ -32,17 +32,17 @@ func (ic *IcingaApiRequest) Do() *IcingaApiResponse {
 	ic.Status = ic.resp.StatusCode
 	ic.ResponseBody, ic.Err = ioutil.ReadAll(ic.resp.Body)
 	if ic.Err != nil {
-		return &IcingaApiResponse{
+		return &APIResponse{
 			Err: ic.Err,
 		}
 	}
-	return &IcingaApiResponse{
+	return &APIResponse{
 		Status:       ic.Status,
 		ResponseBody: ic.ResponseBody,
 	}
 }
 
-func (r *IcingaApiResponse) Into(to interface{}) (int, error) {
+func (r *APIResponse) Into(to interface{}) (int, error) {
 	if r.Err != nil {
 		return r.Status, r.Err
 	}
@@ -53,7 +53,7 @@ func (r *IcingaApiResponse) Into(to interface{}) (int, error) {
 	return r.Status, nil
 }
 
-func (c *IcingaClient) newIcingaRequest(path string) *IcingaApiRequest {
+func (c *Client) newRequest(path string) *APIRequest {
 	mTLSConfig := &tls.Config{}
 
 	if c.config.CaCert != nil {
@@ -70,7 +70,7 @@ func (c *IcingaClient) newIcingaRequest(path string) *IcingaApiRequest {
 	client := &http.Client{Transport: tr}
 
 	c.pathPrefix = c.pathPrefix + path
-	return &IcingaApiRequest{
+	return &APIRequest{
 		uri:      c.config.Endpoint + c.pathPrefix,
 		client:   client,
 		userName: c.config.BasicAuth.Username,
@@ -78,7 +78,7 @@ func (c *IcingaClient) newIcingaRequest(path string) *IcingaApiRequest {
 	}
 }
 
-func (ic *IcingaApiRequest) newRequest(method, urlStr string, body io.Reader) (*http.Request, error) {
+func (ic *APIRequest) newRequest(method, urlStr string, body io.Reader) (*http.Request, error) {
 	if strings.HasSuffix(urlStr, "/") {
 		urlStr = strings.TrimRight(urlStr, "/")
 	}

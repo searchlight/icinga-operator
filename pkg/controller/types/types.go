@@ -6,7 +6,7 @@ import (
 	tapi "github.com/appscode/searchlight/api"
 	tcs "github.com/appscode/searchlight/client/clientset"
 	"github.com/appscode/searchlight/data"
-	icinga "github.com/appscode/searchlight/pkg/icinga/client"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/voyager/pkg/stash"
 	//	"github.com/appscode/searchlight/pkg/stash"
 	clientset "k8s.io/client-go/kubernetes"
@@ -59,7 +59,7 @@ type Context struct {
 	KubeClient clientset.Interface
 	ExtClient  tcs.ExtensionInterface
 
-	IcingaClient *icinga.IcingaClient
+	IcingaClient *icinga.Client
 	IcingaData   map[string]*IcingaCommands
 
 	Resource   *tapi.PodAlert

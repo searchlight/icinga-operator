@@ -1,10 +1,10 @@
-package host
+package icinga
 
 import (
 	"github.com/appscode/errors"
 	tapi "github.com/appscode/searchlight/api"
 	tcs "github.com/appscode/searchlight/client/clientset"
-	icinga "github.com/appscode/searchlight/pkg/icinga/client"
+	"github.com/appscode/searchlight/pkg/icinga"
 	clientset "k8s.io/client-go/kubernetes"
 )
 
@@ -15,7 +15,7 @@ type ClusterHost struct {
 	ExtClient  tcs.ExtensionInterface
 }
 
-func NewClusterHost(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, IcingaClient *icinga.IcingaClient) *ClusterHost {
+func NewClusterHost(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, IcingaClient *icinga.Client) *ClusterHost {
 	return &ClusterHost{
 		KubeClient: kubeClient,
 		ExtClient:  extClient,

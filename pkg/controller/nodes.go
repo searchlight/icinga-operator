@@ -131,6 +131,18 @@ func (c *Controller) WatchNodes() {
 }
 
 func (c *Controller) EnsureNode(resource *apiv1.Node, old, new *tapi.NodeAlert) (err error) {
+	// c.nodeHost.Create()
+	{
+		//c.recorder.Eventf(
+		//	alert,
+		//	apiv1.EventTypeWarning,
+		//	eventer.EventReasonFailedToDelete,
+		//	`Fail to be delete NodeAlert: "%v". Reason: %v`,
+		//	alert.Name,
+		//	err,
+		//)
+	}
+
 	return nil
 }
 

@@ -1,4 +1,4 @@
-package host
+package icinga
 
 import (
 	"github.com/appscode/errors"

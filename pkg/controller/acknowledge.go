@@ -8,7 +8,7 @@ import (
 	"github.com/appscode/errors"
 	"github.com/appscode/log"
 	"github.com/appscode/searchlight/pkg/controller/types"
-	icinga "github.com/appscode/searchlight/pkg/icinga/client"
+	"github.com/appscode/searchlight/pkg/icinga"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
@@ -42,7 +42,7 @@ func (c *Controller) Acknowledge(event *apiv1.Event) error {
 	return nil
 }
 
-func acknowledgeIcingaNotification(client *icinga.IcingaClient, icingaHostName, icingaServiceName, comment, username string) error {
+func acknowledgeIcingaNotification(client *icinga.Client, icingaHostName, icingaServiceName, comment, username string) error {
 	mp := make(map[string]interface{})
 	mp["type"] = "Service"
 	mp["filter"] = fmt.Sprintf(`service.name == "%s" && host.name == "%s"`, icingaServiceName, icingaHostName)
