@@ -4,10 +4,11 @@ import (
 	"os"
 
 	"github.com/appscode/errors"
+	"github.com/appscode/kubed/pkg/events"
 	aci "github.com/appscode/searchlight/api"
 	acs "github.com/appscode/searchlight/client/clientset"
 	"github.com/appscode/searchlight/pkg/controller/types"
-	"github.com/appscode/searchlight/pkg/events"
+	//"github.com/appscode/searchlight/pkg/events"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"

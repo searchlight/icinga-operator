@@ -55,7 +55,7 @@ type ScaleStatus struct {
 	Replicas int32
 
 	// label query over pods that should match the replicas count.
-	// More info: http://kubernetes.io/docs/labels#label-selectors
+	// More info: http://kubernetes.io/docs/user-guide/labels#label-selectors
 	// +optional
 	Selector *metav1.LabelSelector
 }
@@ -420,7 +420,7 @@ type DaemonSetSpec struct {
 	// A label query over pods that are managed by the daemon set.
 	// Must match in order to be controlled.
 	// If empty, defaulted to labels on Pod template.
-	// More info: http://kubernetes.io/docs/labels#label-selectors
+	// More info: http://kubernetes.io/docs/user-guide/labels#label-selectors
 	// +optional
 	Selector *metav1.LabelSelector
 
@@ -428,7 +428,7 @@ type DaemonSetSpec struct {
 	// The DaemonSet will create exactly one copy of this pod on every node
 	// that matches the template's node selector (or on every node if no node
 	// selector is specified).
-	// More info: http://kubernetes.io/docs/replication-controller#pod-template
+	// More info: http://kubernetes.io/docs/user-guide/replication-controller#pod-template
 	Template api.PodTemplateSpec
 
 	// An update strategy to replace existing DaemonSet pods with new pods.
@@ -749,7 +749,7 @@ type ReplicaSetSpec struct {
 	// Selector is a label query over pods that should match the replica count.
 	// Must match in order to be controlled.
 	// If empty, defaulted to labels on pod template.
-	// More info: http://kubernetes.io/docs/labels#label-selectors
+	// More info: http://kubernetes.io/docs/user-guide/labels#label-selectors
 	// +optional
 	Selector *metav1.LabelSelector
 

@@ -8,33 +8,30 @@ import (
 	"k8s.io/client-go/tools/record"
 )
 
-type EventReason string
-
 const (
-	EventReasonNotFound        EventReason = "NotFound"
-	EventReasonFailedToProceed EventReason = "FailedToProceed"
+	EventReasonNotFound        = "NotFound"
+	EventReasonFailedToProceed = "FailedToProceed"
 
 	// Icinga objects create event list
-	EventReasonCreating         EventReason = "Creating"
-	EventReasonFailedToCreate   EventReason = "FailedToCreate"
-	EventReasonSuccessfulCreate EventReason = "SuccessfulCreate"
+	EventReasonCreating         = "Creating"
+	EventReasonFailedToCreate   = "FailedToCreate"
+	EventReasonSuccessfulCreate = "SuccessfulCreate"
 
 	// Icinga objects update event list
-	EventReasonUpdating         EventReason = "Updating"
-	EventReasonFailedToUpdate   EventReason = "FailedToUpdate"
-	EventReasonSuccessfulUpdate EventReason = "SuccessfulUpdate"
+	EventReasonUpdating         = "Updating"
+	EventReasonFailedToUpdate   = "FailedToUpdate"
+	EventReasonSuccessfulUpdate = "SuccessfulUpdate"
 
 	// Icinga objects delete event list
-	EventReasonDeleting         EventReason = "Deleting"
-	EventReasonFailedToDelete   EventReason = "FailedToDelete"
-	EventReasonSuccessfulDelete EventReason = "SuccessfulDelete"
+	EventReasonDeleting         = "Deleting"
+	EventReasonFailedToDelete   = "FailedToDelete"
+	EventReasonSuccessfulDelete = "SuccessfulDelete"
 
 	// Icinga objects sync event list
-	EventReasonSync           EventReason = "Sync"
-	EventReasonFailedToSync   EventReason = "FailedToSync"
-	EventReasonSuccessfulSync EventReason = "SuccessfulSync"
+	EventReasonSync           = "Sync"
+	EventReasonFailedToSync   = "FailedToSync"
+	EventReasonSuccessfulSync = "SuccessfulSync"
 )
-
 
 func NewEventRecorder(client clientset.Interface, component string) record.EventRecorder {
 	// Event Broadcaster

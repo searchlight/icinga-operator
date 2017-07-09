@@ -5563,9 +5563,9 @@ func (m *Alert) GetStatus() *Alert_AlertStatus {
 }
 
 type Alert_AlertSpec struct {
-	IcingaParam    *Alert_AlertSpec_IcingaParam     `protobuf:"bytes,1,opt,name=icinga_param,json=intervals" json:"icinga_param,omitempty"`
-	CheckCommand   string                           `protobuf:"bytes,2,opt,name=check_command,json=check" json:"check_command,omitempty"`
-	NotifierParams []*Alert_AlertSpec_NotifierParam `protobuf:"bytes,3,rep,name=notifier_params,json=receivers" json:"notifier_params,omitempty"`
+	IcingaParam    *Alert_AlertSpec_IcingaParam     `protobuf:"bytes,1,opt,name=icinga_param,json=icingaParam" json:"icinga_param,omitempty"`
+	CheckCommand   string                           `protobuf:"bytes,2,opt,name=check_command,json=checkCommand" json:"check_command,omitempty"`
+	NotifierParams []*Alert_AlertSpec_NotifierParam `protobuf:"bytes,3,rep,name=notifier_params,json=notifierParams" json:"notifier_params,omitempty"`
 	Vars           map[string]string                `protobuf:"bytes,4,rep,name=vars" json:"vars,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 }
 
@@ -5603,8 +5603,8 @@ func (m *Alert_AlertSpec) GetVars() map[string]string {
 }
 
 type Alert_AlertSpec_IcingaParam struct {
-	checkInterval int64 `protobuf:"varint,1,opt,name=check_interval_sec,json=checkInterval" json:"check_interval_sec,omitempty"`
-	alertInterval int64 `protobuf:"varint,2,opt,name=alert_interval_sec,json=alertInterval" json:"alert_interval_sec,omitempty"`
+	CheckIntervalSec int64 `protobuf:"varint,1,opt,name=check_interval_sec,json=checkIntervalSec" json:"check_interval_sec,omitempty"`
+	AlertIntervalSec int64 `protobuf:"varint,2,opt,name=alert_interval_sec,json=alertIntervalSec" json:"alert_interval_sec,omitempty"`
 }
 
 func (m *Alert_AlertSpec_IcingaParam) Reset()         { *m = Alert_AlertSpec_IcingaParam{} }
@@ -5614,23 +5614,23 @@ func (*Alert_AlertSpec_IcingaParam) Descriptor() ([]byte, []int) {
 	return fileDescriptor0, []int{43, 0, 1}
 }
 
-func (m *Alert_AlertSpec_IcingaParam) GetcheckInterval() int64 {
+func (m *Alert_AlertSpec_IcingaParam) GetCheckIntervalSec() int64 {
 	if m != nil {
-		return m.checkInterval
+		return m.CheckIntervalSec
 	}
 	return 0
 }
 
-func (m *Alert_AlertSpec_IcingaParam) GetalertInterval() int64 {
+func (m *Alert_AlertSpec_IcingaParam) GetAlertIntervalSec() int64 {
 	if m != nil {
-		return m.alertInterval
+		return m.AlertIntervalSec
 	}
 	return 0
 }
 
 type Alert_AlertSpec_NotifierParam struct {
 	State   string `protobuf:"bytes,1,opt,name=state" json:"state,omitempty"`
-	UserUid string `protobuf:"bytes,2,opt,name=user_uid,json=to" json:"user_uid,omitempty"`
+	UserUid string `protobuf:"bytes,2,opt,name=user_uid,json=userUid" json:"user_uid,omitempty"`
 	Method  string `protobuf:"bytes,3,opt,name=method" json:"method,omitempty"`
 }
 
@@ -7507,35 +7507,35 @@ type VolumeSource struct {
 	// machine that is directly exposed to the container. This is generally
 	// used for system agents or other privileged things that are allowed
 	// to see the host machine. Most containers will NOT need this.
-	// More info: http://kubernetes.io/docs/volumes#hostpath
+	// More info: http://kubernetes.io/docs/user-guide/volumes#hostpath
 	// ---
 	// TODO(jonesdl) We need to restrict who can use host directory mounts and who can/can not
 	// mount host directories as read/write.
 	// +optional
 	HostPath *HostPathVolumeSource `protobuf:"bytes,1,opt,name=hostPath" json:"hostPath,omitempty"`
 	// EmptyDir represents a temporary directory that shares a pod's lifetime.
-	// More info: http://kubernetes.io/docs/volumes#emptydir
+	// More info: http://kubernetes.io/docs/user-guide/volumes#emptydir
 	// +optional
 	EmptyDir *EmptyDirVolumeSource `protobuf:"bytes,2,opt,name=emptyDir" json:"emptyDir,omitempty"`
 	// GCEPersistentDisk represents a GCE Disk resource that is attached to a
 	// kubelet's host machine and then exposed to the pod.
-	// More info: http://kubernetes.io/docs/volumes#gcepersistentdisk
+	// More info: http://kubernetes.io/docs/user-guide/volumes#gcepersistentdisk
 	// +optional
 	GcePersistentDisk *GCEPersistentDiskVolumeSource `protobuf:"bytes,3,opt,name=gcePersistentDisk" json:"gcePersistentDisk,omitempty"`
 	// AWSElasticBlockStore represents an AWS Disk resource that is attached to a
 	// kubelet's host machine and then exposed to the pod.
-	// More info: http://kubernetes.io/docs/volumes#awselasticblockstore
+	// More info: http://kubernetes.io/docs/user-guide/volumes#awselasticblockstore
 	// +optional
 	AwsElasticBlockStore *AWSElasticBlockStoreVolumeSource `protobuf:"bytes,4,opt,name=awsElasticBlockStore" json:"awsElasticBlockStore,omitempty"`
 	// GitRepo represents a git repository at a particular revision.
 	// +optional
 	GitRepo *GitRepoVolumeSource `protobuf:"bytes,5,opt,name=gitRepo" json:"gitRepo,omitempty"`
 	// Secret represents a secret that should populate this volume.
-	// More info: http://kubernetes.io/docs/volumes#secrets
+	// More info: http://kubernetes.io/docs/user-guide/volumes#secrets
 	// +optional
 	Secret *SecretVolumeSource `protobuf:"bytes,6,opt,name=secret" json:"secret,omitempty"`
 	// NFS represents an NFS mount on the host that shares a pod's lifetime
-	// More info: http://kubernetes.io/docs/volumes#nfs
+	// More info: http://kubernetes.io/docs/user-guide/volumes#nfs
 	// +optional
 	Nfs *NFSVolumeSource `protobuf:"bytes,7,opt,name=nfs" json:"nfs,omitempty"`
 	// ISCSI represents an ISCSI Disk resource that is attached to a
@@ -7549,7 +7549,7 @@ type VolumeSource struct {
 	Glusterfs *GlusterfsVolumeSource `protobuf:"bytes,9,opt,name=glusterfs" json:"glusterfs,omitempty"`
 	// PersistentVolumeClaimVolumeSource represents a reference to a
 	// PersistentVolumeClaim in the same namespace.
-	// More info: http://kubernetes.io/docs/persistent-volumes#persistentvolumeclaims
+	// More info: http://kubernetes.io/docs/user-guide/persistent-volumes#persistentvolumeclaims
 	// +optional
 	PersistentVolumeClaim *PersistentVolumeClaimVolumeSource `protobuf:"bytes,10,opt,name=persistentVolumeClaim" json:"persistentVolumeClaim,omitempty"`
 	// RBD represents a Rados Block Device mount on the host that shares a pod's lifetime.
@@ -7770,12 +7770,12 @@ func (m *VolumeSource) GetPhotonPersistentDisk() *PhotonPersistentDiskVolumeSour
 // ownership management and SELinux relabeling.
 type AWSElasticBlockStoreVolumeSource struct {
 	// Unique ID of the persistent disk resource in AWS (Amazon EBS volume).
-	// More info: http://releases.k8s.io/release-1.4/docs/volumes.md#awselasticblockstore
+	// More info: http://releases.k8s.io/release-1.4/docs/user-guide/volumes.md#awselasticblockstore
 	VolumeID string `protobuf:"bytes,1,opt,name=volumeID" json:"volumeID,omitempty"`
 	// Filesystem type of the volume that you want to mount.
 	// Tip: Ensure that the filesystem type is supported by the host operating system.
 	// Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
-	// More info: http://releases.k8s.io/release-1.4/docs/volumes.md#awselasticblockstore
+	// More info: http://releases.k8s.io/release-1.4/docs/user-guide/volumes.md#awselasticblockstore
 	// TODO: how do we prevent errors in the filesystem from compromising the machine
 	FsType string `protobuf:"bytes,2,opt,name=fsType" json:"fsType,omitempty"`
 	// The partition in the volume that you want to mount.
@@ -7785,7 +7785,7 @@ type AWSElasticBlockStoreVolumeSource struct {
 	Partition int32 `protobuf:"varint,3,opt,name=partition" json:"partition,omitempty"`
 	// Specify "true" to force and set the ReadOnly property in VolumeMounts to "true".
 	// If omitted, the default is "false".
-	// More info: http://releases.k8s.io/release-1.4/docs/volumes.md#awselasticblockstore
+	// More info: http://releases.k8s.io/release-1.4/docs/user-guide/volumes.md#awselasticblockstore
 	ReadOnly bool `protobuf:"varint,4,opt,name=readOnly" json:"readOnly,omitempty"`
 }
 
@@ -7828,7 +7828,7 @@ func (m *AWSElasticBlockStoreVolumeSource) GetReadOnly() bool {
 // Host path volumes do not support ownership management or SELinux relabeling.
 type HostPathVolumeSource struct {
 	// Path of the directory on the host.
-	// More info: http://releases.k8s.io/release-1.4/docs/volumes.md#hostpath
+	// More info: http://releases.k8s.io/release-1.4/docs/user-guide/volumes.md#hostpath
 	Path string `protobuf:"bytes,1,opt,name=path" json:"path,omitempty"`
 }
 
@@ -7851,7 +7851,7 @@ func (m *HostPathVolumeSource) GetPath() string {
 // Secret volumes support ownership management and SELinux relabeling.
 type SecretVolumeSource struct {
 	// Name of the secret in the pod's namespace to use.
-	// More info: http://kubernetes.io/docs/volumes#secrets
+	// More info: http://kubernetes.io/docs/user-guide/volumes#secrets
 	SecretName string `protobuf:"bytes,1,opt,name=secretName" json:"secretName,omitempty"`
 	// If unspecified, each key-value pair in the Data field of the referenced
 	// Secret will be projected into the volume as a file whose name is the
@@ -7944,7 +7944,7 @@ type EmptyDirVolumeSource struct {
 	// What type of storage medium should back this directory.
 	// The default is "" which means to use the node's default medium.
 	// Must be an empty string (default) or Memory.
-	// More info: http://kubernetes.io/docs/volumes#emptydir
+	// More info: http://kubernetes.io/docs/user-guide/volumes#emptydir
 	Medium string `protobuf:"bytes,1,opt,name=medium" json:"medium,omitempty"`
 }
 
@@ -7966,7 +7966,7 @@ func (m *EmptyDirVolumeSource) GetMedium() string {
 // type of volume that is owned by someone else (the system).
 type PersistentVolumeClaimVolumeSource struct {
 	// ClaimName is the name of a PersistentVolumeClaim in the same namespace as the pod using this volume.
-	// More info: http://kubernetes.io/docs/persistent-volumes#persistentvolumeclaims
+	// More info: http://kubernetes.io/docs/user-guide/persistent-volumes#persistentvolumeclaims
 	ClaimName string `protobuf:"bytes,1,opt,name=claimName" json:"claimName,omitempty"`
 	// Will force the ReadOnly setting in VolumeMounts.
 	// Default false.
@@ -8172,7 +8172,7 @@ func (m *PhotonPersistentDiskVolumeSource) GetFsType() string {
 // referenced object inside the same namespace.
 type LocalObjectReference struct {
 	// Name of the referent.
-	// More info: http://kubernetes.io/docs/identifiers#names
+	// More info: http://kubernetes.io/docs/user-guide/identifiers#names
 	// TODO: Add other useful fields. apiVersion, kind, uid?
 	// +optional
 	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
@@ -8194,15 +8194,15 @@ func (m *LocalObjectReference) GetName() string {
 // NFS volumes do not support ownership management or SELinux relabeling.
 type NFSVolumeSource struct {
 	// Server is the hostname or IP address of the NFS server.
-	// More info: http://releases.k8s.io/release-1.4/docs/volumes.md#nfs
+	// More info: http://releases.k8s.io/release-1.4/docs/user-guide/volumes.md#nfs
 	Server string `protobuf:"bytes,1,opt,name=server" json:"server,omitempty"`
 	// Path that is exported by the NFS server.
-	// More info: http://releases.k8s.io/release-1.4/docs/volumes.md#nfs
+	// More info: http://releases.k8s.io/release-1.4/docs/user-guide/volumes.md#nfs
 	Path string `protobuf:"bytes,2,opt,name=path" json:"path,omitempty"`
 	// ReadOnly here will force
 	// the NFS export to be mounted with read-only permissions.
 	// Defaults to false.
-	// More info: http://releases.k8s.io/release-1.4/docs/volumes.md#nfs
+	// More info: http://releases.k8s.io/release-1.4/docs/user-guide/volumes.md#nfs
 	ReadOnly bool `protobuf:"varint,3,opt,name=readOnly" json:"readOnly,omitempty"`
 }
 
@@ -8372,23 +8372,23 @@ func (m *FlockerVolumeSource) GetDatasetName() string {
 // PDs support ownership management and SELinux relabeling.
 type GCEPersistentDiskVolumeSource struct {
 	// Unique name of the PD resource in GCE. Used to identify the disk in GCE.
-	// More info: http://releases.k8s.io/release-1.4/docs/volumes.md#gcepersistentdisk
+	// More info: http://releases.k8s.io/release-1.4/docs/user-guide/volumes.md#gcepersistentdisk
 	PdName string `protobuf:"bytes,1,opt,name=pdName" json:"pdName,omitempty"`
 	// Filesystem type of the volume that you want to mount.
 	// Tip: Ensure that the filesystem type is supported by the host operating system.
 	// Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
-	// More info: http://releases.k8s.io/release-1.4/docs/volumes.md#gcepersistentdisk
+	// More info: http://releases.k8s.io/release-1.4/docs/user-guide/volumes.md#gcepersistentdisk
 	// TODO: how do we prevent errors in the filesystem from compromising the machine
 	FsType string `protobuf:"bytes,2,opt,name=fsType" json:"fsType,omitempty"`
 	// The partition in the volume that you want to mount.
 	// If omitted, the default is to mount by volume name.
 	// Examples: For volume /dev/sda1, you specify the partition as "1".
 	// Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty).
-	// More info: http://releases.k8s.io/release-1.4/docs/volumes.md#gcepersistentdisk
+	// More info: http://releases.k8s.io/release-1.4/docs/user-guide/volumes.md#gcepersistentdisk
 	Partition int32 `protobuf:"varint,3,opt,name=partition" json:"partition,omitempty"`
 	// ReadOnly here will force the ReadOnly setting in VolumeMounts.
 	// Defaults to false.
-	// More info: http://releases.k8s.io/release-1.4/docs/volumes.md#gcepersistentdisk
+	// More info: http://releases.k8s.io/release-1.4/docs/user-guide/volumes.md#gcepersistentdisk
 	ReadOnly bool `protobuf:"varint,4,opt,name=readOnly" json:"readOnly,omitempty"`
 }
 
@@ -8519,7 +8519,7 @@ type RBDVolumeSource struct {
 	// Filesystem type of the volume that you want to mount.
 	// Tip: Ensure that the filesystem type is supported by the host operating system.
 	// Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
-	// More info: http://releases.k8s.io/release-1.4/docs/volumes.md#rbd
+	// More info: http://releases.k8s.io/release-1.4/docs/user-guide/volumes.md#rbd
 	// TODO: how do we prevent errors in the filesystem from compromising the machine
 	FsType string `protobuf:"bytes,3,opt,name=fsType" json:"fsType,omitempty"`
 	// The rados pool name.
@@ -8622,7 +8622,7 @@ type ISCSIVolumeSource struct {
 	// Filesystem type of the volume that you want to mount.
 	// Tip: Ensure that the filesystem type is supported by the host operating system.
 	// Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if unspecified.
-	// More info: http://releases.k8s.io/release-1.4/docs/volumes.md#iscsi
+	// More info: http://releases.k8s.io/release-1.4/docs/user-guide/volumes.md#iscsi
 	// TODO: how do we prevent errors in the filesystem from compromising the machine
 	FsType string `protobuf:"bytes,5,opt,name=fsType" json:"fsType,omitempty"`
 	// ReadOnly here will force the ReadOnly setting in VolumeMounts.

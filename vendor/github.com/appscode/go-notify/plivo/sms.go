@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/appscode/envconfig"
 	"github.com/appscode/go-notify"
-	"github.com/kelseyhightower/envconfig"
 )
 
 const (
@@ -42,6 +42,19 @@ func Default() (*client, error) {
 		return nil, err
 	}
 	return New(opt), nil
+}
+
+func Load(loader envconfig.LoaderFunc) (*client, error) {
+	var opt Options
+	err := envconfig.Load(UID, &opt, loader)
+	if err != nil {
+		return nil, err
+	}
+	return New(opt), nil
+}
+
+func (c client) UID() string {
+	return UID
 }
 
 func (c client) From(from string) notify.BySMS {

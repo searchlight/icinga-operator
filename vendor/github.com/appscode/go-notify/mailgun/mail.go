@@ -1,9 +1,9 @@
 package mailgun
 
 import (
+	"github.com/appscode/envconfig"
 	notify "github.com/appscode/go-notify"
 	h2t "github.com/jaytaylor/html2text"
-	"github.com/kelseyhightower/envconfig"
 	mailgun "github.com/mailgun/mailgun-go"
 )
 
@@ -45,6 +45,19 @@ func Default() (*client, error) {
 		return nil, err
 	}
 	return New(opt), nil
+}
+
+func Load(loader envconfig.LoaderFunc) (*client, error) {
+	var opt Options
+	err := envconfig.Load(UID, &opt, loader)
+	if err != nil {
+		return nil, err
+	}
+	return New(opt), nil
+}
+
+func (c client) UID() string {
+	return UID
 }
 
 func (c client) From(from string) notify.ByEmail {

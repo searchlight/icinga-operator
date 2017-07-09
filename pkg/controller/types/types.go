@@ -7,7 +7,7 @@ import (
 	acs "github.com/appscode/searchlight/client/clientset"
 	"github.com/appscode/searchlight/data"
 	icinga "github.com/appscode/searchlight/pkg/icinga/client"
-	"github.com/appscode/searchlight/pkg/stash"
+//	"github.com/appscode/searchlight/pkg/stash"
 	clientset "k8s.io/client-go/kubernetes"
 )
 

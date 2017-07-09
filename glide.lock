@@ -1,5 +1,5 @@
 hash: 49e2eaea4a57a709ee1fa21885d3a9e8351af7c6dc165b34e4798eba7d9a4cda
-updated: 2017-07-05T17:37:56.067243811-07:00
+updated: 2017-07-08T20:58:14.886530113-07:00
 imports:
 - name: github.com/appscode/api
   version: b61754fd4d336573cfed5cf16bcbdfe6d30d078d
@@ -23,6 +23,8 @@ imports:
   subpackages:
   - credential
   - util
+- name: github.com/appscode/envconfig
+  version: a74ef73ab982beb8f0c6060ac44da1c960fea414
 - name: github.com/appscode/errors
   version: 748883e321a9f99fe901bd2663c7af3fcae43ea4
 - name: github.com/appscode/go
@@ -38,7 +40,7 @@ imports:
   - types
   - version
 - name: github.com/appscode/go-notify
-  version: b56c335311b82247e828ccdc8516621abc230b45
+  version: 55715f5bccdb3e322e0ebd347e8026088b79bee7
   subpackages:
   - hipchat
   - mailgun
@@ -46,6 +48,10 @@ imports:
   - slack
   - smtp
   - twilio
+- name: github.com/appscode/kubed
+  version: efb38445568c1a15be77f5c9b782ef07cc10850d
+  subpackages:
+  - pkg/events
 - name: github.com/appscode/log
   version: 68e0e42e42c01371f3950571fc87c2298a51dd8f
   subpackages:
@@ -127,6 +133,10 @@ imports:
   - sortkeys
 - name: github.com/golang/glog
   version: 44145f04b68cf362d9c4df2182967c2275eaefed
+- name: github.com/golang/groupcache
+  version: 02826c3e79038b59d737d3b1c0a1d937f71a4433
+  subpackages:
+  - lru
 - name: github.com/golang/protobuf
   version: 8ee79997227bf9b34611aee7946ae64735e6fd93
   subpackages:
@@ -169,10 +179,8 @@ imports:
   version: c7d06af17c68cd34c835053720b21f6549d9b0ee
 - name: github.com/juju/ratelimit
   version: 77ed1c8a01217656d2080ad51981f6e99adaa177
-- name: github.com/kelseyhightower/envconfig
-  version: 9aca109c9aec4633fced9717c4a09ecab3d33111
 - name: github.com/Knetic/govaluate
-  version: 31678da578da40773346157387ef9933d650eb23
+  version: 6f13716d3d9d121223a2dea46f726f413f57f0c4
 - name: github.com/mailgun/mailgun-go
   version: 369a1fa57ce6fb314e627087b9fff0db5c266c0f
 - name: github.com/mailru/easyjson
@@ -360,16 +368,19 @@ imports:
   - pkg/util/httpstream/spdy
   - pkg/util/intstr
   - pkg/util/json
+  - pkg/util/mergepatch
   - pkg/util/net
   - pkg/util/rand
   - pkg/util/runtime
   - pkg/util/sets
+  - pkg/util/strategicpatch
   - pkg/util/validation
   - pkg/util/validation/field
   - pkg/util/wait
   - pkg/util/yaml
   - pkg/version
   - pkg/watch
+  - third_party/forked/golang/json
   - third_party/forked/golang/netutil
   - third_party/forked/golang/reflect
 - name: k8s.io/apiserver
@@ -401,9 +412,6 @@ imports:
   - kubernetes/typed/settings/v1alpha1
   - kubernetes/typed/storage/v1
   - kubernetes/typed/storage/v1beta1
-  - listers/apps/v1beta1
-  - listers/core/v1
-  - listers/extensions/v1beta1
   - pkg/api
   - pkg/api/install
   - pkg/api/v1
@@ -459,6 +467,7 @@ imports:
   - tools/clientcmd/api/latest
   - tools/clientcmd/api/v1
   - tools/metrics
+  - tools/record
   - transport
   - util/cert
   - util/clock

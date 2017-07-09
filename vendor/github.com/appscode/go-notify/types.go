@@ -1,6 +1,7 @@
 package notify
 
 type ByEmail interface {
+	UID() string
 	From(from string) ByEmail
 	WithSubject(subject string) ByEmail
 	WithBody(body string) ByEmail
@@ -11,6 +12,7 @@ type ByEmail interface {
 }
 
 type BySMS interface {
+	UID() string
 	From(from string) BySMS
 	WithBody(body string) BySMS
 	To(to string, cc ...string) BySMS
@@ -18,6 +20,7 @@ type BySMS interface {
 }
 
 type ByChat interface {
+	UID() string
 	WithBody(body string) ByChat
 	To(to string, cc ...string) ByChat
 	Send() error

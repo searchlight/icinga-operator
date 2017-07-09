@@ -7,6 +7,7 @@ import (
 	aci "github.com/appscode/searchlight/api"
 	acs "github.com/appscode/searchlight/client/clientset"
 	"github.com/appscode/searchlight/pkg/controller/types"
+	"github.com/appscode/searchlight/pkg/eventer"
 	icinga "github.com/appscode/searchlight/pkg/icinga/client"
 	_ "github.com/appscode/searchlight/pkg/icinga/host/localhost"
 	_ "github.com/appscode/searchlight/pkg/icinga/host/node"
@@ -15,6 +16,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
+	"k8s.io/client-go/tools/record"
 )
 
 type Controller struct {
@@ -22,6 +24,8 @@ type Controller struct {
 	ExtClient    acs.ExtensionInterface
 	IcingaClient *icinga.IcingaClient // TODO: init
 
+	// Event Recorder
+	recorder   record.EventRecorder
 	opt        *types.Option
 	syncPeriod time.Duration
 }
@@ -30,6 +34,7 @@ func New(kubeClient clientset.Interface, extClient acs.ExtensionInterface) *Cont
 	return &Controller{
 		KubeClient: kubeClient,
 		ExtClient:  extClient,
+		recorder:   eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
 		syncPeriod: 5 * time.Minute,
 	}
 }
