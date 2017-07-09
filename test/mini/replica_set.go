@@ -6,7 +6,7 @@ import (
 
 	"github.com/appscode/go/types"
 	"github.com/appscode/searchlight/pkg/controller"
-	"github.com/appscode/searchlight/pkg/controller/host"
+	"github.com/appscode/searchlight/pkg/icinga/host"
 	"github.com/appscode/searchlight/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/appscode/errors"
-	"github.com/appscode/searchlight/pkg/client/icinga"
+	icinga "github.com/appscode/searchlight/pkg/icinga/client"
 	clientset "k8s.io/client-go/kubernetes"
 )
 

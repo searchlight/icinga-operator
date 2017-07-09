@@ -37,32 +37,6 @@ type PodAlertList struct {
 	Items []PodAlert `json:"items"`
 }
 
-type CheckPod string
-
-const (
-	CheckPodInfluxQuery       CheckPod     = "influx_query"
-	CheckPodStatus            CheckPod     = "pod_status"
-	CheckPodPrometheusMetric  CheckPod     = "prometheus_metric"
-	CheckVolume               CheckPod     = "volume"
-	CheckPodExec              CheckPod     = "kube_exec"
-	CheckNodeInfluxQuery      CheckNode    = "influx_query"
-	CheckNodeDisk             CheckNode    = "node_disk"
-	CheckNodeStatus           CheckNode    = "node_status"
-	CheckNodePrometheusMetric CheckNode    = "prometheus_metric"
-	CheckHttp                 CheckCluster = "any_http"
-	CheckComponentStatus      CheckCluster = "component_status"
-	CheckJsonPath             CheckCluster = "json_path"
-	CheckNodeCount            CheckCluster = "node_count"
-	CheckPodExists            CheckCluster = "pod_exists"
-	CheckPrometheusMetric     CheckCluster = "prometheus_metric"
-	CheckClusterEvent         CheckCluster = "kube_event"
-	CheckHelloIcinga          CheckCluster = "hello_icinga"
-	CheckDIG                  CheckCluster = "dig"
-	CheckDNS                  CheckCluster = "dns"
-	CheckDummy                CheckCluster = "dummy"
-	CheckICMP                 CheckCluster = "icmp"
-)
-
 // PodAlertSpec describes the PodAlert the user wishes to create.
 type PodAlertSpec struct {
 	Selector metav1.LabelSelector `json:"selector,omitempty"`
@@ -82,4 +56,29 @@ type PodAlertSpec struct {
 
 	// Vars contains Icinga Service variables to be used in CheckCommand
 	Vars map[string]interface{} `json:"vars,omitempty"`
+}
+
+func (s PodAlertSpec) IsValid() bool {
+	cmd, ok := PodCommands[s.Check]
+	if !ok {
+		return false
+	}
+	for k := range s.Vars {
+		if _, ok := cmd.Vars[k]; !ok {
+			return false
+		}
+	}
+	for _, rcv := range s.Receivers {
+		found := false
+		for _, state := range cmd.States {
+			if state == rcv.State {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+	return true
 }

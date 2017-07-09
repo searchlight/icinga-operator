@@ -3,7 +3,7 @@ package controller
 import (
 	"github.com/appscode/errors"
 	"github.com/appscode/log"
-	"github.com/appscode/searchlight/pkg/controller/host/extpoints"
+	"github.com/appscode/searchlight/pkg/icinga/host/extpoints"
 )
 
 func (c *Controller) Create(specificObject ...string) error {

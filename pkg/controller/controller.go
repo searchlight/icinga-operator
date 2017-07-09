@@ -6,11 +6,11 @@ import (
 	"github.com/appscode/log"
 	aci "github.com/appscode/searchlight/api"
 	acs "github.com/appscode/searchlight/client/clientset"
-	"github.com/appscode/searchlight/data"
-	_ "github.com/appscode/searchlight/pkg/controller/host/localhost"
-	_ "github.com/appscode/searchlight/pkg/controller/host/node"
-	_ "github.com/appscode/searchlight/pkg/controller/host/pod"
 	"github.com/appscode/searchlight/pkg/controller/types"
+	icinga "github.com/appscode/searchlight/pkg/icinga/client"
+	_ "github.com/appscode/searchlight/pkg/icinga/host/localhost"
+	_ "github.com/appscode/searchlight/pkg/icinga/host/node"
+	_ "github.com/appscode/searchlight/pkg/icinga/host/pod"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
@@ -18,38 +18,20 @@ import (
 )
 
 type Controller struct {
-	KubeClient clientset.Interface
-	ExtClient  acs.ExtensionInterface
+	KubeClient   clientset.Interface
+	ExtClient    acs.ExtensionInterface
+	IcingaClient *icinga.IcingaClient // TODO: init
 
-	opt *types.Option
-
-	Commands   map[string]*types.IcingaCommands
+	opt        *types.Option
 	syncPeriod time.Duration
 }
 
-func New(kubeClient clientset.Interface, extClient acs.ExtensionInterface) (*Controller, error) {
-	ctrl := &Controller{
+func New(kubeClient clientset.Interface, extClient acs.ExtensionInterface) *Controller {
+	return &Controller{
 		KubeClient: kubeClient,
 		ExtClient:  extClient,
 		syncPeriod: 5 * time.Minute,
 	}
-	cmdList, err := data.LoadIcingaData()
-	if err != nil {
-		return nil, err
-	}
-	ctrl.Commands = make(map[string]*types.IcingaCommands)
-	for _, cmd := range cmdList.Command {
-		vars := make(map[string]data.CommandVar)
-		for _, v := range cmd.Vars {
-			vars[v.Name] = v
-		}
-		ctrl.Commands[cmd.Name] = &types.IcingaCommands{
-			Name:   cmd.Name,
-			Vars:   vars,
-			States: cmd.States,
-		}
-	}
-	return ctrl, nil
 }
 
 func (c *Controller) Setup() {

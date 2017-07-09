@@ -1,4 +1,4 @@
-package node
+package pod
 
 import (
 	"fmt"
@@ -7,13 +7,13 @@ import (
 	"github.com/appscode/errors"
 	aci "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/data"
-	"github.com/appscode/searchlight/pkg/controller/host"
-	"github.com/appscode/searchlight/pkg/controller/host/extpoints"
 	"github.com/appscode/searchlight/pkg/controller/types"
+	"github.com/appscode/searchlight/pkg/icinga/host"
+	"github.com/appscode/searchlight/pkg/icinga/host/extpoints"
 )
 
 func init() {
-	extpoints.IcingaHostTypes.Register(new(icingaHost), host.HostTypeNode)
+	extpoints.IcingaHostTypes.Register(new(icingaHost), host.HostTypePod)
 }
 
 type icingaHost struct {
@@ -36,6 +36,7 @@ func (p *icingaHost) DeleteAlert(ctx *types.Option, specificObject string) error
 }
 
 //-----------------------------------------------------
+
 // set Alert in Icinga LocalHost
 func (b *biblio) create(specificObject string) error {
 	alertSpec := b.Resource.Spec
@@ -45,7 +46,7 @@ func (b *biblio) create(specificObject string) error {
 	}
 
 	// Get Icinga Host Info
-	objectList, err := host.GetObjectList(b.KubeClient, alertSpec.Check, host.HostTypeNode, b.Resource.Namespace, b.ObjectType, b.ObjectName, specificObject)
+	objectList, err := host.GetObjectList(b.KubeClient, alertSpec.Check, host.HostTypePod, b.Resource.Namespace, b.ObjectType, b.ObjectName, specificObject)
 	if err != nil {
 		return errors.New().WithCause(err).Err()
 	}
@@ -80,12 +81,11 @@ func setParameterizedVariables(alertSpec aci.PodAlertSpec, objectName string, co
 			if !v.Parameterized {
 				continue
 			}
-
-			reg, err := regexp.Compile("nodename[ ]*=[ ]*'[?]'")
+			reg, err := regexp.Compile("pod_name[ ]*=[ ]*'[?]'")
 			if err != nil {
 				return nil, errors.New().WithCause(err).Err()
 			}
-			mp[host.IVar(key)] = reg.ReplaceAllString(val.(string), fmt.Sprintf("nodename='%s'", objectName))
+			mp[host.IVar(key)] = reg.ReplaceAllString(val.(string), fmt.Sprintf("pod_name='%s'", objectName))
 		} else {
 			return nil, errors.Newf("variable %v not found", key).Err()
 		}
@@ -129,7 +129,7 @@ func (b *biblio) update() error {
 	alertSpec := b.Resource.Spec
 
 	// Get Icinga Host Info
-	objectList, err := host.GetObjectList(b.KubeClient, alertSpec.Check, host.HostTypeNode, b.Resource.Namespace, b.ObjectType, b.ObjectName, "")
+	objectList, err := host.GetObjectList(b.KubeClient, alertSpec.Check, host.HostTypePod, b.Resource.Namespace, b.ObjectType, b.ObjectName, "")
 	if err != nil {
 		return errors.New().WithCause(err).Err()
 	}
@@ -177,19 +177,17 @@ func (b *biblio) updateIcingaService(objectList []*host.KubeObjectInfo) error {
 
 func (b *biblio) delete(specificObject string) error {
 	alertSpec := b.Resource.Spec
-
 	var objectList []*host.KubeObjectInfo
 	if specificObject != "" {
 		objectList = append(objectList, &host.KubeObjectInfo{Name: specificObject + "@" + b.Resource.Namespace})
 	} else {
 		// Get Icinga Host Info
 		var err error
-		objectList, err = host.GetObjectList(b.KubeClient, alertSpec.Check, host.HostTypeNode,
+		objectList, err = host.GetObjectList(b.KubeClient, alertSpec.Check, host.HostTypePod,
 			b.Resource.Namespace, b.ObjectType, b.ObjectName, specificObject)
 		if err != nil {
 			return errors.New().WithCause(err).Err()
 		}
-
 	}
 
 	if err := host.DeleteIcingaService(b.IcingaClient, objectList, b.Resource.Name); err != nil {
@@ -201,5 +199,6 @@ func (b *biblio) delete(specificObject string) error {
 			return errors.New().WithCause(err).Err()
 		}
 	}
+
 	return nil
 }

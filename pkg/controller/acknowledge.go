@@ -7,8 +7,8 @@ import (
 
 	"github.com/appscode/errors"
 	"github.com/appscode/log"
-	"github.com/appscode/searchlight/pkg/client/icinga"
 	"github.com/appscode/searchlight/pkg/controller/types"
+	icinga "github.com/appscode/searchlight/pkg/icinga/client"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )

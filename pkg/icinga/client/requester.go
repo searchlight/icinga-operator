@@ -1,4 +1,4 @@
-package icinga
+package client
 
 import (
 	"crypto/tls"

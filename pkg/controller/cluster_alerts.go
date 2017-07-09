@@ -2,7 +2,6 @@ package controller
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 
 	acrt "github.com/appscode/go/runtime"
@@ -34,7 +33,7 @@ func (c *Controller) WatchClusterAlerts() {
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				if resource, ok := obj.(*tapi.ClusterAlert); ok {
-					fmt.Println(resource.Name)
+					c.EnsureClusterAlert(nil, resource)
 				}
 			},
 			UpdateFunc: func(old, new interface{}) {
@@ -49,14 +48,67 @@ func (c *Controller) WatchClusterAlerts() {
 					return
 				}
 				if !reflect.DeepEqual(oldObj, newObj) {
+					c.EnsureClusterAlert(oldObj, newObj)
 				}
 			},
 			DeleteFunc: func(obj interface{}) {
 				if resource, ok := obj.(*tapi.ClusterAlert); ok {
-					fmt.Println(resource.Name)
+					c.EnsureClusterAlertDeleted(resource)
 				}
 			},
 		},
 	)
 	ctrl.Run(wait.NeverStop)
+}
+
+func (c *Controller) EnsureClusterAlert(old, new *tapi.ClusterAlert) {
+	var oldOpt, newOpt *metav1.ListOptions
+	if old != nil {
+		oldSelector, err := metav1.LabelSelectorAsSelector(&old.Spec.Selector)
+		if err != nil {
+			return
+		}
+		oldOpt = &metav1.ListOptions{LabelSelector: oldSelector.String()}
+	}
+
+	newSelector, err := metav1.LabelSelectorAsSelector(&new.Spec.Selector)
+	if err != nil {
+		return
+	}
+	newOpt = &metav1.ListOptions{LabelSelector: newSelector.String()}
+
+	{
+		oldObjs := make(map[string]apiv1.Pod)
+		if oldOpt != nil {
+			if resources, err := c.KubeClient.CoreV1().Pods(new.Namespace).List(*oldOpt); err == nil {
+				for _, resource := range resources.Items {
+					oldObjs[resource.Name] = resource
+				}
+			}
+		}
+
+		if resources, err := c.KubeClient.CoreV1().Pods(new.Namespace).List(*newOpt); err == nil {
+			for _, resource := range resources.Items {
+				delete(oldObjs, resource.Name)
+				go c.EnsureLocalhost(&resource, old, new)
+			}
+		}
+		for _, resource := range oldObjs {
+			go c.EnsureLocalhostDeleted(&resource, old)
+		}
+	}
+}
+
+func (c *Controller) EnsureClusterAlertDeleted(alert *tapi.ClusterAlert) {
+	sel, err := metav1.LabelSelectorAsSelector(&alert.Spec.Selector)
+	if err != nil {
+		return
+	}
+	opt := metav1.ListOptions{LabelSelector: sel.String()}
+
+	if resources, err := c.KubeClient.CoreV1().Pods(alert.Namespace).List(opt); err == nil {
+		for _, resource := range resources.Items {
+			go c.EnsureLocalhostDeleted(&resource, alert)
+		}
+	}
 }

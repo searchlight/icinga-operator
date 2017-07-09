@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/appscode/searchlight/pkg/client/icinga"
 	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/pkg/controller"
+	icinga "github.com/appscode/searchlight/pkg/icinga/client"
 	"github.com/appscode/searchlight/test/mini"
 	"github.com/appscode/searchlight/util"
 	"k8s.io/client-go/pkg/api"

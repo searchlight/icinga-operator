@@ -1,4 +1,4 @@
-package icinga
+package client
 
 import (
 	"errors"
@@ -8,7 +8,6 @@ import (
 
 	_env "github.com/appscode/go/env"
 	_ "github.com/appscode/searchlight/api/install"
-	"github.com/appscode/searchlight/pkg/dns"
 	ini "github.com/vaughan0/go-ini"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
@@ -61,10 +60,7 @@ func getIcingaSecretData(kubeClient clientset.Interface, secretName, secretNames
 		hostIP := net.ParseIP(host)
 		if hostIP == nil {
 			if _env.InCluster() {
-				host, err = dns.GetServiceClusterIP(kubeClient, ConfigKeyPrefix, host)
-				if err != nil {
-					return nil, err
-				}
+				host = "127.0.0.1"
 			}
 		}
 

@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/appscode/errors"
-	"github.com/appscode/searchlight/pkg/client/icinga"
+	icinga "github.com/appscode/searchlight/pkg/icinga/client"
 )
 
 const (

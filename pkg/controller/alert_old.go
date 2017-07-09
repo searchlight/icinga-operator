@@ -9,13 +9,13 @@ import (
 	"github.com/appscode/log"
 	aci "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/analytics"
-	"github.com/appscode/searchlight/pkg/controller/event"
-	"github.com/appscode/searchlight/pkg/controller/host"
-	_ "github.com/appscode/searchlight/pkg/controller/host/localhost"
-	_ "github.com/appscode/searchlight/pkg/controller/host/node"
-	_ "github.com/appscode/searchlight/pkg/controller/host/pod"
+	"github.com/appscode/searchlight/pkg/controller/eventer"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	"github.com/appscode/searchlight/pkg/events"
+	"github.com/appscode/searchlight/pkg/icinga/host"
+	_ "github.com/appscode/searchlight/pkg/icinga/host/localhost"
+	_ "github.com/appscode/searchlight/pkg/icinga/host/node"
+	_ "github.com/appscode/searchlight/pkg/icinga/host/pod"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -78,15 +78,15 @@ func (c *Controller) handleAlert(e *events.Event) error {
 				return errors.New().WithCause(err).Err()
 			}
 			if kerr.IsNotFound(err) {
-				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonNotFound, err.Error())
+				eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonNotFound, err.Error())
 				return nil
 			} else {
-				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToProceed, err.Error())
+				eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToProceed, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
 		}
 
-		event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonCreating)
+		eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonCreating)
 
 		if err := c.Create(); err != nil {
 			// Update Status
@@ -98,7 +98,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 				return errors.New().WithCause(err).Err()
 			}
 
-			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToCreate, err.Error())
+			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToCreate, err.Error())
 			return errors.New().WithCause(err).Err()
 		}
 
@@ -109,7 +109,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 		if _, err = c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert); err != nil {
 			return errors.New().WithCause(err).Err()
 		}
-		event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulCreate)
+		eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulCreate)
 	} else if e.EventType.IsUpdated() {
 		if len(alert) == 0 {
 			return errors.New("Missing alert data").Err()
@@ -130,18 +130,18 @@ func (c *Controller) handleAlert(e *events.Event) error {
 
 		if err := c.IsObjectExists(); err != nil {
 			if kerr.IsNotFound(err) {
-				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonNotFound, err.Error())
+				eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonNotFound, err.Error())
 				return nil
 			} else {
-				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToProceed, err.Error())
+				eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToProceed, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
 		}
 
-		event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonUpdating)
+		eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonUpdating)
 
 		if err := c.Update(); err != nil {
-			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToUpdate, err.Error())
+			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToUpdate, err.Error())
 			return errors.New().WithCause(err).Err()
 		}
 
@@ -152,21 +152,21 @@ func (c *Controller) handleAlert(e *events.Event) error {
 		if _, err := c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert); err != nil {
 			return errors.New().WithCause(err).Err()
 		}
-		event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulUpdate)
+		eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulUpdate)
 	} else if e.EventType.IsDeleted() {
 		if len(alert) == 0 {
 			return errors.New("Missing alert data").Err()
 		}
 
 		c.opt.Resource = alert[0].(*aci.PodAlert)
-		event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonDeleting)
+		eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonDeleting)
 
 		c.parseAlertOptions()
 		if err := c.Delete(); err != nil {
-			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToDelete, err.Error())
+			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToDelete, err.Error())
 			return errors.New().WithCause(err).Err()
 		}
-		event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulDelete)
+		eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulDelete)
 	}
 	return nil
 }
@@ -265,26 +265,26 @@ func (c *Controller) handleRegularPod(e *events.Event, ancestors []*types.Ancest
 			c.opt.Resource = &alert
 
 			additionalMessage := fmt.Sprintf(`pod "%v.%v"`, e.MetaData.Name, e.MetaData.Namespace)
-			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSync, additionalMessage)
+			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSync, additionalMessage)
 			c.parseAlertOptions()
 
 			if err := c.Create(e.MetaData.Name); err != nil {
-				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
+				eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
-			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
+			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 		} else if e.EventType.IsDeleted() {
 			c.opt.Resource = &alert
 
 			additionalMessage := fmt.Sprintf(`pod "%v.%v"`, e.MetaData.Name, e.MetaData.Namespace)
-			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSync, additionalMessage)
+			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSync, additionalMessage)
 			c.parseAlertOptions()
 
 			if err := c.Delete(e.MetaData.Name); err != nil {
-				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
+				eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
-			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
+			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 		}
 		return nil
 	}
@@ -359,27 +359,27 @@ func (c *Controller) handleNode(e *events.Event) error {
 			c.opt.Resource = &alert
 
 			additionalMessage := fmt.Sprintf(`node "%v"`, e.MetaData.Name)
-			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSync, additionalMessage)
+			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSync, additionalMessage)
 			c.parseAlertOptions()
 
 			if err := c.Create(e.MetaData.Name); err != nil {
-				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
+				eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
-			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
+			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 
 		} else if e.EventType.IsDeleted() {
 			c.opt.Resource = &alert
 
 			additionalMessage := fmt.Sprintf(`node "%v"`, e.MetaData.Name)
-			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSync, additionalMessage)
+			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSync, additionalMessage)
 			c.parseAlertOptions()
 
 			if err := c.Delete(e.MetaData.Name); err != nil {
-				event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
+				eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
 				return errors.New().WithCause(err).Err()
 			}
-			event.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
+			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 		}
 		return nil
 	}

@@ -1,4 +1,4 @@
-package event
+package eventer
 
 import (
 	"fmt"

@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	"github.com/appscode/go/crypto/rand"
-	"github.com/appscode/searchlight/pkg/client/icinga"
 	"github.com/appscode/searchlight/pkg/client/k8s"
+	icinga "github.com/appscode/searchlight/pkg/icinga/client"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )

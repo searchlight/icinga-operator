@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/appscode/log"
-	"github.com/appscode/searchlight/pkg/controller/host"
+	"github.com/appscode/searchlight/pkg/icinga/host"
 )
 
 func (c *Controller) parseAlertOptions() {

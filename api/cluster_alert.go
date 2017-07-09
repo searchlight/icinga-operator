@@ -37,8 +37,6 @@ type ClusterAlertList struct {
 	Items []ClusterAlert `json:"items"`
 }
 
-type CheckCluster string
-
 // ClusterAlertSpec describes the ClusterAlert the user wishes to create.
 type ClusterAlertSpec struct {
 	// Icinga CheckCommand name
@@ -56,4 +54,29 @@ type ClusterAlertSpec struct {
 
 	// Vars contains Icinga Service variables to be used in CheckCommand
 	Vars map[string]interface{} `json:"vars,omitempty"`
+}
+
+func (s ClusterAlertSpec) IsValid() bool {
+	cmd, ok := ClusterCommands[s.Check]
+	if !ok {
+		return false
+	}
+	for k := range s.Vars {
+		if _, ok := cmd.Vars[k]; !ok {
+			return false
+		}
+	}
+	for _, rcv := range s.Receivers {
+		found := false
+		for _, state := range cmd.States {
+			if state == rcv.State {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+	return true
 }

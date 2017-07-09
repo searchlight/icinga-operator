@@ -6,6 +6,8 @@ import (
 
 	acrt "github.com/appscode/go/runtime"
 	"github.com/appscode/log"
+	tapi "github.com/appscode/searchlight/api"
+	"github.com/appscode/searchlight/pkg/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -26,14 +28,30 @@ func (c *Controller) WatchNodes() {
 			return c.KubeClient.CoreV1().Nodes().Watch(metav1.ListOptions{})
 		},
 	}
-	_, ctrl := cache.NewInformer(
-		lw,
+	_, ctrl := cache.NewInformer(lw,
 		&apiv1.Node{},
 		c.syncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				if resource, ok := obj.(*apiv1.Node); ok {
 					log.Infof("Node %s@%s added", resource.Name, resource.Namespace)
+
+					alerts, err := util.FindNodeAlert(c.ExtClient, resource.ObjectMeta)
+					if err != nil {
+						log.Errorf("Error while searching NodeAlert for Node %s@%s.", resource.Name, resource.Namespace)
+						return
+					}
+					if len(alerts) == 0 {
+						log.Errorf("No NodeAlert found for Node %s@%s.", resource.Name, resource.Namespace)
+						return
+					}
+					for _, alert := range alerts {
+						err = c.EnsureNode(resource, nil, alert)
+						if err != nil {
+							log.Errorf("Failed to add icinga2 alert for Node %s@%s.", resource.Name, resource.Namespace)
+							// return
+						}
+					}
 				}
 			},
 			UpdateFunc: func(old, new interface{}) {
@@ -48,9 +66,74 @@ func (c *Controller) WatchNodes() {
 					return
 				}
 				if !reflect.DeepEqual(oldObj.Labels, newObj.Labels) {
+					oldAlerts, err := util.FindNodeAlert(c.ExtClient, oldObj.ObjectMeta)
+					if err != nil {
+						log.Errorf("Error while searching NodeAlert for Node %s@%s.", oldObj.Name, oldObj.Namespace)
+						return
+					}
+					newAlerts, err := util.FindNodeAlert(c.ExtClient, newObj.ObjectMeta)
+					if err != nil {
+						log.Errorf("Error while searching NodeAlert for Node %s@%s.", newObj.Name, newObj.Namespace)
+						return
+					}
+
+					type change struct {
+						old *tapi.NodeAlert
+						new *tapi.NodeAlert
+					}
+					diff := make(map[string]*change)
+					for _, alert := range oldAlerts {
+						diff[alert.Name] = &change{old: alert}
+					}
+					for _, alert := range newAlerts {
+						if ch, ok := diff[alert.Name]; ok {
+							ch.new = alert
+						} else {
+							diff[alert.Name] = &change{new: alert}
+						}
+					}
+					for _, ch := range diff {
+						if ch.old == nil && ch.new != nil {
+							c.EnsureNode(newObj, nil, ch.new)
+						} else if ch.old != nil && ch.new == nil {
+							c.EnsureNodeDeleted(newObj, ch.old)
+						} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
+							c.EnsureNode(newObj, ch.old, ch.new)
+						}
+					}
+				}
+			},
+			DeleteFunc: func(obj interface{}) {
+				if resource, ok := obj.(*apiv1.Node); ok {
+					log.Infof("Node %s@%s deleted", resource.Name, resource.Namespace)
+
+					alerts, err := util.FindNodeAlert(c.ExtClient, resource.ObjectMeta)
+					if err != nil {
+						log.Errorf("Error while searching NodeAlert for Node %s@%s.", resource.Name, resource.Namespace)
+						return
+					}
+					if len(alerts) == 0 {
+						log.Errorf("No NodeAlert found for Node %s@%s.", resource.Name, resource.Namespace)
+						return
+					}
+					for _, alert := range alerts {
+						err = c.EnsureNodeDeleted(resource, alert)
+						if err != nil {
+							log.Errorf("Failed to delete icinga2 alert for Node %s@%s.", resource.Name, resource.Namespace)
+							// return
+						}
+					}
 				}
 			},
 		},
 	)
 	ctrl.Run(wait.NeverStop)
+}
+
+func (c *Controller) EnsureNode(resource *apiv1.Node, old, new *tapi.NodeAlert) (err error) {
+	return nil
+}
+
+func (c *Controller) EnsureNodeDeleted(resource *apiv1.Node, alert *tapi.NodeAlert) (err error) {
+	return nil
 }

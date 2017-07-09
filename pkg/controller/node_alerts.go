@@ -2,13 +2,13 @@ package controller
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 
 	acrt "github.com/appscode/go/runtime"
 	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/api"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/apimachinery/pkg/watch"
@@ -34,7 +34,7 @@ func (c *Controller) WatchNodeAlerts() {
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				if resource, ok := obj.(*tapi.NodeAlert); ok {
-					fmt.Println(resource.Name)
+					c.EnsureNodeAlert(nil, resource)
 				}
 			},
 			UpdateFunc: func(old, new interface{}) {
@@ -49,14 +49,55 @@ func (c *Controller) WatchNodeAlerts() {
 					return
 				}
 				if !reflect.DeepEqual(oldObj, newObj) {
+					c.EnsureNodeAlert(oldObj, newObj)
 				}
 			},
 			DeleteFunc: func(obj interface{}) {
 				if resource, ok := obj.(*tapi.NodeAlert); ok {
-					fmt.Println(resource.Name)
+					c.EnsureNodeAlertDeleted(resource)
 				}
 			},
 		},
 	)
 	ctrl.Run(wait.NeverStop)
+}
+
+func (c *Controller) EnsureNodeAlert(old, new *tapi.NodeAlert) {
+	var oldOpt, newOpt *metav1.ListOptions
+	if old != nil {
+		oldOpt = &metav1.ListOptions{LabelSelector: labels.SelectorFromSet(old.Spec.Selector).String()}
+	}
+
+	newOpt = &metav1.ListOptions{LabelSelector: labels.SelectorFromSet(new.Spec.Selector).String()}
+
+	{
+		oldObjs := make(map[string]apiv1.Node)
+		if oldOpt != nil {
+			if resources, err := c.KubeClient.CoreV1().Nodes().List(*oldOpt); err == nil {
+				for _, resource := range resources.Items {
+					oldObjs[resource.Name] = resource
+				}
+			}
+		}
+
+		if resources, err := c.KubeClient.CoreV1().Nodes().List(*newOpt); err == nil {
+			for _, resource := range resources.Items {
+				delete(oldObjs, resource.Name)
+				go c.EnsureNode(&resource, old, new)
+			}
+		}
+		for _, resource := range oldObjs {
+			go c.EnsureNodeDeleted(&resource, old)
+		}
+	}
+}
+
+func (c *Controller) EnsureNodeAlertDeleted(alert *tapi.NodeAlert) {
+	opt := metav1.ListOptions{LabelSelector: labels.SelectorFromSet(alert.Spec.Selector).String()}
+
+	if resources, err := c.KubeClient.CoreV1().Nodes().List(opt); err == nil {
+		for _, resource := range resources.Items {
+			go c.EnsureNodeDeleted(&resource, alert)
+		}
+	}
 }

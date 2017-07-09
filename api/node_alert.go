@@ -37,8 +37,6 @@ type NodeAlertList struct {
 	Items []NodeAlert `json:"items"`
 }
 
-type CheckNode string
-
 // NodeAlertSpec describes the NodeAlert the user wishes to create.
 type NodeAlertSpec struct {
 	Selector map[string]string `json:"selector,omitempty"`
@@ -58,4 +56,29 @@ type NodeAlertSpec struct {
 
 	// Vars contains Icinga Service variables to be used in CheckCommand
 	Vars map[string]interface{} `json:"vars,omitempty"`
+}
+
+func (s NodeAlertSpec) IsValid() bool {
+	cmd, ok := NodeCommands[s.Check]
+	if !ok {
+		return false
+	}
+	for k := range s.Vars {
+		if _, ok := cmd.Vars[k]; !ok {
+			return false
+		}
+	}
+	for _, rcv := range s.Receivers {
+		found := false
+		for _, state := range cmd.States {
+			if state == rcv.State {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+	return true
 }

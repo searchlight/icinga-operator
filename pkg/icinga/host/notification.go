@@ -6,7 +6,7 @@ import (
 
 	"github.com/appscode/errors"
 	aci "github.com/appscode/searchlight/api"
-	"github.com/appscode/searchlight/pkg/client/icinga"
+	icinga "github.com/appscode/searchlight/pkg/icinga/client"
 )
 
 func CreateIcingaNotification(icingaClient *icinga.IcingaClient, alert *aci.PodAlert, objectList []*KubeObjectInfo) error {

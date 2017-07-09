@@ -1,7 +1,7 @@
 package kube_exec
 
 import (
-	"github.com/appscode/searchlight/pkg/controller/host"
+	"github.com/appscode/searchlight/pkg/icinga/host"
 	"github.com/appscode/searchlight/test/plugin"
 )
 
