@@ -1,4 +1,4 @@
-package node
+package host
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSetParameterizedVariables(t *testing.T) {
+func TestSetParameterizedNodeVariables(t *testing.T) {
 	alertSpec := aci.PodAlertSpec{
 		Vars: map[string]interface{}{
 			"A": `Fake Query for nodename   =  '?'`,

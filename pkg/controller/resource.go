@@ -124,7 +124,7 @@ func (c *Controller) checkPodIPAvailability(podName, namespace string) (bool, er
 	log.Debugln("Checking pod IP")
 	pod, err := c.opt.KubeClient.CoreV1().Pods(namespace).Get(podName, metav1.GetOptions{})
 	if err != nil {
-		return false, errors.New().WithCause(err).Err()
+		return false, errors.FromErr(err).Err()
 	}
 	if pod.Status.PodIP == "" {
 		return false, nil

@@ -36,7 +36,7 @@ func CreateIcingaHost(icingaClient *icinga.IcingaClient, objectList []*KubeObjec
 		obj.Attrs = mp
 		jsonStr, err := json.Marshal(obj)
 		if err != nil {
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 
 		resp = icingaClient.Objects().Hosts(hostName).Create([]string{}, string(jsonStr)).Do()

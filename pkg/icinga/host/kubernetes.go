@@ -35,38 +35,38 @@ func getLabels(client clientset.Interface, namespace, objectType, objectName str
 	if objectType == TypeServices {
 		service, err := client.CoreV1().Services(namespace).Get(objectName, metav1.GetOptions{})
 		if err != nil {
-			return nil, errors.New().WithCause(err).Err()
+			return nil, errors.FromErr(err).Err()
 		}
 		labelsMap = service.Spec.Selector
 
 	} else if objectType == TypeReplicationcontrollers {
 		rc, err := client.CoreV1().ReplicationControllers(namespace).Get(objectName, metav1.GetOptions{})
 		if err != nil {
-			return nil, errors.New().WithCause(err).Err()
+			return nil, errors.FromErr(err).Err()
 		}
 		labelsMap = rc.Spec.Selector
 	} else if objectType == TypeDaemonsets {
 		daemonSet, err := client.ExtensionsV1beta1().DaemonSets(namespace).Get(objectName, metav1.GetOptions{})
 		if err != nil {
-			return nil, errors.New().WithCause(err).Err()
+			return nil, errors.FromErr(err).Err()
 		}
 		labelsMap = daemonSet.Spec.Selector.MatchLabels
 	} else if objectType == TypeReplicasets {
 		replicaSet, err := client.ExtensionsV1beta1().ReplicaSets(namespace).Get(objectName, metav1.GetOptions{})
 		if err != nil {
-			return nil, errors.New().WithCause(err).Err()
+			return nil, errors.FromErr(err).Err()
 		}
 		labelsMap = replicaSet.Spec.Selector.MatchLabels
 	} else if objectType == TypeStatefulSet {
 		statefulSet, err := client.AppsV1beta1().StatefulSets(namespace).Get(objectName, metav1.GetOptions{})
 		if err != nil {
-			return nil, errors.New().WithCause(err).Err()
+			return nil, errors.FromErr(err).Err()
 		}
 		labelsMap = statefulSet.Spec.Selector.MatchLabels
 	} else if objectType == TypeDeployments {
 		deployment, err := client.ExtensionsV1beta1().Deployments(namespace).Get(objectName, metav1.GetOptions{})
 		if err != nil {
-			return nil, errors.New().WithCause(err).Err()
+			return nil, errors.FromErr(err).Err()
 		}
 		labelsMap = deployment.Spec.Selector.MatchLabels
 	} else {
@@ -77,7 +77,7 @@ func getLabels(client clientset.Interface, namespace, objectType, objectName str
 		s := sets.NewString(value)
 		ls, err := labels.NewRequirement(key, selection.Equals, s.List())
 		if err != nil {
-			return nil, errors.New().WithCause(err).Err()
+			return nil, errors.FromErr(err).Err()
 		}
 		label = label.Add(*ls)
 	}
@@ -90,12 +90,12 @@ func GetPodList(client clientset.Interface, namespace, objectType, objectName st
 
 	label, err := getLabels(client, namespace, objectType, objectName)
 	if err != nil {
-		return nil, errors.New().WithCause(err).Err()
+		return nil, errors.FromErr(err).Err()
 	}
 
 	pods, err := client.CoreV1().Pods(namespace).List(metav1.ListOptions{LabelSelector: label.String()})
 	if err != nil {
-		return nil, errors.New().WithCause(err).Err()
+		return nil, errors.FromErr(err).Err()
 	}
 
 	for _, pod := range pods.Items {
@@ -109,7 +109,7 @@ func GetPod(client clientset.Interface, namespace, objectType, objectName, podNa
 	var podList []*KubeObjectInfo
 	pod, err := client.CoreV1().Pods(namespace).Get(podName, metav1.GetOptions{})
 	if err != nil {
-		return nil, errors.New().WithCause(err).Err()
+		return nil, errors.FromErr(err).Err()
 	}
 	podList = append(podList, &KubeObjectInfo{Name: pod.Name + "@" + namespace, IP: pod.Status.PodIP, GroupName: objectName, GroupType: objectType})
 	return podList, nil
@@ -119,7 +119,7 @@ func GetNodeList(client clientset.Interface, alertNamespace string) ([]*KubeObje
 	var nodeList []*KubeObjectInfo
 	nodes, err := client.CoreV1().Nodes().List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
 	if err != nil {
-		return nodeList, errors.New().WithCause(err).Err()
+		return nodeList, errors.FromErr(err).Err()
 	}
 	for _, node := range nodes.Items {
 		nodeIP := "127.0.0.1"
@@ -139,7 +139,7 @@ func GetNode(client clientset.Interface, nodeName, alertNamespace string) ([]*Ku
 	node := &apiv1.Node{}
 	node, err := client.CoreV1().Nodes().Get(nodeName, metav1.GetOptions{})
 	if err != nil {
-		return nodeList, errors.New().WithCause(err).Err()
+		return nodeList, errors.FromErr(err).Err()
 	}
 	nodeIP := "127.0.0.1"
 	for _, ip := range node.Status.Addresses {
@@ -157,7 +157,7 @@ func GetAlertList(acExtClient acs.ExtensionInterface, kubeClient clientset.Inter
 	if namespace != "" {
 		alertList, err := acExtClient.PodAlerts(namespace).List(metav1.ListOptions{LabelSelector: ls.String()})
 		if err != nil {
-			return nil, errors.New().WithCause(err).Err()
+			return nil, errors.FromErr(err).Err()
 		}
 		if len(alertList.Items) > 0 {
 			alerts = append(alerts, alertList.Items...)
@@ -165,7 +165,7 @@ func GetAlertList(acExtClient acs.ExtensionInterface, kubeClient clientset.Inter
 	} else {
 		alertList, err := acExtClient.PodAlerts(apiv1.NamespaceAll).List(metav1.ListOptions{LabelSelector: ls.String()})
 		if err != nil {
-			return nil, errors.New().WithCause(err).Err()
+			return nil, errors.FromErr(err).Err()
 		}
 		if len(alertList.Items) > 0 {
 			alerts = append(alerts, alertList.Items...)
@@ -189,7 +189,7 @@ func GetLabelSelector(objectType, objectName string) (labels.Selector, error) {
 	if objectType != "" {
 		lsot, err := labels.NewRequirement(ObjectType, selection.Equals, sets.NewString(objectType).List())
 		if err != nil {
-			return lb, errors.New().WithCause(err).Err()
+			return lb, errors.FromErr(err).Err()
 		}
 		lb = lb.Add(*lsot)
 	}
@@ -197,7 +197,7 @@ func GetLabelSelector(objectType, objectName string) (labels.Selector, error) {
 	if objectName != "" {
 		lson, err := labels.NewRequirement(ObjectName, selection.Equals, sets.NewString(objectName).List())
 		if err != nil {
-			return lb, errors.New().WithCause(err).Err()
+			return lb, errors.FromErr(err).Err()
 		}
 		lb = lb.Add(*lson)
 	}

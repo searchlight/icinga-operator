@@ -1,4 +1,4 @@
-package node
+package host
 
 import (
 	"fmt"
@@ -9,35 +9,15 @@ import (
 	"github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	"github.com/appscode/searchlight/pkg/icinga/host"
-	"github.com/appscode/searchlight/pkg/icinga/host/extpoints"
 )
 
-func init() {
-	extpoints.IcingaHostTypes.Register(new(icingaHost), host.HostTypeNode)
-}
-
-type icingaHost struct {
-}
-
-type biblio struct {
+type NodeHost struct {
 	*types.Option
-}
-
-func (p *icingaHost) CreateAlert(ctx *types.Option, specificObject string) error {
-	return (&biblio{ctx}).create(specificObject)
-}
-
-func (p *icingaHost) UpdateAlert(ctx *types.Option) error {
-	return (&biblio{ctx}).update()
-}
-
-func (p *icingaHost) DeleteAlert(ctx *types.Option, specificObject string) error {
-	return (&biblio{ctx}).delete(specificObject)
 }
 
 //-----------------------------------------------------
 // set Alert in Icinga LocalHost
-func (b *biblio) create(specificObject string) error {
+func (b *NodeHost) Create(specificObject string) error {
 	alertSpec := b.Resource.Spec
 
 	if alertSpec.Check == "" {
@@ -47,12 +27,12 @@ func (b *biblio) create(specificObject string) error {
 	// Get Icinga Host Info
 	objectList, err := host.GetObjectList(b.KubeClient, alertSpec.Check, host.HostTypeNode, b.Resource.Namespace, b.ObjectType, b.ObjectName, specificObject)
 	if err != nil {
-		return errors.New().WithCause(err).Err()
+		return errors.FromErr(err).Err()
 	}
 
 	var has bool
 	if has, err = host.CheckIcingaService(b.IcingaClient, b.Resource.Name, objectList); err != nil {
-		return errors.New().WithCause(err).Err()
+		return errors.FromErr(err).Err()
 	}
 	if has {
 		return nil
@@ -60,15 +40,15 @@ func (b *biblio) create(specificObject string) error {
 
 	// Create Icinga Host
 	if err := host.CreateIcingaHost(b.IcingaClient, objectList, b.Resource.Namespace); err != nil {
-		return errors.New().WithCause(err).Err()
+		return errors.FromErr(err).Err()
 	}
 
 	if err := b.createIcingaService(objectList); err != nil {
-		return errors.New().WithCause(err).Err()
+		return errors.FromErr(err).Err()
 	}
 
 	if err := host.CreateIcingaNotification(b.IcingaClient, b.Resource, objectList); err != nil {
-		return errors.New().WithCause(err).Err()
+		return errors.FromErr(err).Err()
 	}
 
 	return nil
@@ -83,7 +63,7 @@ func setParameterizedVariables(alertSpec aci.PodAlertSpec, objectName string, co
 
 			reg, err := regexp.Compile("nodename[ ]*=[ ]*'[?]'")
 			if err != nil {
-				return nil, errors.New().WithCause(err).Err()
+				return nil, errors.FromErr(err).Err()
 			}
 			mp[host.IVar(key)] = reg.ReplaceAllString(val.(string), fmt.Sprintf("nodename='%s'", objectName))
 		} else {
@@ -93,7 +73,7 @@ func setParameterizedVariables(alertSpec aci.PodAlertSpec, objectName string, co
 	return mp, nil
 }
 
-func (b *biblio) createIcingaService(objectList []*host.KubeObjectInfo) error {
+func (b *NodeHost) createIcingaService(objectList []*host.KubeObjectInfo) error {
 	alertSpec := b.Resource.Spec
 
 	mp := make(map[string]interface{})
@@ -115,36 +95,36 @@ func (b *biblio) createIcingaService(objectList []*host.KubeObjectInfo) error {
 	for _, object := range objectList {
 		var err error
 		if mp, err = setParameterizedVariables(alertSpec, object.Name, commandVars, mp); err != nil {
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 
 		if err := host.CreateIcingaService(b.IcingaClient, mp, object, b.Resource.Name); err != nil {
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 	}
 	return nil
 }
 
-func (b *biblio) update() error {
+func (b *NodeHost) Update() error {
 	alertSpec := b.Resource.Spec
 
 	// Get Icinga Host Info
 	objectList, err := host.GetObjectList(b.KubeClient, alertSpec.Check, host.HostTypeNode, b.Resource.Namespace, b.ObjectType, b.ObjectName, "")
 	if err != nil {
-		return errors.New().WithCause(err).Err()
+		return errors.FromErr(err).Err()
 	}
 
 	if err := b.updateIcingaService(objectList); err != nil {
-		return errors.New().WithCause(err).Err()
+		return errors.FromErr(err).Err()
 	}
 
 	if err := host.UpdateIcingaNotification(b.IcingaClient, b.Resource, objectList); err != nil {
-		return errors.New().WithCause(err).Err()
+		return errors.FromErr(err).Err()
 	}
 	return nil
 }
 
-func (b *biblio) updateIcingaService(objectList []*host.KubeObjectInfo) error {
+func (b *NodeHost) updateIcingaService(objectList []*host.KubeObjectInfo) error {
 	alertSpec := b.Resource.Spec
 
 	mp := make(map[string]interface{})
@@ -165,17 +145,17 @@ func (b *biblio) updateIcingaService(objectList []*host.KubeObjectInfo) error {
 	for _, object := range objectList {
 		var err error
 		if mp, err = setParameterizedVariables(alertSpec, object.Name, commandVars, mp); err != nil {
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 
 		if err := host.UpdateIcingaService(b.IcingaClient, mp, object, b.Resource.Name); err != nil {
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 	}
 	return nil
 }
 
-func (b *biblio) delete(specificObject string) error {
+func (b *NodeHost) Delete(specificObject string) error {
 	alertSpec := b.Resource.Spec
 
 	var objectList []*host.KubeObjectInfo
@@ -187,18 +167,18 @@ func (b *biblio) delete(specificObject string) error {
 		objectList, err = host.GetObjectList(b.KubeClient, alertSpec.Check, host.HostTypeNode,
 			b.Resource.Namespace, b.ObjectType, b.ObjectName, specificObject)
 		if err != nil {
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 
 	}
 
 	if err := host.DeleteIcingaService(b.IcingaClient, objectList, b.Resource.Name); err != nil {
-		return errors.New().WithCause(err).Err()
+		return errors.FromErr(err).Err()
 	}
 
 	for _, object := range objectList {
 		if err := host.DeleteIcingaHost(b.IcingaClient, object.Name); err != nil {
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 	}
 	return nil

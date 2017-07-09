@@ -63,7 +63,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 			_alert.Status.Phase = aci.AlertPhaseCreating
 			_alert, err = c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert)
 			if err != nil {
-				return errors.New().WithCause(err).Err()
+				return errors.FromErr(err).Err()
 			}
 		}
 
@@ -76,14 +76,14 @@ func (c *Controller) handleAlert(e *events.Event) error {
 			_alert.Status.Phase = aci.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
 			if _, err := c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert); err != nil {
-				return errors.New().WithCause(err).Err()
+				return errors.FromErr(err).Err()
 			}
 			if kerr.IsNotFound(err) {
 				eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonNotFound, err.Error())
 				return nil
 			} else {
 				eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToProceed, err.Error())
-				return errors.New().WithCause(err).Err()
+				return errors.FromErr(err).Err()
 			}
 		}
 
@@ -96,11 +96,11 @@ func (c *Controller) handleAlert(e *events.Event) error {
 			_alert.Status.Phase = aci.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
 			if _, err := c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert); err != nil {
-				return errors.New().WithCause(err).Err()
+				return errors.FromErr(err).Err()
 			}
 
 			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToCreate, err.Error())
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 
 		t := metav1.Now()
@@ -108,7 +108,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 		_alert.Status.Phase = aci.AlertPhaseCreated
 		_alert.Status.Reason = ""
 		if _, err = c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert); err != nil {
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 		eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulCreate)
 	} else if e.EventType.IsUpdated() {
@@ -124,7 +124,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 		}
 
 		if err := host.CheckAlertConfig(oldConfig, newConfig); err != nil {
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 
 		c.opt.Resource = newConfig
@@ -135,7 +135,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 				return nil
 			} else {
 				eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToProceed, err.Error())
-				return errors.New().WithCause(err).Err()
+				return errors.FromErr(err).Err()
 			}
 		}
 
@@ -143,7 +143,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 
 		if err := c.Update(); err != nil {
 			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToUpdate, err.Error())
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 
 		// Set Status
@@ -151,7 +151,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 		t := metav1.Now()
 		_alert.Status.UpdateTime = &t
 		if _, err := c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert); err != nil {
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 		eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulUpdate)
 	} else if e.EventType.IsDeleted() {
@@ -165,7 +165,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 		c.parseAlertOptions()
 		if err := c.Delete(); err != nil {
 			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToDelete, err.Error())
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 		eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulDelete)
 	}
@@ -250,7 +250,7 @@ func (c *Controller) handleRegularPod(e *events.Event, ancestors []*types.Ancest
 			for {
 				hasPodIP, err := c.checkPodIPAvailability(e.MetaData.Name, namespace)
 				if err != nil {
-					return errors.New().WithCause(err).Err()
+					return errors.FromErr(err).Err()
 				}
 				if hasPodIP {
 					break
@@ -271,7 +271,7 @@ func (c *Controller) handleRegularPod(e *events.Event, ancestors []*types.Ancest
 
 			if err := c.Create(e.MetaData.Name); err != nil {
 				eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
-				return errors.New().WithCause(err).Err()
+				return errors.FromErr(err).Err()
 			}
 			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 		} else if e.EventType.IsDeleted() {
@@ -283,7 +283,7 @@ func (c *Controller) handleRegularPod(e *events.Event, ancestors []*types.Ancest
 
 			if err := c.Delete(e.MetaData.Name); err != nil {
 				eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
-				return errors.New().WithCause(err).Err()
+				return errors.FromErr(err).Err()
 			}
 			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 		}
@@ -296,14 +296,14 @@ func (c *Controller) handleRegularPod(e *events.Event, ancestors []*types.Ancest
 		for _, objectName := range ancestor.Names {
 			lb, err := host.GetLabelSelector(objectType, objectName)
 			if err != nil {
-				return errors.New().WithCause(err).Err()
+				return errors.FromErr(err).Err()
 			}
 
 			alertList, err := c.opt.ExtClient.PodAlerts(namespace).List(metav1.ListOptions{
 				LabelSelector: lb.String(),
 			})
 			if err != nil {
-				return errors.New().WithCause(err).Err()
+				return errors.FromErr(err).Err()
 			}
 
 			for _, alert := range alertList.Items {
@@ -343,11 +343,11 @@ func (c *Controller) handleNode(e *events.Event) error {
 
 	lb, err := host.GetLabelSelector(events.Cluster.String(), "")
 	if err != nil {
-		return errors.New().WithCause(err).Err()
+		return errors.FromErr(err).Err()
 	}
 	lb1, err := host.GetLabelSelector(events.Node.String(), e.MetaData.Name)
 	if err != nil {
-		return errors.New().WithCause(err).Err()
+		return errors.FromErr(err).Err()
 	}
 
 	requirements, _ := lb1.Requirements()
@@ -365,7 +365,7 @@ func (c *Controller) handleNode(e *events.Event) error {
 
 			if err := c.Create(e.MetaData.Name); err != nil {
 				eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
-				return errors.New().WithCause(err).Err()
+				return errors.FromErr(err).Err()
 			}
 			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 
@@ -378,7 +378,7 @@ func (c *Controller) handleNode(e *events.Event) error {
 
 			if err := c.Delete(e.MetaData.Name); err != nil {
 				eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonFailedToSync, additionalMessage, err.Error())
-				return errors.New().WithCause(err).Err()
+				return errors.FromErr(err).Err()
 			}
 			eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonSuccessfulSync, additionalMessage)
 		}
@@ -389,7 +389,7 @@ func (c *Controller) handleNode(e *events.Event) error {
 		LabelSelector: lb.String(),
 	})
 	if err != nil {
-		return errors.New().WithCause(err).Err()
+		return errors.FromErr(err).Err()
 	}
 
 	for _, alert := range alertList.Items {
@@ -426,7 +426,7 @@ func (c *Controller) handleService(e *events.Event) error {
 		if checkIcingaService(e.MetaData.Name, e.MetaData.Namespace) {
 			service, err := c.opt.KubeClient.CoreV1().Services(e.MetaData.Namespace).Get(e.MetaData.Name, metav1.GetOptions{})
 			if err != nil {
-				return errors.New().WithCause(err).Err()
+				return errors.FromErr(err).Err()
 			}
 			endpoint := fmt.Sprintf("https://%v:5665/v1", service.Spec.ClusterIP)
 			c.opt.IcingaClient = c.opt.IcingaClient.SetEndpoint(endpoint)
@@ -462,7 +462,7 @@ func (c *Controller) handleAlertEvent(e *events.Event) error {
 
 		alert, err := c.opt.ExtClient.PodAlerts(eventRefObjNamespace).Get(eventRefObjName)
 		if err != nil {
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 
 		c.opt.Resource = alert

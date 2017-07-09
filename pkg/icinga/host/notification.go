@@ -21,7 +21,7 @@ func CreateIcingaNotification(icingaClient *icinga.IcingaClient, alert *aci.PodA
 
 		jsonStr, err := json.Marshal(obj)
 		if err != nil {
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 
 		resp := icingaClient.Objects().Notifications(object.Name).Create([]string{alert.Name, alert.Name}, string(jsonStr)).Do()
@@ -49,7 +49,7 @@ func UpdateIcingaNotification(icingaClient *icinga.IcingaClient, alert *aci.PodA
 		obj.Attrs = mp
 		jsonStr, err := json.Marshal(obj)
 		if err != nil {
-			return errors.New().WithCause(err).Err()
+			return errors.FromErr(err).Err()
 		}
 		resp := icingaClient.Objects().Notifications(object.Name).Update([]string{icignaService, icignaService}, string(jsonStr)).Do()
 

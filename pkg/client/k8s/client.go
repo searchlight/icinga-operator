@@ -13,18 +13,18 @@ func NewClient() (*KubeClient, error) {
 
 	config, err := GetKubeConfig()
 	if err != nil {
-		return nil, errors.New().WithCause(err).Err()
+		return nil, errors.FromErr(err).Err()
 	}
 	log.Debugln("Using cluster:", config.Host)
 
 	client, err := clientset.NewForConfig(config)
 	if err != nil {
-		return nil, errors.New().WithCause(err).Err()
+		return nil, errors.FromErr(err).Err()
 	}
 
 	extClient, err := acs.NewForConfig(config)
 	if err != nil {
-		return nil, errors.New().WithCause(err).Err()
+		return nil, errors.FromErr(err).Err()
 	}
 
 	return &KubeClient{

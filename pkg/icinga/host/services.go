@@ -22,7 +22,7 @@ func CreateIcingaService(icingaClient *icinga.IcingaClient, mp map[string]interf
 	obj.Attrs = mp
 	jsonStr, err := json.Marshal(obj)
 	if err != nil {
-		return errors.New().WithCause(err).Err()
+		return errors.FromErr(err).Err()
 	}
 
 	resp := icingaClient.Objects().Service(object.Name).Create([]string{serviceName}, string(jsonStr)).Do()
@@ -46,7 +46,7 @@ func UpdateIcingaService(icingaClient *icinga.IcingaClient, mp map[string]interf
 	obj.Attrs = mp
 	jsonStr, err := json.Marshal(obj)
 	if err != nil {
-		return errors.New().WithCause(err).Err()
+		return errors.FromErr(err).Err()
 	}
 	resp := icingaClient.Objects().Service(object.Name).Update([]string{icignaService}, string(jsonStr)).Do()
 	if resp.Err != nil {
