@@ -7,7 +7,6 @@ import (
 
 	"github.com/appscode/errors"
 	tapi "github.com/appscode/searchlight/api"
-	"github.com/appscode/searchlight/pkg/icinga"
 )
 
 const (
@@ -17,7 +16,7 @@ const (
 )
 
 type commonHost struct {
-	IcingaClient *icinga.Client
+	IcingaClient *Client
 }
 
 func (h *commonHost) CreateIcingaHost(kh KHost) error {

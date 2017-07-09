@@ -2,7 +2,6 @@ package pod_status
 
 import (
 	"github.com/appscode/searchlight/pkg/controller"
-	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/plugin"
 	"github.com/appscode/searchlight/util"
 	"k8s.io/apimachinery/pkg/labels"

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/mini"
 	"github.com/appscode/searchlight/test/util"
 	"github.com/stretchr/testify/assert"

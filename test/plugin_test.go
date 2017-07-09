@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins/check_component_status"
 	"github.com/appscode/searchlight/plugins/check_json_path"
 	"github.com/appscode/searchlight/plugins/check_kube_event"

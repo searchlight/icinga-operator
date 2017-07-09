@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/appscode/searchlight/pkg/controller"
-	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/util"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )

@@ -2,6 +2,11 @@ package icinga
 
 const (
 	internalIP = "InternalIP"
+
+	TypePods   = "pods"
+	TypeNodes  = "nodes"
+	ObjectType = "alert.appscode.com/objectType"
+	ObjectName = "alert.appscode.com/objectName"
 )
 
 type KHost struct {
