@@ -5,12 +5,12 @@ import (
 
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/searchlight/pkg/client/k8s"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/plugin"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/client-go/pkg/api"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
-	"github.com/appscode/searchlight/pkg/icinga"
 )
 
 func getStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Duration) (icinga.State, error) {

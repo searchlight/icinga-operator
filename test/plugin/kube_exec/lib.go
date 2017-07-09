@@ -1,8 +1,8 @@
 package kube_exec
 
 import (
-	"github.com/appscode/searchlight/test/plugin"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/test/plugin"
 )
 
 func GetTestData(objectList []*icinga.KHost) ([]plugin.TestData, error) {

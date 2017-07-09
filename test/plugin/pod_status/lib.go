@@ -2,10 +2,10 @@ package pod_status
 
 import (
 	"github.com/appscode/searchlight/pkg/controller"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/plugin"
 	"k8s.io/apimachinery/pkg/labels"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
-	"github.com/appscode/searchlight/pkg/icinga"
 )
 
 func getStatusCodeForPodStatus(w *controller.Controller, objectType, objectName, namespace string) (icinga.State, error) {

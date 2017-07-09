@@ -4,6 +4,8 @@ import (
 	"errors"
 	"reflect"
 	"strings"
+
+	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/icinga"
 )
 
@@ -18,7 +20,7 @@ func GetKubeObjectInfo(hostname string) (objectType string, objectName string, n
 
 	objectType = ""
 	objectName = ""
-	if name != icinga.CheckCommandPodExists && name != icinga.CheckCommandPodStatus {
+	if name != string(tapi.CheckPodExists) && name != string(tapi.CheckPodStatus) {
 		parts = strings.Split(name, "|")
 		if len(parts) == 1 {
 			objectType = icinga.TypePods
