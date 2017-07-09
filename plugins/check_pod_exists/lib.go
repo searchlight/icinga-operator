@@ -39,7 +39,7 @@ func CheckPodExists(req *Request, isCountSet bool) (util.IcingaState, interface{
 	}
 
 	total_pod := 0
-	if req.ObjectType == host.TypePods {
+	if req.ObjectType == icinga.TypePods {
 		pod, err := kubeClient.Client.CoreV1().Pods(req.Namespace).Get(req.ObjectName, metav1.GetOptions{})
 		if err != nil {
 			return util.Unknown, err
@@ -104,10 +104,10 @@ func NewCmd() *cobra.Command {
 
 			objectType := ""
 			objectName := ""
-			if name != host.CheckCommandPodExists {
+			if name != icinga.CheckCommandPodExists {
 				parts = strings.Split(name, "|")
 				if len(parts) == 1 {
-					objectType = host.TypePods
+					objectType = icinga.TypePods
 					objectName = parts[0]
 				} else if len(parts) == 2 {
 					objectType = parts[0]
