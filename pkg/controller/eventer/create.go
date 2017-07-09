@@ -7,7 +7,7 @@ import (
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/kubed/pkg/events"
 	"github.com/appscode/log"
-	aci "github.com/appscode/searchlight/api"
+	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/controller/types"
 	//"github.com/appscode/searchlight/pkg/events"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -15,7 +15,7 @@ import (
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
-func CreateAlertEvent(kubeClient clientset.Interface, alert *aci.PodAlert, reason types.EventReason, additionalMessage ...string) {
+func CreateAlertEvent(kubeClient clientset.Interface, alert *tapi.PodAlert, reason types.EventReason, additionalMessage ...string) {
 	timestamp := metav1.NewTime(time.Now().UTC())
 	event := &apiv1.Event{
 		ObjectMeta: metav1.ObjectMeta{

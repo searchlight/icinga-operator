@@ -3,8 +3,8 @@ package types
 import (
 	"sync"
 
-	aci "github.com/appscode/searchlight/api"
-	acs "github.com/appscode/searchlight/client/clientset"
+	tapi "github.com/appscode/searchlight/api"
+	tcs "github.com/appscode/searchlight/client/clientset"
 	"github.com/appscode/searchlight/data"
 	icinga "github.com/appscode/searchlight/pkg/icinga/client"
 	"github.com/appscode/voyager/pkg/stash"
@@ -54,15 +54,15 @@ type IcingaCommands struct {
 	States []string
 }
 
-type Option struct {
+type Context struct {
 	// kubernetes client
 	KubeClient clientset.Interface
-	ExtClient  acs.ExtensionInterface
+	ExtClient  tcs.ExtensionInterface
 
 	IcingaClient *icinga.IcingaClient
 	IcingaData   map[string]*IcingaCommands
 
-	Resource   *aci.PodAlert
+	Resource   *tapi.PodAlert
 	ObjectType string
 	ObjectName string
 

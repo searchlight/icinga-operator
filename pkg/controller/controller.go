@@ -23,7 +23,7 @@ type Controller struct {
 
 	// Event Recorder
 	recorder   record.EventRecorder
-	opt        *types.Option
+	opt        *types.Context
 	syncPeriod time.Duration
 }
 

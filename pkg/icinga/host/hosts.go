@@ -1,11 +1,7 @@
 package host
 
 import (
-	"encoding/json"
-	"fmt"
-
 	"github.com/appscode/errors"
-	icinga "github.com/appscode/searchlight/pkg/icinga/client"
 	clientset "k8s.io/client-go/kubernetes"
 )
 
@@ -21,57 +17,7 @@ const (
 	CheckCommandVolume    = "volume"
 )
 
-func CreateIcingaHost(icingaClient *icinga.IcingaClient, objectList []*KubeObjectInfo, alertNamespace string) error {
-	for _, object := range objectList {
-		hostName := object.Name
-		resp := icingaClient.Objects().Hosts(hostName).Get([]string{}).Do()
-		if resp.Status == 200 {
-			continue
-		}
-		var obj IcingaObject
-		obj.Templates = []string{"generic-host"}
-		mp := make(map[string]interface{})
-		mp["address"] = object.IP
-
-		obj.Attrs = mp
-		jsonStr, err := json.Marshal(obj)
-		if err != nil {
-			return errors.FromErr(err).Err()
-		}
-
-		resp = icingaClient.Objects().Hosts(hostName).Create([]string{}, string(jsonStr)).Do()
-		if resp.Err != nil {
-			return errors.New().WithCause(resp.Err).Err()
-		}
-
-		if resp.Status != 200 {
-			return errors.New("Can't create Icinga host").Err()
-		}
-	}
-	return nil
-}
-
-func DeleteIcingaHost(icingaClient *icinga.IcingaClient, host string) error {
-	param := map[string]string{
-		"cascade": "1",
-	}
-
-	in := fmt.Sprintf(`{"filter": "match(\"%s\",host.name)"}`, host)
-	var respService ResponseObject
-	if _, err := icingaClient.Objects().Service("").Update([]string{}, in).Do().Into(&respService); err != nil {
-		return errors.New("Can't get Icinga service").Err()
-	}
-
-	if len(respService.Results) <= 1 {
-		resp := icingaClient.Objects().Hosts("").Delete([]string{}, in).Params(param).Do()
-		if resp.Err != nil {
-			return errors.New("Can't delete Icinga host").Err()
-		}
-	}
-	return nil
-}
-
-func GetObjectList(kubeClient clientset.Interface, check, hostType, namespace, objectType, objectName, specificObject string) ([]*KubeObjectInfo, error) {
+func GetObjectList(kubeClient clientset.Interface, check, hostType, namespace, objectType, objectName, specificObject string) ([]*KHost, error) {
 	switch hostType {
 	case HostTypePod:
 		switch objectType {
@@ -105,7 +51,7 @@ func GetObjectList(kubeClient clientset.Interface, check, hostType, namespace, o
 		if objectType != TypeCluster {
 			hostName = objectType + "|" + objectName
 		}
-		return []*KubeObjectInfo{{Name: hostName + "@" + namespace, IP: "127.0.0.1"}}, nil
+		return []*KHost{{Name: hostName + "@" + namespace, IP: "127.0.0.1"}}, nil
 	default:
 		return nil, errors.New("Invalid Icinga HostType").Err()
 	}

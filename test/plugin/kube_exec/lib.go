@@ -5,7 +5,7 @@ import (
 	"github.com/appscode/searchlight/test/plugin"
 )
 
-func GetTestData(objectList []*host.KubeObjectInfo) ([]plugin.TestData, error) {
+func GetTestData(objectList []*host.KHost) ([]plugin.TestData, error) {
 	testDataList := make([]plugin.TestData, 0)
 	for _, object := range objectList {
 		_, objectName, namespace, err := plugin.GetKubeObjectInfo(object.Name)

@@ -4,11 +4,9 @@ const (
 	internalIP = "InternalIP"
 )
 
-type KubeObjectInfo struct {
-	Name      string
-	IP        string
-	GroupName string
-	GroupType string
+type KHost struct {
+	Name string
+	IP   string
 }
 
 type IcingaObject struct {

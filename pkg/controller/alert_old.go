@@ -8,7 +8,7 @@ import (
 	"github.com/appscode/errors"
 	"github.com/appscode/kubed/pkg/events"
 	"github.com/appscode/log"
-	aci "github.com/appscode/searchlight/api"
+	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/analytics"
 	"github.com/appscode/searchlight/pkg/controller/eventer"
 	"github.com/appscode/searchlight/pkg/controller/types"
@@ -50,12 +50,12 @@ func (c *Controller) handleAlert(e *events.Event) error {
 		}
 
 		var err error
-		_alert := alert[0].(*aci.PodAlert)
+		_alert := alert[0].(*tapi.PodAlert)
 		if _alert.Status.CreationTime == nil {
 			// Set Status
 			t := metav1.Now()
 			_alert.Status.CreationTime = &t
-			_alert.Status.Phase = aci.AlertPhaseCreating
+			_alert.Status.Phase = tapi.AlertPhaseCreating
 			_alert, err = c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert)
 			if err != nil {
 				return errors.FromErr(err).Err()
@@ -68,7 +68,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 			// Update Status
 			t := metav1.Now()
 			_alert.Status.UpdateTime = &t
-			_alert.Status.Phase = aci.AlertPhaseFailed
+			_alert.Status.Phase = tapi.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
 			if _, err := c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert); err != nil {
 				return errors.FromErr(err).Err()
@@ -88,7 +88,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 			// Update Status
 			t := metav1.Now()
 			_alert.Status.UpdateTime = &t
-			_alert.Status.Phase = aci.AlertPhaseFailed
+			_alert.Status.Phase = tapi.AlertPhaseFailed
 			_alert.Status.Reason = err.Error()
 			if _, err := c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert); err != nil {
 				return errors.FromErr(err).Err()
@@ -100,7 +100,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 
 		t := metav1.Now()
 		_alert.Status.UpdateTime = &t
-		_alert.Status.Phase = aci.AlertPhaseCreated
+		_alert.Status.Phase = tapi.AlertPhaseCreated
 		_alert.Status.Reason = ""
 		if _, err = c.opt.ExtClient.PodAlerts(_alert.Namespace).Update(_alert); err != nil {
 			return errors.FromErr(err).Err()
@@ -111,8 +111,8 @@ func (c *Controller) handleAlert(e *events.Event) error {
 			return errors.New("Missing alert data").Err()
 		}
 
-		oldConfig := alert[0].(*aci.PodAlert)
-		newConfig := alert[1].(*aci.PodAlert)
+		oldConfig := alert[0].(*tapi.PodAlert)
+		newConfig := alert[1].(*tapi.PodAlert)
 
 		if reflect.DeepEqual(oldConfig.Spec, newConfig.Spec) {
 			return nil
@@ -154,7 +154,7 @@ func (c *Controller) handleAlert(e *events.Event) error {
 			return errors.New("Missing alert data").Err()
 		}
 
-		c.opt.Resource = alert[0].(*aci.PodAlert)
+		c.opt.Resource = alert[0].(*tapi.PodAlert)
 		eventer.CreateAlertEvent(c.opt.KubeClient, c.opt.Resource, types.EventReasonDeleting)
 
 		c.parseAlertOptions()
@@ -238,7 +238,7 @@ func (c *Controller) handleRegularPod(e *events.Event, ancestors []*types.Ancest
 		Names: []string{e.MetaData.Name},
 	}
 
-	syncAlert := func(alert aci.PodAlert) error {
+	syncAlert := func(alert tapi.PodAlert) error {
 		if e.EventType.IsAdded() {
 			// Waiting for POD IP to use as Icinga Host IP
 			then := time.Now()
@@ -350,7 +350,7 @@ func (c *Controller) handleNode(e *events.Event) error {
 
 	icingaUp := false
 
-	syncAlert := func(alert aci.PodAlert) error {
+	syncAlert := func(alert tapi.PodAlert) error {
 		if e.EventType.IsAdded() {
 			c.opt.Resource = &alert
 

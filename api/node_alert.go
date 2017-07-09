@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -60,17 +61,39 @@ type NodeAlertSpec struct {
 	Vars map[string]interface{} `json:"vars,omitempty"`
 }
 
-func (s NodeAlertSpec) IsValid() (bool, error) {
-	cmd, ok := NodeCommands[s.Check]
+var _ Alert = &NodeAlert{}
+
+func (a NodeAlert) GetName() string {
+	return a.Name
+}
+
+func (a NodeAlert) GetNamespace() string {
+	return a.Namespace
+}
+
+func (a NodeAlert) Command() string {
+	return string(a.Spec.Check)
+}
+
+func (a NodeAlert) GetCheckInterval() time.Duration {
+	return a.Spec.CheckInterval.Duration
+}
+
+func (a NodeAlert) GetAlertInterval() time.Duration {
+	return a.Spec.AlertInterval.Duration
+}
+
+func (a NodeAlert) IsValid() (bool, error) {
+	cmd, ok := NodeCommands[a.Spec.Check]
 	if !ok {
-		return false, fmt.Errorf("%s is not a valid node check command.", s.Check)
+		return false, fmt.Errorf("%s is not a valid node check command.", a.Spec.Check)
 	}
-	for k := range s.Vars {
+	for k := range a.Spec.Vars {
 		if _, ok := cmd.Vars[k]; !ok {
-			return false, fmt.Errorf("Var %s is unsupported for check command %s.", k, s.Check)
+			return false, fmt.Errorf("Var %s is unsupported for check command %s.", k, a.Spec.Check)
 		}
 	}
-	for _, rcv := range s.Receivers {
+	for _, rcv := range a.Spec.Receivers {
 		found := false
 		for _, state := range cmd.States {
 			if state == rcv.State {
@@ -79,7 +102,7 @@ func (s NodeAlertSpec) IsValid() (bool, error) {
 			}
 		}
 		if !found {
-			return false, fmt.Errorf("State %s is unsupported for check command %s.", rcv.State, s.Check)
+			return false, fmt.Errorf("State %s is unsupported for check command %s.", rcv.State, a.Spec.Check)
 		}
 	}
 	return true, nil

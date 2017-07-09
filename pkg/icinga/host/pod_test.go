@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	aci "github.com/appscode/searchlight/api"
+	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/data"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSetParameterizedPodVariables(t *testing.T) {
-	alertSpec := aci.PodAlertSpec{
+	alertSpec := tapi.PodAlertSpec{
 		Vars: map[string]interface{}{
 			"A": `Fake Query for pod_name   =  '?'`,
 			"B": `Fake Query for pod_name='?'`,

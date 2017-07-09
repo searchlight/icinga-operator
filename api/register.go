@@ -47,5 +47,5 @@ func (obj *PodAlertList) GetObjectKind() schema.ObjectKind { return &obj.TypeMet
 func (obj *NodeAlert) GetObjectKind() schema.ObjectKind     { return &obj.TypeMeta }
 func (obj *NodeAlertList) GetObjectKind() schema.ObjectKind { return &obj.TypeMeta }
 
-func (obj *ClusterAlert) GetObjectKind() schema.ObjectKind     { return &obj.TypeMeta }
+func (a *ClusterAlert) GetObjectKind() schema.ObjectKind       { return &a.TypeMeta }
 func (obj *ClusterAlertList) GetObjectKind() schema.ObjectKind { return &obj.TypeMeta }
