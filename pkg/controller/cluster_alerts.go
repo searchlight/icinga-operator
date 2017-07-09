@@ -95,10 +95,61 @@ func (c *Controller) WatchClusterAlerts() {
 	ctrl.Run(wait.NeverStop)
 }
 
-func (c *Controller) EnsureClusterAlert(old, new *tapi.ClusterAlert) {
-	//c.clusterHost.Create()
+func (c *Controller) EnsureClusterAlert(old, new *tapi.ClusterAlert) (err error) {
+	defer func() {
+		if err == nil {
+			c.recorder.Eventf(
+				new,
+				apiv1.EventTypeWarning,
+				eventer.EventReasonSuccessfulSync,
+				`Applied ClusterAlert: "%v"`,
+				new.Name,
+			)
+			return
+		} else {
+			c.recorder.Eventf(
+				new,
+				apiv1.EventTypeWarning,
+				eventer.EventReasonFailedToSync,
+				`Fail to be apply ClusterAlert: "%v". Reason: %v`,
+				new.Name,
+				err,
+			)
+			return
+		}
+	}()
+
+	if old == nil {
+		err = c.clusterHost.Create(*new)
+	} else {
+		err = c.clusterHost.Update(*new)
+	}
+	return
 }
 
-func (c *Controller) EnsureClusterAlertDeleted(alert *tapi.ClusterAlert) {
-
+func (c *Controller) EnsureClusterAlertDeleted(alert *tapi.ClusterAlert) (err error) {
+	defer func() {
+		if err == nil {
+			c.recorder.Eventf(
+				alert,
+				apiv1.EventTypeWarning,
+				eventer.EventReasonSuccessfulDelete,
+				`Deleted ClusterAlert: "%v"`,
+				alert.Name,
+			)
+			return
+		} else {
+			c.recorder.Eventf(
+				alert,
+				apiv1.EventTypeWarning,
+				eventer.EventReasonFailedToDelete,
+				`Fail to be delete ClusterAlert: "%v". Reason: %v`,
+				alert.Name,
+				err,
+			)
+			return
+		}
+	}()
+	err = c.clusterHost.Delete(*alert)
+	return
 }

@@ -7,6 +7,7 @@ import (
 	acrt "github.com/appscode/go/runtime"
 	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/api"
+	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -134,10 +135,61 @@ func (c *Controller) WatchPods() {
 	ctrl.Run(wait.NeverStop)
 }
 
-func (c *Controller) EnsurePod(resource *apiv1.Pod, old, new *tapi.PodAlert) (err error) {
-	return nil
+func (c *Controller) EnsurePod(pod *apiv1.Pod, old, new *tapi.PodAlert) (err error) {
+	defer func() {
+		if err == nil {
+			c.recorder.Eventf(
+				new,
+				apiv1.EventTypeWarning,
+				eventer.EventReasonSuccessfulSync,
+				`Applied PodAlert: "%v"`,
+				new.Name,
+			)
+			return
+		} else {
+			c.recorder.Eventf(
+				new,
+				apiv1.EventTypeWarning,
+				eventer.EventReasonFailedToSync,
+				`Fail to be apply PodAlert: "%v". Reason: %v`,
+				new.Name,
+				err,
+			)
+			return
+		}
+	}()
+
+	if old == nil {
+		err = c.podHost.Create(*new, *pod)
+	} else {
+		err = c.podHost.Update(*new, *pod)
+	}
+	return
 }
 
-func (c *Controller) EnsurePodDeleted(resource *apiv1.Pod, alert *tapi.PodAlert) (err error) {
-	return nil
+func (c *Controller) EnsurePodDeleted(pod *apiv1.Pod, alert *tapi.PodAlert) (err error) {
+	defer func() {
+		if err == nil {
+			c.recorder.Eventf(
+				alert,
+				apiv1.EventTypeWarning,
+				eventer.EventReasonSuccessfulDelete,
+				`Deleted PodAlert: "%v"`,
+				alert.Name,
+			)
+			return
+		} else {
+			c.recorder.Eventf(
+				alert,
+				apiv1.EventTypeWarning,
+				eventer.EventReasonFailedToDelete,
+				`Fail to be delete PodAlert: "%v". Reason: %v`,
+				alert.Name,
+				err,
+			)
+			return
+		}
+	}()
+	err = c.podHost.Delete(*alert, *pod)
+	return
 }

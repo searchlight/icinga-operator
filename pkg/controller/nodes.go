@@ -7,6 +7,7 @@ import (
 	acrt "github.com/appscode/go/runtime"
 	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/api"
+	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -130,22 +131,61 @@ func (c *Controller) WatchNodes() {
 	ctrl.Run(wait.NeverStop)
 }
 
-func (c *Controller) EnsureNode(resource *apiv1.Node, old, new *tapi.NodeAlert) (err error) {
-	// c.nodeHost.Create()
-	{
-		//c.recorder.Eventf(
-		//	alert,
-		//	apiv1.EventTypeWarning,
-		//	eventer.EventReasonFailedToDelete,
-		//	`Fail to be delete NodeAlert: "%v". Reason: %v`,
-		//	alert.Name,
-		//	err,
-		//)
-	}
+func (c *Controller) EnsureNode(node *apiv1.Node, old, new *tapi.NodeAlert) (err error) {
+	defer func() {
+		if err == nil {
+			c.recorder.Eventf(
+				new,
+				apiv1.EventTypeWarning,
+				eventer.EventReasonSuccessfulSync,
+				`Applied NodeAlert: "%v"`,
+				new.Name,
+			)
+			return
+		} else {
+			c.recorder.Eventf(
+				new,
+				apiv1.EventTypeWarning,
+				eventer.EventReasonFailedToSync,
+				`Fail to be apply NodeAlert: "%v". Reason: %v`,
+				new.Name,
+				err,
+			)
+			return
+		}
+	}()
 
-	return nil
+	if old == nil {
+		err = c.nodeHost.Create(*new, *node)
+	} else {
+		err = c.nodeHost.Update(*new, *node)
+	}
+	return
 }
 
-func (c *Controller) EnsureNodeDeleted(resource *apiv1.Node, alert *tapi.NodeAlert) (err error) {
-	return nil
+func (c *Controller) EnsureNodeDeleted(node *apiv1.Node, alert *tapi.NodeAlert) (err error) {
+	defer func() {
+		if err == nil {
+			c.recorder.Eventf(
+				alert,
+				apiv1.EventTypeWarning,
+				eventer.EventReasonSuccessfulDelete,
+				`Deleted NodeAlert: "%v"`,
+				alert.Name,
+			)
+			return
+		} else {
+			c.recorder.Eventf(
+				alert,
+				apiv1.EventTypeWarning,
+				eventer.EventReasonFailedToDelete,
+				`Fail to be delete NodeAlert: "%v". Reason: %v`,
+				alert.Name,
+				err,
+			)
+			return
+		}
+	}()
+	err = c.nodeHost.Delete(*alert, *node)
+	return
 }

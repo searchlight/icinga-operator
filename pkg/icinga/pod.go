@@ -52,7 +52,7 @@ func (h *PodHost) expandVars(alertSpec tapi.PodAlertSpec, kh KHost, attrs map[st
 	return nil
 }
 
-func (h *PodHost) Create(alert tapi.PodAlert, pod apiv1.Pod, specificObject string) error {
+func (h *PodHost) Create(alert tapi.PodAlert, pod apiv1.Pod) error {
 	alertSpec := alert.Spec
 	kh := h.GetObject(alert, pod)
 
