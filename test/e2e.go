@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/pkg/controller"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/pkg/util"
 	"github.com/appscode/searchlight/test/mini"
 	"k8s.io/client-go/pkg/api"
 )
@@ -26,20 +26,20 @@ type dataConfig struct {
 
 type kubeClient struct {
 	isClientSet bool
-	client      *k8s.KubeClient
+	client      *util.KubeClient
 	once        sync.Once
 }
 
 var e2eClient = kubeClient{isClientSet: false}
 
-func getKubeClient() (kubeClient *k8s.KubeClient, err error) {
+func getKubeClient() (kubeClient *util.KubeClient, err error) {
 	if e2eClient.isClientSet {
 		kubeClient = e2eClient.client
 		return
 	}
 	e2eClient.once.Do(
 		func() {
-			kubeClient, err = k8s.NewClient()
+			kubeClient, err = util.NewClient()
 			e2eClient.client = kubeClient
 			e2eClient.isClientSet = true
 		},
@@ -68,7 +68,7 @@ func getIcingaClient() (icingaClient *icinga.Client, err error) {
 	}
 	e2eIcingaClient.once.Do(
 		func() {
-			var kubeClient *k8s.KubeClient
+			var kubeClient *util.KubeClient
 			kubeClient, err = getKubeClient()
 			if err != nil {
 				return
@@ -135,7 +135,7 @@ func runKubeD(setIcingaClient bool) (w *controller.Controller, err error) {
 	e2eWatcher.once.Do(
 		func() {
 			fmt.Println("-- TestE2E: Waiting for kubed")
-			var kubeClient *k8s.KubeClient
+			var kubeClient *util.KubeClient
 			if kubeClient, err = getKubeClient(); err != nil {
 				return
 			}

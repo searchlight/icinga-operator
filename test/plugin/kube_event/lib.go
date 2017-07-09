@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
-	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/pkg/util"
 	"github.com/appscode/searchlight/test/plugin"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -13,7 +13,7 @@ import (
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
-func getStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Duration) (icinga.State, error) {
+func getStatusCodeForEventCount(kubeClient *util.KubeClient, checkInterval, clockSkew time.Duration) (icinga.State, error) {
 
 	now := time.Now()
 	// Create some fake event
@@ -53,7 +53,7 @@ func getStatusCodeForEventCount(kubeClient *k8s.KubeClient, checkInterval, clock
 	return icinga.OK, nil
 }
 
-func GetTestData(kubeClient *k8s.KubeClient, checkInterval, clockSkew time.Duration) ([]plugin.TestData, error) {
+func GetTestData(kubeClient *util.KubeClient, checkInterval, clockSkew time.Duration) ([]plugin.TestData, error) {
 	expectedIcingaState, err := getStatusCodeForEventCount(kubeClient, checkInterval, clockSkew)
 	if err != nil {
 		return nil, err

@@ -11,8 +11,8 @@ import (
 
 	"github.com/Knetic/govaluate"
 	"github.com/appscode/go/flags"
-	"github.com/appscode/searchlight/pkg/client/influxdb"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/pkg/influxdb"
 	"github.com/influxdata/influxdb/client"
 	"github.com/spf13/cobra"
 )

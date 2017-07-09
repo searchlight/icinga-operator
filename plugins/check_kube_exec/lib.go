@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/appscode/go/flags"
-	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
 	"k8s.io/apimachinery/pkg/apis/meta/internalversion"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -38,7 +38,7 @@ func newStringReader(ss []string) io.Reader {
 }
 
 func CheckKubeExec(req *Request) (icinga.State, interface{}) {
-	kubeConfig, err := k8s.GetKubeConfig()
+	kubeConfig, err := util.GetKubeConfig()
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}

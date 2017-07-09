@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -23,7 +23,7 @@ type serviceOutput struct {
 }
 
 func CheckComponentStatus() (icinga.State, interface{}) {
-	kubeClient, err := k8s.NewClient()
+	kubeClient, err := util.NewClient()
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}

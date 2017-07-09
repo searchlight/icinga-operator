@@ -8,8 +8,8 @@ import (
 
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/net/httpclient"
-	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
@@ -163,7 +163,7 @@ const (
 	password  = "password"
 )
 
-func getHostfactsSecretData(kubeClient *k8s.KubeClient, secretName, secretNamespace string) *authInfo {
+func getHostfactsSecretData(kubeClient *util.KubeClient, secretName, secretNamespace string) *authInfo {
 	if secretName == "" {
 		return nil
 	}
@@ -215,7 +215,7 @@ func checkResult(field string, warning, critical, result float64) (icinga.State,
 	return icinga.OK, "(Disk & Inodes)"
 }
 
-func checkDiskStat(kubeClient *k8s.KubeClient, req *Request, nodeIP, path string) (icinga.State, interface{}) {
+func checkDiskStat(kubeClient *util.KubeClient, req *Request, nodeIP, path string) (icinga.State, interface{}) {
 	authInfo := getHostfactsSecretData(kubeClient, req.SecretName, req.SecretNamespace)
 
 	usage, err := getUsage(authInfo, nodeIP, path)
@@ -240,7 +240,7 @@ func checkNodeDiskStat(req *Request) (icinga.State, interface{}) {
 		return icinga.UNKNOWN, "Invalid icinga host.name"
 	}
 
-	kubeClient, err := k8s.NewClient()
+	kubeClient, err := util.NewClient()
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
@@ -276,7 +276,7 @@ func checkPodVolumeStat(req *Request) (icinga.State, interface{}) {
 		return icinga.UNKNOWN, "Invalid icinga host.name"
 	}
 
-	kubeClient, err := k8s.NewClient()
+	kubeClient, err := util.NewClient()
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}

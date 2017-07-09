@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	"github.com/appscode/go/crypto/rand"
-	"github.com/appscode/searchlight/pkg/client/k8s"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/pkg/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
@@ -21,7 +21,7 @@ type icingaSecretInfo struct {
 
 var icingaSecret = icingaSecretInfo{}
 
-func CreateIcingaSecret(kubeClient *k8s.KubeClient, namespace string, secretMap map[string]string) (secretName string, err error) {
+func CreateIcingaSecret(kubeClient *util.KubeClient, namespace string, secretMap map[string]string) (secretName string, err error) {
 	if icingaSecret.isSecretSet {
 		secretName = icingaSecret.name
 		return

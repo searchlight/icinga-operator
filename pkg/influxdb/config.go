@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/appscode/searchlight/pkg/client/k8s"
+	"github.com/appscode/searchlight/pkg/util"
 	influxdb "github.com/influxdata/influxdb/client"
 	ini "github.com/vaughan0/go-ini"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -32,7 +32,7 @@ type AuthInfo struct {
 }
 
 func GetInfluxDBSecretData(secretName, namespace string) (*AuthInfo, error) {
-	kubeClient, err := k8s.NewClient()
+	kubeClient, err := util.NewClient()
 	if err != nil {
 		return nil, err
 	}
