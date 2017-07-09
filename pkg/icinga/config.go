@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	_env "github.com/appscode/go/env"
-	_ "github.com/appscode/searchlight/api/install"
 	ini "github.com/vaughan0/go-ini"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"

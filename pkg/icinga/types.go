@@ -1,5 +1,10 @@
 package icinga
 
+import (
+	"fmt"
+	"os"
+)
+
 const (
 	internalIP = "InternalIP"
 
@@ -33,4 +38,18 @@ type ResponseObject struct {
 
 func IVar(value string) string {
 	return "vars." + value
+}
+
+type State int32
+
+const (
+	OK       State = iota // 0
+	WARNING               // 1
+	CRITICAL              // 2
+	UNKNOWN               // 3
+)
+
+func (i State) Output(message interface{}) {
+	fmt.Fprintln(os.Stdout, i, ":", message)
+	os.Exit(int(i))
 }

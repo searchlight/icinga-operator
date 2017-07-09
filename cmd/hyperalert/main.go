@@ -1,3 +1,4 @@
+//go:generate stringer -type=IcingaState ../../pkg/icinga/types.go
 package main
 
 import (

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 
-	_ "github.com/appscode/searchlight/api/install"
 	clientset "k8s.io/client-go/kubernetes"
 )
 
