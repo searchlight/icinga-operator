@@ -7,40 +7,42 @@ import (
 	acs "github.com/appscode/searchlight/client/clientset"
 	"github.com/appscode/searchlight/data"
 	icinga "github.com/appscode/searchlight/pkg/icinga/client"
-//	"github.com/appscode/searchlight/pkg/stash"
+	"github.com/appscode/voyager/pkg/stash"
+	//	"github.com/appscode/searchlight/pkg/stash"
 	clientset "k8s.io/client-go/kubernetes"
 )
 
-type EventReason string
-
-const (
-	EventReasonNotFound        EventReason = "NotFound"
-	EventReasonFailedToProceed EventReason = "FailedToProceed"
-
-	// Icinga objects create event list
-	EventReasonCreating         EventReason = "Creating"
-	EventReasonFailedToCreate   EventReason = "FailedToCreate"
-	EventReasonSuccessfulCreate EventReason = "SuccessfulCreate"
-
-	// Icinga objects update event list
-	EventReasonUpdating         EventReason = "Updating"
-	EventReasonFailedToUpdate   EventReason = "FailedToUpdate"
-	EventReasonSuccessfulUpdate EventReason = "SuccessfulUpdate"
-
-	// Icinga objects delete event list
-	EventReasonDeleting         EventReason = "Deleting"
-	EventReasonFailedToDelete   EventReason = "FailedToDelete"
-	EventReasonSuccessfulDelete EventReason = "SuccessfulDelete"
-
-	// Icinga objects sync event list
-	EventReasonSync           EventReason = "Sync"
-	EventReasonFailedToSync   EventReason = "FailedToSync"
-	EventReasonSuccessfulSync EventReason = "SuccessfulSync"
-)
-
-func (r EventReason) String() string {
-	return string(r)
-}
+//
+//type EventReason string
+//
+//const (
+//	EventReasonNotFound        EventReason = "NotFound"
+//	EventReasonFailedToProceed EventReason = "FailedToProceed"
+//
+//	// Icinga objects create event list
+//	EventReasonCreating         EventReason = "Creating"
+//	EventReasonFailedToCreate   EventReason = "FailedToCreate"
+//	EventReasonSuccessfulCreate EventReason = "SuccessfulCreate"
+//
+//	// Icinga objects update event list
+//	EventReasonUpdating         EventReason = "Updating"
+//	EventReasonFailedToUpdate   EventReason = "FailedToUpdate"
+//	EventReasonSuccessfulUpdate EventReason = "SuccessfulUpdate"
+//
+//	// Icinga objects delete event list
+//	EventReasonDeleting         EventReason = "Deleting"
+//	EventReasonFailedToDelete   EventReason = "FailedToDelete"
+//	EventReasonSuccessfulDelete EventReason = "SuccessfulDelete"
+//
+//	// Icinga objects sync event list
+//	EventReasonSync           EventReason = "Sync"
+//	EventReasonFailedToSync   EventReason = "FailedToSync"
+//	EventReasonSuccessfulSync EventReason = "SuccessfulSync"
+//)
+//
+//func (r EventReason) String() string {
+//	return string(r)
+//}
 
 const (
 	AcknowledgeTimestamp string = "acknowledgement_timestamp"

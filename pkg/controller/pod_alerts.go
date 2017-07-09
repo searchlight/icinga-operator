@@ -7,6 +7,7 @@ import (
 	acrt "github.com/appscode/go/runtime"
 	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/api"
+	"github.com/appscode/searchlight/pkg/eventer"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -32,28 +33,61 @@ func (c *Controller) WatchPodAlerts() {
 		c.syncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
-				if resource, ok := obj.(*tapi.PodAlert); ok {
-					c.EnsurePodAlert(nil, resource)
+				if alert, ok := obj.(*tapi.PodAlert); ok {
+					if ok, err := alert.Spec.IsValid(); !ok {
+						c.recorder.Eventf(
+							alert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonFailedToCreate,
+							`Fail to be create PodAlert: "%v". Reason: %v`,
+							alert.Name,
+							err,
+						)
+						return
+					}
+					c.EnsurePodAlert(nil, alert)
 				}
 			},
 			UpdateFunc: func(old, new interface{}) {
-				oldObj, ok := old.(*tapi.PodAlert)
+				oldAlert, ok := old.(*tapi.PodAlert)
 				if !ok {
 					log.Errorln(errors.New("Invalid PodAlert object"))
 					return
 				}
-				newObj, ok := new.(*tapi.PodAlert)
+				newAlert, ok := new.(*tapi.PodAlert)
 				if !ok {
 					log.Errorln(errors.New("Invalid PodAlert object"))
 					return
 				}
-				if !reflect.DeepEqual(oldObj, newObj) {
-					c.EnsurePodAlert(oldObj, newObj)
+				if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
+					if ok, err := newAlert.Spec.IsValid(); !ok {
+						c.recorder.Eventf(
+							newAlert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonFailedToDelete,
+							`Fail to be update PodAlert: "%v". Reason: %v`,
+							newAlert.Name,
+							err,
+						)
+						return
+					}
+					c.EnsurePodAlert(oldAlert, newAlert)
 				}
 			},
 			DeleteFunc: func(obj interface{}) {
-				if resource, ok := obj.(*tapi.PodAlert); ok {
-					c.EnsurePodAlertDeleted(resource)
+				if alert, ok := obj.(*tapi.PodAlert); ok {
+					if ok, err := alert.Spec.IsValid(); !ok {
+						c.recorder.Eventf(
+							alert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonFailedToDelete,
+							`Fail to be delete PodAlert: "%v". Reason: %v`,
+							alert.Name,
+							err,
+						)
+						return
+					}
+					c.EnsurePodAlertDeleted(alert)
 				}
 			},
 		},

@@ -7,6 +7,7 @@ import (
 	acrt "github.com/appscode/go/runtime"
 	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/api"
+	"github.com/appscode/searchlight/pkg/eventer"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -33,28 +34,61 @@ func (c *Controller) WatchNodeAlerts() {
 		c.syncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
-				if resource, ok := obj.(*tapi.NodeAlert); ok {
-					c.EnsureNodeAlert(nil, resource)
+				if alert, ok := obj.(*tapi.NodeAlert); ok {
+					if ok, err := alert.Spec.IsValid(); !ok {
+						c.recorder.Eventf(
+							alert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonFailedToCreate,
+							`Fail to be create NodeAlert: "%v". Reason: %v`,
+							alert.Name,
+							err,
+						)
+						return
+					}
+					c.EnsureNodeAlert(nil, alert)
 				}
 			},
 			UpdateFunc: func(old, new interface{}) {
-				oldObj, ok := old.(*tapi.NodeAlert)
+				oldAlert, ok := old.(*tapi.NodeAlert)
 				if !ok {
 					log.Errorln(errors.New("Invalid NodeAlert object"))
 					return
 				}
-				newObj, ok := new.(*tapi.NodeAlert)
+				newAlert, ok := new.(*tapi.NodeAlert)
 				if !ok {
 					log.Errorln(errors.New("Invalid NodeAlert object"))
 					return
 				}
-				if !reflect.DeepEqual(oldObj, newObj) {
-					c.EnsureNodeAlert(oldObj, newObj)
+				if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
+					if ok, err := newAlert.Spec.IsValid(); !ok {
+						c.recorder.Eventf(
+							newAlert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonFailedToDelete,
+							`Fail to be update NodeAlert: "%v". Reason: %v`,
+							newAlert.Name,
+							err,
+						)
+						return
+					}
+					c.EnsureNodeAlert(oldAlert, newAlert)
 				}
 			},
 			DeleteFunc: func(obj interface{}) {
-				if resource, ok := obj.(*tapi.NodeAlert); ok {
-					c.EnsureNodeAlertDeleted(resource)
+				if alert, ok := obj.(*tapi.NodeAlert); ok {
+					if ok, err := alert.Spec.IsValid(); !ok {
+						c.recorder.Eventf(
+							alert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonFailedToDelete,
+							`Fail to be delete NodeAlert: "%v". Reason: %v`,
+							alert.Name,
+							err,
+						)
+						return
+					}
+					c.EnsureNodeAlertDeleted(alert)
 				}
 			},
 		},

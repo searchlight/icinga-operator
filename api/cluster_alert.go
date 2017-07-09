@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -56,14 +58,14 @@ type ClusterAlertSpec struct {
 	Vars map[string]interface{} `json:"vars,omitempty"`
 }
 
-func (s ClusterAlertSpec) IsValid() bool {
+func (s ClusterAlertSpec) IsValid() (bool, error) {
 	cmd, ok := ClusterCommands[s.Check]
 	if !ok {
-		return false
+		return false, fmt.Errorf("%s is not a valid cluster check command.", s.Check)
 	}
 	for k := range s.Vars {
 		if _, ok := cmd.Vars[k]; !ok {
-			return false
+			return false, fmt.Errorf("Var %s is unsupported for check command %s.", k, s.Check)
 		}
 	}
 	for _, rcv := range s.Receivers {
@@ -75,8 +77,8 @@ func (s ClusterAlertSpec) IsValid() bool {
 			}
 		}
 		if !found {
-			return false
+			return false, fmt.Errorf("State %s is unsupported for check command %s.", rcv.State, s.Check)
 		}
 	}
-	return true
+	return true, nil
 }

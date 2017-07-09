@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"fmt"
-
 	acrt "github.com/appscode/go/runtime"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -31,7 +29,11 @@ func (c *Controller) WatchNamespaces() {
 		cache.ResourceEventHandlerFuncs{
 			DeleteFunc: func(obj interface{}) {
 				if ns, ok := obj.(*apiv1.Namespace); ok {
-					fmt.Println(ns)
+					if alerts, err := c.ExtClient.PodAlerts(ns.Name).List(metav1.ListOptions{}); err == nil {
+						for _, alert := range alerts.Items {
+							c.ExtClient.PodAlerts(alert.Namespace).Delete(alert.Name)
+						}
+					}
 				}
 			},
 		},

@@ -7,6 +7,7 @@ import (
 	acrt "github.com/appscode/go/runtime"
 	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/api"
+	"github.com/appscode/searchlight/pkg/eventer"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -32,28 +33,61 @@ func (c *Controller) WatchClusterAlerts() {
 		c.syncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
-				if resource, ok := obj.(*tapi.ClusterAlert); ok {
-					c.EnsureClusterAlert(nil, resource)
+				if alert, ok := obj.(*tapi.ClusterAlert); ok {
+					if ok, err := alert.Spec.IsValid(); !ok {
+						c.recorder.Eventf(
+							alert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonFailedToCreate,
+							`Fail to be create ClusterAlert: "%v". Reason: %v`,
+							alert.Name,
+							err,
+						)
+						return
+					}
+					c.EnsureClusterAlert(nil, alert)
 				}
 			},
 			UpdateFunc: func(old, new interface{}) {
-				oldObj, ok := old.(*tapi.ClusterAlert)
+				oldAlert, ok := old.(*tapi.ClusterAlert)
 				if !ok {
 					log.Errorln(errors.New("Invalid ClusterAlert object"))
 					return
 				}
-				newObj, ok := new.(*tapi.ClusterAlert)
+				newAlert, ok := new.(*tapi.ClusterAlert)
 				if !ok {
 					log.Errorln(errors.New("Invalid ClusterAlert object"))
 					return
 				}
-				if !reflect.DeepEqual(oldObj, newObj) {
-					c.EnsureClusterAlert(oldObj, newObj)
+				if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
+					if ok, err := newAlert.Spec.IsValid(); !ok {
+						c.recorder.Eventf(
+							newAlert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonFailedToDelete,
+							`Fail to be update ClusterAlert: "%v". Reason: %v`,
+							newAlert.Name,
+							err,
+						)
+						return
+					}
+					c.EnsureClusterAlert(oldAlert, newAlert)
 				}
 			},
 			DeleteFunc: func(obj interface{}) {
-				if resource, ok := obj.(*tapi.ClusterAlert); ok {
-					c.EnsureClusterAlertDeleted(resource)
+				if alert, ok := obj.(*tapi.ClusterAlert); ok {
+					if ok, err := alert.Spec.IsValid(); !ok {
+						c.recorder.Eventf(
+							alert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonFailedToDelete,
+							`Fail to be delete ClusterAlert: "%v". Reason: %v`,
+							alert.Name,
+							err,
+						)
+						return
+					}
+					c.EnsureClusterAlertDeleted(alert)
 				}
 			},
 		},
@@ -62,53 +96,9 @@ func (c *Controller) WatchClusterAlerts() {
 }
 
 func (c *Controller) EnsureClusterAlert(old, new *tapi.ClusterAlert) {
-	var oldOpt, newOpt *metav1.ListOptions
-	if old != nil {
-		oldSelector, err := metav1.LabelSelectorAsSelector(&old.Spec.Selector)
-		if err != nil {
-			return
-		}
-		oldOpt = &metav1.ListOptions{LabelSelector: oldSelector.String()}
-	}
 
-	newSelector, err := metav1.LabelSelectorAsSelector(&new.Spec.Selector)
-	if err != nil {
-		return
-	}
-	newOpt = &metav1.ListOptions{LabelSelector: newSelector.String()}
-
-	{
-		oldObjs := make(map[string]apiv1.Pod)
-		if oldOpt != nil {
-			if resources, err := c.KubeClient.CoreV1().Pods(new.Namespace).List(*oldOpt); err == nil {
-				for _, resource := range resources.Items {
-					oldObjs[resource.Name] = resource
-				}
-			}
-		}
-
-		if resources, err := c.KubeClient.CoreV1().Pods(new.Namespace).List(*newOpt); err == nil {
-			for _, resource := range resources.Items {
-				delete(oldObjs, resource.Name)
-				go c.EnsureLocalhost(&resource, old, new)
-			}
-		}
-		for _, resource := range oldObjs {
-			go c.EnsureLocalhostDeleted(&resource, old)
-		}
-	}
 }
 
 func (c *Controller) EnsureClusterAlertDeleted(alert *tapi.ClusterAlert) {
-	sel, err := metav1.LabelSelectorAsSelector(&alert.Spec.Selector)
-	if err != nil {
-		return
-	}
-	opt := metav1.ListOptions{LabelSelector: sel.String()}
 
-	if resources, err := c.KubeClient.CoreV1().Pods(alert.Namespace).List(opt); err == nil {
-		for _, resource := range resources.Items {
-			go c.EnsureLocalhostDeleted(&resource, alert)
-		}
-	}
 }
