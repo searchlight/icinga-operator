@@ -96,7 +96,7 @@ func (c *Controller) WatchClusterAlerts() {
 }
 
 func (c *Controller) EnsureClusterAlert(old, new *tapi.ClusterAlert) {
-
+	//c.clusterHost.Create()
 }
 
 func (c *Controller) EnsureClusterAlertDeleted(alert *tapi.ClusterAlert) {
