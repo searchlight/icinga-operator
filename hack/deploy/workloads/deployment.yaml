@@ -1,0 +1,58 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: searchlight
+  name: searchlight-operator
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: searchlight
+  template:
+    metadata:
+      labels:
+        app: searchlight
+    spec:
+      containers:
+      - image: appscode/icinga:1.5.9-k8s
+        imagePullPolicy: IfNotPresent
+        name: icinga
+        ports:
+        - containerPort: 5665
+          name: api
+          protocol: TCP
+        - containerPort: 60006
+          name: web
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/pv
+          name: data-volume
+        - mountPath: /var/db-script
+          name: script-volume
+        - mountPath: /srv/icinga2/secrets
+          name: icingaconfig
+      - args:
+        - basic
+        - ./setup-db.sh
+        image: kubedb/postgres:9.5-db
+        imagePullPolicy: IfNotPresent
+        name: ido
+        ports:
+        - containerPort: 5432
+          name: ido
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/pv
+          name: data-volume
+        - mountPath: /var/db-script
+          name: script-volume
+      volumes:
+      - emptyDir: {}
+        name: data-volume
+      - emptyDir: {}
+        name: script-volume
+      - name: icingaconfig
+        secret:
+          secretName: searchlight

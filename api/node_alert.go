@@ -9,7 +9,7 @@ import (
 
 const (
 	ResourceKindNodeAlert = "NodeAlert"
-	ResourceNameNodeAlert = "nodealert"
+	ResourceNameNodeAlert = "node-alert"
 	ResourceTypeNodeAlert = "nodealerts"
 )
 

@@ -10,6 +10,7 @@ import (
 	_ "github.com/appscode/searchlight/client/clientset/fake"
 	"github.com/appscode/searchlight/pkg/analytics"
 	"github.com/appscode/searchlight/pkg/controller"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 	clientset "k8s.io/client-go/kubernetes"
@@ -53,19 +54,18 @@ func NewCmdRun() *cobra.Command {
 
 			kubeClient = clientset.NewForConfigOrDie(config)
 			extClient = tcs.NewForConfigOrDie(config)
+			if icingaSecretName == "" {
+				log.Fatalln("Missing icinga secret")
+			}
+			icingaClient, err := icinga.NewClient(kubeClient, icingaSecretName, icingaSecretNamespace)
+			if err != nil {
+				log.Fatalln(err)
+			}
 
-			ctrl := controller.New(kubeClient, extClient)
+			ctrl := controller.New(kubeClient, extClient, icingaClient)
 			if err := ctrl.Setup(); err != nil {
 				log.Fatalln(err)
 			}
-			//if icingaSecretName == "" {
-			//	log.Fatalln("Missing icinga secret")
-			//}
-			//icingaClient, err := icinga.NewIcingaClient(w.KubeClient, icingaSecretName, icingaSecretNamespace)
-			//if err != nil {
-			//	log.Fatalln(err)
-			//}
-			//w.IcingaClient = icingaClient
 
 			log.Infoln("Starting Searchlight operator...")
 			go ctrl.Run()

@@ -30,15 +30,16 @@ type Controller struct {
 	SyncPeriod  time.Duration
 }
 
-func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface) *Controller {
+func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, icingaClient *icinga.Client) *Controller {
 	return &Controller{
-		KubeClient:  kubeClient,
-		ExtClient:   extClient,
-		clusterHost: icinga.NewClusterHost(kubeClient, extClient, nil),
-		nodeHost:    icinga.NewNodeHost(kubeClient, extClient, nil),
-		podHost:     icinga.NewPodHost(kubeClient, extClient, nil),
-		recorder:    eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
-		SyncPeriod:  5 * time.Minute,
+		KubeClient:   kubeClient,
+		ExtClient:    extClient,
+		IcingaClient: icingaClient,
+		clusterHost:  icinga.NewClusterHost(kubeClient, extClient, icingaClient),
+		nodeHost:     icinga.NewNodeHost(kubeClient, extClient, icingaClient),
+		podHost:      icinga.NewPodHost(kubeClient, extClient, icingaClient),
+		recorder:     eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
+		SyncPeriod:   5 * time.Minute,
 	}
 }
 

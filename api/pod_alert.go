@@ -9,7 +9,7 @@ import (
 
 const (
 	ResourceKindPodAlert = "PodAlert"
-	ResourceNamePodAlert = "podalert"
+	ResourceNamePodAlert = "pod-alert"
 	ResourceTypePodAlert = "podalerts"
 )
 

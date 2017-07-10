@@ -50,8 +50,8 @@ func (c *Controller) WatchPods() {
 						log.Errorf("No PodAlert found for Pod %s@%s.", pod.Name, pod.Namespace)
 						return
 					}
-					for _, alert := range alerts {
-						err = c.EnsurePod(pod, nil, alert)
+					for i := range alerts {
+						err = c.EnsurePod(pod, nil, alerts[i])
 						if err != nil {
 							log.Errorf("Failed to add icinga2 alert for Pod %s@%s.", pod.Name, pod.Namespace)
 							// return
@@ -70,7 +70,10 @@ func (c *Controller) WatchPods() {
 					log.Errorln(errors.New("Invalid Pod object"))
 					return
 				}
-				if !reflect.DeepEqual(oldPod.Labels, newPod.Labels) {
+
+				log.Infof("Pod %s@%s updated", newPod.Name, newPod.Namespace)
+
+				if !reflect.DeepEqual(oldPod.Labels, newPod.Labels) || oldPod.Status.PodIP != newPod.Status.PodIP {
 					oldAlerts, err := util.FindPodAlert(c.ExtClient, oldPod.ObjectMeta)
 					if err != nil {
 						log.Errorf("Error while searching PodAlert for Pod %s@%s.", oldPod.Name, oldPod.Namespace)
@@ -87,23 +90,26 @@ func (c *Controller) WatchPods() {
 						new *tapi.PodAlert
 					}
 					diff := make(map[string]*change)
-					for _, alert := range oldAlerts {
-						diff[alert.Name] = &change{old: alert}
+					for i, alert := range oldAlerts {
+						diff[alert.Name] = &change{old: oldAlerts[i]}
 					}
-					for _, alert := range newAlerts {
+					for i, alert := range newAlerts {
 						if ch, ok := diff[alert.Name]; ok {
-							ch.new = alert
+							ch.new = newAlerts[i]
 						} else {
-							diff[alert.Name] = &change{new: alert}
+							diff[alert.Name] = &change{new: newAlerts[i]}
 						}
 					}
-					for _, ch := range diff {
-						if ch.old == nil && ch.new != nil {
-							c.EnsurePod(newPod, nil, ch.new)
+
+					for i, ch := range diff {
+						if oldPod.Status.PodIP == "" && newPod.Status.PodIP != "" {
+							go c.EnsurePod(newPod, nil, diff[i].new)
+						} else if ch.old == nil && ch.new != nil {
+							go c.EnsurePod(newPod, nil, diff[i].new)
 						} else if ch.old != nil && ch.new == nil {
-							c.EnsurePodDeleted(newPod, ch.old)
+							go c.EnsurePodDeleted(newPod, diff[i].old)
 						} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
-							c.EnsurePod(newPod, ch.old, ch.new)
+							go c.EnsurePod(newPod, diff[i].old, diff[i].new)
 						}
 					}
 				}
@@ -121,8 +127,8 @@ func (c *Controller) WatchPods() {
 						log.Errorf("No PodAlert found for Pod %s@%s.", pod.Name, pod.Namespace)
 						return
 					}
-					for _, alert := range alerts {
-						err = c.EnsurePodDeleted(pod, alert)
+					for i := range alerts {
+						err = c.EnsurePodDeleted(pod, alerts[i])
 						if err != nil {
 							log.Errorf("Failed to delete icinga2 alert for Pod %s@%s.", pod.Name, pod.Namespace)
 							// return

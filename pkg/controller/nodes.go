@@ -46,8 +46,8 @@ func (c *Controller) WatchNodes() {
 						log.Errorf("No NodeAlert found for Node %s@%s.", resource.Name, resource.Namespace)
 						return
 					}
-					for _, alert := range alerts {
-						err = c.EnsureNode(resource, nil, alert)
+					for i := range alerts {
+						err = c.EnsureNode(resource, nil, alerts[i])
 						if err != nil {
 							log.Errorf("Failed to add icinga2 alert for Node %s@%s.", resource.Name, resource.Namespace)
 							// return
@@ -56,25 +56,25 @@ func (c *Controller) WatchNodes() {
 				}
 			},
 			UpdateFunc: func(old, new interface{}) {
-				oldObj, ok := old.(*apiv1.Node)
+				oldNode, ok := old.(*apiv1.Node)
 				if !ok {
 					log.Errorln(errors.New("Invalid Node object"))
 					return
 				}
-				newObj, ok := new.(*apiv1.Node)
+				newNode, ok := new.(*apiv1.Node)
 				if !ok {
 					log.Errorln(errors.New("Invalid Node object"))
 					return
 				}
-				if !reflect.DeepEqual(oldObj.Labels, newObj.Labels) {
-					oldAlerts, err := util.FindNodeAlert(c.ExtClient, oldObj.ObjectMeta)
+				if !reflect.DeepEqual(oldNode.Labels, newNode.Labels) {
+					oldAlerts, err := util.FindNodeAlert(c.ExtClient, oldNode.ObjectMeta)
 					if err != nil {
-						log.Errorf("Error while searching NodeAlert for Node %s@%s.", oldObj.Name, oldObj.Namespace)
+						log.Errorf("Error while searching NodeAlert for Node %s@%s.", oldNode.Name, oldNode.Namespace)
 						return
 					}
-					newAlerts, err := util.FindNodeAlert(c.ExtClient, newObj.ObjectMeta)
+					newAlerts, err := util.FindNodeAlert(c.ExtClient, newNode.ObjectMeta)
 					if err != nil {
-						log.Errorf("Error while searching NodeAlert for Node %s@%s.", newObj.Name, newObj.Namespace)
+						log.Errorf("Error while searching NodeAlert for Node %s@%s.", newNode.Name, newNode.Namespace)
 						return
 					}
 
@@ -83,23 +83,23 @@ func (c *Controller) WatchNodes() {
 						new *tapi.NodeAlert
 					}
 					diff := make(map[string]*change)
-					for _, alert := range oldAlerts {
-						diff[alert.Name] = &change{old: alert}
+					for i, alert := range oldAlerts {
+						diff[alert.Name] = &change{old: oldAlerts[i]}
 					}
-					for _, alert := range newAlerts {
+					for i, alert := range newAlerts {
 						if ch, ok := diff[alert.Name]; ok {
-							ch.new = alert
+							ch.new = newAlerts[i]
 						} else {
-							diff[alert.Name] = &change{new: alert}
+							diff[alert.Name] = &change{new: newAlerts[i]}
 						}
 					}
-					for _, ch := range diff {
+					for i, ch := range diff {
 						if ch.old == nil && ch.new != nil {
-							c.EnsureNode(newObj, nil, ch.new)
+							go c.EnsureNode(newNode, nil, diff[i].new)
 						} else if ch.old != nil && ch.new == nil {
-							c.EnsureNodeDeleted(newObj, ch.old)
+							go c.EnsureNodeDeleted(newNode, diff[i].old)
 						} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
-							c.EnsureNode(newObj, ch.old, ch.new)
+							go c.EnsureNode(newNode, diff[i].old, diff[i].new)
 						}
 					}
 				}
@@ -117,8 +117,8 @@ func (c *Controller) WatchNodes() {
 						log.Errorf("No NodeAlert found for Node %s@%s.", resource.Name, resource.Namespace)
 						return
 					}
-					for _, alert := range alerts {
-						err = c.EnsureNodeDeleted(resource, alert)
+					for i := range alerts {
+						err = c.EnsureNodeDeleted(resource, alerts[i])
 						if err != nil {
 							log.Errorf("Failed to delete icinga2 alert for Node %s@%s.", resource.Name, resource.Namespace)
 							// return

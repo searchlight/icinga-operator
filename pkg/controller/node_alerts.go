@@ -97,20 +97,20 @@ func (c *Controller) WatchNodeAlerts() {
 }
 
 func (c *Controller) EnsureNodeAlert(old, new *tapi.NodeAlert) {
-	oldObjs := make(map[string]apiv1.Node)
+	oldObjs := make(map[string]*apiv1.Node)
 
 	if old != nil {
 		oldSel := labels.SelectorFromSet(old.Spec.Selector)
 		if old.Spec.NodeName != "" {
 			if resource, err := c.KubeClient.CoreV1().Nodes().Get(old.Spec.NodeName, metav1.GetOptions{}); err == nil {
 				if oldSel.Matches(labels.Set(resource.Labels)) {
-					oldObjs[resource.Name] = *resource
+					oldObjs[resource.Name] = resource
 				}
 			}
 		} else {
 			if resources, err := c.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{LabelSelector: oldSel.String()}); err == nil {
 				for _, resource := range resources.Items {
-					oldObjs[resource.Name] = resource
+					oldObjs[resource.Name] = &resource
 				}
 			}
 		}
@@ -132,8 +132,8 @@ func (c *Controller) EnsureNodeAlert(old, new *tapi.NodeAlert) {
 			}
 		}
 	}
-	for _, resource := range oldObjs {
-		go c.EnsureNodeDeleted(&resource, old)
+	for i := range oldObjs {
+		go c.EnsureNodeDeleted(oldObjs[i], old)
 	}
 }
 
