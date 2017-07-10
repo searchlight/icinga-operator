@@ -90,26 +90,26 @@ func (c *Controller) WatchPods() {
 						new *tapi.PodAlert
 					}
 					diff := make(map[string]*change)
-					for i, alert := range oldAlerts {
-						diff[alert.Name] = &change{old: oldAlerts[i]}
+					for i := range oldAlerts {
+						diff[oldAlerts[i].Name] = &change{old: oldAlerts[i]}
 					}
-					for i, alert := range newAlerts {
-						if ch, ok := diff[alert.Name]; ok {
+					for i := range newAlerts {
+						if ch, ok := diff[newAlerts[i].Name]; ok {
 							ch.new = newAlerts[i]
 						} else {
-							diff[alert.Name] = &change{new: newAlerts[i]}
+							diff[newAlerts[i].Name] = &change{new: newAlerts[i]}
 						}
 					}
 
-					for i, ch := range diff {
+					for _, ch := range diff {
 						if oldPod.Status.PodIP == "" && newPod.Status.PodIP != "" {
-							go c.EnsurePod(newPod, nil, diff[i].new)
+							go c.EnsurePod(newPod, nil, ch.new)
 						} else if ch.old == nil && ch.new != nil {
-							go c.EnsurePod(newPod, nil, diff[i].new)
+							go c.EnsurePod(newPod, nil, ch.new)
 						} else if ch.old != nil && ch.new == nil {
-							go c.EnsurePodDeleted(newPod, diff[i].old)
+							go c.EnsurePodDeleted(newPod, ch.old)
 						} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
-							go c.EnsurePod(newPod, diff[i].old, diff[i].new)
+							go c.EnsurePod(newPod, ch.old, ch.new)
 						}
 					}
 				}

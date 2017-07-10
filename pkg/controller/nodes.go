@@ -83,23 +83,23 @@ func (c *Controller) WatchNodes() {
 						new *tapi.NodeAlert
 					}
 					diff := make(map[string]*change)
-					for i, alert := range oldAlerts {
-						diff[alert.Name] = &change{old: oldAlerts[i]}
+					for i := range oldAlerts {
+						diff[oldAlerts[i].Name] = &change{old: oldAlerts[i]}
 					}
-					for i, alert := range newAlerts {
-						if ch, ok := diff[alert.Name]; ok {
+					for i := range newAlerts {
+						if ch, ok := diff[newAlerts[i].Name]; ok {
 							ch.new = newAlerts[i]
 						} else {
-							diff[alert.Name] = &change{new: newAlerts[i]}
+							diff[newAlerts[i].Name] = &change{new: newAlerts[i]}
 						}
 					}
-					for i, ch := range diff {
+					for _, ch := range diff {
 						if ch.old == nil && ch.new != nil {
-							go c.EnsureNode(newNode, nil, diff[i].new)
+							go c.EnsureNode(newNode, nil, ch.new)
 						} else if ch.old != nil && ch.new == nil {
-							go c.EnsureNodeDeleted(newNode, diff[i].old)
+							go c.EnsureNodeDeleted(newNode, ch.old)
 						} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
-							go c.EnsureNode(newNode, diff[i].old, diff[i].new)
+							go c.EnsureNode(newNode, ch.old, ch.new)
 						}
 					}
 				}
