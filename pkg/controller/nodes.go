@@ -93,7 +93,8 @@ func (c *Controller) WatchNodes() {
 							diff[newAlerts[i].Name] = &change{new: newAlerts[i]}
 						}
 					}
-					for _, ch := range diff {
+					for alert := range diff {
+						ch := diff[alert]
 						if ch.old == nil && ch.new != nil {
 							go c.EnsureNode(newNode, nil, ch.new)
 						} else if ch.old != nil && ch.new == nil {

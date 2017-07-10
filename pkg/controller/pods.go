@@ -101,7 +101,8 @@ func (c *Controller) WatchPods() {
 						}
 					}
 
-					for _, ch := range diff {
+					for alert := range diff {
+						ch := diff[alert]
 						if oldPod.Status.PodIP == "" && newPod.Status.PodIP != "" {
 							go c.EnsurePod(newPod, nil, ch.new)
 						} else if ch.old == nil && ch.new != nil {
