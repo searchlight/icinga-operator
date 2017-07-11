@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: searchlight-operator
-  namespace: kube-system
+  namespace: default
   labels:
     app: searchlight
 spec:
@@ -25,6 +25,9 @@ spec:
           protocol: TCP     
         volumeMounts:
           - name: data
+            mountPath: /srv/searchlight
+        volumeMounts:
+          - name: data5
             mountPath: /srv/searchlight
       - image: postgres:9.6-alpine
         name: ido
