@@ -10,7 +10,7 @@ source "$REPO_ROOT/hack/libbuild/common/lib.sh"
 source "$REPO_ROOT/hack/libbuild/common/public_image.sh"
 
 IMG=icinga
-ICINGAWEB_VER=2.1.2
+ICINGAWEB_VER=2.4.1
 
 DIST=$REPO_ROOT/dist
 mkdir -p $DIST
@@ -35,7 +35,7 @@ build() {
 	cd ..
 
 	rm -rf plugins; mkdir -p plugins
-	gsutil cp gs://appscode-dev/binaries/hyperalert/$TAG/hyperalert-linux-amd64 plugins/hyperalert
+	gsutil cp gs://appscode-dev/binaries/hyperalert/1.5.9/hyperalert-linux-amd64 plugins/hyperalert
 	chmod 755 plugins/*
 
 	local cmd="docker build -t appscode/$IMG:$TAG-k8s ."
@@ -44,7 +44,7 @@ build() {
 }
 
 docker_push() {
-	docker_up $IMG:$TAG-k8s
+	hub_up $IMG:$TAG-k8s
 }
 
 docker_release() {
