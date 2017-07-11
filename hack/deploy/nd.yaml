@@ -27,8 +27,20 @@ spec:
         volumeMounts:
           - name: data
             mountPath: /srv
-      - image: postgres:9.6-alpine
-        name: ido
+      - name: icinga
+        image: appscode/icinga:canary
+        ports:
+        - containerPort: 5665
+          name: api
+          protocol: TCP
+        - containerPort: 60006
+          name: web
+          protocol: TCP
+        volumeMounts:
+          - name: data
+            mountPath: /srv
+      - name: ido
+        image: postgres:9.6-alpine
         env:
           - name: PGDATA
             value: /var/lib/postgresql/data/pgdata
