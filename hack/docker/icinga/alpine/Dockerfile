@@ -5,10 +5,11 @@ ENV PGSCRIPT /var/db-script
 
 # Install Icinga2 ###################################
 RUN set -x \
-  && apk add --update --no-cache ca-certificates openssl curl nginx gettext \
+  && apk add --update --no-cache ca-certificates openssl curl nginx gettext bash \
     icinga2 nagios-plugins \
     postgresql \
-    jq
+    jq \
+    php7-fpm
 
 # copy config templates
 RUN set -x && mkdir -p /scripts/icinga2

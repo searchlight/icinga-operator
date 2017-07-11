@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 set -x
-# set -o errexit
-# set -o pipefail
+set -o errexit
+set -o pipefail
 
 echo "Waiting for icinga configuration ..."
 until [ -f /srv/icinga2/config ] > /dev/null; do echo '.'; sleep 5; cat /srv/icinga2/config; done

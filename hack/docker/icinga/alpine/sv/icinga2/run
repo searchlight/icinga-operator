@@ -1,6 +1,6 @@
-#!/bin/sh
-# exec 1> >(logger -s -p daemon.info -t ${PWD##*/})
-# exec 2> >(logger -s -p daemon.error -t ${PWD##*/})
+#!/bin/bash
+exec 1> >(logger -s -p daemon.info -t ${PWD##*/})
+exec 2> >(logger -s -p daemon.error -t ${PWD##*/})
 source /etc/envvars
 
 echo "Starting icinga2..."
@@ -29,7 +29,7 @@ object Zone ZoneName {
 }
 EOL
 
-	chown -R icinga:icinga /srv/icinga2/secrets
+	chown -R icinga:icinga /srv/icinga2/
 	chmod 400 /srv/icinga2/pki/icinga.key
 	cat >/etc/icinga2/features-available/api.conf <<EOL
 /**
