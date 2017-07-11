@@ -165,30 +165,31 @@ func (c *Configurator) createClientCert(csrReq *csr.CertificateRequest) error {
 	return nil
 }
 
-func (c *Configurator) GenerateCertificates() error {
+func (c *Configurator) generateCertificates() error {
 	err := os.MkdirAll(c.PKIDir(), 0755)
 	if err != nil {
 		return err
 	}
-	if _, err := os.Stat(c.certFile("ca")); os.IsNotExist(err) {
-		err = c.initCA()
-		if err != nil {
-			return err
-		}
-		log.Infoln("Created CA cert")
+	err = c.initCA()
+	if err != nil {
+		return err
 	}
-	if _, err := os.Stat(c.certFile("icinga")); os.IsNotExist(err) {
-		var csrReq csr.CertificateRequest
-		csrReq.KeyRequest = csr.NewBasicKeyRequest() // &csr.BasicKeyRequest{A: "rsa", S: 2048}
-		csrReq.CN = "icinga"
-		csrReq.Hosts = []string{"127.0.0.1"} // Add all local IPs
-		return c.createClientCert(&csrReq)
-	}
-	return nil
+	log.Infoln("Created CA cert")
+
+	var csrReq csr.CertificateRequest
+	csrReq.KeyRequest = csr.NewBasicKeyRequest() // &csr.BasicKeyRequest{A: "rsa", S: 2048}
+	csrReq.CN = "icinga"
+	csrReq.Hosts = []string{"127.0.0.1"} // Add all local IPs
+	return c.createClientCert(&csrReq)
 }
 
 func (c *Configurator) LoadIcingaConfig() (*Config, error) {
 	if _, err := os.Stat(c.ConfigFile()); os.IsNotExist(err) {
+		err = c.generateCertificates()
+		if err != nil {
+			return nil, err
+		}
+
 		// auto generate the file
 		cfg := ini.Empty()
 		sec := cfg.Section("")
@@ -230,16 +231,16 @@ func (c *Configurator) LoadIcingaConfig() (*Config, error) {
 	}
 
 	addr := "127.0.0.1:5665"
-	if key, err := sec.GetKey(ICINGA_ADDRESS); err != nil {
+	if key, err := sec.GetKey(ICINGA_ADDRESS); err == nil {
 		addr = key.Value()
 	}
 	ctx := &Config{
 		Endpoint: fmt.Sprintf("https://%s/v1", addr),
 	}
-	if key, err := sec.GetKey(ICINGA_API_USER); err != nil {
+	if key, err := sec.GetKey(ICINGA_API_USER); err == nil {
 		ctx.BasicAuth.Username = key.Value()
 	}
-	if key, err := sec.GetKey(ICINGA_API_PASSWORD); err != nil {
+	if key, err := sec.GetKey(ICINGA_API_PASSWORD); err == nil {
 		ctx.BasicAuth.Password = key.Value()
 	}
 	if caCert, err := ioutil.ReadFile(c.certFile("ca")); err == nil {

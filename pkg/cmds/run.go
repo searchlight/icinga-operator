@@ -1,4 +1,4 @@
-package main
+package cmds
 
 import (
 	"net/http"
@@ -28,7 +28,7 @@ var (
 	extClient  tcs.ExtensionInterface
 )
 
-func NewCmdRun() *cobra.Command {
+func NewCmdRun(version string) *cobra.Command {
 	mgr := &icinga.Configurator{
 		Expiry: 10 * 365 * 24 * time.Hour,
 	}
@@ -39,10 +39,10 @@ func NewCmdRun() *cobra.Command {
 			if enableAnalytics {
 				analytics.Enable()
 			}
-			analytics.SendEvent("operator", "started", Version)
+			analytics.SendEvent("operator", "started", version)
 		},
 		PostRun: func(cmd *cobra.Command, args []string) {
-			analytics.SendEvent("operator", "stopped", Version)
+			analytics.SendEvent("operator", "stopped", version)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			config, err := clientcmd.BuildConfigFromFlags(masterURL, kubeconfigPath)
@@ -53,10 +53,6 @@ func NewCmdRun() *cobra.Command {
 			kubeClient = clientset.NewForConfigOrDie(config)
 			extClient = tcs.NewForConfigOrDie(config)
 
-			err = mgr.GenerateCertificates()
-			if err != nil {
-				log.Fatalln(err)
-			}
 			cfg, err := mgr.LoadIcingaConfig()
 			if err != nil {
 				log.Fatalln(err)
@@ -82,7 +78,7 @@ func NewCmdRun() *cobra.Command {
 			if enableAnalytics {
 				analytics.Enable()
 			}
-			analytics.SendEvent("operator", "started", Version)
+			analytics.SendEvent("operator", "started", version)
 
 			http.Handle("/metrics", promhttp.Handler())
 			log.Infoln("Listening on", address)

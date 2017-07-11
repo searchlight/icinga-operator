@@ -1,6 +1,8 @@
-package main
+package cmds
 
 import (
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/appscode/go/flags"
@@ -18,11 +20,15 @@ func NewCmdConfigure() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			flags.SetLogLevel(4)
 
-			err := mgr.GenerateCertificates()
+			cfg, err := mgr.LoadIcingaConfig()
 			if err != nil {
 				return err
 			}
-			_, err = mgr.LoadIcingaConfig()
+			bytes, err := json.MarshalIndent(cfg, "", " ")
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(bytes))
 			return err
 		},
 	}
