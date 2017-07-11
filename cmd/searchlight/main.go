@@ -27,7 +27,7 @@ func main() {
 	flag.CommandLine.Parse([]string{})
 	logs.InitLogs()
 
-	rootCmd.AddCommand(NewCmdGenerate())
+	rootCmd.AddCommand(NewCmdConfigure())
 	rootCmd.AddCommand(NewCmdRun())
 	rootCmd.AddCommand(v.NewCmdVersion())
 

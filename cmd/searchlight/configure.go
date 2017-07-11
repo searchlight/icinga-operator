@@ -8,16 +8,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewCmdGenerate() *cobra.Command {
+func NewCmdConfigure() *cobra.Command {
 	mgr := &icinga.Configurator{
 		Expiry: 10 * 365 * 24 * time.Hour,
 	}
 	cmd := &cobra.Command{
-		Use:   "generate",
-		Short: "Generate icinga config",
+		Use:   "configure",
+		Short: "Generate icinga configuration",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			flags.SetLogLevel(4)
-			flags.EnsureRequiredFlags(cmd, "folder", "namespace", "cluster", "master-external-ip", "master-internal-ip")
 
 			err := mgr.GenerateCertificates()
 			if err != nil {
