@@ -63,6 +63,10 @@ var (
 	}
 )
 
+func init() {
+	ini.PrettyFormat = false
+}
+
 type Configurator struct {
 	ConfigRoot string
 	Expiry     time.Duration
