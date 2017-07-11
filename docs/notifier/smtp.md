@@ -11,38 +11,38 @@ env:
   - name: NOTIFY_VIA
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: notify_via
+        name: searchlight-operator
+        key: NOTIFY_VIA
   - name: SMTP_HOST
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: smtp_host
+        name: searchlight-operator
+        key: SMTP_HOST
   - name: SMTP_PORT
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: smtp_port
+        name: searchlight-operator
+        key: SMTP_PORT
   - name: SMTP_USERNAME
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: smtp_username
+        name: searchlight-operator
+        key: SMTP_USERNAME
   - name: SMTP_PASSWORD
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: smtp_password
+        name: searchlight-operator
+        key: SMTP_PASSWORD
   - name: SMTP_FROM
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: smtp_from
+        name: searchlight-operator
+        key: SMTP_FROM
   - name: SMTP_TO
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: smtp_to
+        name: searchlight-operator
+        key: SMTP_TO
 ```
 
 ##### envconfig for `smtp`

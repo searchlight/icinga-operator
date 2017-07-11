@@ -11,33 +11,33 @@ env:
   - name: NOTIFY_VIA
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: notify_via
+        name: searchlight-operator
+        key: NOTIFY_VIA
   - name: MAILGUN_DOMAIN
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: mailgun_domain
+        name: searchlight-operator
+        key: MAILGUN_DOMAIN
   - name: MAILGUN_API_KEY
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: mailgun_api_key
+        name: searchlight-operator
+        key: MAILGUN_API_KEY
   - name: MAILGUN_PUBLIC_API_KEY
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: mailgun_public_api_key
+        name: searchlight-operator
+        key: MAILGUN_PUBLIC_API_KEY
   - name: MAILGUN_FROM
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: mailgun_from
+        name: searchlight-operator
+        key: MAILGUN_FROM
   - name: MAILGUN_TO
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: mailgun_to
+        name: searchlight-operator
+        key: MAILGUN_TO
 ```
 
 ##### envconfig for `mailgun`

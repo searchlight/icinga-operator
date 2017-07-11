@@ -11,28 +11,28 @@ env:
   - name: NOTIFY_VIA
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: notify_via
+        name: searchlight-operator
+        key: NOTIFY_VIA
   - name: PLIVO_AUTH_ID
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: plivo_auth_id
+        name: searchlight-operator
+        key: PLIVO_AUTH_ID
   - name: PLIVO_AUTH_TOKEN
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: plivo_auth_token
+        name: searchlight-operator
+        key: PLIVO_AUTH_TOKEN
   - name: PLIVO_FROM
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: plivo_from
+        name: searchlight-operator
+        key: PLIVO_FROM
   - name: PLIVO_TO
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: plivo_to
+        name: searchlight-operator
+        key: PLIVO_TO
 ```
 
 ##### envconfig for `plivo`

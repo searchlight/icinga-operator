@@ -1,6 +1,6 @@
 ### Notifier `twilio`
 
-This will send a notification sms using twilio.
+This will send a notification sms using Twilio.
 
 #### Configure
 
@@ -11,28 +11,28 @@ env:
   - name: NOTIFY_VIA
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: notify_via
+        name: searchlight-operator
+        key: NOTIFY_VIA
   - name: TWILIO_ACCOUNT_SID
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: twilio_account_sid
+        name: searchlight-operator
+        key: TWILIO_ACCOUNT_SID
   - name: TWILIO_AUTH_TOKEN
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: twilio_auth_token
+        name: searchlight-operator
+        key: TWILIO_AUTH_TOKEN
   - name: TWILIO_FROM
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: twilio_from
+        name: searchlight-operator
+        key: TWILIO_FROM
   - name: TWILIO_TO
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
-        key: twilio_to
+        name: searchlight-operator
+        key: TWILIO_TO
 ```
 
 ##### envconfig for `twilio`

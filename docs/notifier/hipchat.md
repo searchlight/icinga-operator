@@ -11,17 +11,17 @@ env:
   - name: NOTIFY_VIA
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
+        name: searchlight-operator
         key: NOTIFY_VIA
   - name: HIPCHAT_AUTH_TOKEN
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
+        name: searchlight-operator
         key: HIPCHAT_AUTH_TOKEN
   - name: HIPCHAT_TO
     valueFrom:
       secretKeyRef:
-        name: searchlight-icinga
+        name: searchlight-operator
         key: HIPCHAT_TO
 ```
 
