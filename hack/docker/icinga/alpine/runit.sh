@@ -75,6 +75,7 @@ mkdir -p /var/run/config/appscode; chmod -R 0755 /var/run/config/appscode
 echo "Waiting for postgres to become ready ..."
 until pg_isready -h 127.0.0.1 > /dev/null; do echo '.'; sleep 5; done
 
+# Ensure icinga plugins can read ENV cars
 echo "export KUBERNETES_SERVICE_HOST=${KUBERNETES_SERVICE_HOST}" >> /etc/default/icinga2
 echo "export KUBERNETES_SERVICE_PORT=${KUBERNETES_SERVICE_PORT}" >> /etc/default/icinga2
 
