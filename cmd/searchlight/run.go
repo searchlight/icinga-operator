@@ -85,10 +85,7 @@ func NewCmdRun() *cobra.Command {
 	cmd.Flags().StringVar(&kubeconfigPath, "kubeconfig", kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
 	cmd.Flags().StringVarP(&icingaSecretName, "icinga-secret-name", "s", icingaSecretName, "Icinga secret name")
 	cmd.Flags().StringVarP(&icingaSecretNamespace, "icinga-secret-namespace", "n", icingaSecretNamespace, "Icinga secret namespace")
-
 	cmd.Flags().StringVar(&address, "address", address, "Address to listen on for web interface and telemetry.")
-
-	// Analytics flags
 	cmd.Flags().BoolVar(&enableAnalytics, "analytics", enableAnalytics, "Send analytical event to Google Analytics")
 
 	return cmd
