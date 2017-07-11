@@ -50,7 +50,7 @@ COPY config/icingaweb2/resources.ini      /scripts/icingaweb2/resources.ini
 
 # Add icingaweb2
 COPY icingaweb2 /usr/share/icingaweb2
-RUN set -x && chown -R www-data:www-data /usr/share/icingaweb2
+RUN set -x && chown -R nginx:nginx /usr/share/icingaweb2
 COPY config/icingaweb2 /etc/icingaweb2/
 RUN set -x \
   && mkdir -p /etc/icingaweb2/enabledModules \
