@@ -3,7 +3,6 @@ package check_node_status
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/appscode/go/flags"
 	"github.com/appscode/searchlight/pkg/icinga"
@@ -51,13 +50,17 @@ func NewCmd() *cobra.Command {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "host")
-			parts := strings.Split(icingaHost, "@")
-			if len(parts) != 2 {
+
+			host, err := icinga.ParseHost(icingaHost)
+			if err != nil {
 				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
 				os.Exit(3)
 			}
-
-			req.Name = parts[0]
+			if host.Type != icinga.TypeNode {
+				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host type")
+				os.Exit(3)
+			}
+			req.Name = host.ObjectName
 			icinga.Output(CheckNodeStatus(&req))
 		},
 	}

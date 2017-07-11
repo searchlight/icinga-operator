@@ -7,7 +7,6 @@ import (
 	"net/url"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/Knetic/govaluate"
 	"github.com/appscode/go/flags"
@@ -205,12 +204,12 @@ func NewCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "host")
 
-			parts := strings.Split(icingaHost, "@")
-			if len(parts) != 2 {
+			host, err := icinga.ParseHost(icingaHost)
+			if err != nil {
 				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
 				os.Exit(3)
 			}
-			req.Namespace = parts[1]
+			req.Namespace = host.AlertNamespace
 
 			flags.EnsureRequiredFlags(cmd, "secret", "R")
 			flags.EnsureAlterableFlags(cmd, "A", "B", "C", "D", "E")

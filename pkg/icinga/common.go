@@ -14,8 +14,11 @@ type commonHost struct {
 }
 
 func (h *commonHost) CreateIcingaHost(kh IcingaHost) error {
-	name := kh.Name
-	resp := h.IcingaClient.Objects().Hosts(name).Get([]string{}).Do()
+	host, err := kh.Name()
+	if err != nil {
+		return err
+	}
+	resp := h.IcingaClient.Objects().Hosts(host).Get([]string{}).Do()
 	if resp.Status == 200 {
 		return nil
 	}
@@ -30,7 +33,7 @@ func (h *commonHost) CreateIcingaHost(kh IcingaHost) error {
 		return errors.FromErr(err).Err()
 	}
 
-	resp = h.IcingaClient.Objects().Hosts(name).Create([]string{}, string(jsonStr)).Do()
+	resp = h.IcingaClient.Objects().Hosts(host).Create([]string{}, string(jsonStr)).Do()
 	if resp.Err != nil {
 		return errors.FromErr(resp.Err).Err()
 	}
@@ -40,9 +43,13 @@ func (h *commonHost) CreateIcingaHost(kh IcingaHost) error {
 	return nil
 }
 
-func (h *commonHost) DeleteIcingaHost(host string) error {
+func (h *commonHost) DeleteIcingaHost(kh IcingaHost) error {
 	param := map[string]string{
 		"cascade": "1",
+	}
+	host, err := kh.Name()
+	if err != nil {
+		return err
 	}
 
 	in := fmt.Sprintf(`{"filter": "match(\"%s\",host.name)"}`, host)
@@ -70,8 +77,11 @@ func (h *commonHost) CreateIcingaService(svc string, kh IcingaHost, attrs map[st
 	if err != nil {
 		return errors.FromErr(err).Err()
 	}
-
-	resp := h.IcingaClient.Objects().Service(kh.Name).Create([]string{svc}, string(jsonStr)).Do()
+	host, err := kh.Name()
+	if err != nil {
+		return err
+	}
+	resp := h.IcingaClient.Objects().Service(host).Create([]string{svc}, string(jsonStr)).Do()
 	if resp.Err != nil {
 		return errors.FromErr(resp.Err).Err()
 	}
@@ -93,8 +103,11 @@ func (h *commonHost) UpdateIcingaService(svc string, kh IcingaHost, attrs map[st
 	if err != nil {
 		return errors.FromErr(err).Err()
 	}
-
-	resp := h.IcingaClient.Objects().Service(kh.Name).Update([]string{svc}, string(jsonStr)).Do()
+	host, err := kh.Name()
+	if err != nil {
+		return err
+	}
+	resp := h.IcingaClient.Objects().Service(host).Update([]string{svc}, string(jsonStr)).Do()
 	if resp.Err != nil {
 		return errors.FromErr(resp.Err).Err()
 	}
@@ -136,7 +149,8 @@ func (h *commonHost) IcingaServiceSearchQuery(svc string, kids ...IcingaHost) st
 		if i > 0 {
 			matchHost = matchHost + "||"
 		}
-		matchHost = matchHost + fmt.Sprintf(`match(\"%s\",host.name)`, kh.Name)
+		host, _ := kh.Name()
+		matchHost = matchHost + fmt.Sprintf(`match(\"%s\",host.name)`, host)
 	}
 	return fmt.Sprintf(`{"filter": "(%s)&&match(\"%s\",service.name)"}`, matchHost, svc)
 }
@@ -153,9 +167,12 @@ func (h *commonHost) CreateIcingaNotification(alert tapi.Alert, kh IcingaHost) e
 	if err != nil {
 		return errors.FromErr(err).Err()
 	}
-
+	host, err := kh.Name()
+	if err != nil {
+		return err
+	}
 	resp := h.IcingaClient.Objects().
-		Notifications(kh.Name).
+		Notifications(host).
 		Create([]string{alert.GetName(), alert.GetName()}, string(jsonStr)).
 		Do()
 	if resp.Err != nil {
@@ -177,9 +194,12 @@ func (h *commonHost) UpdateIcingaNotification(alert tapi.Alert, kh IcingaHost) e
 	if err != nil {
 		return errors.FromErr(err).Err()
 	}
-
+	host, err := kh.Name()
+	if err != nil {
+		return err
+	}
 	resp := h.IcingaClient.Objects().
-		Notifications(kh.Name).
+		Notifications(host).
 		Update([]string{alert.GetName(), alert.GetName()}, string(jsonStr)).
 		Do()
 	if resp.Err != nil {

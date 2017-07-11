@@ -34,7 +34,7 @@ func icingaHostSearchQuery(objectList []*icinga.IcingaHost) string {
 		if id > 0 {
 			matchHost = matchHost + "||"
 		}
-		matchHost = matchHost + fmt.Sprintf(`match(\"%s\",icinga.name)`, object.Name)
+		matchHost = matchHost + fmt.Sprintf(`match(\"%s\",icinga.name)`, object.Hostname)
 	}
 	return fmt.Sprintf(`{"filter": "(%s)"}`, matchHost)
 }
@@ -175,7 +175,7 @@ func CheckIcingaObjectsForPod(w *controller.Controller, podName, namespace strin
 
 	objectList := []*icinga.IcingaHost{
 		{
-			Name: fmt.Sprintf("%v@%v", podName, namespace),
+			Hostname: fmt.Sprintf("%v@%v", podName, namespace),
 		},
 	}
 

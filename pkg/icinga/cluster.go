@@ -24,16 +24,17 @@ func NewClusterHost(kubeClient clientset.Interface, extClient tcs.ExtensionInter
 	}
 }
 
-func (h *ClusterHost) GetObject(alert tapi.ClusterAlert) IcingaHost {
+func (h *ClusterHost) getHost(alert tapi.ClusterAlert) IcingaHost {
 	return IcingaHost{
-		Name: alert.Command() + "@" + alert.Namespace,
-		IP:   "127.0.0.1",
+		Type:           TypeCluster,
+		AlertNamespace: alert.Namespace,
+		IP:             "127.0.0.1",
 	}
 }
 
 func (h *ClusterHost) Create(alert tapi.ClusterAlert) error {
 	alertSpec := alert.Spec
-	kh := h.GetObject(alert)
+	kh := h.getHost(alert)
 
 	if has, err := h.CheckIcingaService(alert.Name, kh); err != nil || has {
 		return err
@@ -62,7 +63,7 @@ func (h *ClusterHost) Create(alert tapi.ClusterAlert) error {
 
 func (h *ClusterHost) Update(alert tapi.ClusterAlert) error {
 	alertSpec := alert.Spec
-	kh := h.GetObject(alert)
+	kh := h.getHost(alert)
 
 	attrs := make(map[string]interface{})
 	if alertSpec.CheckInterval.Seconds() > 0 {
@@ -82,9 +83,9 @@ func (h *ClusterHost) Update(alert tapi.ClusterAlert) error {
 }
 
 func (h *ClusterHost) Delete(alert tapi.ClusterAlert) error {
-	kh := h.GetObject(alert)
+	kh := h.getHost(alert)
 	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
 		return errors.FromErr(err).Err()
 	}
-	return h.DeleteIcingaHost(kh.Name)
+	return h.DeleteIcingaHost(kh)
 }

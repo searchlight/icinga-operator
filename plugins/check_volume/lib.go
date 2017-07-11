@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/net/httpclient"
@@ -234,19 +233,19 @@ func checkDiskStat(kubeClient *util.KubeClient, req *Request, nodeIP, path strin
 }
 
 func checkNodeDiskStat(req *Request) (icinga.State, interface{}) {
-	host := req.Host
-	parts := strings.Split(host, "@")
-	if len(parts) != 2 {
+	host, err := icinga.ParseHost(req.Host)
+	if err != nil {
 		return icinga.UNKNOWN, "Invalid icinga host.name"
+	}
+	if host.Type != icinga.TypeNode {
+		return icinga.UNKNOWN, "Invalid icinga host type"
 	}
 
 	kubeClient, err := util.NewClient()
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
-
-	node_name := parts[0]
-	node, err := kubeClient.Client.CoreV1().Nodes().Get(node_name, metav1.GetOptions{})
+	node, err := kubeClient.Client.CoreV1().Nodes().Get(host.ObjectName, metav1.GetOptions{})
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
@@ -269,21 +268,19 @@ func checkNodeDiskStat(req *Request) (icinga.State, interface{}) {
 }
 
 func checkPodVolumeStat(req *Request) (icinga.State, interface{}) {
-	host := req.Host
-	name := req.VolumeName
-	parts := strings.Split(host, "@")
-	if len(parts) != 2 {
+	host, err := icinga.ParseHost(req.Host)
+	if err != nil {
 		return icinga.UNKNOWN, "Invalid icinga host.name"
+	}
+	if host.Type != icinga.TypePod {
+		return icinga.UNKNOWN, "Invalid icinga host type"
 	}
 
 	kubeClient, err := util.NewClient()
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
-
-	pod_name := parts[0]
-	namespace := parts[1]
-	pod, err := kubeClient.Client.CoreV1().Pods(namespace).Get(pod_name, metav1.GetOptions{})
+	pod, err := kubeClient.Client.CoreV1().Pods(host.AlertNamespace).Get(host.ObjectName, metav1.GetOptions{})
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
@@ -291,9 +288,9 @@ func checkPodVolumeStat(req *Request) (icinga.State, interface{}) {
 	var volumeSourcePluginName = ""
 	var volumeSourceName = ""
 	for _, volume := range pod.Spec.Volumes {
-		if volume.Name == name {
+		if volume.Name == req.VolumeName {
 			if volume.PersistentVolumeClaim != nil {
-				claim, err := kubeClient.Client.CoreV1().PersistentVolumeClaims(namespace).Get(volume.PersistentVolumeClaim.ClaimName, metav1.GetOptions{})
+				claim, err := kubeClient.Client.CoreV1().PersistentVolumeClaims(host.AlertNamespace).Get(volume.PersistentVolumeClaim.ClaimName, metav1.GetOptions{})
 				if err != nil {
 					return icinga.UNKNOWN, err
 

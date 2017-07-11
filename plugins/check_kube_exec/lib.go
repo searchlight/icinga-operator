@@ -131,7 +131,7 @@ type Request struct {
 
 func NewCmd() *cobra.Command {
 	var req Request
-	var host string
+	var icingaHost string
 	c := &cobra.Command{
 		Use:     "check_kube_exec",
 		Short:   "Check exit code of exec command on kubernetes container",
@@ -140,18 +140,22 @@ func NewCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "host", "arg")
 
-			parts := strings.Split(host, "@")
-			if len(parts) != 2 {
+			host, err := icinga.ParseHost(icingaHost)
+			if err != nil {
 				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
 				os.Exit(3)
 			}
-			req.Pod = parts[0]
-			req.Namespace = parts[1]
+			if host.Type != icinga.TypePod {
+				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host type")
+				os.Exit(3)
+			}
+			req.Namespace = host.AlertNamespace
+			req.Pod = host.ObjectName
 			icinga.Output(CheckKubeExec(&req))
 		},
 	}
 
-	c.Flags().StringVarP(&host, "host", "H", "", "Icinga host name")
+	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	c.Flags().StringVarP(&req.Container, "container", "C", "", "Container name in specified pod")
 	c.Flags().StringVarP(&req.Command, "cmd", "c", "/bin/sh", "Exec command. [Default: /bin/sh]")
 	c.Flags().StringVarP(&req.Arg, "argv", "a", "", "Arguments for exec command. [Format: 'arg; arg; arg']")
