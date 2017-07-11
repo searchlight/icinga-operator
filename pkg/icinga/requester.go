@@ -56,9 +56,9 @@ func (r *APIResponse) Into(to interface{}) (int, error) {
 func (c *Client) newRequest(path string) *APIRequest {
 	mTLSConfig := &tls.Config{}
 
-	if c.config.CaCert != nil {
+	if c.config.CACert != nil {
 		certs := x509.NewCertPool()
-		certs.AppendCertsFromPEM(c.config.CaCert)
+		certs.AppendCertsFromPEM(c.config.CACert)
 		mTLSConfig.RootCAs = certs
 	} else {
 		mTLSConfig.InsecureSkipVerify = true

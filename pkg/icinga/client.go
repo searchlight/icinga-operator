@@ -12,7 +12,7 @@ type Config struct {
 		Username string
 		Password string
 	}
-	CaCert []byte
+	CACert []byte
 }
 
 type Client struct {
