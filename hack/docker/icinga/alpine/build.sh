@@ -25,8 +25,8 @@ clean() {
 }
 
 build() {
-    pushd $REPO_ROOT/hack/docker/icinga/alpine
-    detect_tag $DIST/.tag
+	pushd $REPO_ROOT/hack/docker/icinga/alpine
+	detect_tag $DIST/.tag
 
 	rm -rf icingaweb2
 	clone https://github.com/Icinga/icingaweb2.git
