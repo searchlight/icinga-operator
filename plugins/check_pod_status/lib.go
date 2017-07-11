@@ -4,10 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/appscode/go/flags"
-	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
@@ -88,25 +86,22 @@ func NewCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "host")
 
-			parts := strings.Split(icingaHost, "@")
-			if len(parts) != 2 {
+			host, err := icinga.ParseHost(icingaHost)
+			if err != nil {
 				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
 				os.Exit(3)
 			}
-
-			name := parts[0]
-			namespace := parts[1]
-			if name != string(tapi.CheckPodStatus) {
-				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
+			if host.Type != icinga.TypePod {
+				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host type")
 				os.Exit(3)
 			}
-			req.Namespace = namespace
+			req.PodName = host.ObjectName
+			req.Namespace = host.AlertNamespace
 
 			icinga.Output(CheckPodStatus(&req))
 		},
 	}
 	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	c.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
-	c.Flags().StringVarP(&req.PodName, "pod_name", "p", "", "Name of pod whose status is checked")
 	return c
 }

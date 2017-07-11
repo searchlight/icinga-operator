@@ -23,7 +23,7 @@ func GetKubeObjectInfo(hostname string) (objectType string, objectName string, n
 	if name != string(tapi.CheckPodExists) && name != string(tapi.CheckPodStatus) {
 		parts = strings.Split(name, "|")
 		if len(parts) == 1 {
-			objectType = icinga.TypePods
+			objectType = icinga.TypePod
 			objectName = parts[0]
 		} else if len(parts) == 2 {
 			objectType = parts[0]

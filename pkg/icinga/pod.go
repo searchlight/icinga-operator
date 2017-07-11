@@ -30,8 +30,10 @@ func NewPodHost(kubeClient clientset.Interface, extClient tcs.ExtensionInterface
 
 func (h *PodHost) getHost(alert tapi.PodAlert, pod apiv1.Pod) IcingaHost {
 	return IcingaHost{
-		Name: fmt.Sprintf("%s@pod@%s", pod.Name, alert.Namespace),
-		IP: pod.Status.PodIP,
+		ObjectName:     pod.Name,
+		Type:           TypePod,
+		AlertNamespace: alert.Namespace,
+		IP:             pod.Status.PodIP,
 	}
 }
 
@@ -44,7 +46,11 @@ func (h *PodHost) expandVars(alertSpec tapi.PodAlertSpec, kh IcingaHost, attrs m
 				if err != nil {
 					return err
 				}
-				attrs[IVar(key)] = reg.ReplaceAllString(val.(string), fmt.Sprintf("pod_name='%s'", kh.Name))
+				host, err := kh.Name()
+				if err != nil {
+					return err
+				}
+				attrs[IVar(key)] = reg.ReplaceAllString(val.(string), fmt.Sprintf("pod_name='%s'", host))
 			} else {
 				attrs[IVar(key)] = val
 			}
@@ -106,5 +112,5 @@ func (h *PodHost) Delete(alert tapi.PodAlert, pod apiv1.Pod) error {
 	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
 		return errors.FromErr(err).Err()
 	}
-	return h.DeleteIcingaHost(kh.Name)
+	return h.DeleteIcingaHost(kh)
 }

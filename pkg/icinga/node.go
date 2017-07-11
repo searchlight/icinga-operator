@@ -38,8 +38,10 @@ func (h *NodeHost) getHost(alert tapi.NodeAlert, node apiv1.Node) IcingaHost {
 		}
 	}
 	return IcingaHost{
-		Name: fmt.Sprintf("%s@node@%s", node.Name, alert.Namespace),
-		IP: nodeIP,
+		ObjectName:     node.Name,
+		Type:           TypeNode,
+		AlertNamespace: alert.Namespace,
+		IP:             nodeIP,
 	}
 }
 
@@ -52,7 +54,11 @@ func (h *NodeHost) expandVars(alertSpec tapi.NodeAlertSpec, kh IcingaHost, attrs
 				if err != nil {
 					return err
 				}
-				attrs[IVar(key)] = reg.ReplaceAllString(val.(string), fmt.Sprintf("nodename='%s'", kh.Name))
+				host, err := kh.Name()
+				if err != nil {
+					return err
+				}
+				attrs[IVar(key)] = reg.ReplaceAllString(val.(string), fmt.Sprintf("nodename='%s'", host))
 			} else {
 				attrs[IVar(key)] = val
 			}
@@ -115,5 +121,5 @@ func (h *NodeHost) Delete(alert tapi.NodeAlert, node apiv1.Node) error {
 	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
 		return errors.FromErr(err).Err()
 	}
-	return h.DeleteIcingaHost(kh.Name)
+	return h.DeleteIcingaHost(kh)
 }

@@ -342,7 +342,7 @@ func TestAlertOnPod(t *testing.T) {
 
 	fmt.Println("--> Creating Alert on Pod")
 	labelMap := map[string]string{
-		"objectType": icinga.TypePods,
+		"objectType": icinga.TypePod,
 		"objectName": pod.Name,
 	}
 	alert, err := mini.CreateAlert(watcher, pod.Namespace, labelMap, icinga.CheckCommandVolume)
@@ -429,7 +429,7 @@ func TestInvalidNamespace(t *testing.T) {
 
 	fmt.Println("--> Creating Alert on Pod")
 	labelMap := map[string]string{
-		"objectType": icinga.TypePods,
+		"objectType": icinga.TypePod,
 		"objectName": pod.Name,
 	}
 	alert, err := mini.CreateAlert(watcher, "default", labelMap, icinga.CheckCommandVolume)

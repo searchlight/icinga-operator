@@ -26,8 +26,9 @@ func NewClusterHost(kubeClient clientset.Interface, extClient tcs.ExtensionInter
 
 func (h *ClusterHost) getHost(alert tapi.ClusterAlert) IcingaHost {
 	return IcingaHost{
-		Name: alert.Command() + "@cluster@" + alert.Namespace,
-		IP:   "127.0.0.1",
+		Type:           TypeCluster,
+		AlertNamespace: alert.Namespace,
+		IP:             "127.0.0.1",
 	}
 }
 
@@ -86,5 +87,5 @@ func (h *ClusterHost) Delete(alert tapi.ClusterAlert) error {
 	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
 		return errors.FromErr(err).Err()
 	}
-	return h.DeleteIcingaHost(kh.Name)
+	return h.DeleteIcingaHost(kh)
 }

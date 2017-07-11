@@ -10,7 +10,7 @@ import (
 
 func getStatusCodeForPodStatus(w *controller.Controller, objectType, objectName, namespace string) (icinga.State, error) {
 	var err error
-	if objectType == icinga.TypePods {
+	if objectType == icinga.TypePod {
 		pod, err := w.Storage.PodStore.Pods(namespace).Get(objectName)
 		if err != nil {
 			return icinga.UNKNOWN, err

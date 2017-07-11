@@ -8,7 +8,7 @@ import (
 func GetTestData(objectList []*icinga.IcingaHost) ([]plugin.TestData, error) {
 	testDataList := make([]plugin.TestData, 0)
 	for _, object := range objectList {
-		_, objectName, namespace, err := plugin.GetKubeObjectInfo(object.Name)
+		_, objectName, namespace, err := plugin.GetKubeObjectInfo(object.Hostname)
 		if err != nil {
 			return nil, err
 		}
