@@ -15,6 +15,7 @@ spec:
       containers:
       - name: operator
         image: appscode/searchlight:canary
+        imagePullPolicy: Always
         args:
         - run
         - --v=3
@@ -25,10 +26,7 @@ spec:
           protocol: TCP     
         volumeMounts:
           - name: data
-            mountPath: /srv/searchlight
-        volumeMounts:
-          - name: data
-            mountPath: /srv/tamal
+            mountPath: /srv
       - image: postgres:9.6-alpine
         name: ido
         env:
