@@ -28,7 +28,7 @@ spec:
             mountPath: /srv/searchlight
         volumeMounts:
           - name: data
-            mountPath: /srv/searchlight
+            mountPath: /srv/tamal
       - image: postgres:9.6-alpine
         name: ido
         env:
