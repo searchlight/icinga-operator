@@ -166,18 +166,21 @@ func (c *Configurator) GenerateCertificates() error {
 	if err != nil {
 		return err
 	}
-
-	err = c.initCA()
-	if err != nil {
-		return err
+	if _, err := os.Stat(c.certFile("ca")); os.IsNotExist(err) {
+		err = c.initCA()
+		if err != nil {
+			return err
+		}
+		log.Infoln("Created CA cert")
 	}
-	log.Infoln("Created CA cert")
-
-	var csrReq csr.CertificateRequest
-	csrReq.KeyRequest = csr.NewBasicKeyRequest() // &csr.BasicKeyRequest{A: "rsa", S: 2048}
-	csrReq.CN = "icinga"
-	csrReq.Hosts = []string{"127.0.0.1"} // Add all local IPs
-	return c.createClientCert(&csrReq)
+	if _, err := os.Stat(c.certFile("icinga")); os.IsNotExist(err) {
+		var csrReq csr.CertificateRequest
+		csrReq.KeyRequest = csr.NewBasicKeyRequest() // &csr.BasicKeyRequest{A: "rsa", S: 2048}
+		csrReq.CN = "icinga"
+		csrReq.Hosts = []string{"127.0.0.1"} // Add all local IPs
+		return c.createClientCert(&csrReq)
+	}
+	return nil
 }
 
 func (c *Configurator) LoadIcingaConfig() (*Config, error) {
@@ -185,20 +188,21 @@ func (c *Configurator) LoadIcingaConfig() (*Config, error) {
 		// auto generate the file
 		cfg := ini.Empty()
 		sec := cfg.Section("")
+		sec.NewKey(ICINGA_ADDRESS, "127.0.0.1")
+		sec.NewKey(ICINGA_CA_CERT, c.certFile("ca"))
+		sec.NewKey(ICINGA_API_USER, "icingaapi")
+		sec.NewKey(ICINGA_API_PASSWORD, rand.GeneratePassword())
+		sec.NewKey(ICINGA_IDO_HOST, "127.0.0.1")
+		sec.NewKey(ICINGA_IDO_PORT, "5432")
+		sec.NewKey(ICINGA_IDO_DB, "icingaidodb")
+		sec.NewKey(ICINGA_IDO_USER, "icingaido")
+		sec.NewKey(ICINGA_IDO_PASSWORD, rand.GeneratePassword())
 		sec.NewKey(ICINGA_WEB_HOST, "127.0.0.1")
 		sec.NewKey(ICINGA_WEB_PORT, "5432")
 		sec.NewKey(ICINGA_WEB_DB, "icingawebdb")
 		sec.NewKey(ICINGA_WEB_USER, "icingaweb")
 		sec.NewKey(ICINGA_WEB_PASSWORD, rand.GeneratePassword())
 		sec.NewKey(ICINGA_WEB_ADMIN_PASSWORD, rand.GeneratePassword())
-		sec.NewKey(ICINGA_IDO_HOST, "127.0.0.1")
-		sec.NewKey(ICINGA_IDO_PORT, "5432")
-		sec.NewKey(ICINGA_IDO_DB, "icingaidodb")
-		sec.NewKey(ICINGA_IDO_USER, "icingaido")
-		sec.NewKey(ICINGA_IDO_PASSWORD, rand.GeneratePassword())
-		sec.NewKey(ICINGA_API_USER, "icingaapi")
-		sec.NewKey(ICINGA_API_PASSWORD, rand.GeneratePassword())
-		sec.NewKey(ICINGA_ADDRESS, "127.0.0.1")
 
 		err = os.MkdirAll(filepath.Dir(c.ConfigFile()), 0755)
 		if err != nil {

@@ -14,17 +14,21 @@ func NewCmdGenerate() *cobra.Command {
 	}
 	cmd := &cobra.Command{
 		Use:   "generate",
-		Short: "Generate certificates for Kubernetes cluster",
+		Short: "Generate icinga config",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			flags.SetLogLevel(4)
 			flags.EnsureRequiredFlags(cmd, "folder", "namespace", "cluster", "master-external-ip", "master-internal-ip")
 
-			return mgr.GenerateCertificates()
+			err := mgr.GenerateCertificates()
+			if err != nil {
+				return err
+			}
+			_, err = mgr.LoadIcingaConfig()
+			return err
 		},
 	}
 
-	cmd.Flags().StringVarP(&configDir, "config-dir", "s", configDir, "Path to directory containing icinga2 config. This should be an emptyDir inside Kubernetes.")
-	cmd.Flags().StringVar(&mgr.ConfigRoot, "folder", mgr.ConfigRoot, "Folder where certs are stored")
+	cmd.Flags().StringVarP(&mgr.ConfigRoot, "config-dir", "s", mgr.ConfigRoot, "Path to directory containing icinga2 config. This should be an emptyDir inside Kubernetes.")
 
 	return cmd
 }
