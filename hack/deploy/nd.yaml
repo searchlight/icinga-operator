@@ -21,25 +21,25 @@ spec:
         - --v=3
         - --config-dir=/srv
         ports:
-        - containerPort: 56790
-          name: http
+        - name: http
+          containerPort: 56790
           protocol: TCP
         volumeMounts:
-        - mountPath: /srv
-          name: data
+        - name: data
+          mountPath: /srv
       - name: icinga
         image: appscode/icinga:canary
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 5665
-          name: api
+        - name: api
+          containerPort: 5665
           protocol: TCP
-        - containerPort: 60006
-          name: web
+        - name: web
+          containerPort: 60006
           protocol: TCP
         volumeMounts:
-        - mountPath: /srv
-          name: data
+        - name: data
+          mountPath: /srv
       - name: ido
         image: postgres:9.6-alpine
         imagePullPolicy: IfNotPresent
@@ -47,12 +47,12 @@ spec:
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
         ports:
-        - containerPort: 5432
-          name: ido
+        - name: ido
+          containerPort: 5432
           protocol: TCP
         volumeMounts:
-        - mountPath: /var/lib/postgresql/data
-          name: data
+        - name: data
+          mountPath: /var/lib/postgresql/data
       volumes:
-      - emptyDir: {}
-        name: data
+      - name: data
+        emptyDir: {}
