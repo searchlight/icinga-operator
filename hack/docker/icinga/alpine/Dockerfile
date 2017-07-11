@@ -3,69 +3,12 @@ FROM appscode/alpine:3.6
 ENV PGROOT /var/pv
 ENV PGSCRIPT /var/db-script
 
+# Install Icinga2 ###################################
 RUN set -x \
-  && groupadd -r icinga --gid=888 \
-  && groupadd -r icingacmd --gid=777 \
-  && useradd -r -G icingacmd -g icinga --uid=888 icinga \
-  && usermod -a -G icingacmd www-data \
-  && mkdir -p /var/cache/icinga2 \
-  && chown -R icinga:icinga /var/cache/icinga2
-
-# Install compilers ###################################
-RUN set -x \
-  && apt-get update \
-  && apt-get install -y --no-install-recommends ca-certificates netcat wget curl \
-    build-essential \
-    libssl-dev \
-    libboost-all-dev \
-    bison \
-    flex \
-    libpq-dev \
-    libyajl-dev \
-    libedit-dev \
+  && apk add --update --no-cache ca-certificates openssl curl nginx \
+    icinga2 nagios-plugins \
     postgresql-client \
     jq
-
-RUN set -x \
-  && wget http://www.cmake.org/files/v3.2/cmake-3.2.2.tar.gz \
-  && tar xf cmake-3.2.2.tar.gz \
-  && cd cmake-3.2.2 \
-  && ./configure \
-  && make \
-  && make install \
-  && cd ..
-
-# Icing2 ##############################################
-RUN set -x \
-  && wget https://github.com/Icinga/icinga2/archive/v2.4.8.tar.gz \
-  && tar xf v2.4.8.tar.gz \
-  && cd icinga2-2.4.8 \
-  && mkdir build && cd build \
-  && cmake .. -DICINGA2_WITH_MYSQL=OFF -DCMAKE_INSTALL_PREFIX= \
-  && make \
-  && make install \
-  && cd ../..
-
-# Nagios-plugins ####################################
-# https://wiki.icinga.org/display/howtos/Nagios+Plugins
-RUN set -x \
-  && wget https://www.monitoring-plugins.org/download/monitoring-plugins-2.1.2.tar.gz \
-  && tar xf monitoring-plugins-2.1.2.tar.gz \
-  && cd monitoring-plugins-2.1.2 \
-  && ./configure --prefix=/usr/lib/nagios \
-    --with-nagios-user=icinga \
-    --with-nagios-group=icinga \
-  && make \
-  && make install \
-  && mv /usr/lib/nagios/libexec /usr/lib/nagios/plugins \
-  && cd ..
-
-RUN set -x \
-  && rm -rf /monitoring-plugins-2.1.2 /monitoring-plugins-2.1.2.tar.gz \
-  && rm -rf /icinga2-2.4.8 /v2.4.8.tar.gz \
-  && rm -rf /cmake-3.2.2 /cmake-3.2.2.tar.gz \
-  && apt-get purge -y --auto-remove wget build-essential \
-  && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /tmp/*
 
 # copy config templates
 RUN set -x && mkdir -p /scripts/icinga2
