@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"net/http"
-
-	clientset "k8s.io/client-go/kubernetes"
 )
 
 type Config struct {
@@ -18,7 +16,7 @@ type Config struct {
 }
 
 type Client struct {
-	config     *Config
+	config     Config
 	pathPrefix string
 }
 
@@ -46,11 +44,8 @@ type APIResponse struct {
 	ResponseBody []byte
 }
 
-func newClient(icingaConfig *Config) *Client {
-	c := &Client{
-		config: icingaConfig,
-	}
-	return c
+func NewClient(cfg Config) *Client {
+	return &Client{config: cfg}
 }
 
 func (c *Client) SetEndpoint(endpoint string) *Client {
@@ -129,13 +124,4 @@ func (ic *APIRequest) Params(param map[string]string) *APIRequest {
 	}
 	ic.req.URL.RawQuery = p.Encode()
 	return ic
-}
-
-func NewClient(kubeClient clientset.Interface, secretName, secretNamespace string) (*Client, error) {
-	config, err := getIcingaConfig(kubeClient, secretName, secretNamespace)
-	if err != nil {
-		return nil, err
-	}
-	c := newClient(config)
-	return c, nil
 }
