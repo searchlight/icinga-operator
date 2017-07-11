@@ -37,13 +37,7 @@ RUN set -x \
   && cat /scripts/users.conf >> /etc/icinga2/conf.d/users.conf \
   && rm /scripts/users.conf
 
-RUN set -x && rm /etc/icinga2/conf.d/hosts.conf
-
-# Fix icinga installation location and permission
-# This is needed since we are building from source
-RUN set -x \
-  && mv /share/icinga2-ido-pgsql /usr/share \
-  && mv /var/lib/icinga2 /scripts/lib
+RUN set -x && rm -rf /etc/icinga2/conf.d/hosts.conf
 
 # Icingaweb2 ##############################################
 
