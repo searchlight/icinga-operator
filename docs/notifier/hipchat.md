@@ -12,17 +12,17 @@ env:
     valueFrom:
       secretKeyRef:
         name: searchlight-icinga
-        key: notify_via
+        key: NOTIFY_VIA
   - name: HIPCHAT_AUTH_TOKEN
     valueFrom:
       secretKeyRef:
         name: searchlight-icinga
-        key: hipchat_auth_token
+        key: HIPCHAT_AUTH_TOKEN
   - name: HIPCHAT_TO
     valueFrom:
       secretKeyRef:
         name: searchlight-icinga
-        key: hipchat_to
+        key: HIPCHAT_TO
 ```
 
 ##### envconfig for `hipchat`
