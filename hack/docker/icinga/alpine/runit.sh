@@ -1,10 +1,11 @@
 #!/bin/sh
 
-set -o errexit
-set -o pipefail
+set -x
+# set -o errexit
+# set -o pipefail
 
 echo "Waiting for icinga configuration ..."
-until [ -f /srv/icinga2/config ] > /dev/null; do echo '.'; sleep 5; done
+until [ -f /srv/icinga2/config ] > /dev/null; do echo '.'; sleep 5; cat /srv/icinga2/config; done
 export $(cat /srv/icinga2/config | xargs)
 
 if [ ! -f "/scripts/.icingaweb2" ]; then
@@ -20,7 +21,7 @@ if [ ! -f "$PGROOT/.lib_icinga2" ]; then
     touch $PGROOT/.lib_icinga2
 fi
 chown -R icinga:icinga $PGROOT/icinga2
-ln -sv -t /var/lib $PGROOT/icinga2
+ln -sv -T /var/lib $PGROOT/icinga2
 
 chown -R icinga:icinga /usr/lib/nagios/plugins
 chmod -R 755 /usr/lib/nagios/plugins
@@ -77,4 +78,4 @@ echo "export KUBERNETES_SERVICE_PORT=${KUBERNETES_SERVICE_PORT}" >> /etc/default
 export > /etc/envvars
 
 echo "Starting runit..."
-exec /usr/sbin/runsvdir-start
+exec /sbin/runsvdir -P /etc/service
