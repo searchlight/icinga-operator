@@ -1,10 +1,9 @@
 package smtp
 
 import (
-	"strings"
-
 	api "github.com/appscode/api/kubernetes/v1beta1"
 	"github.com/appscode/go-notify/smtp"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins/notifier/driver"
 	"github.com/appscode/searchlight/plugins/notifier/driver/extpoints"
 )
@@ -16,10 +15,11 @@ func init() {
 }
 
 func (b *biblio) Notify(req *api.IncidentNotifyRequest) error {
-	parts := strings.Split(req.HostName, "@")
-	namespace := parts[1]
-
-	alert, err := driver.GetAlertInfo(namespace, req.KubernetesAlertName)
+	host, err := icinga.ParseHost(req.HostName)
+	if err != nil {
+		return err
+	}
+	alert, err := driver.GetAlertInfo(host.AlertNamespace, req.KubernetesAlertName)
 	if err != nil {
 		return err
 	}
