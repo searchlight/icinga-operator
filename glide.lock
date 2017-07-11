@@ -1,5 +1,5 @@
-hash: 49e2eaea4a57a709ee1fa21885d3a9e8351af7c6dc165b34e4798eba7d9a4cda
-updated: 2017-07-09T15:11:25.873254304-07:00
+hash: ba7a43d99f7ae7abee5af0d04eedced27232e183ce6fc92b1ef4f5fd22c91221
+updated: 2017-07-10T19:28:45.019013603-07:00
 imports:
 - name: github.com/appscode/api
   version: b61754fd4d336573cfed5cf16bcbdfe6d30d078d
@@ -62,6 +62,32 @@ imports:
   - quantile
 - name: github.com/cenkalti/backoff
   version: 32cd0c5b3aef12c76ed64aaf678f6c79736be7dc
+- name: github.com/cloudflare/cfssl
+  version: b53da94cf51de120a50cbae533152fb3935375e0
+  subpackages:
+  - api
+  - api/client
+  - auth
+  - certdb
+  - certdb/dbconf
+  - certdb/sql
+  - cli
+  - cli/genkey
+  - cli/sign
+  - config
+  - crypto/pkcs7
+  - csr
+  - errors
+  - helpers
+  - helpers/derhelpers
+  - info
+  - initca
+  - log
+  - ocsp/config
+  - signer
+  - signer/local
+  - signer/remote
+  - signer/universal
 - name: github.com/cpuguy83/go-md2man
   version: 71acacd42f85e5e82f70a55327789582a5200a90
   subpackages:
@@ -140,6 +166,14 @@ imports:
   - proto
   - protoc-gen-go/descriptor
   - ptypes/any
+- name: github.com/google/certificate-transparency
+  version: 05502e09183232d2345db9a3a008076eff9a530c
+  subpackages:
+  - go
+  - go/asn1
+  - go/client
+  - go/x509
+  - go/x509/pkix
 - name: github.com/google/go-querystring
   version: 547ef5ac979778feb2f760cdb5f4eae1a2207b86
   subpackages:
@@ -169,12 +203,20 @@ imports:
   - pkg/escape
 - name: github.com/jaytaylor/html2text
   version: 52d9b785554a1918cb09909b89a1509a98b853fd
+- name: github.com/jmoiron/sqlx
+  version: 398dd5876282499cdfd4cb8ea0f31a672abe9495
+  repo: https://github.com/jmoiron/sqlx
+  subpackages:
+  - reflectx
 - name: github.com/jpillora/go-ogle-analytics
   version: 14b04e0594ef6a9fd943363b135656f0ec8c9d0e
 - name: github.com/juju/errors
   version: c7d06af17c68cd34c835053720b21f6549d9b0ee
 - name: github.com/juju/ratelimit
   version: 77ed1c8a01217656d2080ad51981f6e99adaa177
+- name: github.com/kisielk/sqlstruct
+  version: 648daed35d49dac24a4bff253b190a80da3ab6a5
+  repo: https://github.com/kisielk/sqlstruct
 - name: github.com/Knetic/govaluate
   version: ecff4eed5a1b9d98d7f4795c732fb24ad55e6fc8
 - name: github.com/mailgun/mailgun-go
@@ -264,6 +306,8 @@ imports:
   version: d172538b2cfce0c13cee31e647d0367aa8cd2486
   subpackages:
   - pbkdf2
+  - pkcs12
+  - pkcs12/internal/rc2
   - ssh/terminal
 - name: golang.org/x/net
   version: da118f7b8e5954f39d0d2130ab35d4bf0e3cb344

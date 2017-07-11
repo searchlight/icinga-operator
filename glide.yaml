@@ -59,6 +59,10 @@ import:
   version: master
 - package: github.com/spf13/pflag
   version: master
+- package: github.com/cloudflare/cfssl
+  version: b53da94cf51de120a50cbae533152fb3935375e0
+- package: github.com/google/certificate-transparency
+  version: 05502e09183232d2345db9a3a008076eff9a530c
 testImport:
 - package: github.com/stretchr/testify
   version: v1.1.4
