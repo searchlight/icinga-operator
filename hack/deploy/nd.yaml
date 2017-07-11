@@ -27,7 +27,7 @@ spec:
           - name: data
             mountPath: /srv/searchlight
         volumeMounts:
-          - name: data5
+          - name: data
             mountPath: /srv/searchlight
       - image: postgres:9.6-alpine
         name: ido
