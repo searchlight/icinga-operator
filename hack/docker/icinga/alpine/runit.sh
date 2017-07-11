@@ -3,14 +3,9 @@
 set -o errexit
 set -o pipefail
 
-if [ -f '/srv/icinga2/secrets/.env' ]; then
-    export $(cat /srv/icinga2/secrets/.env | xargs)
-else
-    echo
-    echo 'Missing environment file /srv/icinga2/secrets/.env.'
-    echo
-    exit 1
-fi
+echo "Waiting for icinga configuration ..."
+until [ -f /srv/icinga2/pki/config ] > /dev/null; do echo '.'; sleep 5; done
+export $(cat /srv/icinga2/pki/config | xargs)
 
 if [ ! -f "/scripts/.icingaweb2" ]; then
     envsubst < /scripts/icingaweb2/authentication.ini > /etc/icingaweb2/authentication.ini

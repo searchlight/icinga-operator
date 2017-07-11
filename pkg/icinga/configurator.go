@@ -74,11 +74,11 @@ type Configurator struct {
 }
 
 func (c *Configurator) ConfigFile() string {
-	return filepath.Join(c.ConfigRoot, "icinga/config")
+	return filepath.Join(c.ConfigRoot, "icinga2/config")
 }
 
 func (c *Configurator) PKIDir() string {
-	return filepath.Join(c.ConfigRoot, "icinga/pki")
+	return filepath.Join(c.ConfigRoot, "icinga2/pki")
 }
 
 func (c *Configurator) certFile(name string) string {
