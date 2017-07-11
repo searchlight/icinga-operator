@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
+	stringz "github.com/appscode/go/strings"
 	"github.com/appscode/log"
 	"github.com/cloudflare/cfssl/cli"
 	"github.com/cloudflare/cfssl/cli/genkey"
@@ -196,18 +197,18 @@ func (c *Configurator) LoadIcingaConfig() (*Config, error) {
 		sec.NewKey(ICINGA_ADDRESS, "127.0.0.1:5665")
 		sec.NewKey(ICINGA_CA_CERT, c.certFile("ca"))
 		sec.NewKey(ICINGA_API_USER, "icingaapi")
-		sec.NewKey(ICINGA_API_PASSWORD, rand.GeneratePassword())
+		sec.NewKey(ICINGA_API_PASSWORD, stringz.Val(os.Getenv(ICINGA_API_PASSWORD), rand.GeneratePassword()))
 		sec.NewKey(ICINGA_IDO_HOST, "127.0.0.1")
 		sec.NewKey(ICINGA_IDO_PORT, "5432")
 		sec.NewKey(ICINGA_IDO_DB, "icingaidodb")
 		sec.NewKey(ICINGA_IDO_USER, "icingaido")
-		sec.NewKey(ICINGA_IDO_PASSWORD, rand.GeneratePassword())
+		sec.NewKey(ICINGA_IDO_PASSWORD, stringz.Val(os.Getenv(ICINGA_IDO_PASSWORD), rand.GeneratePassword()))
 		sec.NewKey(ICINGA_WEB_HOST, "127.0.0.1")
 		sec.NewKey(ICINGA_WEB_PORT, "5432")
 		sec.NewKey(ICINGA_WEB_DB, "icingawebdb")
 		sec.NewKey(ICINGA_WEB_USER, "icingaweb")
-		sec.NewKey(ICINGA_WEB_PASSWORD, rand.GeneratePassword())
-		sec.NewKey(ICINGA_WEB_ADMIN_PASSWORD, rand.GeneratePassword())
+		sec.NewKey(ICINGA_WEB_PASSWORD, stringz.Val(os.Getenv(ICINGA_WEB_PASSWORD), rand.GeneratePassword()))
+		sec.NewKey(ICINGA_WEB_ADMIN_PASSWORD, stringz.Val(os.Getenv(ICINGA_WEB_ADMIN_PASSWORD), rand.GeneratePassword()))
 
 		err = os.MkdirAll(filepath.Dir(c.ConfigFile()), 0755)
 		if err != nil {
