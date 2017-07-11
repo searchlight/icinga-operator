@@ -28,8 +28,11 @@ func NewPodHost(kubeClient clientset.Interface, extClient tcs.ExtensionInterface
 	}
 }
 
-func (h *PodHost) GetObject(alert tapi.PodAlert, pod apiv1.Pod) IcingaHost {
-	return IcingaHost{Name: pod.Name + "@" + alert.Namespace, IP: pod.Status.PodIP}
+func (h *PodHost) getHost(alert tapi.PodAlert, pod apiv1.Pod) IcingaHost {
+	return IcingaHost{
+		Name: fmt.Sprintf("%s@pod@%s", pod.Name, alert.Namespace),
+		IP: pod.Status.PodIP,
+	}
 }
 
 func (h *PodHost) expandVars(alertSpec tapi.PodAlertSpec, kh IcingaHost, attrs map[string]interface{}) error {
@@ -54,7 +57,7 @@ func (h *PodHost) expandVars(alertSpec tapi.PodAlertSpec, kh IcingaHost, attrs m
 
 func (h *PodHost) Create(alert tapi.PodAlert, pod apiv1.Pod) error {
 	alertSpec := alert.Spec
-	kh := h.GetObject(alert, pod)
+	kh := h.getHost(alert, pod)
 
 	if has, err := h.CheckIcingaService(alert.Name, kh); err != nil || has {
 		return err
@@ -81,7 +84,7 @@ func (h *PodHost) Create(alert tapi.PodAlert, pod apiv1.Pod) error {
 
 func (h *PodHost) Update(alert tapi.PodAlert, pod apiv1.Pod) error {
 	alertSpec := alert.Spec
-	kh := h.GetObject(alert, pod)
+	kh := h.getHost(alert, pod)
 
 	attrs := make(map[string]interface{})
 	if alertSpec.CheckInterval.Seconds() > 0 {
@@ -98,7 +101,7 @@ func (h *PodHost) Update(alert tapi.PodAlert, pod apiv1.Pod) error {
 }
 
 func (h *PodHost) Delete(alert tapi.PodAlert, pod apiv1.Pod) error {
-	kh := h.GetObject(alert, pod)
+	kh := h.getHost(alert, pod)
 
 	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
 		return errors.FromErr(err).Err()

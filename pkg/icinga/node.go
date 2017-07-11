@@ -29,7 +29,7 @@ func NewNodeHost(kubeClient clientset.Interface, extClient tcs.ExtensionInterfac
 	}
 }
 
-func (h *NodeHost) GetObject(alert tapi.NodeAlert, node apiv1.Node) IcingaHost {
+func (h *NodeHost) getHost(alert tapi.NodeAlert, node apiv1.Node) IcingaHost {
 	nodeIP := "127.0.0.1"
 	for _, ip := range node.Status.Addresses {
 		if ip.Type == internalIP {
@@ -37,7 +37,10 @@ func (h *NodeHost) GetObject(alert tapi.NodeAlert, node apiv1.Node) IcingaHost {
 			break
 		}
 	}
-	return IcingaHost{Name: node.Name + "@" + alert.Namespace, IP: nodeIP}
+	return IcingaHost{
+		Name: fmt.Sprintf("%s@node@%s", node.Name, alert.Namespace),
+		IP: nodeIP,
+	}
 }
 
 func (h *NodeHost) expandVars(alertSpec tapi.NodeAlertSpec, kh IcingaHost, attrs map[string]interface{}) error {
@@ -63,7 +66,7 @@ func (h *NodeHost) expandVars(alertSpec tapi.NodeAlertSpec, kh IcingaHost, attrs
 // set Alert in Icinga LocalHost
 func (h *NodeHost) Create(alert tapi.NodeAlert, node apiv1.Node) error {
 	alertSpec := alert.Spec
-	kh := h.GetObject(alert, node)
+	kh := h.getHost(alert, node)
 
 	if has, err := h.CheckIcingaService(alert.Name, kh); err != nil || has {
 		return err
@@ -90,7 +93,7 @@ func (h *NodeHost) Create(alert tapi.NodeAlert, node apiv1.Node) error {
 
 func (h *NodeHost) Update(alert tapi.NodeAlert, node apiv1.Node) error {
 	alertSpec := alert.Spec
-	kh := h.GetObject(alert, node)
+	kh := h.getHost(alert, node)
 
 	attrs := make(map[string]interface{})
 	if alertSpec.CheckInterval.Seconds() > 0 {
@@ -107,7 +110,7 @@ func (h *NodeHost) Update(alert tapi.NodeAlert, node apiv1.Node) error {
 }
 
 func (h *NodeHost) Delete(alert tapi.NodeAlert, node apiv1.Node) error {
-	kh := h.GetObject(alert, node)
+	kh := h.getHost(alert, node)
 
 	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
 		return errors.FromErr(err).Err()
