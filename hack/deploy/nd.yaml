@@ -23,12 +23,13 @@ spec:
         ports:
         - containerPort: 56790
           name: http
-          protocol: TCP     
+          protocol: TCP
         volumeMounts:
-          - name: data
-            mountPath: /srv
+        - mountPath: /srv
+          name: data
       - name: icinga
         image: appscode/icinga:canary
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5665
           name: api
@@ -37,20 +38,21 @@ spec:
           name: web
           protocol: TCP
         volumeMounts:
-          - name: data
-            mountPath: /srv
+        - mountPath: /srv
+          name: data
       - name: ido
         image: postgres:9.6-alpine
+        imagePullPolicy: IfNotPresent
         env:
-          - name: PGDATA
-            value: /var/lib/postgresql/data/pgdata
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
         ports:
-          - containerPort: 5432
-            name: ido
-            protocol: TCP
+        - containerPort: 5432
+          name: ido
+          protocol: TCP
         volumeMounts:
-          - name: data
-            mountPath: /var/lib/postgresql/data
+        - mountPath: /var/lib/postgresql/data
+          name: data
       volumes:
-        - name: data
-          emptyDir: {}
+      - emptyDir: {}
+        name: data
