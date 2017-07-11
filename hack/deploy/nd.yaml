@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: searchlight-operator
+  namespace: kube-system
+  labels:
+    app: searchlight
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: searchlight
+    spec:
+      containers:
+      - name: operator
+        image: appscode/searchlight:canary
+        args:
+        - run
+        - --v=5
+        - --icinga-secret-name=searchlight-operator
+        - --icinga-secret-namespace=kube-system
+        ports:
+        - containerPort: 56790
+          name: http
+          protocol: TCP     
+      - image: postgres:9.6-alpine
+        name: ido
+        env:
+          - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        ports:
+          - containerPort: 5432
+            name: ido
+            protocol: TCP
+        volumeMounts:
+          - name: data
+            mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: data
+          emptyDir: {}

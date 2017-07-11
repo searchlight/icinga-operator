@@ -53,7 +53,7 @@ spec:
     spec:
       containers:
       - name: operator
-        image: appscode/searchlight:1.5.9
+        image: appscode/searchlight:canary
         args:
         - run
         - --icinga-secret-name=searchlight-operator
