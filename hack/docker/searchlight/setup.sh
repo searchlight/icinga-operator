@@ -46,7 +46,6 @@ RUN set -x \
   && apk add --update --no-cache ca-certificates
 
 COPY searchlight /searchlight
-USER nobody:nobody
 ENTRYPOINT ["/searchlight"]
 EOL
 	local cmd="docker build -t appscode/$IMG:$TAG ."
