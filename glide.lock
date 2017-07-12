@@ -1,28 +1,10 @@
 hash: ba7a43d99f7ae7abee5af0d04eedced27232e183ce6fc92b1ef4f5fd22c91221
-updated: 2017-07-10T19:28:45.019013603-07:00
+updated: 2017-07-12T12:56:06.258487108+06:00
 imports:
 - name: github.com/appscode/api
   version: b61754fd4d336573cfed5cf16bcbdfe6d30d078d
-  subpackages:
-  - attic/v1beta1
-  - auth/v1beta1
-  - certificate/v1beta1
-  - ci/v1beta1
-  - credential/v1beta1
-  - dtypes
-  - health
-  - kubernetes/v1beta1
-  - kubernetes/v1beta2
-  - mailinglist/v1beta1
-  - namespace/v1beta1
-  - operation/v1beta1
-  - ssh/v1beta1
-  - version
 - name: github.com/appscode/client
   version: 9844500890e8cf3df84b3c86ddc17c220db38af1
-  subpackages:
-  - credential
-  - util
 - name: github.com/appscode/envconfig
   version: a74ef73ab982beb8f0c6060ac44da1c960fea414
 - name: github.com/appscode/errors
@@ -33,21 +15,24 @@ imports:
   - crypto/rand
   - env
   - flags
-  - io
   - net
   - net/httpclient
   - runtime
+  - strings
   - types
   - version
 - name: github.com/appscode/go-notify
-  version: 55715f5bccdb3e322e0ebd347e8026088b79bee7
+  version: 906bd4ab3891b6e3bb8730e6f03b12ff342a9fa6
   subpackages:
   - hipchat
+  - log
   - mailgun
   - plivo
   - slack
   - smtp
   - twilio
+  - unified
+  - webhook
 - name: github.com/appscode/log
   version: 68e0e42e42c01371f3950571fc87c2298a51dd8f
   subpackages:
@@ -89,7 +74,7 @@ imports:
   - signer/remote
   - signer/universal
 - name: github.com/cpuguy83/go-md2man
-  version: 71acacd42f85e5e82f70a55327789582a5200a90
+  version: 23709d0847197db6021a51fdb193e66e9222d4e7
   subpackages:
   - md2man
 - name: github.com/davecgh/go-spew
@@ -162,10 +147,7 @@ imports:
 - name: github.com/golang/protobuf
   version: 8ee79997227bf9b34611aee7946ae64735e6fd93
   subpackages:
-  - jsonpb
   - proto
-  - protoc-gen-go/descriptor
-  - ptypes/any
 - name: github.com/google/certificate-transparency
   version: 05502e09183232d2345db9a3a008076eff9a530c
   subpackages:
@@ -184,11 +166,6 @@ imports:
   version: 42a2d1c4991e79a4a8318984e5c81031b21f3c76
   repo: https://github.com/appscode/grpc-gateway.git
   vcs: git
-  subpackages:
-  - runtime
-  - runtime/internal
-  - third_party/appscodeapis/appscode/api
-  - utilities
 - name: github.com/howeyc/gopass
   version: 3ca23474a7c7203e0a0a070fd33508f6efdb9b3d
 - name: github.com/imdario/mergo
@@ -238,7 +215,6 @@ imports:
 - name: github.com/prometheus/client_golang
   version: c5b7fccd204277076155f10851dad72b76a49317
   subpackages:
-  - api/prometheus
   - prometheus
   - prometheus/promhttp
 - name: github.com/prometheus/client_model
@@ -277,7 +253,7 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
 - name: github.com/spf13/cobra
-  version: 8c6fa02d2225de0f9bdcb7ca912556f68d172d8c
+  version: c46add8a652801b61513ad36c56759f302fbb028
   subpackages:
   - doc
 - name: github.com/spf13/pflag
@@ -296,12 +272,6 @@ imports:
   version: 0db4a625e949e956314d7d1adea9bf82384cc10c
 - name: github.com/vaughan0/go-ini
   version: a98ad7ee00ec53921f08832bc06ecf7fd600e6a1
-- name: github.com/xeipuuv/gojsonpointer
-  version: e0fe6f68307607d540ed8eac07a342c33fa1b54a
-- name: github.com/xeipuuv/gojsonreference
-  version: e02fc20de94c78484cd5ffb007f8af96be030a45
-- name: github.com/xeipuuv/gojsonschema
-  version: 93e72a773fade158921402d6a24c819b48aba29d
 - name: golang.org/x/crypto
   version: d172538b2cfce0c13cee31e647d0367aa8cd2486
   subpackages:
@@ -313,15 +283,12 @@ imports:
   version: da118f7b8e5954f39d0d2130ab35d4bf0e3cb344
   subpackages:
   - context
-  - context/ctxhttp
   - html
   - html/atom
   - http2
   - http2/hpack
   - idna
-  - internal/timeseries
   - lex/httplex
-  - trace
   - websocket
 - name: golang.org/x/sys
   version: 8f0908ab3b2457e2e15403d3697c9ef5cb4b57a9
@@ -341,27 +308,8 @@ imports:
   - unicode/bidi
   - unicode/norm
   - width
-- name: google.golang.org/genproto
-  version: 411e09b969b1170a9f0c467558eb4c4c110d9c77
-  subpackages:
-  - googleapis/api/annotations
-  - googleapis/rpc/status
 - name: google.golang.org/grpc
   version: d2e1b51f33ff8c5e4a15560ff049d200e83726c5
-  subpackages:
-  - codes
-  - credentials
-  - grpclb/grpc_lb_v1
-  - grpclog
-  - internal
-  - keepalive
-  - metadata
-  - naming
-  - peer
-  - stats
-  - status
-  - tap
-  - transport
 - name: gopkg.in/alexcesaro/quotedprintable.v3
   version: 2caba252f4dc53eaf6b553000885530023f54623
 - name: gopkg.in/gomail.v2
@@ -424,7 +372,7 @@ imports:
   - third_party/forked/golang/netutil
   - third_party/forked/golang/reflect
 - name: k8s.io/apiserver
-  version: 2308857ad3b8b18abf74ff734853973eda9da94d
+  version: 087d1a2efeb6296f04bb0f54e7af9890052aa6d7
   subpackages:
   - pkg/server/httplog
   - pkg/util/wsstream
@@ -515,7 +463,7 @@ imports:
   - util/homedir
   - util/integer
 - name: k8s.io/kubernetes
-  version: 095136c3078ccf887b9034b7ce598a0a1faff769
+  version: 313fd317f96265658831a576fafdd6ed85aaf428
   subpackages:
   - pkg/api
   - pkg/client/unversioned/remotecommand
