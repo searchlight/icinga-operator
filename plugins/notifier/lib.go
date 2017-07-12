@@ -73,7 +73,6 @@ func getLoader(client clientset.Interface) (envconfig.LoaderFunc, error) {
 }
 
 func sendNotification(req *Request) {
-
 	client, err := util.NewClient()
 	if err != nil {
 		log.Fatalln(err)
@@ -97,13 +96,9 @@ func sendNotification(req *Request) {
 	receivers := alert.GetReceivers()
 
 	for _, receiver := range receivers {
-
-		if len(receiver.To) == 0 {
+		if receiver.State != req.State || len(receiver.To) == 0 {
 			continue
 		}
-
-		var err error
-
 		notifyVia, err := unified.LoadVia(receiver.Method, loader)
 		if err != nil {
 			log.Errorln(err)
@@ -116,15 +111,12 @@ func sendNotification(req *Request) {
 			if sub, found := subjectMap[req.Type]; found {
 				subject = sub
 			}
-
 			var mailBody string
 			mailBody, err = RenderMail(alert, req)
 			if err != nil {
 				break
 			}
-			err = n.To(receiver.To[0], receiver.To[1:]...).
-				WithSubject(subject).
-				WithBody(mailBody).Send()
+			err = n.To(receiver.To[0], receiver.To[1:]...).WithSubject(subject).WithBody(mailBody).Send()
 		case notify.BySMS:
 			var smsBody string
 			smsBody, err = RenderSMS(alert, req)
