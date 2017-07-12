@@ -104,7 +104,7 @@ func run(mgr *icinga.Configurator) {
 	}
 	m.Post(ackPattern, http.HandlerFunc(ackHandler))
 
-	http.Handle("/metrics", promhttp.Handler())
+	http.Handle("/", m)
 	log.Infoln("Listening on", address)
 	log.Fatal(http.ListenAndServe(address, nil))
 }
