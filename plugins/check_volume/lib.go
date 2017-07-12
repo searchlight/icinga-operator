@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
-	"strings"
 
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/net/httpclient"
@@ -278,7 +276,6 @@ func checkPodVolumeStat(req *Request) (icinga.State, interface{}) {
 		return icinga.UNKNOWN, "Invalid icinga host type"
 	}
 
-
 	kubeClient, err := util.NewClient()
 	if err != nil {
 		return icinga.UNKNOWN, err
@@ -335,7 +332,6 @@ func NewCmd() *cobra.Command {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "host")
-
 
 			if req.NodeStat {
 				icinga.Output(checkNodeDiskStat(&req))
