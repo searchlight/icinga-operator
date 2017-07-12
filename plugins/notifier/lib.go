@@ -23,18 +23,16 @@ import (
 )
 
 type Request struct {
-	AlertPhid string `protobuf:"bytes,1,opt,name=alert_phid,json=alertPhid" json:"alert_phid,omitempty"`
-	HostName  string `protobuf:"bytes,2,opt,name=host_name,json=hostName" json:"host_name,omitempty"`
-	Type      string `protobuf:"bytes,3,opt,name=type" json:"type,omitempty"`
-	State     string `protobuf:"bytes,4,opt,name=state" json:"state,omitempty"`
-	Output    string `protobuf:"bytes,5,opt,name=output" json:"output,omitempty"`
+	HostName  string
+	AlertName string
+	Type      string
+	State     string
+	Output    string
 	// The time object is used in icinga to send request. This
 	// indicates detection time from icinga.
-	Time                int64  `protobuf:"varint,6,opt,name=time" json:"time,omitempty"`
-	Author              string `protobuf:"bytes,7,opt,name=author" json:"author,omitempty"`
-	Comment             string `protobuf:"bytes,8,opt,name=comment" json:"comment,omitempty"`
-	KubernetesAlertName string `protobuf:"bytes,9,opt,name=kubernetes_alert_name,json=kubernetesAlertName" json:"kubernetes_alert_name,omitempty"`
-	KubernetesCluster   string `protobuf:"bytes,10,opt,name=kubernetes_cluster,json=kubernetesCluster" json:"kubernetes_cluster,omitempty"`
+	Time    int64
+	Author  string
+	Comment string
 }
 
 type Secret struct {
@@ -86,7 +84,7 @@ func sendNotification(req *Request) {
 		log.Fatalln(err)
 	}
 
-	alert, err := host.GetAlert(client.ExtClient, req.KubernetesAlertName)
+	alert, err := host.GetAlert(client.ExtClient, req.AlertName)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -172,8 +170,8 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().StringVarP(&req.KubernetesAlertName, "alert", "A", "", "Kubernetes alert object name")
 	c.Flags().StringVarP(&req.HostName, "host", "H", "", "Icinga host name")
+	c.Flags().StringVarP(&req.AlertName, "alert", "A", "", "Kubernetes alert object name")
 	c.Flags().StringVar(&req.Type, "type", "", "Notification type")
 	c.Flags().StringVar(&req.State, "state", "", "Service state")
 	c.Flags().StringVar(&req.Output, "output", "", "Service output")

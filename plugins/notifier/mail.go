@@ -37,9 +37,9 @@ func RenderMail(alert aci.Alert, req *Request) (string, error) {
 	}
 
 	data := map[string]interface{}{
-		"KubernetesCluster":    req.KubernetesCluster,
 		"KubernetesNamespace":  host.AlertNamespace,
 		"kubernetesAlertType":  host.Type,
+		"kubernetesAlertName":  alert.GetName(),
 		"kubernetesObjectName": host.ObjectName,
 		"IcingaHostName":       req.HostName,
 		"IcingaServiceName":    alert.GetName(),

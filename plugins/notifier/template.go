@@ -74,13 +74,6 @@ background: #f2f2f2; color: #263249; font-family: Roboto, sans-serif; font-size:
                         <h4 style="font-size: 15px; font-weight: 400; text-transform: capitalize; border-top-left-radius: 3px; border-top-right-radius: 3px; overflow: hidden; background: #fcfcfc; margin: 0; padding: 4px; border-color: #f0f0f0#f0f0f0#dddddd; border-style: solid; border-width: 1px 1px 0px;">kubernetes Information</h4>
                         <table style="border-collapse: collapse; width: 100%; border: 0px solid #f0f0f0;">
 
-                            {% if KubernetesCluster %}
-                            <tr>
-                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Cluster</td>
-                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{KubernetesCluster}}</td>
-                            </tr>
-                            {% endif %}
-
                             {% if KubernetesNamespace %}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Namespace</td>
@@ -88,10 +81,17 @@ background: #f2f2f2; color: #263249; font-family: Roboto, sans-serif; font-size:
                             </tr>
                             {% endif %}
 
-                            {% if kubernetesObjectType %}
+                            {% if kubernetesAlertType %}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Object Type</td>
-                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{kubernetesObjectType}}</td>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{kubernetesAlertType}}</td>
+                            </tr>
+                            {% endif %}
+
+                            {% if kubernetesAlertName %}
+                            <tr>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Object Type</td>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{kubernetesAlertName}}</td>
                             </tr>
                             {% endif %}
 
