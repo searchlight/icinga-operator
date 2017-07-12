@@ -56,7 +56,7 @@ func Acknowledge(client *icinga.Client, w http.ResponseWriter, r *http.Request) 
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	var ackRequest *AcknowledgeRequest
+	var ackRequest AcknowledgeRequest
 	if err := json.Unmarshal(body, &ackRequest); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
