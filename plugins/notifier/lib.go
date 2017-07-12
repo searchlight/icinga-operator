@@ -7,7 +7,8 @@ import (
 	"time"
 
 	api "github.com/appscode/api/kubernetes/v1beta1"
-	"github.com/appscode/client"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/io"
 	"github.com/appscode/log"
@@ -20,6 +21,14 @@ import (
 	_ "github.com/appscode/searchlight/plugins/notifier/driver/smtp"
 	_ "github.com/appscode/searchlight/plugins/notifier/driver/twilio"
 	"github.com/spf13/cobra"
+	"github.com/appscode/searchlight/pkg/icinga"
+	"io/ioutil"
+	"strings"
+	"github.com/appscode/envconfig"
+	"github.com/appscode/searchlight/pkg/util"
+	clientset "k8s.io/client-go/kubernetes"
+	"github.com/appscode/go-notify/unified"
+	"github.com/appscode/go-notify"
 )
 
 const (
@@ -29,51 +38,108 @@ const (
 	notifyVia = "NOTIFY_VIA"
 )
 
+type Request struct {
+	AlertPhid string `protobuf:"bytes,1,opt,name=alert_phid,json=alertPhid" json:"alert_phid,omitempty"`
+	HostName  string `protobuf:"bytes,2,opt,name=host_name,json=hostName" json:"host_name,omitempty"`
+	Type      string `protobuf:"bytes,3,opt,name=type" json:"type,omitempty"`
+	State     string `protobuf:"bytes,4,opt,name=state" json:"state,omitempty"`
+	Output    string `protobuf:"bytes,5,opt,name=output" json:"output,omitempty"`
+	// The time object is used in icinga to send request. This
+	// indicates detection time from icinga.
+	Time                int64  `protobuf:"varint,6,opt,name=time" json:"time,omitempty"`
+	Author              string `protobuf:"bytes,7,opt,name=author" json:"author,omitempty"`
+	Comment             string `protobuf:"bytes,8,opt,name=comment" json:"comment,omitempty"`
+	KubernetesAlertName string `protobuf:"bytes,9,opt,name=kubernetes_alert_name,json=kubernetesAlertName" json:"kubernetes_alert_name,omitempty"`
+	KubernetesCluster   string `protobuf:"bytes,10,opt,name=kubernetes_cluster,json=kubernetesCluster" json:"kubernetes_cluster,omitempty"`
+}
+
 type Secret struct {
 	Namespace string `json:"namespace"`
 	Token     string `json:"token"`
 }
 
-func notifyViaAppsCode(req *api.IncidentNotifyRequest) error {
-	cluster_uid, err := io.ReadFile(appscodeConfigPath + "cluster-uid")
+func namespace() string {
+	if ns := os.Getenv("OPERATOR_NAMESPACE"); ns != "" {
+		return ns
+	}
+	if data, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace"); err == nil {
+		if ns := strings.TrimSpace(string(data)); len(ns) > 0 {
+			return ns
+		}
+	}
+	return apiv1.NamespaceDefault
+}
+
+
+func getLoader(client clientset.Interface) (envconfig.LoaderFunc, error) {
+
+	secretName := os.Getenv(icinga.ICINGA_NOTIFIER_SECRET_NAME)
+	secretNamespace := namespace()
+
+	cfg, err := client.CoreV1().
+		Secrets(secretNamespace).
+		Get(secretName, metav1.GetOptions{})
 	if err != nil {
-		return err
-	}
-	req.KubernetesCluster = cluster_uid
-
-	grpc_endpoint, err := io.ReadFile(appscodeConfigPath + "appscode-api-grpc-endpoint")
-	if err != nil {
-		return err
+		return nil, err
 	}
 
-	apiOptions := client.NewOption(grpc_endpoint)
-
-	var secretData Secret
-	if err := io.ReadFileAs(appscodeSecretPath+"api-token", &secretData); err != nil {
-		return err
-	}
-
-	apiOptions = apiOptions.BearerAuth(secretData.Namespace, secretData.Token)
-	conn, err := client.New(apiOptions)
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
-
-	if _, err := conn.Kubernetes().V1beta1().Incident().Notify(conn.Context(), req); err != nil {
-		return err
-	}
-
-	return nil
+	return func(key string) (value string, found bool) {
+		var bytes []byte
+		bytes, found = cfg.Data[key]
+		value = string(bytes)
+		return
+	}, nil
 }
 
 func sendNotification(req *api.IncidentNotifyRequest) {
-	if err := notifyViaAppsCode(req); err != nil {
-		log.Debug(err)
-	} else {
-		log.Debug("Notification sent via AppsCode")
-		os.Exit(0)
+
+	client, err := util.NewClient()
+	if err != nil {
+
 	}
+
+	loader, err := getLoader(client.Client)
+	if err != nil {
+		return
+	}
+	notifier, err := unified.Load(loader)
+	if err != nil {
+		return
+	}
+
+	host, err := icinga.ParseHost(req.HostName)
+	if err != nil {
+		return err
+	}
+
+	client.ExtClient.PodAlerts(namespace).Get(alertName)
+
+	alert, err := driver.GetAlertInfo(host.AlertNamespace, req.KubernetesAlertName)
+	if err != nil {
+		return err
+	}
+	
+
+	switch n := notifier.(type) {
+	case notify.ByEmail:
+		receivers := getArray(loader, "CLUSTER_ADMIN_EMAIL")
+		if len(receivers) == 0 {
+			return n.UID(), errors.New("Missing / invalid cluster admin email(s)")
+		}
+		n = n.To(receivers[0], receivers[1:]...)
+		return n.UID(), n.WithSubject("Cluster CA Certificate").WithBody(msg).Send()
+	case notify.BySMS:
+		receivers := getArray(loader, "CLUSTER_ADMIN_PHONE")
+		if len(receivers) == 0 {
+			return n.UID(), errors.New("Missing / invalid cluster admin phone number(s)")
+		}
+		n = n.To(receivers[0], receivers[1:]...)
+		return n.UID(), n.WithBody(msg).Send()
+	case notify.ByChat:
+		return n.UID(), n.WithBody(msg).Send()
+	}
+	return "", errors.New("Unknown notifier")
+
 
 	notifyVia := os.Getenv(notifyVia)
 	if notifyVia == "" {
@@ -101,7 +167,7 @@ func sendNotification(req *api.IncidentNotifyRequest) {
 }
 
 func NewCmd() *cobra.Command {
-	var req api.IncidentNotifyRequest
+	var req Request
 	var eventTime string
 
 	c := &cobra.Command{
