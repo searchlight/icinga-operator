@@ -3,6 +3,8 @@ package icinga
 import (
 	"fmt"
 	"os"
+	tapi "github.com/appscode/searchlight/api"
+	tcs "github.com/appscode/searchlight/client/clientset"
 	"strings"
 )
 
@@ -34,6 +36,18 @@ func (kh IcingaHost) Name() (string, error) {
 		return kh.AlertNamespace + "@" + kh.Type, nil
 	}
 	return "", fmt.Errorf("Unknown host type %s", kh.Type)
+}
+
+func (kh IcingaHost) GetAlert(extClient tcs.ExtensionInterface, alertName string) (tapi.Alert, error) {
+	switch kh.Type {
+	case TypePod:
+		return extClient.PodAlerts(kh.AlertNamespace).Get(alertName)
+	case TypeNode:
+		return extClient.NodeAlerts(kh.AlertNamespace).Get(alertName)
+	case TypeCluster:
+		return extClient.ClusterAlerts(kh.AlertNamespace).Get(alertName)
+	}
+	return nil, fmt.Errorf("Unknown host type %s", kh.Type)
 }
 
 func ParseHost(name string) (*IcingaHost, error) {
