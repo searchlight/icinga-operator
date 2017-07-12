@@ -160,7 +160,7 @@ func (h *commonHost) CreateIcingaNotification(alert tapi.Alert, kh IcingaHost) e
 		Templates: []string{"icinga2-notifier-template"},
 		Attrs: map[string]interface{}{
 			"interval": int(alert.GetAlertInterval().Seconds()),
-			"users":    []string{"appscode_user"},
+			"users":    []string{"searchlight_user"},
 		},
 	}
 	jsonStr, err := json.Marshal(obj)

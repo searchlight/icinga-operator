@@ -4,6 +4,12 @@
       "description": "This is used to check Kubernetes components",
       "examples": "hyperalert check_component_status",
       "name": "component_status",
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ],
        "states": [
          "OK",
          "CRITICAL",
@@ -13,6 +19,12 @@
     {
       "description": "This is used to check InfluxDB query result",
       "name": "influx_query",
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ],
       "vars": [
         {
           "description": "URL of InfluxDB host to query",
@@ -140,6 +152,12 @@
       "description": "This is used to check any API response parsing JSON using JQ queries",
       "examples": "hyperalert check_json_path --url='https://api.appscode.com/health' --query='.status' --critical='.status != \"OK\"'",
       "name": "json_path",
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ],
       "vars": [
         {
           "description": "URL to get data",
@@ -223,6 +241,12 @@
       "description": "This is used to check total number of Kubernetes node",
       "examples": "hyperalert check_node_exists --count=3",
       "name": "node_exists",
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ],
       "vars": [
         {
           "description": "Number of expected Kubernetes Node",
@@ -271,6 +295,12 @@
       "description": "This is used to check Kubernetes Node status",
       "examples": "hyperalert check_node_status --name=master.internal",
       "name": "node_status",
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ],
       "states": [
         "OK",
         "CRITICAL",
@@ -333,6 +363,12 @@
     {
       "description": "This is used to check Kubernetes pod status",
       "name": "pod_status",
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ],
       "states": [
         "OK",
         "CRITICAL",
@@ -342,6 +378,12 @@
     {
       "description": "This is used to check Node Disk stat.",
       "name": "node_disk",
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ],
       "vars": [
         {
           "description": "Kubernetes secret name",
@@ -389,6 +431,12 @@
     {
       "description": "This is used to check Pod volume stat.",
       "name": "volume",
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ],
       "vars": [
         {
           "description": "Kubernetes secret name",
@@ -448,6 +496,12 @@
     {
       "description": "This is used to check Kubernetes events. This plugin checks for all Warning events happened in last 'c' seconds. Icinga check_interval is provided as 'c'.",
       "name": "kube_event",
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ],
       "vars": [
         {
           "description": "Clock skew in Duration. [Default: 30s]. This time is added with check_interval while checking events",
@@ -471,6 +525,12 @@
     {
       "description": "This is used to check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL",
       "name": "kube_exec",
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ],
       "vars": [
         {
           "description": "Kubernetes container name in a pod",
@@ -517,7 +577,13 @@
     },
     {
       "description": "This is used to test various stuff",
-      "name": "hello_icinga"
+      "name": "hello_icinga",
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ]
     },
     {
       "description": "The [check_dig](https://www.monitoring-plugins.org/doc/man/check_dig.html) plugin test the DNS service on the specified host using dig.",
