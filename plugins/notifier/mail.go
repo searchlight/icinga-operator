@@ -3,39 +3,16 @@ package notifier
 import (
 	"time"
 
-	api "github.com/appscode/api/kubernetes/v1beta1"
 	aci "github.com/appscode/searchlight/api"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/flosch/pongo2"
 )
 
-const (
-	ObjectType = "alert.appscode.com/objectType"
-	ObjectName = "alert.appscode.com/objectName"
-)
-
-var SubjectMap = map[string]string{
+var subjectMap = map[string]string{
 	"PROBLEM":         "Problem Detected",
 	"ACKNOWLEDGEMENT": "Problem Acknowledged",
 	"RECOVERY":        "Problem Recovered",
 	"CUSTOM":          "Custom Notification",
-}
-
-type labelMap map[string]string
-
-func (s labelMap) ObjectType() string {
-	v, _ := s[ObjectType]
-	return v
-}
-
-func (s labelMap) ObjectName() string {
-	v, _ := s[ObjectName]
-	return v
-}
-func getObjectInfo(label map[string]string) (objectType string, objectName string) {
-	opts := labelMap(label)
-	objectType = opts.ObjectType()
-	objectName = opts.ObjectName()
-	return
 }
 
 func render(ctx *pongo2.Context, template string) (string, error) {
@@ -51,19 +28,22 @@ func render(ctx *pongo2.Context, template string) (string, error) {
 	return body, nil
 }
 
-func RenderMail(alert *aci.PodAlert, req *api.IncidentNotifyRequest) (string, error) {
+func RenderMail(alert aci.Alert, req *Request) (string, error) {
 	t := time.Unix(req.Time, 0)
 
-	objectType, objectName := getObjectInfo(alert.Labels)
+	host, err := icinga.ParseHost(req.HostName)
+	if err != nil {
+		return "", err
+	}
 
 	data := map[string]interface{}{
 		"KubernetesCluster":    req.KubernetesCluster,
-		"KubernetesNamespace":  alert.Namespace,
-		"kubernetesObjectType": objectType,
-		"kubernetesObjectName": objectName,
+		"KubernetesNamespace":  host.AlertNamespace,
+		"kubernetesAlertType":  host.Type,
+		"kubernetesObjectName": host.ObjectName,
 		"IcingaHostName":       req.HostName,
-		"IcingaServiceName":    alert.Name,
-		"CheckCommand":         alert.Spec.Check,
+		"IcingaServiceName":    alert.GetName(),
+		"CheckCommand":         alert.Command(),
 		"IcingaType":           req.Type,
 		"IcingaState":          req.State,
 		"IcingaOutput":         req.Output,

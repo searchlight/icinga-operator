@@ -3,17 +3,19 @@ package notifier
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"strings"
 	"time"
 
-	api "github.com/appscode/api/kubernetes/v1beta1"
-	apiv1 "k8s.io/client-go/pkg/api/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/appscode/envconfig"
+	"github.com/appscode/go-notify"
+	"github.com/appscode/go-notify/unified"
 	"github.com/appscode/go/flags"
-	"github.com/appscode/go/io"
 	"github.com/appscode/log"
 	logs "github.com/appscode/log/golog"
-	"github.com/appscode/searchlight/plugins/notifier/driver/extpoints"
+	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/pkg/util"
 	_ "github.com/appscode/searchlight/plugins/notifier/driver/hipchat"
 	_ "github.com/appscode/searchlight/plugins/notifier/driver/mailgun"
 	_ "github.com/appscode/searchlight/plugins/notifier/driver/plivo"
@@ -21,21 +23,9 @@ import (
 	_ "github.com/appscode/searchlight/plugins/notifier/driver/smtp"
 	_ "github.com/appscode/searchlight/plugins/notifier/driver/twilio"
 	"github.com/spf13/cobra"
-	"github.com/appscode/searchlight/pkg/icinga"
-	"io/ioutil"
-	"strings"
-	"github.com/appscode/envconfig"
-	"github.com/appscode/searchlight/pkg/util"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
-	"github.com/appscode/go-notify/unified"
-	"github.com/appscode/go-notify"
-)
-
-const (
-	appscodeConfigPath = "/var/run/config/appscode/"
-	appscodeSecretPath = "/var/run/secrets/appscode/"
-
-	notifyVia = "NOTIFY_VIA"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
 type Request struct {
@@ -70,7 +60,6 @@ func namespace() string {
 	return apiv1.NamespaceDefault
 }
 
-
 func getLoader(client clientset.Interface) (envconfig.LoaderFunc, error) {
 
 	secretName := os.Getenv(icinga.ICINGA_NOTIFIER_SECRET_NAME)
@@ -91,78 +80,80 @@ func getLoader(client clientset.Interface) (envconfig.LoaderFunc, error) {
 	}, nil
 }
 
-func sendNotification(req *api.IncidentNotifyRequest) {
+func sendNotification(req *Request) {
 
 	client, err := util.NewClient()
 	if err != nil {
-
-	}
-
-	loader, err := getLoader(client.Client)
-	if err != nil {
-		return
-	}
-	notifier, err := unified.Load(loader)
-	if err != nil {
-		return
+		log.Fatalln(err)
 	}
 
 	host, err := icinga.ParseHost(req.HostName)
 	if err != nil {
-		return err
+		log.Fatalln(err)
 	}
 
-	client.ExtClient.PodAlerts(namespace).Get(alertName)
-
-	alert, err := driver.GetAlertInfo(host.AlertNamespace, req.KubernetesAlertName)
+	alert, err := host.GetAlert(client.ExtClient, req.KubernetesAlertName)
 	if err != nil {
-		return err
-	}
-	
-
-	switch n := notifier.(type) {
-	case notify.ByEmail:
-		receivers := getArray(loader, "CLUSTER_ADMIN_EMAIL")
-		if len(receivers) == 0 {
-			return n.UID(), errors.New("Missing / invalid cluster admin email(s)")
-		}
-		n = n.To(receivers[0], receivers[1:]...)
-		return n.UID(), n.WithSubject("Cluster CA Certificate").WithBody(msg).Send()
-	case notify.BySMS:
-		receivers := getArray(loader, "CLUSTER_ADMIN_PHONE")
-		if len(receivers) == 0 {
-			return n.UID(), errors.New("Missing / invalid cluster admin phone number(s)")
-		}
-		n = n.To(receivers[0], receivers[1:]...)
-		return n.UID(), n.WithBody(msg).Send()
-	case notify.ByChat:
-		return n.UID(), n.WithBody(msg).Send()
-	}
-	return "", errors.New("Unknown notifier")
-
-
-	notifyVia := os.Getenv(notifyVia)
-	if notifyVia == "" {
-		log.Errorln("No fallback notifier set")
-		os.Exit(1)
+		log.Fatalln(err)
 	}
 
-	cluster_uid, err := io.ReadFile(appscodeConfigPath + "cluster-name")
+	loader, err := getLoader(client.Client)
 	if err != nil {
-		cluster_uid = ""
+		log.Fatalln(err)
 	}
 
-	req.KubernetesCluster = cluster_uid
-	driver := extpoints.Drivers.Lookup(notifyVia)
-	if driver == nil {
-		log.Errorln("Invalid failback notifier")
-		os.Exit(1)
-	}
+	receivers := alert.GetReceivers()
 
-	if err := driver.Notify(req); err != nil {
-		log.Errorln(err)
-	} else {
-		log.Debug(fmt.Sprintf("Notification sent via %s", notifyVia))
+	for _, receiver := range receivers {
+
+		if len(receiver.To) == 0 {
+			continue
+		}
+
+		var err error
+
+		notifyVia, err := unified.LoadVia(receiver.Method, loader)
+		if err != nil {
+			log.Errorln(err)
+			continue
+		}
+
+		switch n := notifyVia.(type) {
+		case notify.ByEmail:
+			subject := "Notification"
+			if sub, found := subjectMap[req.Type]; found {
+				subject = sub
+			}
+
+			var mailBody string
+			mailBody, err = RenderMail(alert, req)
+			if err != nil {
+				break
+			}
+			err = n.To(receiver.To[0], receiver.To[1:]...).
+				WithSubject(subject).
+				WithBody(mailBody).Send()
+		case notify.BySMS:
+			var smsBody string
+			smsBody, err = RenderSMS(alert, req)
+			if err != nil {
+				break
+			}
+			err = n.To(receiver.To[0], receiver.To[1:]...).WithBody(smsBody).Send()
+		case notify.ByChat:
+			var smsBody string
+			smsBody, err = RenderSMS(alert, req)
+			if err != nil {
+				break
+			}
+			err = n.To(receiver.To[0], receiver.To[1:]...).WithBody(smsBody).Send()
+		}
+
+		if err != nil {
+			log.Errorln(err)
+		} else {
+			log.Debug(fmt.Sprintf("Notification sent using %s", receiver.Method))
+		}
 	}
 }
 

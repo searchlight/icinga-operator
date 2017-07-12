@@ -1,4 +1,3 @@
-//go:generate go-extpoints ../../plugins/notifier/driver/extpoints
 package main
 
 import (

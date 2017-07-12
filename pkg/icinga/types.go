@@ -3,9 +3,10 @@ package icinga
 import (
 	"fmt"
 	"os"
+	"strings"
+
 	tapi "github.com/appscode/searchlight/api"
 	tcs "github.com/appscode/searchlight/client/clientset"
-	"strings"
 )
 
 const (
