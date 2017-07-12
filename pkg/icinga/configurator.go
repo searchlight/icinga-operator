@@ -77,7 +77,7 @@ type Configurator struct {
 }
 
 func (c *Configurator) ConfigFile() string {
-	return filepath.Join(c.ConfigRoot, "icinga2/config")
+	return filepath.Join(c.ConfigRoot, "icinga2/config.ini")
 }
 
 func (c *Configurator) PKIDir() string {

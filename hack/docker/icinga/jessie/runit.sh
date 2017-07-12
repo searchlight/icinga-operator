@@ -3,11 +3,11 @@
 set -o errexit
 set -o pipefail
 
-if [ -f '/srv/icinga2/secrets/.env' ]; then
-    export $(cat /srv/icinga2/secrets/.env | xargs)
+if [ -f '/srv/icinga2/config.ini' ]; then
+    export $(cat /srv/icinga2/config.ini | xargs)
 else
     echo
-    echo 'Missing environment file /srv/icinga2/secrets/.env.'
+    echo 'Missing environment file /srv/icinga2/config.ini.'
     echo
     exit 1
 fi
