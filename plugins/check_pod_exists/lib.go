@@ -13,9 +13,9 @@ import (
 
 type Request struct {
 	Namespace string
-	Count     int
 	Selector  string
 	PodName   string
+	Count     int
 }
 
 type objectInfo struct {
@@ -99,8 +99,8 @@ func NewCmd() *cobra.Command {
 		},
 	}
 	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
-	c.Flags().IntVarP(&req.Count, "count", "c", 0, "Number of Kubernetes Node")
 	c.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
 	c.Flags().StringVarP(&req.PodName, "pod_name", "p", "", "Name of pod whose existence is checked")
+	c.Flags().IntVarP(&req.Count, "count", "c", 0, "Number of Kubernetes pods")
 	return c
 }

@@ -9,7 +9,6 @@ import (
 	"github.com/appscode/searchlight/plugins/check_json_path"
 	"github.com/appscode/searchlight/plugins/check_kube_event"
 	"github.com/appscode/searchlight/plugins/check_kube_exec"
-	"github.com/appscode/searchlight/plugins/check_node_count"
 	"github.com/appscode/searchlight/plugins/check_node_status"
 	"github.com/appscode/searchlight/plugins/check_pod_exists"
 	"github.com/appscode/searchlight/plugins/check_pod_status"
@@ -136,10 +135,10 @@ func TestNodeCount(t *testing.T) {
 	}
 
 	for _, testData := range testDataList {
-		var req check_node_count.Request
+		var req check_node_exists.Request
 		plugin.FillStruct(testData.Data, &req)
 
-		icingaState, _ := check_node_count.CheckNodeCount(&req)
+		icingaState, _ := check_node_exists.CheckNodeCount(&req)
 		assert.EqualValues(t, testData.ExpectedIcingaState, icingaState)
 	}
 }

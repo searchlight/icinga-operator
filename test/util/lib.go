@@ -1,6 +1,6 @@
 package util
 
-import (
+/*import (
 	"errors"
 	"fmt"
 	"strings"
@@ -10,7 +10,9 @@ import (
 	"github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/controller"
 	"github.com/appscode/searchlight/pkg/icinga"
-)
+)*/
+
+/*
 
 func getIcingaHostType(commandName, objectType string) (string, error) {
 	icingaData, err := data.LoadIcingaData()
@@ -37,6 +39,7 @@ func icingaHostSearchQuery(objectList []*icinga.IcingaHost) string {
 		matchHost = matchHost + fmt.Sprintf(`match(\"%s\",icinga.name)`, object.Hostname)
 	}
 	return fmt.Sprintf(`{"filter": "(%s)"}`, matchHost)
+
 }
 
 func countIcingaService(w *controller.Controller, objectList []*icinga.IcingaHost, serviceName string, expectZero bool) error {
@@ -128,8 +131,8 @@ func GetIcingaHostList(w *controller.Controller, alert *aci.PodAlert) ([]*icinga
 	}
 
 	return objectList, nil
-}
-
+}*/
+/*
 func CheckIcingaObjectsForAlert(w *controller.Controller, alert *aci.PodAlert, expectZeroHost, expectZeroService bool) (err error) {
 	objectList, err := GetIcingaHostList(w, alert)
 	if err != nil {
@@ -213,4 +216,4 @@ func CheckIcingaObjectsForPod(w *controller.Controller, podName, namespace strin
 	}
 
 	return nil
-}
+}*/

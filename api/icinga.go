@@ -129,9 +129,8 @@ func init() {
 		if c.Name == "any_http" ||
 			c.Name == "component_status" ||
 			c.Name == "json_path" ||
-			c.Name == "node_count" ||
+			c.Name == "node_exists" ||
 			c.Name == "pod_exists" ||
-			c.Name == "prometheus_metric" ||
 			c.Name == "kube_event" ||
 			c.Name == "hello_icinga" ||
 			c.Name == "dig" ||

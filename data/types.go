@@ -15,12 +15,11 @@ type CommandVar struct {
 }
 
 type IcingaCheckCommand struct {
-	Name         string            `json:"name"`
-	Description  string            `json:"description,omitempty"`
-	Envs         []string          `json:"envs"`
-	ObjectToHost map[string]string `json:"object_to_host"`
-	Vars         []CommandVar      `json:"vars,omitempty"`
-	States       []string          `json:"states,omitempty"`
+	Name        string       `json:"name"`
+	Description string       `json:"description,omitempty"`
+	Envs        []string     `json:"envs"`
+	Vars        []CommandVar `json:"vars,omitempty"`
+	States      []string     `json:"states,omitempty"`
 }
 
 type IcingaData struct {

@@ -83,7 +83,7 @@ libbuild.BIN_MATRIX = {
             'linux': ['amd64']
         }
     },
-    'check_node_count': {
+    'check_node_exists': {
         'type': 'go',
         'go_version': True,
         'distro': {
@@ -105,13 +105,6 @@ libbuild.BIN_MATRIX = {
         }
     },
     'check_pod_status': {
-        'type': 'go',
-        'go_version': True,
-        'distro': {
-            'linux': ['amd64']
-        }
-    },
-    'check_prometheus_metric': {
         'type': 'go',
         'go_version': True,
         'distro': {

@@ -4,7 +4,7 @@ import (
 	"os"
 
 	v "github.com/appscode/go/version"
-	"github.com/appscode/searchlight/plugins/check_node_count"
+	"github.com/appscode/searchlight/plugins/check_node_exists"
 )
 
 var (
@@ -38,7 +38,7 @@ func init() {
 }
 
 func main() {
-	rootCmd := check_node_count.NewCmd()
+	rootCmd := check_node_exists.NewCmd()
 	// execute commands.
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
