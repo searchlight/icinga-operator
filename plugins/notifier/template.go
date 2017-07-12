@@ -83,14 +83,14 @@ background: #f2f2f2; color: #263249; font-family: Roboto, sans-serif; font-size:
 
                             {% if kubernetesAlertType %}
                             <tr>
-                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Object Type</td>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Alert Type</td>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{kubernetesAlertType}}</td>
                             </tr>
                             {% endif %}
 
                             {% if kubernetesAlertName %}
                             <tr>
-                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Object Type</td>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Alert Name</td>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{kubernetesAlertName}}</td>
                             </tr>
                             {% endif %}
