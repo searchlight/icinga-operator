@@ -181,7 +181,7 @@ func (c *Configurator) generateCertificates() error {
 	log.Infoln("Created CA cert")
 
 	var csrReq csr.CertificateRequest
-	csrReq.KeyRequest = &csr.BasicKeyRequest{A: "rsa", S: 2048} // csr.NewBasicKeyRequest()
+	csrReq.KeyRequest = &csr.BasicKeyRequest{A: "rsa", S: 2048} // ECC does not work with icinga api
 	csrReq.CN = "icinga"
 	csrReq.Hosts = []string{"127.0.0.1"} // Add all local IPs
 	return c.createClientCert(&csrReq)
