@@ -35,6 +35,8 @@ func TestE2e(t *testing.T) {
 	RunSpecsWithDefaultAndCustomReporters(t, "e2e Suite", []Reporter{junitReporter})
 }
 
+const KUBE = "minikube"
+
 var _ = BeforeSuite(func() {
 	userHome, err := homedir.Dir()
 	Expect(err).NotTo(HaveOccurred())
@@ -48,13 +50,15 @@ var _ = BeforeSuite(func() {
 	extClient := tcs.NewForConfigOrDie(config)
 	root = framework.New(kubeClient, extClient, nil)
 
+	fmt.Println("Using namespace ", root.Namespace())
+	By("Using namespace " + root.Namespace())
+
 	err = root.CreateNamespace()
 	Expect(err).NotTo(HaveOccurred())
 
-	secretTempPath := filepath.Join(userHome)
 	configure := &icinga.Configurator{
 		NotifierSecretName: "searchlight",
-		ConfigRoot:         secretTempPath,
+		ConfigRoot:         filepath.Join(userHome),
 		Expiry:             10 * 365 * 24 * time.Hour,
 	}
 	_, err = configure.LoadIcingaConfig()
@@ -65,9 +69,10 @@ var _ = BeforeSuite(func() {
 	err = root.CreateSecret(icingaSecret)
 	Expect(err).NotTo(HaveOccurred())
 
-	icingaDeployment := root.Invoke().DeploymentSearchlight()
+	icingaDeployment := root.Invoke().DeploymentAppSearchlight()
 	err = root.CreateDeploymentApp(icingaDeployment)
 	Expect(err).NotTo(HaveOccurred())
+
 })
 
 var _ = AfterSuite(func() {

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <testsuite tests="8" failures="0" time="0.048036417">
-      <testcase name="PodAlert Create a namespace" classname="e2e Suite" time="6.211e-06"></testcase>
-      <testcase name="PodAlert Create a deployment" classname="e2e Suite" time="4.384e-06"></testcase>
-      <testcase name="PodAlert Create a PodAlert" classname="e2e Suite" time="3.777e-06"></testcase>
-      <testcase name="PodAlert Check Checking Icinga2 Counting Icinga2 Host" classname="e2e Suite" time="9.636e-06"></testcase>
-      <testcase name="PodAlert Check Checking Icinga2 Counting Icinga2 Service" classname="e2e Suite" time="7.685e-06"></testcase>
-      <testcase name="PodAlert Check Increment replica Incrementing replica" classname="e2e Suite" time="7.831e-06"></testcase>
-      <testcase name="PodAlert Check Checking Icinga2 again Counting Icinga2 Host" classname="e2e Suite" time="7.412e-06"></testcase>
-      <testcase name="PodAlert Check Checking Icinga2 again Counting Icinga2 Service" classname="e2e Suite" time="7.456e-06"></testcase>
+  <testsuite tests="8" failures="0" time="0.046738278">
+      <testcase name="PodAlert Create a namespace" classname="e2e Suite" time="6.465e-06"></testcase>
+      <testcase name="PodAlert Create a deployment" classname="e2e Suite" time="2.637e-06"></testcase>
+      <testcase name="PodAlert Create a PodAlert" classname="e2e Suite" time="1.073e-06"></testcase>
+      <testcase name="PodAlert Check Checking Icinga2 Counting Icinga2 Host" classname="e2e Suite" time="6.225e-06"></testcase>
+      <testcase name="PodAlert Check Checking Icinga2 Counting Icinga2 Service" classname="e2e Suite" time="4.009e-06"></testcase>
+      <testcase name="PodAlert Check Increment replica Incrementing replica" classname="e2e Suite" time="4.37e-06"></testcase>
+      <testcase name="PodAlert Check Checking Icinga2 again Counting Icinga2 Host" classname="e2e Suite" time="3.268e-06"></testcase>
+      <testcase name="PodAlert Check Checking Icinga2 again Counting Icinga2 Service" classname="e2e Suite" time="3.921e-06"></testcase>
   </testsuite>
