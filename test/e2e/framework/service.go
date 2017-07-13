@@ -2,8 +2,10 @@ package framework
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
+	"github.com/appscode/searchlight/test/e2e"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
@@ -30,10 +32,12 @@ func (f *Framework) GetServiceIngressHost(meta metav1.ObjectMeta) (string, error
 
 		for _, ingress := range service.Status.LoadBalancer.Ingress {
 			if ingress.Hostname != "" {
+				e2e.PrintSeparately("Ingress Hostname is available")
 				return ingress.Hostname, nil
 			}
 		}
 
+		fmt.Println("Waiting for Ingress Hostname in service")
 		time.Sleep(time.Second * 10)
 		now = time.Now()
 	}

@@ -1,9 +1,6 @@
 package framework
 
 import (
-	"path/filepath"
-
-	"github.com/appscode/go/io"
 	"github.com/appscode/go/types"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -71,46 +68,6 @@ func (f *Invocation) ServiceSearchlight() *apiv1.Service {
 	}
 }
 
-func (f *Invocation) SecretSearchlight(path string) (*apiv1.Secret, error) {
-	secret := &apiv1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      f.name,
-			Namespace: f.namespace,
-			Labels: map[string]string{
-				"app": "searchlight",
-			},
-		},
-	}
-
-	secret.Data = make(map[string][]byte)
-
-	ca, err := io.ReadFile(filepath.Join(path, "pki/ca.crt"))
-	if err != nil {
-		return nil, err
-	}
-	secret.Data["ca.crt"] = []byte(ca)
-
-	crt, err := io.ReadFile(filepath.Join(path, "pki/icinga.crt"))
-	if err != nil {
-		return nil, err
-	}
-	secret.Data["icinga.crt"] = []byte(crt)
-
-	key, err := io.ReadFile(filepath.Join(path, "pki/icinga.key"))
-	if err != nil {
-		return nil, err
-	}
-	secret.Data["icinga.key"] = []byte(key)
-
-	ini, err := io.ReadFile(filepath.Join(path, "config.ini"))
-	if err != nil {
-		return nil, err
-	}
-	secret.Data["config.ini"] = []byte(ini)
-
-	return secret, err
-}
-
 func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 	return apiv1.PodTemplateSpec{
 		ObjectMeta: metav1.ObjectMeta{
@@ -122,7 +79,7 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 			Containers: []apiv1.Container{
 				{
 					Name:            "icinga",
-					Image:           "aerokite/icinga:config-k8s",
+					Image:           "aerokite/icinga:e2e-test-k8s",
 					ImagePullPolicy: apiv1.PullIfNotPresent,
 					Ports: []apiv1.ContainerPort{
 						{
@@ -145,7 +102,7 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 						},
 						{
 							Name:      "icingaconfig",
-							MountPath: "/srv/icinga2",
+							MountPath: "/srv",
 						},
 					},
 				},
@@ -191,26 +148,9 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 				{
 					Name: "icingaconfig",
 					VolumeSource: apiv1.VolumeSource{
-						Secret: &apiv1.SecretVolumeSource{
-							SecretName: f.name,
-							Items: []apiv1.KeyToPath{
-								{
-									Key:  "ca.crt",
-									Path: filepath.Join("pki", "ca.crt"),
-								},
-								{
-									Key:  "icinga.crt",
-									Path: filepath.Join("pki", "icinga.crt"),
-								},
-								{
-									Key:  "icinga.key",
-									Path: filepath.Join("pki", "icinga.key"),
-								},
-								{
-									Key:  "config.ini",
-									Path: filepath.Join("config.ini"),
-								},
-							},
+						GitRepo: &apiv1.GitRepoVolumeSource{
+							Repository: "https://github.com/aerokite/icinga-secret.git",
+							Directory:  ".",
 						},
 					},
 				},

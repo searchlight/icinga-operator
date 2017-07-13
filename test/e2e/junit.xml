@@ -1,2 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <testsuite tests="8" failures="8" time="166.415489178"></testsuite>
+  <testsuite tests="8" failures="0" time="165.73496991">
+      <testcase name="PodAlert Create a namespace" classname="e2e Suite" time="2.686e-06"></testcase>
+      <testcase name="PodAlert Create a deployment" classname="e2e Suite" time="1.541e-06"></testcase>
+      <testcase name="PodAlert Create a PodAlert" classname="e2e Suite" time="1.056e-06"></testcase>
+      <testcase name="PodAlert Check Checking Icinga2 Counting Icinga2 Host" classname="e2e Suite" time="3.185e-06"></testcase>
+      <testcase name="PodAlert Check Checking Icinga2 Counting Icinga2 Service" classname="e2e Suite" time="3.155e-06"></testcase>
+      <testcase name="PodAlert Check Increment replica Incrementing replica" classname="e2e Suite" time="3.332e-06"></testcase>
+      <testcase name="PodAlert Check Checking Icinga2 again Counting Icinga2 Host" classname="e2e Suite" time="3.103e-06"></testcase>
+      <testcase name="PodAlert Check Checking Icinga2 again Counting Icinga2 Service" classname="e2e Suite" time="2.909e-06"></testcase>
+  </testsuite>

@@ -36,8 +36,6 @@ func TestE2e(t *testing.T) {
 	RunSpecsWithDefaultAndCustomReporters(t, "e2e Suite", []Reporter{junitReporter})
 }
 
-const KUBE = "minikube"
-
 var _ = BeforeSuite(func() {
 	userHome, err := homedir.Dir()
 	Expect(err).NotTo(HaveOccurred())
@@ -59,18 +57,6 @@ var _ = BeforeSuite(func() {
 
 	// Create namespace
 	err = root.CreateNamespace()
-	Expect(err).NotTo(HaveOccurred())
-
-	// Create Icinga secret
-	configure := &icinga.Configurator{
-		ConfigRoot: filepath.Join(userHome),
-		Expiry:     10 * 365 * 24 * time.Hour,
-	}
-	cfg, err := configure.LoadIcingaConfig()
-	Expect(err).NotTo(HaveOccurred())
-	icingaSecret, err := root.Invoke().SecretSearchlight(filepath.Join(configure.ConfigRoot, "icinga2"))
-	Expect(err).NotTo(HaveOccurred())
-	err = root.CreateSecret(icingaSecret)
 	Expect(err).NotTo(HaveOccurred())
 
 	// Create Searchlight deployment
@@ -100,8 +86,13 @@ var _ = BeforeSuite(func() {
 	icingaHost, err := root.GetServiceIngressHost(searchlightService.ObjectMeta)
 	Expect(err).NotTo(HaveOccurred())
 
+	cfg := &icinga.Config{
+		Endpoint: fmt.Sprintf("https://%s:5665/v1", icingaHost),
+	}
+	cfg.BasicAuth.Username = e2e.ICINGA_API_USER
+	cfg.BasicAuth.Password = e2e.ICINGA_API_PASSWORD
+
 	icingaClient := icinga.NewClient(*cfg)
-	icingaClient.SetEndpoint(fmt.Sprintf("https://%s:5665/v1", icingaHost))
 	for {
 		if icingaClient.Check().Get(nil).Do().Status == 200 {
 			e2e.PrintSeparately("Connected to icinga api")
@@ -110,6 +101,7 @@ var _ = BeforeSuite(func() {
 		fmt.Println("Waiting for icinga to start")
 		time.Sleep(5 * time.Second)
 	}
+
 })
 
 var _ = AfterSuite(func() {
