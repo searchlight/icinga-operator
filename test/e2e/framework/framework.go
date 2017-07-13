@@ -12,6 +12,7 @@ type Framework struct {
 	extClient    tcs.ExtensionInterface
 	icingaClient *icinga.Client
 	namespace    string
+	name         string
 }
 
 func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, icingaClient *icinga.Client) *Framework {
@@ -19,7 +20,8 @@ func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, icing
 		kubeClient:   kubeClient,
 		extClient:    extClient,
 		icingaClient: icingaClient,
-		namespace:    rand.WithUniqSuffix("test-searchlight"),
+		name:         "searchlight-operator",
+		namespace:    rand.WithUniqSuffix("searchlight"),
 	}
 }
 

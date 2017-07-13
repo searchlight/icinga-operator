@@ -1,0 +1,71 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: searchlight
+  name: searchlight-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: searchlight
+  template:
+    metadata:
+      labels:
+        app: searchlight
+    spec:
+      containers:
+      - name: operator
+        image: aerokite/searchlight:e2e-test
+        imagePullPolicy: Always
+        args:
+        - run
+        - --v=3
+        ports:
+        - containerPort: 56790
+          name: http
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /icinga2
+          name: icingaconfig
+      - image: aerokite/icinga:e2e-test-k8s
+        imagePullPolicy: Always
+        name: icinga
+        ports:
+        - containerPort: 5665
+          name: api
+          protocol: TCP
+        - containerPort: 60006
+          name: web
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/pv
+          name: data-volume
+        - mountPath: /var/db-script
+          name: script-volume
+        - mountPath: /srv/icinga2
+          name: icingaconfig
+      - args:
+        - basic
+        - ./setup-db.sh
+        image: appscode/postgres:9.5-v3-db
+        imagePullPolicy: IfNotPresent
+        name: ido
+        ports:
+        - containerPort: 5432
+          name: ido
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        volumeMounts:
+        - mountPath: /var/pv
+          name: data-volume
+        - mountPath: /var/db-script
+          name: script-volume
+      volumes:
+      - emptyDir: {}
+        name: data-volume
+      - emptyDir: {}
+        name: script-volume
+      - name: icingaconfig
+        emptyDir: {}
