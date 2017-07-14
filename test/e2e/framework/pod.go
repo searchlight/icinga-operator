@@ -57,6 +57,8 @@ func (f *Framework) GetPodList(actual interface{}) (*apiv1.PodList, error) {
 		return f.listPods(obj.Namespace, obj.Labels)
 	case *extensions.ReplicaSet:
 		return f.listPods(obj.Namespace, obj.Spec.Selector.MatchLabels)
+	case *extensions.Deployment:
+		return f.listPods(obj.Namespace, obj.Spec.Selector.MatchLabels)
 	default:
 		return nil, fmt.Errorf("Unknown object type")
 	}

@@ -11,6 +11,7 @@ import (
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e"
 	"github.com/appscode/searchlight/test/e2e/framework"
+	. "github.com/appscode/searchlight/test/e2e/matcher"
 	"github.com/mitchellh/go-homedir"
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/reporters"
@@ -54,35 +55,24 @@ var _ = BeforeSuite(func() {
 	e2e.PrintSeparately("Using namespace: ", root.Namespace())
 	By("Using namespace " + root.Namespace())
 
-	//// Create namespace
-	//err = root.CreateNamespace()
-	//Expect(err).NotTo(HaveOccurred())
-	//
-	//// Create Searchlight deployment
-	//searchlightDeployment := root.Invoke().DeploymentExtensionSearchlight()
-	//err = root.CreateDeploymentExtension(searchlightDeployment)
-	//Expect(err).NotTo(HaveOccurred())
-	//// Check for deployment
-	//for {
-	//	deployment, err := root.GetDeploymentExtension(searchlightDeployment.ObjectMeta)
-	//	Expect(err).NotTo(HaveOccurred())
-	//
-	//	if deployment.Status.AvailableReplicas != 0 {
-	//		e2e.PrintSeparately("Searchlight deployment is available")
-	//		break
-	//	}
-	//	fmt.Println("Waiting for Searchlight deployment to be available")
-	//	time.Sleep(5 * time.Second)
-	//}
-	//// Create Searchlight service
-	//searchlightService := root.Invoke().ServiceSearchlight()
-	//err = root.CreateService(searchlightService)
-	//Expect(err).NotTo(HaveOccurred())
-	// Get Icinga Ingress Hostname
-	//icingaHost, err := root.GetServiceIngressHost(searchlightService.ObjectMeta)
-	//Expect(err).NotTo(HaveOccurred())
+	// Create namespace
+	err = root.CreateNamespace()
+	Expect(err).NotTo(HaveOccurred())
 
-	icingaHost := "ac68949ad686a11e78b6912f236046fb-2136874930.us-east-1.elb.amazonaws.com"
+	// Create Searchlight deployment
+	slDeployment := root.Invoke().DeploymentExtensionSearchlight()
+	err = root.CreateDeploymentExtension(slDeployment)
+	Expect(err).NotTo(HaveOccurred())
+	By("Waiting for Running pods")
+	root.EventuallyDeploymentExtensionRunning(slDeployment.ObjectMeta).Should(HaveRunningPods(*slDeployment.Spec.Replicas))
+
+	// Create Searchlight service
+	slService := root.Invoke().ServiceSearchlight()
+	err = root.CreateService(slService)
+	Expect(err).NotTo(HaveOccurred())
+	// Get Icinga Ingress Hostname
+	icingaHost, err := root.GetServiceIngressHost(slService.ObjectMeta)
+	Expect(err).NotTo(HaveOccurred())
 
 	// Icinga Config
 	cfg := &icinga.Config{
@@ -90,18 +80,16 @@ var _ = BeforeSuite(func() {
 	}
 	cfg.BasicAuth.Username = e2e.ICINGA_API_USER
 	cfg.BasicAuth.Password = e2e.ICINGA_API_PASSWORD
+
 	// Icinga Client
 	icingaClient := icinga.NewClient(*cfg)
-	for {
-		if icingaClient.Check().Get(nil).Do().Status == 200 {
-			e2e.PrintSeparately("Connected to icinga api")
-			break
-		}
-		fmt.Println("Waiting for icinga to start")
-		time.Sleep(5 * time.Second)
-	}
+	root = root.SetIcingaClient(icingaClient)
+	root.EventuallyIcingaAPI().Should(Succeed())
 
-	e2e.PrintSeparately("Check icingaweb2: ", fmt.Sprintf("http://%s/icingaweb2", icingaHost))
+	fmt.Println()
+	fmt.Println("Icingaweb2:     ", fmt.Sprintf("http://%s/icingaweb2", icingaHost))
+	fmt.Println("Login password: ", e2e.ICINGA_WEB_ADMIN_PASSWORD)
+	fmt.Println()
 
 	// Controller
 	ctrl = controller.New(kubeClient, extClient, icingaClient)
@@ -109,12 +97,10 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	ctrl.Run()
 	root.EventuallyTPR().Should(Succeed())
-
-	time.Sleep(time.Minute*30)
 })
 
 var _ = AfterSuite(func() {
-	//err := root.DeleteNamespace()
-	//Expect(err).NotTo(HaveOccurred())
-	//e2e.PrintSeparately("Deleted namespace")
+	err := root.DeleteNamespace()
+	Expect(err).NotTo(HaveOccurred())
+	e2e.PrintSeparately("Deleted namespace")
 })

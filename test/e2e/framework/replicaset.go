@@ -1,6 +1,8 @@
 package framework
 
 import (
+	"time"
+
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/go/types"
 	. "github.com/onsi/gomega"
@@ -34,11 +36,15 @@ func (f *Framework) DeleteReplicaSet(meta metav1.ObjectMeta) error {
 }
 
 func (f *Framework) EventuallyReplicaSetRunning(meta metav1.ObjectMeta) GomegaAsyncAssertion {
-	return Eventually(func() *apiv1.PodList {
-		obj, err := f.kubeClient.ExtensionsV1beta1().ReplicaSets(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
-		Expect(err).NotTo(HaveOccurred())
-		podList, err := f.GetPodList(obj)
-		Expect(err).NotTo(HaveOccurred())
-		return podList
-	})
+	return Eventually(
+		func() *apiv1.PodList {
+			obj, err := f.kubeClient.ExtensionsV1beta1().ReplicaSets(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
+			Expect(err).NotTo(HaveOccurred())
+			podList, err := f.GetPodList(obj)
+			Expect(err).NotTo(HaveOccurred())
+			return podList
+		},
+		time.Minute*2,
+		time.Second*2,
+	)
 }

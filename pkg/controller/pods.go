@@ -102,15 +102,20 @@ func (c *Controller) WatchPods() {
 					}
 
 					for alert := range diff {
+						var err error = nil
 						ch := diff[alert]
 						if oldPod.Status.PodIP == "" && newPod.Status.PodIP != "" {
-							go c.EnsurePod(newPod, nil, ch.new)
+							err = c.EnsurePod(newPod, nil, ch.new)
 						} else if ch.old == nil && ch.new != nil {
-							go c.EnsurePod(newPod, nil, ch.new)
+							err = c.EnsurePod(newPod, nil, ch.new)
 						} else if ch.old != nil && ch.new == nil {
-							go c.EnsurePodDeleted(newPod, ch.old)
+							err = c.EnsurePodDeleted(newPod, ch.old)
 						} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
-							go c.EnsurePod(newPod, ch.old, ch.new)
+							err = c.EnsurePod(newPod, ch.old, ch.new)
+						}
+
+						if err != nil {
+							log.Errorln(err)
 						}
 					}
 				}
@@ -171,7 +176,7 @@ func (c *Controller) EnsurePod(pod *apiv1.Pod, old, new *tapi.PodAlert) (err err
 	} else {
 		err = c.podHost.Update(*new, *pod)
 	}
-	return
+	return err
 }
 
 func (c *Controller) EnsurePodDeleted(pod *apiv1.Pod, alert *tapi.PodAlert) (err error) {

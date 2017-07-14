@@ -21,8 +21,13 @@ func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, icing
 		extClient:    extClient,
 		icingaClient: icingaClient,
 		name:         "searchlight-operator",
-		namespace:    "searchlight-ec6pab", /*rand.WithUniqSuffix("searchlight"),*/
+		namespace:    rand.WithUniqSuffix("searchlight"),
 	}
+}
+
+func (f *Framework) SetIcingaClient(icingaClient *icinga.Client) *Framework {
+	f.icingaClient = icingaClient
+	return f
 }
 
 func (f *Framework) Invoke() *Invocation {

@@ -1,2 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <testsuite tests="4" failures="4" time="131.496093832"></testsuite>
+  <testsuite tests="6" failures="0" time="200.116422577">
+      <testcase name="PodAlert Create ReplicaSet" classname="e2e Suite" time="3.982665472"></testcase>
+      <testcase name="PodAlert Test pod_status Create PodAlert" classname="e2e Suite" time="0.284791897"></testcase>
+      <testcase name="PodAlert Test pod_status Check Icinga Object" classname="e2e Suite" time="23.822680457"></testcase>
+      <testcase name="PodAlert Test pod_status Delete PodAlert" classname="e2e Suite" time="0.293389029"></testcase>
+      <testcase name="PodAlert Test pod_status Check Icinga Object" classname="e2e Suite" time="12.634087411"></testcase>
+      <testcase name="PodAlert Delete ReplicaSet" classname="e2e Suite" time="0.287083232"></testcase>
+  </testsuite>

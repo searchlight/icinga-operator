@@ -87,6 +87,7 @@ type ResponseObject struct {
 			Name            string                 `json:"name"`
 			CheckInterval   float64                `json:"check_interval"`
 			Vars            map[string]interface{} `json:"vars"`
+			LastState       float64                `json:"last_state"`
 			Acknowledgement float64                `json:"acknowledgement"`
 		} `json:"attrs"`
 		Name string `json:"name"`

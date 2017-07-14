@@ -35,17 +35,24 @@ var _ = Describe("PodAlert", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
+		It("Check Icinga Object", func() {
+			root.EventuallyPodAlertIcingaService(podAlert.ObjectMeta, podAlert.Spec).
+				Should(HaveIcingaObject(IcingaServiceState{Ok: *replicaSet.Spec.Replicas}))
+		})
+
 		It("Delete PodAlert", func() {
-			Skip("For test")
 			err := root.DeletePodAlert(podAlert.ObjectMeta)
 			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("Check Icinga Object", func() {
+			root.EventuallyPodAlertIcingaService(podAlert.ObjectMeta, podAlert.Spec).
+				Should(HaveIcingaObject(IcingaServiceState{}))
 		})
 	})
 
 	It("Delete ReplicaSet", func() {
-		Skip("For test")
 		err := root.DeleteReplicaSet(replicaSet.ObjectMeta)
 		Expect(err).NotTo(HaveOccurred())
 	})
 })
-

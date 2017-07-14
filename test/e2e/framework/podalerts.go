@@ -1,9 +1,15 @@
 package framework
 
 import (
+	"time"
+
 	"github.com/appscode/go/crypto/rand"
 	tapi "github.com/appscode/searchlight/api"
+	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/test/e2e/matcher"
+	. "github.com/onsi/gomega"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
 func (f *Invocation) PodAlert() *tapi.PodAlert {
@@ -15,7 +21,9 @@ func (f *Invocation) PodAlert() *tapi.PodAlert {
 				"app": f.app,
 			},
 		},
-		Spec: tapi.PodAlertSpec{},
+		Spec: tapi.PodAlertSpec{
+			CheckInterval: metav1.Duration{time.Second * 5},
+		},
 	}
 }
 
@@ -26,4 +34,77 @@ func (f *Framework) CreatePodAlert(obj *tapi.PodAlert) error {
 
 func (f *Framework) DeletePodAlert(meta metav1.ObjectMeta) error {
 	return f.extClient.PodAlerts(meta.Namespace).Delete(meta.Name)
+}
+
+func (f *Framework) getPodAlertObjects(meta metav1.ObjectMeta, podAlertSpec tapi.PodAlertSpec) ([]icinga.IcingaHost, error) {
+	var podList *apiv1.PodList
+
+	if podAlertSpec.PodName != "" {
+		pod, err := f.kubeClient.CoreV1().Pods(meta.Namespace).Get(podAlertSpec.PodName, metav1.GetOptions{})
+		if err != nil {
+			return nil, err
+		}
+		podList.Items = append(podList.Items, *pod)
+	} else {
+		sel, err := metav1.LabelSelectorAsSelector(&podAlertSpec.Selector)
+		if err != nil {
+			return nil, err
+		}
+		podList, err = f.kubeClient.CoreV1().Pods(meta.Namespace).List(
+			metav1.ListOptions{
+				LabelSelector: sel.String(),
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	objectList := make([]icinga.IcingaHost, 0)
+	for _, pod := range podList.Items {
+		objectList = append(objectList,
+			icinga.IcingaHost{
+				Type:           icinga.TypePod,
+				AlertNamespace: meta.Namespace,
+				ObjectName:     pod.Name,
+			})
+	}
+
+	return objectList, nil
+}
+
+func (f *Framework) EventuallyPodAlertIcingaService(meta metav1.ObjectMeta, podAlertSpec tapi.PodAlertSpec) GomegaAsyncAssertion {
+	objectList, err := f.getPodAlertObjects(meta, podAlertSpec)
+	Expect(err).NotTo(HaveOccurred())
+
+	in := icinga.NewPodHost(nil, nil, f.icingaClient).
+		IcingaServiceSearchQuery(meta.Name, objectList...)
+
+	return Eventually(
+		func() matcher.IcingaServiceState {
+			var respService icinga.ResponseObject
+			_, err := f.icingaClient.Objects().Service("").Get([]string{}, in).Do().Into(&respService)
+			Expect(err).NotTo(HaveOccurred())
+
+			var icingaServiceState matcher.IcingaServiceState
+			for _, service := range respService.Results {
+				if service.Attrs.LastState == 0.0 {
+					icingaServiceState.Ok++
+				}
+				if service.Attrs.LastState == 1.0 {
+					icingaServiceState.Warning++
+				}
+				if service.Attrs.LastState == 2.0 {
+					icingaServiceState.Critical++
+				}
+				if service.Attrs.LastState == 3.0 {
+					icingaServiceState.Unknown++
+				}
+			}
+			return icingaServiceState
+		},
+		time.Minute*5,
+		time.Second*10,
+	)
 }
