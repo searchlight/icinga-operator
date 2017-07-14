@@ -7,11 +7,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
-	"fmt"
 )
 
 func (f *Invocation) ReplicaSet() *extensions.ReplicaSet {
-	fmt.Println("-- ", f)
 	return &extensions.ReplicaSet{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      rand.WithUniqSuffix("replicaset"),
@@ -27,13 +25,8 @@ func (f *Invocation) ReplicaSet() *extensions.ReplicaSet {
 	}
 }
 
-func (f *Framework) GetReplicaSet(meta metav1.ObjectMeta) (*extensions.ReplicaSet, error) {
-	return f.kubeClient.ExtensionsV1beta1().ReplicaSets(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
-}
-
-func (f *Framework) CreateReplicaSet(obj *extensions.ReplicaSet) error {
-	_, err := f.kubeClient.ExtensionsV1beta1().ReplicaSets(obj.Namespace).Create(obj)
-	return err
+func (f *Framework) CreateReplicaSet(obj *extensions.ReplicaSet) (*extensions.ReplicaSet, error) {
+	return f.kubeClient.ExtensionsV1beta1().ReplicaSets(obj.Namespace).Create(obj)
 }
 
 func (f *Framework) DeleteReplicaSet(meta metav1.ObjectMeta) error {
