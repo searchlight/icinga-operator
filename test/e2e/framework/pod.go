@@ -1,8 +1,12 @@
 package framework
 
 import (
+	"fmt"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
+	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
 const (
@@ -45,4 +49,21 @@ func (f *Invocation) PodTemplate() apiv1.PodTemplateSpec {
 			},
 		},
 	}
+}
+
+func (f *Framework) GetPodList(actual interface{}) (*apiv1.PodList, error) {
+	switch obj := actual.(type) {
+	case *apiv1.Pod:
+		return f.listPods(obj.Namespace, obj.Labels)
+	case *extensions.ReplicaSet:
+		return f.listPods(obj.Namespace, obj.Spec.Selector.MatchLabels)
+	default:
+		return nil, fmt.Errorf("Unknown object type")
+	}
+}
+
+func (f *Framework) listPods(namespace string, label map[string]string) (*apiv1.PodList, error) {
+	return f.kubeClient.CoreV1().Pods(namespace).List(metav1.ListOptions{
+		LabelSelector: labels.SelectorFromSet(label).String(),
+	})
 }

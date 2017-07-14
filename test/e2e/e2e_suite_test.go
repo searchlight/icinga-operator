@@ -45,12 +45,13 @@ var _ = BeforeSuite(func() {
 	By("Using kubeconfig from " + kubeconfigPath)
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
 	Expect(err).NotTo(HaveOccurred())
-
 	// Clients
 	kubeClient := clientset.NewForConfigOrDie(config)
 	extClient := tcs.NewForConfigOrDie(config)
 	// Framework
 	root = framework.New(kubeClient, extClient, nil)
+
+	fmt.Println("++ ", root)
 
 	e2e.PrintSeparately("Using namespace: ", root.Namespace())
 	By("Using namespace " + root.Namespace())
@@ -58,13 +59,11 @@ var _ = BeforeSuite(func() {
 	// Create namespace
 	err = root.CreateNamespace()
 	Expect(err).NotTo(HaveOccurred())
-
 	// Create Searchlight deployment
 	searchlightDeployment := root.Invoke().DeploymentExtensionSearchlight()
 	err = root.CreateDeploymentExtension(searchlightDeployment)
 	Expect(err).NotTo(HaveOccurred())
-
-	//
+	// Check for deployment
 	for {
 		deployment, err := root.GetDeploymentExtension(searchlightDeployment.ObjectMeta)
 		Expect(err).NotTo(HaveOccurred())
@@ -76,22 +75,20 @@ var _ = BeforeSuite(func() {
 		fmt.Println("Waiting for Searchlight deployment to be available")
 		time.Sleep(5 * time.Second)
 	}
-
-	// Create Searchlight svc
+	// Create Searchlight service
 	searchlightService := root.Invoke().ServiceSearchlight()
 	err = root.CreateService(searchlightService)
 	Expect(err).NotTo(HaveOccurred())
-
 	// Get Icinga Ingress Hostname
 	icingaHost, err := root.GetServiceIngressHost(searchlightService.ObjectMeta)
 	Expect(err).NotTo(HaveOccurred())
-
+	// Icinga Config
 	cfg := &icinga.Config{
 		Endpoint: fmt.Sprintf("https://%s:5665/v1", icingaHost),
 	}
 	cfg.BasicAuth.Username = e2e.ICINGA_API_USER
 	cfg.BasicAuth.Password = e2e.ICINGA_API_PASSWORD
-
+	// Icinga Client
 	icingaClient := icinga.NewClient(*cfg)
 	for {
 		if icingaClient.Check().Get(nil).Do().Status == 200 {
@@ -101,7 +98,11 @@ var _ = BeforeSuite(func() {
 		fmt.Println("Waiting for icinga to start")
 		time.Sleep(5 * time.Second)
 	}
-
+	// Controller
+	ctrl = controller.New(kubeClient, extClient, icingaClient)
+	err = ctrl.Setup()
+	Expect(err).NotTo(HaveOccurred())
+	ctrl.Run()
 })
 
 var _ = AfterSuite(func() {

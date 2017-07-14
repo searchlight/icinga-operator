@@ -15,7 +15,7 @@ func (f *Invocation) DeploymentAppSearchlight() *apps.Deployment {
 			Name:      f.name,
 			Namespace: f.namespace,
 			Labels: map[string]string{
-				"app": "searchlight",
+				"app": f.app,
 			},
 		},
 		Spec: apps.DeploymentSpec{
@@ -31,7 +31,7 @@ func (f *Invocation) DeploymentExtensionSearchlight() *extensions.Deployment {
 			Name:      f.name,
 			Namespace: f.namespace,
 			Labels: map[string]string{
-				"app": "searchlight",
+				"app": f.app,
 			},
 		},
 		Spec: extensions.DeploymentSpec{
@@ -49,7 +49,7 @@ func (f *Invocation) ServiceSearchlight() *apiv1.Service {
 		},
 		Spec: apiv1.ServiceSpec{
 			Selector: map[string]string{
-				"app": "searchlight",
+				"app": f.app,
 			},
 			Type: apiv1.ServiceTypeLoadBalancer,
 			Ports: []apiv1.ServicePort{
@@ -72,7 +72,7 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 	return apiv1.PodTemplateSpec{
 		ObjectMeta: metav1.ObjectMeta{
 			Labels: map[string]string{
-				"app": "searchlight",
+				"app": f.app,
 			},
 		},
 		Spec: apiv1.PodSpec{
