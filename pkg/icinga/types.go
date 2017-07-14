@@ -15,9 +15,6 @@ const (
 	TypePod     = "pod"
 	TypeNode    = "node"
 	TypeCluster = "cluster"
-
-	ObjectType = "alert.appscode.com/objectType"
-	ObjectName = "alert.appscode.com/objectName"
 )
 
 type IcingaHost struct {
@@ -53,7 +50,7 @@ func (kh IcingaHost) GetAlert(extClient tcs.ExtensionInterface, alertName string
 
 func ParseHost(name string) (*IcingaHost, error) {
 	parts := strings.SplitN(name, "@", 3)
-	if len(parts) == 2 || len(parts) == 3 {
+	if !(len(parts) == 2 || len(parts) == 3) {
 		return nil, fmt.Errorf("Host %s has a bad format", name)
 	}
 	t := parts[1]
