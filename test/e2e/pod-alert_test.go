@@ -1,8 +1,8 @@
 package e2e_test
 
 import (
-	"github.com/appscode/go/types"
 	tapi "github.com/appscode/searchlight/api"
+	"github.com/appscode/searchlight/test/e2e/framework"
 	. "github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -12,47 +12,104 @@ import (
 var _ = Describe("PodAlert", func() {
 
 	var (
-		replicaSet *extensions.ReplicaSet
-		podAlert   *tapi.PodAlert
-		err        error
+		err   error
+		f     *framework.Invocation
+		rs    *extensions.ReplicaSet
+		alert *tapi.PodAlert
 	)
 
-	It("Create ReplicaSet", func() {
-		replicaSet = root.Invoke().ReplicaSet()
-		replicaSet.Spec.Replicas = types.Int32P(2)
-		replicaSet, err = root.CreateReplicaSet(replicaSet)
-		Expect(err).NotTo(HaveOccurred())
-		By("Waiting for Running pods")
-		root.EventuallyReplicaSetRunning(replicaSet.ObjectMeta).Should(HaveRunningPods(*replicaSet.Spec.Replicas))
+	BeforeEach(func() {
+		f = root.Invoke()
+		alert = f.PodAlert()
 	})
+	JustBeforeEach(func() {
+		rs = f.ReplicaSet()
+		alert.Spec.Selector = *(rs.Spec.Selector)
+	})
+
+	var (
+		shouldManageIcingaServiceForOriginalReplicas = func() {
+			By("Creating replica set " + rs.Name + "@" + rs.Namespace)
+			_, err = f.CreateReplicaSet(rs)
+			Expect(err).NotTo(HaveOccurred())
+
+			By("Waiting for Running pods")
+			f.EventuallyReplicaSetRunning(rs.ObjectMeta).Should(HaveRunningPods(*rs.Spec.Replicas))
+
+			By("Create matching pod alert")
+			err := f.CreatePodAlert(alert)
+			Expect(err).NotTo(HaveOccurred())
+
+			By("Waiting for icinga services")
+			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
+				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
+
+			By("Delete pod alerts")
+			err = f.DeletePodAlert(alert.ObjectMeta)
+			Expect(err).NotTo(HaveOccurred())
+
+			By("Wait for icinga services to be deleted")
+			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
+				Should(HaveIcingaObject(IcingaServiceState{}))
+		}
+
+		shouldManageIcingaServiceForNewReplica = func() {
+			By("Creating replica set " + rs.Name + "@" + rs.Namespace)
+			_, err = f.CreateReplicaSet(rs)
+			Expect(err).NotTo(HaveOccurred())
+
+			By("Waiting for Running pods")
+			f.EventuallyReplicaSetRunning(rs.ObjectMeta).Should(HaveRunningPods(*rs.Spec.Replicas))
+
+			By("Create matching pod alert")
+			err := f.CreatePodAlert(alert)
+			Expect(err).NotTo(HaveOccurred())
+
+			By("Waiting for icinga services")
+			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
+				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
+
+			// replica = 3
+
+			By("Delete pod alerts")
+			err = f.DeletePodAlert(alert.ObjectMeta)
+			Expect(err).NotTo(HaveOccurred())
+
+			By("Wait for icinga services to be deleted")
+			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
+				Should(HaveIcingaObject(IcingaServiceState{}))
+		}
+
+		// Reducing replica removed icinga service
+
+		// Changing RS label removed alert
+		// Changing alert selector, removed alert
+	)
 
 	Describe("Test pod_status", func() {
-		It("Create PodAlert", func() {
-			podAlert = root.Invoke().PodAlert()
-			podAlert.Spec.Selector = *(replicaSet.Spec.Selector)
-			podAlert.Spec.Check = tapi.CheckPodStatus
-			err := root.CreatePodAlert(podAlert)
-			Expect(err).NotTo(HaveOccurred())
+		AfterEach(func() {
+			f.DeleteReplicaSet(rs.ObjectMeta)
+			f.DeletePodAlert(alert.ObjectMeta)
 		})
 
-		It("Check Icinga Object", func() {
-			root.EventuallyPodAlertIcingaService(podAlert.ObjectMeta, podAlert.Spec).
-				Should(HaveIcingaObject(IcingaServiceState{Ok: *replicaSet.Spec.Replicas}))
+		Context("check_pod_status", func() {
+			BeforeEach(func() {
+				alert.Spec.Check = tapi.CheckPodStatus
+				// vars
+			})
+
+			It("should manage icinga service for original replicas", shouldManageIcingaServiceForOriginalReplicas)
+			It("should manage icinga service for new replica", shouldManageIcingaServiceForNewReplica)
 		})
 
-		It("Delete PodAlert", func() {
-			err := root.DeletePodAlert(podAlert.ObjectMeta)
-			Expect(err).NotTo(HaveOccurred())
-		})
+		Context("check_pod_exec", func() {
+			BeforeEach(func() {
+				alert.Spec.Check = tapi.CheckPodExec
+				// vars
+			})
 
-		It("Check Icinga Object", func() {
-			root.EventuallyPodAlertIcingaService(podAlert.ObjectMeta, podAlert.Spec).
-				Should(HaveIcingaObject(IcingaServiceState{}))
+			It("should manage icinga service for original replicas", shouldManageIcingaServiceForOriginalReplicas)
+			It("should manage icinga service for new replica", shouldManageIcingaServiceForNewReplica)
 		})
-	})
-
-	It("Delete ReplicaSet", func() {
-		err := root.DeleteReplicaSet(replicaSet.ObjectMeta)
-		Expect(err).NotTo(HaveOccurred())
 	})
 })

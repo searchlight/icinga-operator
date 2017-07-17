@@ -21,7 +21,7 @@ func (f *Invocation) ReplicaSet() *extensions.ReplicaSet {
 			},
 		},
 		Spec: extensions.ReplicaSetSpec{
-			Replicas: types.Int32P(1),
+			Replicas: types.Int32P(2),
 			Template: f.PodTemplate(),
 		},
 	}
