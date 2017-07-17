@@ -2,7 +2,10 @@ package framework
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/appscode/go/crypto/rand"
+	. "github.com/onsi/gomega"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
@@ -14,6 +17,41 @@ const (
 	TestSourceDataMountPath  = "/source/data"
 )
 
+func (f *Invocation) Pod() *apiv1.Pod {
+	return &apiv1.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      rand.WithUniqSuffix("pod"),
+			Namespace: f.namespace,
+			Labels: map[string]string{
+				"app": f.app,
+			},
+		},
+		Spec: getPodSpec(),
+	}
+}
+
+func (f *Framework) CreatePod(obj *apiv1.Pod) (*apiv1.Pod, error) {
+	return f.kubeClient.CoreV1().Pods(obj.Namespace).Create(obj)
+}
+
+func (f *Framework) DeletePod(meta metav1.ObjectMeta) error {
+	return f.kubeClient.CoreV1().Pods(meta.Namespace).Delete(meta.Name, deleteInForeground())
+}
+
+func (f *Framework) EventuallyPodRunning(meta metav1.ObjectMeta) GomegaAsyncAssertion {
+	return Eventually(
+		func() *apiv1.PodList {
+			obj, err := f.kubeClient.CoreV1().Pods(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
+			Expect(err).NotTo(HaveOccurred())
+			podList, err := f.GetPodList(obj)
+			Expect(err).NotTo(HaveOccurred())
+			return podList
+		},
+		time.Minute*2,
+		time.Second*2,
+	)
+}
+
 func (f *Invocation) PodTemplate() apiv1.PodTemplateSpec {
 	return apiv1.PodTemplateSpec{
 		ObjectMeta: metav1.ObjectMeta{
@@ -21,30 +59,34 @@ func (f *Invocation) PodTemplate() apiv1.PodTemplateSpec {
 				"app": f.app,
 			},
 		},
-		Spec: apiv1.PodSpec{
-			Containers: []apiv1.Container{
-				{
-					Name:            "busybox",
-					Image:           "busybox",
-					ImagePullPolicy: apiv1.PullIfNotPresent,
-					Command: []string{
-						"sleep",
-						"3600",
-					},
-					VolumeMounts: []apiv1.VolumeMount{
-						{
-							Name:      TestSourceDataVolumeName,
-							MountPath: TestSourceDataMountPath,
-						},
+		Spec: getPodSpec(),
+	}
+}
+
+func getPodSpec() apiv1.PodSpec {
+	return apiv1.PodSpec{
+		Containers: []apiv1.Container{
+			{
+				Name:            "busybox",
+				Image:           "busybox",
+				ImagePullPolicy: apiv1.PullIfNotPresent,
+				Command: []string{
+					"sleep",
+					"3600",
+				},
+				VolumeMounts: []apiv1.VolumeMount{
+					{
+						Name:      TestSourceDataVolumeName,
+						MountPath: TestSourceDataMountPath,
 					},
 				},
 			},
-			Volumes: []apiv1.Volume{
-				{
-					Name: TestSourceDataVolumeName,
-					VolumeSource: apiv1.VolumeSource{
-						EmptyDir: &apiv1.EmptyDirVolumeSource{},
-					},
+		},
+		Volumes: []apiv1.Volume{
+			{
+				Name: TestSourceDataVolumeName,
+				VolumeSource: apiv1.VolumeSource{
+					EmptyDir: &apiv1.EmptyDirVolumeSource{},
 				},
 			},
 		},

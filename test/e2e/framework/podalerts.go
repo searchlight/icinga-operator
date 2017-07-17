@@ -9,7 +9,6 @@ import (
 	"github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/gomega"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
 func (f *Invocation) PodAlert() *tapi.PodAlert {
@@ -32,25 +31,33 @@ func (f *Framework) CreatePodAlert(obj *tapi.PodAlert) error {
 	return err
 }
 
+func (f *Framework) GetPodAlert(meta metav1.ObjectMeta) (*tapi.PodAlert, error) {
+	return f.extClient.PodAlerts(meta.Namespace).Get(meta.Name)
+}
+
+func (f *Framework) UpdatePodAlert(obj *tapi.PodAlert) (*tapi.PodAlert, error) {
+	return f.extClient.PodAlerts(obj.Namespace).Update(obj)
+}
+
 func (f *Framework) DeletePodAlert(meta metav1.ObjectMeta) error {
 	return f.extClient.PodAlerts(meta.Namespace).Delete(meta.Name)
 }
 
 func (f *Framework) getPodAlertObjects(meta metav1.ObjectMeta, podAlertSpec tapi.PodAlertSpec) ([]icinga.IcingaHost, error) {
-	var podList *apiv1.PodList
+	names := make([]string, 0)
 
 	if podAlertSpec.PodName != "" {
 		pod, err := f.kubeClient.CoreV1().Pods(meta.Namespace).Get(podAlertSpec.PodName, metav1.GetOptions{})
 		if err != nil {
 			return nil, err
 		}
-		podList.Items = append(podList.Items, *pod)
+		names = append(names, pod.Name)
 	} else {
 		sel, err := metav1.LabelSelectorAsSelector(&podAlertSpec.Selector)
 		if err != nil {
 			return nil, err
 		}
-		podList, err = f.kubeClient.CoreV1().Pods(meta.Namespace).List(
+		podList, err := f.kubeClient.CoreV1().Pods(meta.Namespace).List(
 			metav1.ListOptions{
 				LabelSelector: sel.String(),
 			},
@@ -59,15 +66,19 @@ func (f *Framework) getPodAlertObjects(meta metav1.ObjectMeta, podAlertSpec tapi
 			return nil, err
 		}
 
+		for _, pod := range podList.Items {
+			names = append(names, pod.Name)
+		}
+
 	}
 
 	objectList := make([]icinga.IcingaHost, 0)
-	for _, pod := range podList.Items {
+	for _, name := range names {
 		objectList = append(objectList,
 			icinga.IcingaHost{
 				Type:           icinga.TypePod,
 				AlertNamespace: meta.Namespace,
-				ObjectName:     pod.Name,
+				ObjectName:     name,
 			})
 	}
 

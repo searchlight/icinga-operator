@@ -112,8 +112,8 @@ func (c *Controller) EnsurePodAlert(old, new *tapi.PodAlert) {
 			}
 		} else {
 			if resources, err := c.KubeClient.CoreV1().Pods(old.Namespace).List(metav1.ListOptions{LabelSelector: oldSel.String()}); err == nil {
-				for _, resource := range resources.Items {
-					oldObjs[resource.Name] = &resource
+				for i := range resources.Items {
+					oldObjs[resources.Items[i].Name] = &resources.Items[i]
 				}
 			}
 		}

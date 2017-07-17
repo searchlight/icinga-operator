@@ -323,7 +323,6 @@ func checkPodVolumeStat(req *Request) (icinga.State, interface{}) {
 
 func NewCmd() *cobra.Command {
 	var req Request
-	var icingaHost string
 
 	c := &cobra.Command{
 		Use:     "check_volume",
@@ -342,7 +341,7 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
+	c.Flags().StringVarP(&req.Host, "host", "H", "", "Icinga host name")
 	c.Flags().BoolVar(&req.NodeStat, "node_stat", false, "Checking Node disk size")
 	c.Flags().StringVarP(&req.SecretName, "secret", "s", "", `Kubernetes secret name`)
 	c.Flags().StringVarP(&req.VolumeName, "volume_name", "N", "", "Volume name")

@@ -43,9 +43,9 @@ func (matcher *icingaObjectMatcher) Match(actual interface{}) (success bool, err
 }
 
 func (matcher *icingaObjectMatcher) FailureMessage(actual interface{}) (message string) {
-	return fmt.Sprintf("Expected to have icinga object: %v", actual)
+	return fmt.Sprintf("Found icinga object: %v", actual)
 }
 
 func (matcher *icingaObjectMatcher) NegatedFailureMessage(actual interface{}) (message string) {
-	return fmt.Sprintf("Expected to not have icinga object: %v", actual)
+	return fmt.Sprintf("Found icinga object: %v", actual)
 }

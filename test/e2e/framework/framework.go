@@ -21,7 +21,7 @@ func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, icing
 		extClient:    extClient,
 		icingaClient: icingaClient,
 		name:         "searchlight-operator",
-		namespace:    rand.WithUniqSuffix("searchlight"),
+		namespace:    "searchlight-hndaso", /*rand.WithUniqSuffix("searchlight"),*/
 	}
 }
 

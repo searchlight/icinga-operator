@@ -35,3 +35,29 @@ func (matcher *statusMatcher) FailureMessage(actual interface{}) (message string
 func (matcher *statusMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return "Expected to be not Running all Pods"
 }
+
+func HavePods(expected int32) types.GomegaMatcher {
+	return &countMatcher{
+		expected: expected,
+	}
+}
+
+type countMatcher struct {
+	expected int32
+}
+
+func (matcher *countMatcher) Match(actual interface{}) (success bool, err error) {
+	podList := actual.(*apiv1.PodList)
+	if int(matcher.expected) != len(podList.Items) {
+		return false, nil
+	}
+	return true, nil
+}
+
+func (matcher *countMatcher) FailureMessage(actual interface{}) (message string) {
+	return "Expected to have all Pods"
+}
+
+func (matcher *countMatcher) NegatedFailureMessage(actual interface{}) (message string) {
+	return "Expected to not have all Pods"
+}

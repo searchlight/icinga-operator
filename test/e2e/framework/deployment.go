@@ -37,7 +37,7 @@ func (f *Framework) DeleteDeploymentApp(meta metav1.ObjectMeta) error {
 	return f.kubeClient.AppsV1beta1().Deployments(meta.Namespace).Delete(meta.Name, deleteInForeground())
 }
 
-func (f *Framework) EventuallyDeploymentAppRunning(meta metav1.ObjectMeta) GomegaAsyncAssertion {
+func (f *Framework) EventuallyDeploymentApp(meta metav1.ObjectMeta) GomegaAsyncAssertion {
 	return Eventually(func() *apiv1.PodList {
 		obj, err := f.kubeClient.AppsV1beta1().Deployments(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
 		Expect(err).NotTo(HaveOccurred())
@@ -72,7 +72,7 @@ func (f *Framework) DeleteDeploymentExtension(meta metav1.ObjectMeta) error {
 	return f.kubeClient.ExtensionsV1beta1().Deployments(meta.Namespace).Delete(meta.Name, deleteInForeground())
 }
 
-func (f *Framework) EventuallyDeploymentExtensionRunning(meta metav1.ObjectMeta) GomegaAsyncAssertion {
+func (f *Framework) EventuallyDeploymentExtension(meta metav1.ObjectMeta) GomegaAsyncAssertion {
 	return Eventually(
 		func() *apiv1.PodList {
 			obj, err := f.kubeClient.ExtensionsV1beta1().Deployments(meta.Namespace).Get(meta.Name, metav1.GetOptions{})

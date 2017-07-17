@@ -27,15 +27,23 @@ func (f *Invocation) ReplicaSet() *extensions.ReplicaSet {
 	}
 }
 
+func (f *Framework) GetReplicaSet(meta metav1.ObjectMeta) (*extensions.ReplicaSet, error) {
+	return f.kubeClient.ExtensionsV1beta1().ReplicaSets(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
+}
+
 func (f *Framework) CreateReplicaSet(obj *extensions.ReplicaSet) (*extensions.ReplicaSet, error) {
 	return f.kubeClient.ExtensionsV1beta1().ReplicaSets(obj.Namespace).Create(obj)
+}
+
+func (f *Framework) UpdateReplicaSet(obj *extensions.ReplicaSet) (*extensions.ReplicaSet, error) {
+	return f.kubeClient.ExtensionsV1beta1().ReplicaSets(obj.Namespace).Update(obj)
 }
 
 func (f *Framework) DeleteReplicaSet(meta metav1.ObjectMeta) error {
 	return f.kubeClient.ExtensionsV1beta1().ReplicaSets(meta.Namespace).Delete(meta.Name, deleteInForeground())
 }
 
-func (f *Framework) EventuallyReplicaSetRunning(meta metav1.ObjectMeta) GomegaAsyncAssertion {
+func (f *Framework) EventuallyReplicaSet(meta metav1.ObjectMeta) GomegaAsyncAssertion {
 	return Eventually(
 		func() *apiv1.PodList {
 			obj, err := f.kubeClient.ExtensionsV1beta1().ReplicaSets(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
