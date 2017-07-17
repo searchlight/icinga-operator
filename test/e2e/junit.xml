@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <testsuite tests="1" failures="1" time="36.203586661">
-      <testcase name="PodAlert Test check_pod_status should manage icinga service for new Pod" classname="e2e Suite" time="1.204171414">
+  <testsuite tests="2" failures="2" time="624.791019445">
+      <testcase name="PodAlert Test check_pod_status should manage icinga service for new Pod" classname="e2e Suite" time="4.657918985">
           <skipped></skipped>
       </testcase>
-      <testcase name="PodAlert Test check_pod_status should manage icinga service for deleted Pod" classname="e2e Suite" time="0.917355772">
+      <testcase name="PodAlert Test check_pod_status should manage icinga service for deleted Pod" classname="e2e Suite" time="2.834865718">
           <skipped></skipped>
       </testcase>
-      <testcase name="PodAlert Test check_pod_status should manage icinga service for Alert.Spec.Selector changed" classname="e2e Suite" time="0.607622177">
+      <testcase name="PodAlert Test check_pod_status should manage icinga service for Alert.Spec.Selector changed" classname="e2e Suite" time="1.4529291739999999">
           <skipped></skipped>
       </testcase>
-      <testcase name="PodAlert Test check_pod_status should manage icinga service for Alert.Spec.PodName" classname="e2e Suite" time="0.611103035">
+      <testcase name="PodAlert Test check_pod_status should manage icinga service for Alert.Spec.PodName" classname="e2e Suite" time="0.582082205">
           <skipped></skipped>
       </testcase>
-      <testcase name="PodAlert Test check_pod_status should handle icinga service for Critical State" classname="e2e Suite" time="0.602416505">
-          <skipped></skipped>
+      <testcase name="PodAlert Test check_kube_exec exit 0 should manage icinga service for Alert.Spec.Selector" classname="e2e Suite" time="306.116462754">
+          <failure type="Failure">/home/shahriar/go/src/github.com/appscode/searchlight/test/e2e/pod-alert_test.go:296&#xA;Timed out after 300.000s.&#xA;Found icinga object: {0 0 0 2}&#xA;/home/shahriar/go/src/github.com/appscode/searchlight/test/e2e/pod-alert_test.go:51</failure>
+          <system-out>�[1mSTEP�[0m: Create ReplicaSet replicaset-mnunfk@searchlight-hndaso&#xA;�[1mSTEP�[0m: Wait for Running pods&#xA;�[1mSTEP�[0m: Create matching pod alert&#xA;�[1mSTEP�[0m: Check icinga services&#xA;</system-out>
       </testcase>
-      <testcase name="PodAlert Test check_volume should manage icinga service for Alert.Spec.Selector" classname="e2e Suite" time="28.58749378">
-          <failure type="Failure">/home/shahriar/go/src/github.com/appscode/searchlight/test/e2e/pod-alert_test.go:277&#xA;Expected error:&#xA;    &lt;*url.Error | 0xc4208ef8f0&gt;: {&#xA;        Op: &#34;Get&#34;,&#xA;        URL: &#34;https://ab443f8b56ad311e78b6912f236046fb-1530931575.us-east-1.elb.amazonaws.com:5665/v1/objects/services&#34;,&#xA;        Err: {&#xA;            Op: &#34;dial&#34;,&#xA;            Net: &#34;tcp&#34;,&#xA;            Source: nil,&#xA;            Addr: nil,&#xA;            Err: {&#xA;                Err: &#34;read udp 127.0.0.1:44664-&gt;127.0.1.1:53: i/o timeout&#34;,&#xA;                Name: &#34;ab443f8b56ad311e78b6912f236046fb-1530931575.us-east-1.elb.amazonaws.com&#34;,&#xA;                Server: &#34;127.0.1.1:53&#34;,&#xA;                IsTimeout: true,&#xA;                IsTemporary: false,&#xA;            },&#xA;        },&#xA;    }&#xA;    Get https://ab443f8b56ad311e78b6912f236046fb-1530931575.us-east-1.elb.amazonaws.com:5665/v1/objects/services: dial tcp: lookup ab443f8b56ad311e78b6912f236046fb-1530931575.us-east-1.elb.amazonaws.com on 127.0.1.1:53: read udp 127.0.0.1:44664-&gt;127.0.1.1:53: i/o timeout&#xA;not to have occurred&#xA;/home/shahriar/go/src/github.com/appscode/searchlight/test/e2e/framework/podalerts.go:99</failure>
-          <system-out>�[1mSTEP�[0m: Create ReplicaSet replicaset-eccc7z@searchlight-hndaso&#xA;�[1mSTEP�[0m: Wait for Running pods&#xA;�[1mSTEP�[0m: Create matching pod alert&#xA;�[1mSTEP�[0m: Check icinga services&#xA;</system-out>
+      <testcase name="PodAlert Test check_kube_exec exit 2 should handle icinga service for Critical State" classname="e2e Suite" time="305.275581508">
+          <failure type="Failure">/home/shahriar/go/src/github.com/appscode/searchlight/test/e2e/pod-alert_test.go:304&#xA;Timed out after 300.000s.&#xA;Found icinga object: {0 0 0 2}&#xA;/home/shahriar/go/src/github.com/appscode/searchlight/test/e2e/pod-alert_test.go:236</failure>
+          <system-out>�[1mSTEP�[0m: Create ReplicaSet replicaset-ebql2e@searchlight-hndaso&#xA;�[1mSTEP�[0m: Wait for all pods&#xA;�[1mSTEP�[0m: Create matching pod alert&#xA;�[1mSTEP�[0m: Check icinga services&#xA;</system-out>
       </testcase>
   </testsuite>

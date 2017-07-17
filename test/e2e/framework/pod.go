@@ -9,6 +9,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
+	apps "k8s.io/client-go/pkg/apis/apps/v1beta1"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
@@ -100,6 +101,10 @@ func (f *Framework) GetPodList(actual interface{}) (*apiv1.PodList, error) {
 	case *extensions.ReplicaSet:
 		return f.listPods(obj.Namespace, obj.Spec.Selector.MatchLabels)
 	case *extensions.Deployment:
+		return f.listPods(obj.Namespace, obj.Spec.Selector.MatchLabels)
+	case *apps.Deployment:
+		return f.listPods(obj.Namespace, obj.Spec.Selector.MatchLabels)
+	case *apps.StatefulSet:
 		return f.listPods(obj.Namespace, obj.Spec.Selector.MatchLabels)
 	default:
 		return nil, fmt.Errorf("Unknown object type")

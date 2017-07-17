@@ -31,7 +31,7 @@ var _ = Describe("PodAlert", func() {
 
 	var (
 		shouldManageIcingaServiceForLabelSelector = func() {
-			//Skip("Skipping test")
+			// Skip("Skipping test")
 
 			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
 			rs, err = f.CreateReplicaSet(rs)
@@ -215,7 +215,7 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldHandleIcingaServiceForCriticalState = func() {
-			Skip("Skipping test")
+			// Skip("Skipping test")
 
 			rs.Spec.Template.Spec.Containers[0].Image = "invalid-image"
 			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
@@ -262,7 +262,7 @@ var _ = Describe("PodAlert", func() {
 			It("should manage icinga service for deleted Pod", shouldManageIcingaServiceForDeletedPod)
 			It("should manage icinga service for Alert.Spec.Selector changed", shouldManageIcingaServiceForLabelChanged)
 			It("should manage icinga service for Alert.Spec.PodName", shouldManageIcingaServiceForPodName)
-			It("should handle icinga service for Critical State", shouldHandleIcingaServiceForCriticalState)
+			// It("should handle icinga service for Critical State", shouldHandleIcingaServiceForCriticalState)
 		})
 
 		// Check "volume"
@@ -274,7 +274,36 @@ var _ = Describe("PodAlert", func() {
 				}
 			})
 
-			It("should manage icinga service for Alert.Spec.Selector", shouldManageIcingaServiceForLabelSelector)
+			//It("should manage icinga service for Alert.Spec.Selector", shouldManageIcingaServiceForLabelSelector)
+		})
+
+		// Check "kube_exec"
+		Context("check_kube_exec", func() {
+
+			BeforeEach(func() {
+				alert.Spec.Check = tapi.CheckPodExec
+				alert.Spec.Vars = map[string]interface{}{
+					"container": "busybox",
+					"cmd":       "/bin/sh",
+				}
+			})
+
+			Context("exit 0", func() {
+				JustBeforeEach(func() {
+					alert.Spec.Vars["argv"] = "exit 0"
+				})
+
+				It("should manage icinga service for Alert.Spec.Selector", shouldManageIcingaServiceForLabelSelector)
+			})
+
+			Context("exit 2", func() {
+				JustBeforeEach(func() {
+					alert.Spec.Vars["argv"] = "exit 2"
+				})
+
+				It("should handle icinga service for Critical State", shouldHandleIcingaServiceForCriticalState)
+			})
+
 		})
 
 	})

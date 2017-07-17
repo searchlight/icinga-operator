@@ -40,7 +40,7 @@ func (f *Framework) UpdateReplicaSet(obj *extensions.ReplicaSet) (*extensions.Re
 }
 
 func (f *Framework) DeleteReplicaSet(meta metav1.ObjectMeta) error {
-	return f.kubeClient.ExtensionsV1beta1().ReplicaSets(meta.Namespace).Delete(meta.Name, deleteInForeground())
+	return f.kubeClient.ExtensionsV1beta1().ReplicaSets(meta.Namespace).Delete(meta.Name, deleteInBackground())
 }
 
 func (f *Framework) EventuallyReplicaSet(meta metav1.ObjectMeta) GomegaAsyncAssertion {

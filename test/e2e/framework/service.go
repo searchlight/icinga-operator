@@ -10,6 +10,10 @@ import (
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
+const (
+	TEST_HEADLESS_SERVICE = "headless"
+)
+
 func (f *Framework) CreateService(obj *apiv1.Service) error {
 	_, err := f.kubeClient.CoreV1().Services(obj.Namespace).Create(obj)
 	return err
