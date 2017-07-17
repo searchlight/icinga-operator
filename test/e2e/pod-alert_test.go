@@ -60,7 +60,7 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForNewPod = func() {
-			Skip("Skipping test")
+			// Skip("Skipping test")
 
 			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
 			rs, err = f.CreateReplicaSet(rs)
@@ -101,7 +101,7 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForDeletedPod = func() {
-			Skip("Skipping test")
+			// Skip("Skipping test")
 
 			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
 			rs, err = f.CreateReplicaSet(rs)
@@ -142,7 +142,7 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForLabelChanged = func() {
-			Skip("Skipping test")
+			// Skip("Skipping test")
 
 			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
 			rs, err = f.CreateReplicaSet(rs)
@@ -186,7 +186,7 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForPodName = func() {
-			Skip("Skipping test")
+			// Skip("Skipping test")
 
 			By("Create Pod " + pod.Name + "@" + pod.Namespace)
 			pod, err = f.CreatePod(pod)

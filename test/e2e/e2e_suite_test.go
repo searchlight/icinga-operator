@@ -11,7 +11,7 @@ import (
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e"
 	"github.com/appscode/searchlight/test/e2e/framework"
-	// . "github.com/appscode/searchlight/test/e2e/matcher"
+	. "github.com/appscode/searchlight/test/e2e/matcher"
 	"github.com/mitchellh/go-homedir"
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/reporters"
@@ -55,26 +55,24 @@ var _ = BeforeSuite(func() {
 	e2e.PrintSeparately("Using namespace: ", root.Namespace())
 	By("Using namespace " + root.Namespace())
 
-	//// Create namespace
-	//err = root.CreateNamespace()
-	//Expect(err).NotTo(HaveOccurred())
-	//
-	//// Create Searchlight deployment
-	//slDeployment := root.Invoke().DeploymentExtensionSearchlight()
-	//err = root.CreateDeploymentExtension(slDeployment)
-	//Expect(err).NotTo(HaveOccurred())
-	//By("Waiting for Running pods")
-	//root.EventuallyDeploymentExtension(slDeployment.ObjectMeta).Should(HaveRunningPods(*slDeployment.Spec.Replicas))
-	//
-	//// Create Searchlight service
-	//slService := root.Invoke().ServiceSearchlight()
-	//err = root.CreateService(slService)
-	//Expect(err).NotTo(HaveOccurred())
-	//// Get Icinga Ingress Hostname
-	//icingaHost, err := root.GetServiceIngressHost(slService.ObjectMeta)
-	//Expect(err).NotTo(HaveOccurred())
+	// Create namespace
+	err = root.CreateNamespace()
+	Expect(err).NotTo(HaveOccurred())
 
-	icingaHost := "ab443f8b56ad311e78b6912f236046fb-1530931575.us-east-1.elb.amazonaws.com"
+	// Create Searchlight deployment
+	slDeployment := root.Invoke().DeploymentExtensionSearchlight()
+	err = root.CreateDeploymentExtension(slDeployment)
+	Expect(err).NotTo(HaveOccurred())
+	By("Waiting for Running pods")
+	root.EventuallyDeploymentExtension(slDeployment.ObjectMeta).Should(HaveRunningPods(*slDeployment.Spec.Replicas))
+
+	// Create Searchlight service
+	slService := root.Invoke().ServiceSearchlight()
+	err = root.CreateService(slService)
+	Expect(err).NotTo(HaveOccurred())
+	// Get Icinga Ingress Hostname
+	icingaHost, err := root.GetServiceIngressHost(slService.ObjectMeta)
+	Expect(err).NotTo(HaveOccurred())
 
 	// Icinga Config
 	cfg := &icinga.Config{
@@ -102,7 +100,7 @@ var _ = BeforeSuite(func() {
 })
 
 var _ = AfterSuite(func() {
-	//err := root.DeleteNamespace()
-	//Expect(err).NotTo(HaveOccurred())
-	//e2e.PrintSeparately("Deleted namespace")
+	err := root.DeleteNamespace()
+	Expect(err).NotTo(HaveOccurred())
+	e2e.PrintSeparately("Deleted namespace")
 })
