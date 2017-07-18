@@ -31,8 +31,6 @@ var _ = Describe("PodAlert", func() {
 
 	var (
 		shouldManageIcingaServiceForLabelSelector = func() {
-			// Skip("Skipping test")
-
 			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
 			rs, err = f.CreateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
@@ -60,8 +58,6 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForNewPod = func() {
-			// Skip("Skipping test")
-
 			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
 			rs, err = f.CreateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
@@ -101,8 +97,6 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForDeletedPod = func() {
-			// Skip("Skipping test")
-
 			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
 			rs, err = f.CreateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
@@ -142,8 +136,6 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForLabelChanged = func() {
-			// Skip("Skipping test")
-
 			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
 			rs, err = f.CreateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
@@ -186,8 +178,6 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForPodName = func() {
-			// Skip("Skipping test")
-
 			By("Create Pod " + pod.Name + "@" + pod.Namespace)
 			pod, err = f.CreatePod(pod)
 			Expect(err).NotTo(HaveOccurred())
@@ -215,8 +205,6 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldHandleIcingaServiceForCriticalState = func() {
-			// Skip("Skipping test")
-
 			rs.Spec.Template.Spec.Containers[0].Image = "invalid-image"
 			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
 			rs, err = f.CreateReplicaSet(rs)
@@ -257,12 +245,12 @@ var _ = Describe("PodAlert", func() {
 				alert.Spec.Check = tapi.CheckPodStatus
 			})
 
-			//It("should manage icinga service for Alert.Spec.Selector", shouldManageIcingaServiceForLabelSelector)
+			It("should manage icinga service for Alert.Spec.Selector", shouldManageIcingaServiceForLabelSelector)
 			It("should manage icinga service for new Pod", shouldManageIcingaServiceForNewPod)
 			It("should manage icinga service for deleted Pod", shouldManageIcingaServiceForDeletedPod)
 			It("should manage icinga service for Alert.Spec.Selector changed", shouldManageIcingaServiceForLabelChanged)
 			It("should manage icinga service for Alert.Spec.PodName", shouldManageIcingaServiceForPodName)
-			// It("should handle icinga service for Critical State", shouldHandleIcingaServiceForCriticalState)
+			It("should handle icinga service for Critical State", shouldHandleIcingaServiceForCriticalState)
 		})
 
 		// Check "volume"
@@ -274,7 +262,7 @@ var _ = Describe("PodAlert", func() {
 				}
 			})
 
-			//It("should manage icinga service for Alert.Spec.Selector", shouldManageIcingaServiceForLabelSelector)
+			It("should manage icinga service for Ok State", shouldManageIcingaServiceForLabelSelector)
 		})
 
 		// Check "kube_exec"
@@ -293,7 +281,7 @@ var _ = Describe("PodAlert", func() {
 					alert.Spec.Vars["argv"] = "exit 0"
 				})
 
-				It("should manage icinga service for Alert.Spec.Selector", shouldManageIcingaServiceForLabelSelector)
+				It("should manage icinga service for Ok State", shouldManageIcingaServiceForLabelSelector)
 			})
 
 			Context("exit 2", func() {
