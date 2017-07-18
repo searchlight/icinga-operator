@@ -241,7 +241,7 @@ var _ = Describe("PodAlert", func() {
 
 		// Check "pod_status" and basic searchlight functionality
 		Context("check_pod_status", func() {
-			JustBeforeEach(func() {
+			BeforeEach(func() {
 				alert.Spec.Check = tapi.CheckPodStatus
 			})
 
@@ -255,7 +255,7 @@ var _ = Describe("PodAlert", func() {
 
 		// Check "volume"
 		Context("check_volume", func() {
-			JustBeforeEach(func() {
+			BeforeEach(func() {
 				alert.Spec.Check = tapi.CheckVolume
 				alert.Spec.Vars = map[string]interface{}{
 					"volume_name": framework.TestSourceDataVolumeName,
@@ -277,7 +277,7 @@ var _ = Describe("PodAlert", func() {
 			})
 
 			Context("exit 0", func() {
-				JustBeforeEach(func() {
+				BeforeEach(func() {
 					alert.Spec.Vars["argv"] = "exit 0"
 				})
 
@@ -285,7 +285,7 @@ var _ = Describe("PodAlert", func() {
 			})
 
 			Context("exit 2", func() {
-				JustBeforeEach(func() {
+				BeforeEach(func() {
 					alert.Spec.Vars["argv"] = "exit 2"
 				})
 
