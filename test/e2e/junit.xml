@@ -1,14 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <testsuite tests="11" failures="0" time="1373.874796935">
-      <testcase name="PodAlert Test check_pod_status should manage icinga service for Alert.Spec.Selector" classname="e2e Suite" time="80.423422737"></testcase>
-      <testcase name="PodAlert Test check_pod_status should manage icinga service for new Pod" classname="e2e Suite" time="121.495258087"></testcase>
-      <testcase name="PodAlert Test check_pod_status should manage icinga service for deleted Pod" classname="e2e Suite" time="130.249989228"></testcase>
-      <testcase name="PodAlert Test check_pod_status should manage icinga service for Alert.Spec.Selector changed" classname="e2e Suite" time="84.091158397"></testcase>
-      <testcase name="PodAlert Test check_pod_status should manage icinga service for Alert.Spec.PodName" classname="e2e Suite" time="21.533161979"></testcase>
-      <testcase name="PodAlert Test check_pod_status invalid image should handle icinga service for Critical State" classname="e2e Suite" time="45.845331689"></testcase>
-      <testcase name="PodAlert Test check_volume State OK should manage icinga service for Ok State" classname="e2e Suite" time="206.64689431"></testcase>
-      <testcase name="PodAlert Test check_volume State Warning should manage icinga service for Warning State" classname="e2e Suite" time="181.847286509"></testcase>
-      <testcase name="PodAlert Test check_volume State Critical should manage icinga service for Critical State" classname="e2e Suite" time="195.793128789"></testcase>
-      <testcase name="PodAlert Test check_kube_exec exit 0 should manage icinga service for Ok State" classname="e2e Suite" time="68.169982333"></testcase>
-      <testcase name="PodAlert Test check_kube_exec exit 2 should handle icinga service for Critical State" classname="e2e Suite" time="68.501169251"></testcase>
-  </testsuite>
+  <testsuite tests="1" failures="0" time="96.574560481"></testsuite>

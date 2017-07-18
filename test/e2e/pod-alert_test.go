@@ -14,7 +14,6 @@ import (
 )
 
 var _ = Describe("PodAlert", func() {
-
 	var (
 		err   error
 		f     *framework.Invocation
@@ -43,15 +42,15 @@ var _ = Describe("PodAlert", func() {
 
 			alert.Spec.Selector = *(rs.Spec.Selector)
 
-			By("Create matching pod alert")
-			err := f.CreatePodAlert(alert)
+			By("Create matching podalert")
+			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Check icinga services")
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
 				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
 
-			By("Delete podalerts")
+			By("Delete podalert")
 			err = f.DeletePodAlert(alert.ObjectMeta)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -70,8 +69,8 @@ var _ = Describe("PodAlert", func() {
 
 			alert.Spec.Selector = *(rs.Spec.Selector)
 
-			By("Create matching pod alert")
-			err := f.CreatePodAlert(alert)
+			By("Create matching podalert")
+			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Check icinga services")
@@ -90,7 +89,7 @@ var _ = Describe("PodAlert", func() {
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
 				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
 
-			By("Delete podalerts")
+			By("Delete podalert")
 			err = f.DeletePodAlert(alert.ObjectMeta)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -109,8 +108,8 @@ var _ = Describe("PodAlert", func() {
 
 			alert.Spec.Selector = *(rs.Spec.Selector)
 
-			By("Create matching pod alert")
-			err := f.CreatePodAlert(alert)
+			By("Create matching podalert")
+			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Check icinga services")
@@ -129,7 +128,7 @@ var _ = Describe("PodAlert", func() {
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
 				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
 
-			By("Delete podalerts")
+			By("Delete podalert")
 			err = f.DeletePodAlert(alert.ObjectMeta)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -148,8 +147,8 @@ var _ = Describe("PodAlert", func() {
 
 			alert.Spec.Selector = *(rs.Spec.Selector)
 
-			By("Create matching pod alert")
-			err := f.CreatePodAlert(alert)
+			By("Create matching podalert")
+			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Check icinga services")
@@ -175,7 +174,7 @@ var _ = Describe("PodAlert", func() {
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
 				Should(HaveIcingaObject(IcingaServiceState{}))
 
-			By("Delete podalerts")
+			By("Delete podalert")
 			err = f.DeletePodAlert(alert.ObjectMeta)
 			Expect(err).NotTo(HaveOccurred())
 		}
@@ -190,15 +189,15 @@ var _ = Describe("PodAlert", func() {
 
 			alert.Spec.PodName = pod.Name
 
-			By("Create matching pod alert")
-			err := f.CreatePodAlert(alert)
+			By("Create matching podalert")
+			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Check icinga services")
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
 				Should(HaveIcingaObject(IcingaServiceState{Ok: 1}))
 
-			By("Delete podalerts")
+			By("Delete podalert")
 			err = f.DeletePodAlert(alert.ObjectMeta)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -217,15 +216,15 @@ var _ = Describe("PodAlert", func() {
 
 			alert.Spec.Selector = *(rs.Spec.Selector)
 
-			By("Create matching pod alert")
-			err := f.CreatePodAlert(alert)
+			By("Create matching podalert")
+			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Check icinga services")
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
 				Should(HaveIcingaObject(IcingaServiceState{Critical: *rs.Spec.Replicas}))
 
-			By("Delete podalerts")
+			By("Delete podalert")
 			err = f.DeletePodAlert(alert.ObjectMeta)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -290,15 +289,15 @@ var _ = Describe("PodAlert", func() {
 
 					alert.Spec.Selector = *(ss.Spec.Selector)
 
-					By("Create matching pod alert")
-					err := f.CreatePodAlert(alert)
+					By("Create matching podalert")
+					err = f.CreatePodAlert(alert)
 					Expect(err).NotTo(HaveOccurred())
 
 					By("Check icinga services")
 					f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
 						Should(HaveIcingaObject(icingaServiceState))
 
-					By("Delete podalerts")
+					By("Delete podalert")
 					err = f.DeletePodAlert(alert.ObjectMeta)
 					Expect(err).NotTo(HaveOccurred())
 
