@@ -6,6 +6,7 @@ import (
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/go/types"
 	. "github.com/onsi/gomega"
+	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 	apps "k8s.io/client-go/pkg/apis/apps/v1beta1"
@@ -33,8 +34,34 @@ func (f *Framework) CreateDeploymentApp(obj *apps.Deployment) error {
 	return err
 }
 
-func (f *Framework) DeleteDeploymentApp(meta metav1.ObjectMeta) error {
-	return f.kubeClient.AppsV1beta1().Deployments(meta.Namespace).Delete(meta.Name, deleteInForeground())
+func (f *Framework) UpdateDeploymentApp(obj *apps.Deployment) (*apps.Deployment, error) {
+	return f.kubeClient.AppsV1beta1().Deployments(obj.Namespace).Update(obj)
+}
+
+func (f *Framework) EventuallyDeleteDeploymentApp(meta metav1.ObjectMeta) GomegaAsyncAssertion {
+	deployment, err := f.kubeClient.AppsV1beta1().Deployments(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
+	if kerr.IsNotFound(err) {
+		return Eventually(func() bool { return true })
+	}
+	deployment.Spec.Replicas = types.Int32P(0)
+	deployment, err = f.UpdateDeploymentApp(deployment)
+	Expect(err).NotTo(HaveOccurred())
+
+	return Eventually(
+		func() bool {
+			podList, err := f.GetPodList(deployment)
+			Expect(err).NotTo(HaveOccurred())
+			if len(podList.Items) != 0 {
+				return false
+			}
+
+			err = f.kubeClient.AppsV1beta1().Deployments(meta.Namespace).Delete(meta.Name, deleteInForeground())
+			Expect(err).NotTo(HaveOccurred())
+			return true
+		},
+		time.Minute*5,
+		time.Second*5,
+	)
 }
 
 func (f *Framework) EventuallyDeploymentApp(meta metav1.ObjectMeta) GomegaAsyncAssertion {
@@ -68,8 +95,34 @@ func (f *Framework) CreateDeploymentExtension(obj *extensions.Deployment) error 
 	return err
 }
 
-func (f *Framework) DeleteDeploymentExtension(meta metav1.ObjectMeta) error {
-	return f.kubeClient.ExtensionsV1beta1().Deployments(meta.Namespace).Delete(meta.Name, deleteInForeground())
+func (f *Framework) UpdateDeploymentExtension(obj *extensions.Deployment) (*extensions.Deployment, error) {
+	return f.kubeClient.ExtensionsV1beta1().Deployments(obj.Namespace).Update(obj)
+}
+
+func (f *Framework) EventuallyDeleteDeploymentExtension(meta metav1.ObjectMeta) GomegaAsyncAssertion {
+	deployment, err := f.kubeClient.ExtensionsV1beta1().Deployments(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
+	if kerr.IsNotFound(err) {
+		return Eventually(func() bool { return true })
+	}
+	deployment.Spec.Replicas = types.Int32P(0)
+	deployment, err = f.UpdateDeploymentExtension(deployment)
+	Expect(err).NotTo(HaveOccurred())
+
+	return Eventually(
+		func() bool {
+			podList, err := f.GetPodList(deployment)
+			Expect(err).NotTo(HaveOccurred())
+			if len(podList.Items) != 0 {
+				return false
+			}
+
+			err = f.kubeClient.ExtensionsV1beta1().Deployments(meta.Namespace).Delete(meta.Name, deleteInForeground())
+			Expect(err).NotTo(HaveOccurred())
+			return true
+		},
+		time.Minute*5,
+		time.Second*5,
+	)
 }
 
 func (f *Framework) EventuallyDeploymentExtension(meta metav1.ObjectMeta) GomegaAsyncAssertion {
@@ -81,7 +134,7 @@ func (f *Framework) EventuallyDeploymentExtension(meta metav1.ObjectMeta) Gomega
 			Expect(err).NotTo(HaveOccurred())
 			return podList
 		},
-		time.Minute*2,
-		time.Second*2,
+		time.Minute*5,
+		time.Second*5,
 	)
 }

@@ -74,6 +74,8 @@ var _ = BeforeSuite(func() {
 	icingaHost, err := root.GetServiceIngressHost(slService.ObjectMeta)
 	Expect(err).NotTo(HaveOccurred())
 
+	//icingaHost := "a365ddb756b8311e78b6912f236046fb-578643977.us-east-1.elb.amazonaws.com"
+
 	// Icinga Config
 	cfg := &icinga.Config{
 		Endpoint: fmt.Sprintf("https://%s:5665/v1", icingaHost),
@@ -100,7 +102,7 @@ var _ = BeforeSuite(func() {
 })
 
 var _ = AfterSuite(func() {
-	err := root.DeleteNamespace()
-	Expect(err).NotTo(HaveOccurred())
-	e2e.PrintSeparately("Deleted namespace")
+	 err := root.DeleteNamespace()
+	 Expect(err).NotTo(HaveOccurred())
+	 e2e.PrintSeparately("Deleted namespace")
 })

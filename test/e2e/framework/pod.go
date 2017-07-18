@@ -48,8 +48,8 @@ func (f *Framework) EventuallyPodRunning(meta metav1.ObjectMeta) GomegaAsyncAsse
 			Expect(err).NotTo(HaveOccurred())
 			return podList
 		},
-		time.Minute*2,
-		time.Second*2,
+		time.Minute*5,
+		time.Second*5,
 	)
 }
 
@@ -73,7 +73,7 @@ func getPodSpec() apiv1.PodSpec {
 				ImagePullPolicy: apiv1.PullIfNotPresent,
 				Command: []string{
 					"sleep",
-					"3600",
+					"1d",
 				},
 				VolumeMounts: []apiv1.VolumeMount{
 					{

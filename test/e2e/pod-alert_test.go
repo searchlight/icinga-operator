@@ -9,6 +9,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
+	apps "k8s.io/client-go/pkg/apis/apps/v1beta1"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
@@ -18,6 +19,7 @@ var _ = Describe("PodAlert", func() {
 		err   error
 		f     *framework.Invocation
 		rs    *extensions.ReplicaSet
+		ss    *apps.StatefulSet
 		pod   *apiv1.Pod
 		alert *tapi.PodAlert
 	)
@@ -25,6 +27,7 @@ var _ = Describe("PodAlert", func() {
 	BeforeEach(func() {
 		f = root.Invoke()
 		rs = f.ReplicaSet()
+		ss = f.StatefulSet()
 		pod = f.Pod()
 		alert = f.PodAlert()
 	})
@@ -205,7 +208,6 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldHandleIcingaServiceForCriticalState = func() {
-			rs.Spec.Template.Spec.Containers[0].Image = "invalid-image"
 			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
 			rs, err = f.CreateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
@@ -235,8 +237,8 @@ var _ = Describe("PodAlert", func() {
 
 	Describe("Test", func() {
 		AfterEach(func() {
-			f.DeleteReplicaSet(rs.ObjectMeta)
-			f.DeletePod(pod.ObjectMeta)
+			go f.EventuallyDeleteReplicaSet(rs.ObjectMeta).Should(BeTrue())
+			go f.DeletePod(pod.ObjectMeta)
 		})
 
 		// Check "pod_status" and basic searchlight functionality
@@ -250,24 +252,96 @@ var _ = Describe("PodAlert", func() {
 			It("should manage icinga service for deleted Pod", shouldManageIcingaServiceForDeletedPod)
 			It("should manage icinga service for Alert.Spec.Selector changed", shouldManageIcingaServiceForLabelChanged)
 			It("should manage icinga service for Alert.Spec.PodName", shouldManageIcingaServiceForPodName)
-			It("should handle icinga service for Critical State", shouldHandleIcingaServiceForCriticalState)
+
+			Context("invalid image", func() {
+				BeforeEach(func() {
+					rs.Spec.Template.Spec.Containers[0].Image = "invalid-image"
+				})
+				It("should handle icinga service for Critical State", shouldHandleIcingaServiceForCriticalState)
+			})
 		})
 
 		// Check "volume"
 		Context("check_volume", func() {
+			AfterEach(func() {
+				go f.EventuallyDeleteStatefulSet(ss.ObjectMeta).Should(BeTrue())
+			})
 			BeforeEach(func() {
+				ss.Spec.Template.Spec.Containers[0].Command = []string{
+					"/bin/sh",
+					"-c",
+					"dd if=/dev/zero of=/source/data/data bs=1024 count=2097152 && sleep 1d",
+				}
 				alert.Spec.Check = tapi.CheckVolume
 				alert.Spec.Vars = map[string]interface{}{
 					"volume_name": framework.TestSourceDataVolumeName,
 				}
 			})
 
-			It("should manage icinga service for Ok State", shouldManageIcingaServiceForLabelSelector)
+			var icingaServiceState IcingaServiceState
+			var (
+				forStatefulSet = func() {
+					By("Create StatefulSet " + ss.Name + "@" + ss.Namespace)
+					ss, err = f.CreateStatefulSet(ss)
+					Expect(err).NotTo(HaveOccurred())
+
+					By("Wait for Running pods")
+					f.EventuallyStatefulSet(ss.ObjectMeta).Should(HaveRunningPods(*ss.Spec.Replicas))
+
+					alert.Spec.Selector = *(ss.Spec.Selector)
+
+					By("Create matching pod alert")
+					err := f.CreatePodAlert(alert)
+					Expect(err).NotTo(HaveOccurred())
+
+					By("Check icinga services")
+					f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
+						Should(HaveIcingaObject(icingaServiceState))
+
+					By("Delete podalerts")
+					err = f.DeletePodAlert(alert.ObjectMeta)
+					Expect(err).NotTo(HaveOccurred())
+
+					By("Wait for icinga services to be deleted")
+					f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
+						Should(HaveIcingaObject(IcingaServiceState{}))
+				}
+			)
+
+			Context("State OK", func() {
+				BeforeEach(func() {
+					icingaServiceState = IcingaServiceState{Ok: *ss.Spec.Replicas}
+					alert.Spec.Vars["warning"] = 50.0
+					alert.Spec.Vars["critical"] = 90.0
+				})
+
+				It("should manage icinga service for Ok State", forStatefulSet)
+			})
+
+			Context("State Warning", func() {
+				BeforeEach(func() {
+					icingaServiceState = IcingaServiceState{Warning: *ss.Spec.Replicas}
+					alert.Spec.Vars["warning"] = 15.0
+					alert.Spec.Vars["critical"] = 90.0
+				})
+
+				It("should manage icinga service for Warning State", forStatefulSet)
+			})
+
+			Context("State Critical", func() {
+				BeforeEach(func() {
+					icingaServiceState = IcingaServiceState{Critical: *ss.Spec.Replicas}
+					alert.Spec.Vars["warning"] = 10.0
+					alert.Spec.Vars["critical"] = 15.0
+				})
+
+				It("should manage icinga service for Critical State", forStatefulSet)
+			})
+
 		})
 
 		// Check "kube_exec"
 		Context("check_kube_exec", func() {
-
 			BeforeEach(func() {
 				alert.Spec.Check = tapi.CheckPodExec
 				alert.Spec.Vars = map[string]interface{}{

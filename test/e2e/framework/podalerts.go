@@ -116,6 +116,6 @@ func (f *Framework) EventuallyPodAlertIcingaService(meta metav1.ObjectMeta, podA
 			return icingaServiceState
 		},
 		time.Minute*5,
-		time.Second*10,
+		time.Second*5,
 	)
 }
