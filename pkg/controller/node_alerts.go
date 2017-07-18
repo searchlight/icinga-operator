@@ -109,8 +109,8 @@ func (c *Controller) EnsureNodeAlert(old, new *tapi.NodeAlert) {
 			}
 		} else {
 			if resources, err := c.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{LabelSelector: oldSel.String()}); err == nil {
-				for _, resource := range resources.Items {
-					oldObjs[resource.Name] = &resource
+				for i := range resources.Items {
+					oldObjs[resources.Items[i].Name] = &resources.Items[i]
 				}
 			}
 		}
@@ -121,19 +121,27 @@ func (c *Controller) EnsureNodeAlert(old, new *tapi.NodeAlert) {
 		if resource, err := c.KubeClient.CoreV1().Nodes().Get(new.Spec.NodeName, metav1.GetOptions{}); err == nil {
 			if newSel.Matches(labels.Set(resource.Labels)) {
 				delete(oldObjs, resource.Name)
-				go c.EnsureNode(resource, old, new)
+				if err := c.EnsureNode(resource, old, new); err != nil {
+					log.Errorln(err)
+				}
+
 			}
 		}
 	} else {
 		if resources, err := c.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{LabelSelector: newSel.String()}); err == nil {
-			for _, resource := range resources.Items {
+			for i := range resources.Items {
+				resource := resources.Items[i]
 				delete(oldObjs, resource.Name)
-				go c.EnsureNode(&resource, old, new)
+				if err := c.EnsureNode(&resource, old, new); err != nil {
+					log.Errorln(err)
+				}
 			}
 		}
 	}
 	for i := range oldObjs {
-		go c.EnsureNodeDeleted(oldObjs[i], old)
+		if err := c.EnsureNodeDeleted(oldObjs[i], old); err != nil {
+			log.Errorln(err)
+		}
 	}
 }
 
@@ -142,13 +150,17 @@ func (c *Controller) EnsureNodeAlertDeleted(alert *tapi.NodeAlert) {
 	if alert.Spec.NodeName != "" {
 		if resource, err := c.KubeClient.CoreV1().Nodes().Get(alert.Spec.NodeName, metav1.GetOptions{}); err == nil {
 			if sel.Matches(labels.Set(resource.Labels)) {
-				go c.EnsureNodeDeleted(resource, alert)
+				if err := c.EnsureNodeDeleted(resource, alert); err != nil {
+					log.Errorln(err)
+				}
 			}
 		}
 	} else {
 		if resources, err := c.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{LabelSelector: sel.String()}); err == nil {
-			for _, resource := range resources.Items {
-				go c.EnsureNodeDeleted(&resource, alert)
+			for i := range resources.Items {
+				if err := c.EnsureNodeDeleted(&resources.Items[i], alert); err != nil {
+					log.Errorln(err)
+				}
 			}
 		}
 	}

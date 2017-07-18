@@ -26,7 +26,6 @@ type icingaObjectMatcher struct {
 func (matcher *icingaObjectMatcher) Match(actual interface{}) (success bool, err error) {
 	switch obj := actual.(type) {
 	case IcingaServiceState:
-		fmt.Println("----+ ", obj, matcher.expected)
 		if obj.Ok != matcher.expected.Ok {
 			return false, nil
 		}

@@ -1,2 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <testsuite tests="1" failures="0" time="96.574560481"></testsuite>
+  <testsuite tests="3" failures="0" time="142.115076206">
+      <testcase name="PodAlert Test check_pod_status should manage icinga service for Alert.Spec.Selector" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="PodAlert Test check_pod_status should manage icinga service for new Pod" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="PodAlert Test check_pod_status should manage icinga service for deleted Pod" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="PodAlert Test check_pod_status should manage icinga service for Alert.Spec.Selector changed" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="PodAlert Test check_pod_status should manage icinga service for Alert.Spec.PodName" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="PodAlert Test check_pod_status invalid image should handle icinga service for Critical State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="PodAlert Test check_volume State OK should manage icinga service for Ok State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="PodAlert Test check_volume State Warning should manage icinga service for Warning State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="PodAlert Test check_volume State Critical should manage icinga service for Critical State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="PodAlert Test check_kube_exec exit 0 should manage icinga service for Ok State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="PodAlert Test check_kube_exec exit 2 should handle icinga service for Critical State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="NodeAlert Test check_node_status should manage icinga service for Ok State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="NodeAlert Test node_disk State OK should manage icinga service for Ok State" classname="e2e Suite" time="41.088018884"></testcase>
+      <testcase name="NodeAlert Test node_disk State Warning should manage icinga service for Warning State" classname="e2e Suite" time="56.321719788"></testcase>
+      <testcase name="NodeAlert Test node_disk State Critical should manage icinga service for Critical State" classname="e2e Suite" time="40.0434898"></testcase>
+  </testsuite>

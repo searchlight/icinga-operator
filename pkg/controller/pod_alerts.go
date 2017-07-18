@@ -130,8 +130,7 @@ func (c *Controller) EnsurePodAlert(old, new *tapi.PodAlert) {
 				if resource.Status.PodIP == "" {
 					log.Warningf("Skipping pod %s@%s, since it has no IP", resource.Name, resource.Namespace)
 				}
-				err := c.EnsurePod(resource, old, new)
-				if err != nil {
+				if err := c.EnsurePod(resource, old, new); err != nil {
 					log.Errorln(err)
 				}
 			}
@@ -145,16 +144,14 @@ func (c *Controller) EnsurePodAlert(old, new *tapi.PodAlert) {
 					log.Warningf("Skipping pod %s@%s, since it has no IP", resource.Name, resource.Namespace)
 					continue
 				}
-				err := c.EnsurePod(&resource, old, new)
-				if err != nil {
+				if err := c.EnsurePod(&resource, old, new); err != nil {
 					log.Errorln(err)
 				}
 			}
 		}
 	}
 	for i := range oldObjs {
-		err := c.EnsurePodDeleted(oldObjs[i], old)
-		if err != nil {
+		if err := c.EnsurePodDeleted(oldObjs[i], old); err != nil {
 			log.Errorln(err)
 		}
 	}
@@ -168,8 +165,7 @@ func (c *Controller) EnsurePodAlertDeleted(alert *tapi.PodAlert) {
 	if alert.Spec.PodName != "" {
 		if resource, err := c.KubeClient.CoreV1().Pods(alert.Namespace).Get(alert.Spec.PodName, metav1.GetOptions{}); err == nil {
 			if sel.Matches(labels.Set(resource.Labels)) {
-				err := c.EnsurePodDeleted(resource, alert)
-				if err != nil {
+				if err := c.EnsurePodDeleted(resource, alert); err != nil {
 					log.Errorln(err)
 				}
 			}
@@ -177,8 +173,7 @@ func (c *Controller) EnsurePodAlertDeleted(alert *tapi.PodAlert) {
 	} else {
 		if resources, err := c.KubeClient.CoreV1().Pods(alert.Namespace).List(metav1.ListOptions{LabelSelector: sel.String()}); err == nil {
 			for i := range resources.Items {
-				err = c.EnsurePodDeleted(&resources.Items[i], alert)
-				if err != nil {
+				if err := c.EnsurePodDeleted(&resources.Items[i], alert); err != nil {
 					log.Errorln(err)
 				}
 			}

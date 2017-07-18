@@ -8,21 +8,23 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = FDescribe("NodeAlert", func() {
+var _ = Describe("NodeAlert", func() {
 	var (
-		err       error
-		f         *framework.Invocation
-		alert     *tapi.NodeAlert
-		totalNode int32
+		err                error
+		f                  *framework.Invocation
+		alert              *tapi.NodeAlert
+		totalNode          int32
+		icingaServiceState IcingaServiceState
 	)
 
 	BeforeEach(func() {
 		f = root.Invoke()
+		totalNode, _ = f.CountNode()
 		alert = f.NodeAlert()
 	})
 
 	var (
-		shouldManageIcingaServiceForOkState = func() {
+		shouldManageIcingaService = func() {
 			By("Create matching nodealert")
 			err = f.CreateNodeAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
@@ -32,7 +34,7 @@ var _ = FDescribe("NodeAlert", func() {
 
 			By("Check icinga services")
 			f.EventuallyNodeAlertIcingaService(alert.ObjectMeta, alert.Spec).
-				Should(HaveIcingaObject(IcingaServiceState{Ok: totalNode}))
+				Should(HaveIcingaObject(icingaServiceState))
 
 			By("Delete nodealert")
 			err = f.DeleteNodeAlert(alert.ObjectMeta)
@@ -47,10 +49,47 @@ var _ = FDescribe("NodeAlert", func() {
 	Describe("Test", func() {
 		Context("check_node_status", func() {
 			BeforeEach(func() {
+				icingaServiceState = IcingaServiceState{Ok: totalNode}
 				alert.Spec.Check = tapi.CheckNodeStatus
 			})
 
-			It("should manage icinga service for Ok State", shouldManageIcingaServiceForOkState)
+			It("should manage icinga service for Ok State", shouldManageIcingaService)
 		})
+
+		// Check "node_disk"
+		FContext("node_disk", func() {
+			BeforeEach(func() {
+				alert.Spec.Check = tapi.CheckNodeDisk
+				alert.Spec.Vars = make(map[string]interface{})
+			})
+
+			Context("State OK", func() {
+				BeforeEach(func() {
+					icingaServiceState = IcingaServiceState{Ok: totalNode}
+					alert.Spec.Vars["warning"] = 100.0
+				})
+
+				It("should manage icinga service for Ok State", shouldManageIcingaService)
+			})
+
+			Context("State Warning", func() {
+				BeforeEach(func() {
+					icingaServiceState = IcingaServiceState{Warning: totalNode}
+					alert.Spec.Vars["warning"] = 1.0
+				})
+
+				It("should manage icinga service for Warning State", shouldManageIcingaService)
+			})
+
+			Context("State Critical", func() {
+				BeforeEach(func() {
+					icingaServiceState = IcingaServiceState{Critical: totalNode}
+					alert.Spec.Vars["critical"] = 1.0
+				})
+
+				It("should manage icinga service for Critical State", shouldManageIcingaService)
+			})
+		})
+
 	})
 })

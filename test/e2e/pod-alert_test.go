@@ -269,7 +269,7 @@ var _ = Describe("PodAlert", func() {
 				ss.Spec.Template.Spec.Containers[0].Command = []string{
 					"/bin/sh",
 					"-c",
-					"dd if=/dev/zero of=/source/data/data bs=1024 count=2097152 && sleep 1d",
+					"dd if=/dev/zero of=/source/data/data bs=1024 count=105000 && sleep 1d",
 				}
 				alert.Spec.Check = tapi.CheckVolume
 				alert.Spec.Vars = map[string]interface{}{
@@ -310,8 +310,7 @@ var _ = Describe("PodAlert", func() {
 			Context("State OK", func() {
 				BeforeEach(func() {
 					icingaServiceState = IcingaServiceState{Ok: *ss.Spec.Replicas}
-					alert.Spec.Vars["warning"] = 50.0
-					alert.Spec.Vars["critical"] = 90.0
+					alert.Spec.Vars["warning"] = 100.0
 				})
 
 				It("should manage icinga service for Ok State", forStatefulSet)
@@ -320,8 +319,7 @@ var _ = Describe("PodAlert", func() {
 			Context("State Warning", func() {
 				BeforeEach(func() {
 					icingaServiceState = IcingaServiceState{Warning: *ss.Spec.Replicas}
-					alert.Spec.Vars["warning"] = 15.0
-					alert.Spec.Vars["critical"] = 90.0
+					alert.Spec.Vars["warning"] = 1.0
 				})
 
 				It("should manage icinga service for Warning State", forStatefulSet)
@@ -330,8 +328,7 @@ var _ = Describe("PodAlert", func() {
 			Context("State Critical", func() {
 				BeforeEach(func() {
 					icingaServiceState = IcingaServiceState{Critical: *ss.Spec.Replicas}
-					alert.Spec.Vars["warning"] = 10.0
-					alert.Spec.Vars["critical"] = 15.0
+					alert.Spec.Vars["critical"] = 1.0
 				})
 
 				It("should manage icinga service for Critical State", forStatefulSet)
