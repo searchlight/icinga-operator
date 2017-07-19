@@ -19,7 +19,7 @@ func (f *Framework) EventuallyIcingaAPI() GomegaAsyncAssertion {
 			fmt.Println("Waiting for icinga to start")
 			return errors.New("Icigna is not ready")
 		},
-		time.Minute*5,
+		time.Minute*10,
 		time.Second*10,
 	)
 }

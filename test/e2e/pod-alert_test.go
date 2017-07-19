@@ -11,16 +11,18 @@ import (
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 	apps "k8s.io/client-go/pkg/apis/apps/v1beta1"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
+	"strings"
 )
 
 var _ = Describe("PodAlert", func() {
 	var (
-		err   error
-		f     *framework.Invocation
-		rs    *extensions.ReplicaSet
-		ss    *apps.StatefulSet
-		pod   *apiv1.Pod
-		alert *tapi.PodAlert
+		err             error
+		f               *framework.Invocation
+		rs              *extensions.ReplicaSet
+		ss              *apps.StatefulSet
+		pod             *apiv1.Pod
+		alert           *tapi.PodAlert
+		skippingMessage string
 	)
 
 	BeforeEach(func() {
@@ -29,11 +31,12 @@ var _ = Describe("PodAlert", func() {
 		ss = f.StatefulSet()
 		pod = f.Pod()
 		alert = f.PodAlert()
+		skippingMessage = ""
 	})
 
 	var (
 		shouldManageIcingaServiceForLabelSelector = func() {
-			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
+			By("Create ReplicaSet :" + rs.Name)
 			rs, err = f.CreateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -42,7 +45,7 @@ var _ = Describe("PodAlert", func() {
 
 			alert.Spec.Selector = *(rs.Spec.Selector)
 
-			By("Create matching podalert")
+			By("Create matching podalert :"+ alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -60,7 +63,7 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForNewPod = func() {
-			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
+			By("Create ReplicaSet :" + rs.Name)
 			rs, err = f.CreateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -69,7 +72,7 @@ var _ = Describe("PodAlert", func() {
 
 			alert.Spec.Selector = *(rs.Spec.Selector)
 
-			By("Create matching podalert")
+			By("Create matching podalert :"+ alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -85,6 +88,9 @@ var _ = Describe("PodAlert", func() {
 			rs, err = f.UpdateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
 
+			By("Wait for Running pods")
+			f.EventuallyReplicaSet(rs.ObjectMeta).Should(HaveRunningPods(*rs.Spec.Replicas))
+
 			By("Check icinga services")
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
 				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
@@ -99,7 +105,7 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForDeletedPod = func() {
-			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
+			By("Create ReplicaSet :" + rs.Name)
 			rs, err = f.CreateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -108,7 +114,7 @@ var _ = Describe("PodAlert", func() {
 
 			alert.Spec.Selector = *(rs.Spec.Selector)
 
-			By("Create matching podalert")
+			By("Create matching podalert :"+ alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -138,7 +144,7 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForLabelChanged = func() {
-			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
+			By("Create ReplicaSet :" + rs.Name)
 			rs, err = f.CreateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -147,7 +153,7 @@ var _ = Describe("PodAlert", func() {
 
 			alert.Spec.Selector = *(rs.Spec.Selector)
 
-			By("Create matching podalert")
+			By("Create matching podalert :"+ alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -180,7 +186,7 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForPodName = func() {
-			By("Create Pod " + pod.Name + "@" + pod.Namespace)
+			By("Create Pod :" + pod.Name)
 			pod, err = f.CreatePod(pod)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -189,7 +195,7 @@ var _ = Describe("PodAlert", func() {
 
 			alert.Spec.PodName = pod.Name
 
-			By("Create matching podalert")
+			By("Create matching podalert :"+ alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -207,7 +213,7 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldHandleIcingaServiceForCriticalState = func() {
-			By("Create ReplicaSet " + rs.Name + "@" + rs.Namespace)
+			By("Create ReplicaSet :" + rs.Name)
 			rs, err = f.CreateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -216,7 +222,7 @@ var _ = Describe("PodAlert", func() {
 
 			alert.Spec.Selector = *(rs.Spec.Selector)
 
-			By("Create matching podalert")
+			By("Create matching podalert :"+ alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -266,10 +272,14 @@ var _ = Describe("PodAlert", func() {
 				go f.EventuallyDeleteStatefulSet(ss.ObjectMeta).Should(BeTrue())
 			})
 			BeforeEach(func() {
+				if strings.ToLower(f.Provider) == "minikube" {
+					skippingMessage = `"check_volume" will not work in minikube"`
+				}
+
 				ss.Spec.Template.Spec.Containers[0].Command = []string{
 					"/bin/sh",
 					"-c",
-					"dd if=/dev/zero of=/source/data/data bs=1024 count=105000 && sleep 1d",
+					"dd if=/dev/zero of=/source/data/data bs=1024 count=52500 && sleep 1d",
 				}
 				alert.Spec.Check = tapi.CheckVolume
 				alert.Spec.Vars = map[string]interface{}{
@@ -280,7 +290,11 @@ var _ = Describe("PodAlert", func() {
 			var icingaServiceState IcingaServiceState
 			var (
 				forStatefulSet = func() {
-					By("Create StatefulSet " + ss.Name + "@" + ss.Namespace)
+					if skippingMessage != "" {
+						Skip(skippingMessage)
+					}
+
+					By("Create StatefulSet: " + ss.Name)
 					ss, err = f.CreateStatefulSet(ss)
 					Expect(err).NotTo(HaveOccurred())
 
@@ -289,7 +303,7 @@ var _ = Describe("PodAlert", func() {
 
 					alert.Spec.Selector = *(ss.Spec.Selector)
 
-					By("Create matching podalert")
+					By("Create matching podalert :"+ alert.Name)
 					err = f.CreatePodAlert(alert)
 					Expect(err).NotTo(HaveOccurred())
 

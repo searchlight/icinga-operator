@@ -96,11 +96,11 @@ func (c *Controller) WatchNodes() {
 					for alert := range diff {
 						ch := diff[alert]
 						if ch.old == nil && ch.new != nil {
-							go c.EnsureNode(newNode, nil, ch.new)
+							c.EnsureNode(newNode, nil, ch.new)
 						} else if ch.old != nil && ch.new == nil {
-							go c.EnsureNodeDeleted(newNode, ch.old)
+							c.EnsureNodeDeleted(newNode, ch.old)
 						} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
-							go c.EnsureNode(newNode, ch.old, ch.new)
+							c.EnsureNode(newNode, ch.old, ch.new)
 						}
 					}
 				}
@@ -137,7 +137,7 @@ func (c *Controller) EnsureNode(node *apiv1.Node, old, new *tapi.NodeAlert) (err
 		if err == nil {
 			c.recorder.Eventf(
 				new,
-				apiv1.EventTypeWarning,
+				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulSync,
 				`Applied NodeAlert: "%v"`,
 				new.Name,
@@ -152,6 +152,7 @@ func (c *Controller) EnsureNode(node *apiv1.Node, old, new *tapi.NodeAlert) (err
 				new.Name,
 				err,
 			)
+			log.Errorln(err)
 			return
 		}
 	}()
@@ -169,7 +170,7 @@ func (c *Controller) EnsureNodeDeleted(node *apiv1.Node, alert *tapi.NodeAlert) 
 		if err == nil {
 			c.recorder.Eventf(
 				alert,
-				apiv1.EventTypeWarning,
+				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulDelete,
 				`Deleted NodeAlert: "%v"`,
 				alert.Name,
@@ -184,6 +185,7 @@ func (c *Controller) EnsureNodeDeleted(node *apiv1.Node, alert *tapi.NodeAlert) 
 				alert.Name,
 				err,
 			)
+			log.Errorln(err)
 			return
 		}
 	}()

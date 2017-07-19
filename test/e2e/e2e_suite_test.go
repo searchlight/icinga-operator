@@ -1,6 +1,7 @@
 package e2e_test
 
 import (
+	"flag"
 	"fmt"
 	"path/filepath"
 	"testing"
@@ -11,7 +12,7 @@ import (
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e"
 	"github.com/appscode/searchlight/test/e2e/framework"
-	//. "github.com/appscode/searchlight/test/e2e/matcher"
+	. "github.com/appscode/searchlight/test/e2e/matcher"
 	"github.com/mitchellh/go-homedir"
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/reporters"
@@ -19,6 +20,16 @@ import (
 	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
+
+var provider string
+var storageClass string
+var minikube string
+
+func init() {
+	flag.StringVar(&provider, "provider", "minikube", "Kubernetes cloud provider")
+	flag.StringVar(&storageClass, "storageclass", "", "Kubernetes StorageClass name")
+	flag.StringVar(&minikube, "minikube", "", "Minikube cluster IP address")
+}
 
 const (
 	TIMEOUT = 20 * time.Minute
@@ -50,36 +61,36 @@ var _ = BeforeSuite(func() {
 	kubeClient := clientset.NewForConfigOrDie(config)
 	extClient := tcs.NewForConfigOrDie(config)
 	// Framework
-	root = framework.New(kubeClient, extClient, nil)
+	root = framework.New(kubeClient, extClient, nil, provider, storageClass, minikube)
 
-	e2e.PrintSeparately("Using namespace: ", root.Namespace())
-	By("Using namespace " + root.Namespace())
+	e2e.PrintSeparately("Using namespace " + root.Namespace())
 
-	//// Create namespace
-	//err = root.CreateNamespace()
-	//Expect(err).NotTo(HaveOccurred())
-	//
-	//// Create Searchlight deployment
-	//slDeployment := root.Invoke().DeploymentExtensionSearchlight()
-	//err = root.CreateDeploymentExtension(slDeployment)
-	//Expect(err).NotTo(HaveOccurred())
-	//By("Waiting for Running pods")
-	//root.EventuallyDeploymentExtension(slDeployment.ObjectMeta).Should(HaveRunningPods(*slDeployment.Spec.Replicas))
-	//
-	//// Create Searchlight service
-	//slService := root.Invoke().ServiceSearchlight()
-	//err = root.CreateService(slService)
-	//Expect(err).NotTo(HaveOccurred())
-	//// Get Icinga Ingress Hostname
-	//icingaHost, err := root.GetServiceIngressHost(slService.ObjectMeta)
-	//Expect(err).NotTo(HaveOccurred())
+	// Create namespace
+	err = root.CreateNamespace()
+	Expect(err).NotTo(HaveOccurred())
 
-	icingaHost := "a365ddb756b8311e78b6912f236046fb-578643977.us-east-1.elb.amazonaws.com"
+	// Create Searchlight deployment
+	slDeployment := root.Invoke().DeploymentExtensionSearchlight()
+	err = root.CreateDeploymentExtension(slDeployment)
+	Expect(err).NotTo(HaveOccurred())
+	By("Waiting for Running pods")
+	root.EventuallyDeploymentExtension(slDeployment.ObjectMeta).Should(HaveRunningPods(*slDeployment.Spec.Replicas))
+
+	// Create Searchlight service
+	slService := root.Invoke().ServiceSearchlight()
+	err = root.CreateService(slService)
+	Expect(err).NotTo(HaveOccurred())
+	root.EventuallyServiceLoadBalancer(slService.ObjectMeta, "api").Should(BeTrue())
+
+	// Get Icinga Ingress Hostname
+	endpoint, err := root.GetServiceEndpoint(slService.ObjectMeta, "api")
+	Expect(err).NotTo(HaveOccurred())
 
 	// Icinga Config
 	cfg := &icinga.Config{
-		Endpoint: fmt.Sprintf("https://%s:5665/v1", icingaHost),
+		Endpoint: fmt.Sprintf("https://%v/v1", endpoint),
 	}
+
 	cfg.BasicAuth.Username = e2e.ICINGA_API_USER
 	cfg.BasicAuth.Password = e2e.ICINGA_API_PASSWORD
 
@@ -88,8 +99,10 @@ var _ = BeforeSuite(func() {
 	root = root.SetIcingaClient(icingaClient)
 	root.EventuallyIcingaAPI().Should(Succeed())
 
+	icingawebEndpoint, err := root.GetServiceEndpoint(slService.ObjectMeta, "web")
+	Expect(err).NotTo(HaveOccurred())
 	fmt.Println()
-	fmt.Println("Icingaweb2:     ", fmt.Sprintf("http://%s/icingaweb2", icingaHost))
+	fmt.Println("Icingaweb2:     ", fmt.Sprintf("http://%v/icingaweb2", icingawebEndpoint))
 	fmt.Println("Login password: ", e2e.ICINGA_WEB_ADMIN_PASSWORD)
 	fmt.Println()
 
@@ -102,7 +115,7 @@ var _ = BeforeSuite(func() {
 })
 
 var _ = AfterSuite(func() {
-	 //err := root.DeleteNamespace()
-	 //Expect(err).NotTo(HaveOccurred())
-	 //e2e.PrintSeparately("Deleted namespace")
+	err := root.DeleteNamespace()
+	Expect(err).NotTo(HaveOccurred())
+	e2e.PrintSeparately("Deleted namespace")
 })

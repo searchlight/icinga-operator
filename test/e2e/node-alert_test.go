@@ -1,6 +1,8 @@
 package e2e_test
 
 import (
+	"strings"
+
 	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/test/e2e/framework"
 	. "github.com/appscode/searchlight/test/e2e/matcher"
@@ -15,17 +17,23 @@ var _ = Describe("NodeAlert", func() {
 		alert              *tapi.NodeAlert
 		totalNode          int32
 		icingaServiceState IcingaServiceState
+		skippingMessage    string
 	)
 
 	BeforeEach(func() {
 		f = root.Invoke()
 		totalNode, _ = f.CountNode()
 		alert = f.NodeAlert()
+		skippingMessage = ""
 	})
 
 	var (
 		shouldManageIcingaService = func() {
-			By("Create matching nodealert")
+			if skippingMessage != "" {
+				Skip(skippingMessage)
+			}
+
+			By("Create matching nodealert :" + alert.Name)
 			err = f.CreateNodeAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -57,8 +65,11 @@ var _ = Describe("NodeAlert", func() {
 		})
 
 		// Check "node_disk"
-		FContext("node_disk", func() {
+		Context("node_disk", func() {
 			BeforeEach(func() {
+				if strings.ToLower(f.Provider) == "minikube" {
+					skippingMessage = `"node_disk will not work in minikube"`
+				}
 				alert.Spec.Check = tapi.CheckNodeDisk
 				alert.Spec.Vars = make(map[string]interface{})
 			})

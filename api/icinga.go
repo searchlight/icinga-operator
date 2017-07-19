@@ -58,7 +58,7 @@ const (
 	CheckHttp             CheckCluster = "any_http"
 	CheckComponentStatus  CheckCluster = "component_status"
 	CheckJsonPath         CheckCluster = "json_path"
-	CheckNodeCount        CheckCluster = "node_count"
+	CheckNodeExists       CheckCluster = "node_exists"
 	CheckPodExists        CheckCluster = "pod_exists"
 	CheckPrometheusMetric CheckCluster = "prometheus_metric"
 	CheckClusterEvent     CheckCluster = "kube_event"

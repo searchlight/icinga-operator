@@ -15,7 +15,7 @@ import (
 func (f *Invocation) NodeAlert() *tapi.NodeAlert {
 	return &tapi.NodeAlert{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      rand.WithUniqSuffix("podalert"),
+			Name:      rand.WithUniqSuffix("nodealert"),
 			Namespace: f.namespace,
 			Labels: map[string]string{
 				"app": f.app,
@@ -83,7 +83,10 @@ func (f *Framework) EventuallyNodeAlertIcingaService(meta metav1.ObjectMeta, nod
 	return Eventually(
 		func() matcher.IcingaServiceState {
 			var respService icinga.ResponseObject
-			_, err := f.icingaClient.Objects().Service("").Get([]string{}, in).Do().Into(&respService)
+			status, err := f.icingaClient.Objects().Service("").Get([]string{}, in).Do().Into(&respService)
+			if status == 0 {
+				return matcher.IcingaServiceState{Unknown: 1.0}
+			}
 			Expect(err).NotTo(HaveOccurred())
 
 			var icingaServiceState matcher.IcingaServiceState

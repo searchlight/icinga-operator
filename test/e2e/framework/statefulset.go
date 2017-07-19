@@ -35,17 +35,17 @@ func (f *Invocation) StatefulSet() *apps.StatefulSet {
 			ObjectMeta: metav1.ObjectMeta{
 				Name: TestSourceDataVolumeName,
 				Annotations: map[string]string{
-					"volume.beta.kubernetes.io/storage-class": "gp2",
+					"volume.beta.kubernetes.io/storage-class": f.storageClass,
 				},
 			},
 			Spec: apiv1.PersistentVolumeClaimSpec{
-				StorageClassName: types.StringP("gp2"),
+				StorageClassName: types.StringP(f.storageClass),
 				AccessModes: []apiv1.PersistentVolumeAccessMode{
 					apiv1.ReadWriteOnce,
 				},
 				Resources: apiv1.ResourceRequirements{
 					Requests: apiv1.ResourceList{
-						apiv1.ResourceStorage: resource.MustParse("10Gi"),
+						apiv1.ResourceStorage: resource.MustParse("5Gi"),
 					},
 				},
 			},

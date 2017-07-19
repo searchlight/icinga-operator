@@ -46,6 +46,9 @@ func (f *Invocation) ServiceSearchlight() *apiv1.Service {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      f.name,
 			Namespace: f.namespace,
+			Labels: map[string]string{
+				"app": "searchlight",
+			},
 		},
 		Spec: apiv1.ServiceSpec{
 			Selector: map[string]string{
@@ -80,7 +83,7 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 				{
 					Name:            "icinga",
 					Image:           "aerokite/icinga:e2e-test-k8s",
-					ImagePullPolicy: apiv1.PullAlways,
+					ImagePullPolicy: apiv1.PullIfNotPresent,
 					Ports: []apiv1.ContainerPort{
 						{
 							ContainerPort: 5665,
