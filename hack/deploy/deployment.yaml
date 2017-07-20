@@ -76,7 +76,10 @@ spec:
           httpGet:
             scheme: HTTPS
             port: 5665
-            path: /v1
+            path: /v1/status
+            httpHeaders:
+              - name: Authorization
+                value: "Basic c3RhdHVzdXNlcjpzdGF0dXNwYXNz"
           initialDelaySeconds: 120
           periodSeconds: 30
         volumeMounts:

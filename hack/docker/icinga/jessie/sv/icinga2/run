@@ -58,8 +58,8 @@ object ApiUser "$ICINGA_API_USER" {
   permissions = [ "*" ]
 }
 
-object ApiUser "statusapi" {
-  password = ""
+object ApiUser "statususer" {
+  password = "statuspass"
   // client_cn = ""
 
   permissions = [ "status/query" ]
