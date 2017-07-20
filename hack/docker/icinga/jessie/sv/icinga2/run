@@ -29,7 +29,7 @@ object Zone ZoneName {
 }
 EOL
 
-	chown -R icinga:icinga /srv/icinga2/secrets
+	chown -R icinga:icinga /srv/icinga2/pki
 	chmod 400 /srv/icinga2/pki/icinga.key
 	cat >/etc/icinga2/features-available/api.conf <<EOL
 /**
