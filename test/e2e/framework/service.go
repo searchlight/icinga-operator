@@ -50,7 +50,7 @@ func (f *Framework) GetServiceEndpoint(meta metav1.ObjectMeta, portName string) 
 			if err != nil {
 				return "", err
 			}
-			host = string(ip)
+			host = strings.TrimRight(string(ip), "\n")
 		}
 	}
 
