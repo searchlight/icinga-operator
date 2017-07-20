@@ -149,7 +149,7 @@ func (c *Controller) EnsureNodeAlertDeleted(alert *tapi.NodeAlert) {
 	} else {
 		if resources, err := c.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{LabelSelector: sel.String()}); err == nil {
 			for i := range resources.Items {
-				c.EnsureNodeDeleted(&resources.Items[i], alert)
+				go c.EnsureNodeDeleted(&resources.Items[i], alert)
 			}
 		}
 	}
