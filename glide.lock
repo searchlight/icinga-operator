@@ -1,8 +1,8 @@
 hash: ba7a43d99f7ae7abee5af0d04eedced27232e183ce6fc92b1ef4f5fd22c91221
-updated: 2017-07-12T12:56:06.258487108+06:00
+updated: 2017-07-20T10:26:39.763227286+06:00
 imports:
 - name: github.com/appscode/api
-  version: b61754fd4d336573cfed5cf16bcbdfe6d30d078d
+  version: e5de76ae801ff8a1a3dc2f1540296ee80825abcc
 - name: github.com/appscode/client
   version: 9844500890e8cf3df84b3c86ddc17c220db38af1
 - name: github.com/appscode/envconfig
@@ -22,7 +22,7 @@ imports:
   - types
   - version
 - name: github.com/appscode/go-notify
-  version: 906bd4ab3891b6e3bb8730e6f03b12ff342a9fa6
+  version: 5af76dc1dd38fa4c71883abf4dbbdfeae3bd14e8
   subpackages:
   - hipchat
   - log
@@ -75,6 +75,10 @@ imports:
   - signer/local
   - signer/remote
   - signer/universal
+- name: github.com/codegangsta/inject
+  version: 33e0aa1cb7c019ccc3fbe049a8262a6403d30504
+- name: github.com/codeskyblue/go-sh
+  version: 3d593d477915b4d2f2e74b2e041495345647a46b
 - name: github.com/cpuguy83/go-md2man
   version: 23709d0847197db6021a51fdb193e66e9222d4e7
   subpackages:
@@ -214,6 +218,22 @@ imports:
   version: ad45545899c7b13c020ea92b2072220eefad42b8
 - name: github.com/nlopes/slack
   version: ca8436d76f805ec1e682eaae2de3c3a9bc894b0f
+- name: github.com/onsi/gomega
+  version: d59fa0ac68bb5dd932ee8d24eed631cdd519efc3
+  subpackages:
+  - format
+  - gstruct
+  - gstruct/errors
+  - internal/assertion
+  - internal/asyncassertion
+  - internal/oraclematcher
+  - internal/testingtsupport
+  - matchers
+  - matchers/support/goraph/bipartitegraph
+  - matchers/support/goraph/edge
+  - matchers/support/goraph/node
+  - matchers/support/goraph/util
+  - types
 - name: github.com/prometheus/client_golang
   version: c5b7fccd204277076155f10851dad72b76a49317
   subpackages:
@@ -255,7 +275,7 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
 - name: github.com/spf13/cobra
-  version: c46add8a652801b61513ad36c56759f302fbb028
+  version: 715f41bd7a70b5111f898b71ab484da52ee6266d
   subpackages:
   - doc
 - name: github.com/spf13/pflag
@@ -333,7 +353,6 @@ imports:
   - pkg/apimachinery
   - pkg/apimachinery/announced
   - pkg/apimachinery/registered
-  - pkg/apis/meta/internalversion
   - pkg/apis/meta/v1
   - pkg/apis/meta/v1/unstructured
   - pkg/conversion
@@ -374,7 +393,7 @@ imports:
   - third_party/forked/golang/netutil
   - third_party/forked/golang/reflect
 - name: k8s.io/apiserver
-  version: 087d1a2efeb6296f04bb0f54e7af9890052aa6d7
+  version: d7bba18199202b51f78c048c2a8404772007f0df
   subpackages:
   - pkg/server/httplog
   - pkg/util/wsstream
@@ -474,6 +493,34 @@ imports:
   - pkg/util/interrupt
   - pkg/util/term
 testImports:
+- name: github.com/mitchellh/go-homedir
+  version: d682a8f0cf139663a984ff12528da460ca963de9
+- name: github.com/onsi/ginkgo
+  version: bb93381d543b0e5725244abe752214a110791d01
+  subpackages:
+  - config
+  - ginkgo
+  - ginkgo/convert
+  - ginkgo/interrupthandler
+  - ginkgo/nodot
+  - ginkgo/testrunner
+  - ginkgo/testsuite
+  - ginkgo/watch
+  - internal/codelocation
+  - internal/containernode
+  - internal/failer
+  - internal/leafnodes
+  - internal/remote
+  - internal/spec
+  - internal/specrunner
+  - internal/suite
+  - internal/testingtproxy
+  - internal/writer
+  - reporters
+  - reporters/stenographer
+  - reporters/stenographer/support/go-colorable
+  - reporters/stenographer/support/go-isatty
+  - types
 - name: github.com/pmezard/go-difflib
   version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
   subpackages:
