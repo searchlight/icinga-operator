@@ -57,6 +57,13 @@ object ApiUser "$ICINGA_API_USER" {
 
   permissions = [ "*" ]
 }
+
+object ApiUser "statusapi" {
+  password = ""
+  // client_cn = ""
+
+  permissions = [ "status/query" ]
+}
 EOL
 
 	/etc/init.d/icinga2 restart
