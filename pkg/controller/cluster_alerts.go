@@ -100,7 +100,7 @@ func (c *Controller) EnsureClusterAlert(old, new *tapi.ClusterAlert) (err error)
 		if err == nil {
 			c.recorder.Eventf(
 				new,
-				apiv1.EventTypeWarning,
+				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulSync,
 				`Applied ClusterAlert: "%v"`,
 				new.Name,
@@ -115,6 +115,7 @@ func (c *Controller) EnsureClusterAlert(old, new *tapi.ClusterAlert) (err error)
 				new.Name,
 				err,
 			)
+			log.Errorln(err)
 			return
 		}
 	}()
@@ -132,7 +133,7 @@ func (c *Controller) EnsureClusterAlertDeleted(alert *tapi.ClusterAlert) (err er
 		if err == nil {
 			c.recorder.Eventf(
 				alert,
-				apiv1.EventTypeWarning,
+				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulDelete,
 				`Deleted ClusterAlert: "%v"`,
 				alert.Name,
@@ -147,6 +148,7 @@ func (c *Controller) EnsureClusterAlertDeleted(alert *tapi.ClusterAlert) (err er
 				alert.Name,
 				err,
 			)
+			log.Errorln(err)
 			return
 		}
 	}()

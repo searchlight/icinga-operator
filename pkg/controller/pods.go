@@ -147,7 +147,7 @@ func (c *Controller) EnsurePod(pod *apiv1.Pod, old, new *tapi.PodAlert) (err err
 		if err == nil {
 			c.recorder.Eventf(
 				new,
-				apiv1.EventTypeWarning,
+				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulSync,
 				`Applied PodAlert: "%v"`,
 				new.Name,
@@ -162,6 +162,7 @@ func (c *Controller) EnsurePod(pod *apiv1.Pod, old, new *tapi.PodAlert) (err err
 				new.Name,
 				err,
 			)
+			log.Errorln(err)
 			return
 		}
 	}()
@@ -179,7 +180,7 @@ func (c *Controller) EnsurePodDeleted(pod *apiv1.Pod, alert *tapi.PodAlert) (err
 		if err == nil {
 			c.recorder.Eventf(
 				alert,
-				apiv1.EventTypeWarning,
+				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulDelete,
 				`Deleted PodAlert: "%v"`,
 				alert.Name,
@@ -194,6 +195,7 @@ func (c *Controller) EnsurePodDeleted(pod *apiv1.Pod, alert *tapi.PodAlert) (err
 				alert.Name,
 				err,
 			)
+			log.Errorln(err)
 			return
 		}
 	}()

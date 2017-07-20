@@ -127,7 +127,7 @@ func (h *commonHost) DeleteIcingaService(svc string, kh IcingaHost) error {
 	if resp.Err != nil {
 		return errors.FromErr(resp.Err).Err()
 	}
-	if resp.Status == 200 {
+	if resp.Status == 200 || resp.Status == 404 {
 		return nil
 	}
 	return errors.New("Fail to delete service").Err()

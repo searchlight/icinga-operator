@@ -109,8 +109,8 @@ func (c *Controller) EnsureNodeAlert(old, new *tapi.NodeAlert) {
 			}
 		} else {
 			if resources, err := c.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{LabelSelector: oldSel.String()}); err == nil {
-				for _, resource := range resources.Items {
-					oldObjs[resource.Name] = &resource
+				for i := range resources.Items {
+					oldObjs[resources.Items[i].Name] = &resources.Items[i]
 				}
 			}
 		}
@@ -126,7 +126,8 @@ func (c *Controller) EnsureNodeAlert(old, new *tapi.NodeAlert) {
 		}
 	} else {
 		if resources, err := c.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{LabelSelector: newSel.String()}); err == nil {
-			for _, resource := range resources.Items {
+			for i := range resources.Items {
+				resource := resources.Items[i]
 				delete(oldObjs, resource.Name)
 				go c.EnsureNode(&resource, old, new)
 			}
@@ -147,8 +148,8 @@ func (c *Controller) EnsureNodeAlertDeleted(alert *tapi.NodeAlert) {
 		}
 	} else {
 		if resources, err := c.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{LabelSelector: sel.String()}); err == nil {
-			for _, resource := range resources.Items {
-				go c.EnsureNodeDeleted(&resource, alert)
+			for i := range resources.Items {
+				go c.EnsureNodeDeleted(&resources.Items[i], alert)
 			}
 		}
 	}

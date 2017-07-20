@@ -250,8 +250,10 @@ func (c *Configurator) LoadIcingaConfig() (*Config, error) {
 	if key, err := sec.GetKey(ICINGA_API_PASSWORD); err == nil {
 		ctx.BasicAuth.Password = key.Value()
 	}
+
 	if caCert, err := ioutil.ReadFile(c.certFile("ca")); err == nil {
 		ctx.CACert = caCert
 	}
+
 	return ctx, nil
 }

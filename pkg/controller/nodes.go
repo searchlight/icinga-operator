@@ -137,7 +137,7 @@ func (c *Controller) EnsureNode(node *apiv1.Node, old, new *tapi.NodeAlert) (err
 		if err == nil {
 			c.recorder.Eventf(
 				new,
-				apiv1.EventTypeWarning,
+				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulSync,
 				`Applied NodeAlert: "%v"`,
 				new.Name,
@@ -152,6 +152,7 @@ func (c *Controller) EnsureNode(node *apiv1.Node, old, new *tapi.NodeAlert) (err
 				new.Name,
 				err,
 			)
+			log.Errorln(err)
 			return
 		}
 	}()
@@ -169,7 +170,7 @@ func (c *Controller) EnsureNodeDeleted(node *apiv1.Node, alert *tapi.NodeAlert) 
 		if err == nil {
 			c.recorder.Eventf(
 				alert,
-				apiv1.EventTypeWarning,
+				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulDelete,
 				`Deleted NodeAlert: "%v"`,
 				alert.Name,
@@ -184,6 +185,7 @@ func (c *Controller) EnsureNodeDeleted(node *apiv1.Node, alert *tapi.NodeAlert) 
 				alert.Name,
 				err,
 			)
+			log.Errorln(err)
 			return
 		}
 	}()
