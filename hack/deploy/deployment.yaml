@@ -72,6 +72,13 @@ spec:
         - containerPort: 60006
           name: web
           protocol: TCP
+        livenessProbe:
+          httpGet:
+            scheme: HTTPS
+            port: 5665
+            path: /v1
+          initialDelaySeconds: 120
+          periodSeconds: 30
         volumeMounts:
           - name: data-volume
             mountPath: /var/pv
