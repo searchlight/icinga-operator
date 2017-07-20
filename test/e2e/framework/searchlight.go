@@ -82,7 +82,7 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 			Containers: []apiv1.Container{
 				{
 					Name:            "icinga",
-					Image:           "aerokite/icinga:e2e-test-k8s",
+					Image:           "aerokite/icinga:probe-k8s",
 					ImagePullPolicy: apiv1.PullIfNotPresent,
 					Ports: []apiv1.ContainerPort{
 						{
@@ -93,6 +93,23 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 							ContainerPort: 60006,
 							Name:          "web",
 						},
+					},
+					LivenessProbe: &apiv1.Probe{
+						Handler: apiv1.Handler{
+							HTTPGet: &apiv1.HTTPGetAction{
+								Scheme: apiv1.URISchemeHTTPS,
+								Port:   intstr.FromString("api"),
+								Path:   "/v1/status",
+								HTTPHeaders: []apiv1.HTTPHeader{
+									{
+										Name:  "Authorization",
+										Value: "Basic c3RhdHVzdXNlcjpzdGF0dXNwYXNz",
+									},
+								},
+							},
+						},
+						InitialDelaySeconds: 120,
+						PeriodSeconds:       30,
 					},
 					VolumeMounts: []apiv1.VolumeMount{
 						{
