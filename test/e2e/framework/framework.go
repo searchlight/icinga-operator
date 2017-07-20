@@ -15,10 +15,9 @@ type Framework struct {
 	name         string
 	Provider     string
 	storageClass string
-	minikube     string
 }
 
-func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, icingaClient *icinga.Client, provider, storageClass, minikube string) *Framework {
+func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, icingaClient *icinga.Client, provider, storageClass string) *Framework {
 	return &Framework{
 		kubeClient:   kubeClient,
 		extClient:    extClient,
@@ -27,7 +26,6 @@ func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, icing
 		namespace:    rand.WithUniqSuffix("searchlight"), // "searchlight-42e4fy",
 		Provider:     provider,
 		storageClass: storageClass,
-		minikube:     minikube,
 	}
 }
 

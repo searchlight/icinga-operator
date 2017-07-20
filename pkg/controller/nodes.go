@@ -96,11 +96,11 @@ func (c *Controller) WatchNodes() {
 					for alert := range diff {
 						ch := diff[alert]
 						if ch.old == nil && ch.new != nil {
-							c.EnsureNode(newNode, nil, ch.new)
+							go c.EnsureNode(newNode, nil, ch.new)
 						} else if ch.old != nil && ch.new == nil {
-							c.EnsureNodeDeleted(newNode, ch.old)
+							go c.EnsureNodeDeleted(newNode, ch.old)
 						} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
-							c.EnsureNode(newNode, ch.old, ch.new)
+							go c.EnsureNode(newNode, ch.old, ch.new)
 						}
 					}
 				}

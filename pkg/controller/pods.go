@@ -102,20 +102,15 @@ func (c *Controller) WatchPods() {
 					}
 
 					for alert := range diff {
-						var err error = nil
 						ch := diff[alert]
 						if oldPod.Status.PodIP == "" && newPod.Status.PodIP != "" {
-							err = c.EnsurePod(newPod, nil, ch.new)
+							go c.EnsurePod(newPod, nil, ch.new)
 						} else if ch.old == nil && ch.new != nil {
-							err = c.EnsurePod(newPod, nil, ch.new)
+							go c.EnsurePod(newPod, nil, ch.new)
 						} else if ch.old != nil && ch.new == nil {
-							err = c.EnsurePodDeleted(newPod, ch.old)
+							go c.EnsurePodDeleted(newPod, ch.old)
 						} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
-							err = c.EnsurePod(newPod, ch.old, ch.new)
-						}
-
-						if err != nil {
-							log.Errorln(err)
+							go c.EnsurePod(newPod, ch.old, ch.new)
 						}
 					}
 				}

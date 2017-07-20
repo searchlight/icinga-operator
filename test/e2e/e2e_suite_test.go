@@ -23,12 +23,10 @@ import (
 
 var provider string
 var storageClass string
-var minikube string
 
 func init() {
 	flag.StringVar(&provider, "provider", "minikube", "Kubernetes cloud provider")
 	flag.StringVar(&storageClass, "storageclass", "", "Kubernetes StorageClass name")
-	flag.StringVar(&minikube, "minikube", "", "Minikube cluster IP address")
 }
 
 const (
@@ -61,7 +59,7 @@ var _ = BeforeSuite(func() {
 	kubeClient := clientset.NewForConfigOrDie(config)
 	extClient := tcs.NewForConfigOrDie(config)
 	// Framework
-	root = framework.New(kubeClient, extClient, nil, provider, storageClass, minikube)
+	root = framework.New(kubeClient, extClient, nil, provider, storageClass)
 
 	e2e.PrintSeparately("Using namespace " + root.Namespace())
 
