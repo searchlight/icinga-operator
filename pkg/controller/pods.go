@@ -172,7 +172,7 @@ func (c *Controller) EnsurePod(pod *apiv1.Pod, old, new *tapi.PodAlert) (err err
 	} else {
 		err = c.podHost.Update(*new, *pod)
 	}
-	return err
+	return
 }
 
 func (c *Controller) EnsurePodDeleted(pod *apiv1.Pod, alert *tapi.PodAlert) (err error) {
