@@ -80,8 +80,8 @@ spec:
             httpHeaders:
               - name: Authorization
                 value: "Basic c3RhdHVzdXNlcjpzdGF0dXNwYXNz"
-          initialDelaySeconds: 120
-          periodSeconds: 30
+          initialDelaySeconds: 300
+          periodSeconds: 120
         volumeMounts:
           - name: data-volume
             mountPath: /var/pv
