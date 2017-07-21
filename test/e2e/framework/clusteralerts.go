@@ -1,9 +1,9 @@
 package framework
 
 import (
+	"fmt"
 	"time"
 
-	"fmt"
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/api"
@@ -24,7 +24,7 @@ func (f *Invocation) ClusterAlert() *tapi.ClusterAlert {
 		},
 		Spec: tapi.ClusterAlertSpec{
 			CheckInterval: metav1.Duration{time.Second * 5},
-			Vars: make(map[string]interface{}),
+			Vars:          make(map[string]interface{}),
 		},
 	}
 }

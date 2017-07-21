@@ -1,9 +1,9 @@
 package framework
 
 import (
+	"fmt"
 	"time"
 
-	"fmt"
 	"github.com/appscode/go/crypto/rand"
 	log "github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/api"
@@ -25,7 +25,7 @@ func (f *Invocation) NodeAlert() *tapi.NodeAlert {
 		},
 		Spec: tapi.NodeAlertSpec{
 			CheckInterval: metav1.Duration{time.Second * 5},
-			Vars: make(map[string]interface{}),
+			Vars:          make(map[string]interface{}),
 		},
 	}
 }
