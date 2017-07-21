@@ -1,6 +1,8 @@
 package e2e_test
 
 import (
+	"strings"
+
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/go/types"
 	tapi "github.com/appscode/searchlight/api"
@@ -8,10 +10,10 @@ import (
 	. "github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 	apps "k8s.io/client-go/pkg/apis/apps/v1beta1"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
-	"strings"
 )
 
 var _ = Describe("PodAlert", func() {
@@ -43,9 +45,7 @@ var _ = Describe("PodAlert", func() {
 			By("Wait for Running pods")
 			f.EventuallyReplicaSet(rs.ObjectMeta).Should(HaveRunningPods(*rs.Spec.Replicas))
 
-			alert.Spec.Selector = *(rs.Spec.Selector)
-
-			By("Create matching podalert :"+ alert.Name)
+			By("Create matching podalert :" + alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -70,9 +70,7 @@ var _ = Describe("PodAlert", func() {
 			By("Wait for Running pods")
 			f.EventuallyReplicaSet(rs.ObjectMeta).Should(HaveRunningPods(*rs.Spec.Replicas))
 
-			alert.Spec.Selector = *(rs.Spec.Selector)
-
-			By("Create matching podalert :"+ alert.Name)
+			By("Create matching podalert :" + alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -80,12 +78,11 @@ var _ = Describe("PodAlert", func() {
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
 				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
 
-			rs, err = f.GetReplicaSet(rs.ObjectMeta)
-			Expect(err).NotTo(HaveOccurred())
-
 			By("Increase replica")
-			rs.Spec.Replicas = types.Int32P(3)
-			rs, err = f.UpdateReplicaSet(rs)
+			rs, err := f.UpdateReplicaSet(rs.ObjectMeta, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
+				in.Spec.Replicas = types.Int32P(3)
+				return in
+			})
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Wait for Running pods")
@@ -112,9 +109,7 @@ var _ = Describe("PodAlert", func() {
 			By("Wait for Running pods")
 			f.EventuallyReplicaSet(rs.ObjectMeta).Should(HaveRunningPods(*rs.Spec.Replicas))
 
-			alert.Spec.Selector = *(rs.Spec.Selector)
-
-			By("Create matching podalert :"+ alert.Name)
+			By("Create matching podalert :" + alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -122,12 +117,11 @@ var _ = Describe("PodAlert", func() {
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
 				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
 
-			rs, err = f.GetReplicaSet(rs.ObjectMeta)
-			Expect(err).NotTo(HaveOccurred())
-
 			By("Decreate replica")
-			rs.Spec.Replicas = types.Int32P(1)
-			rs, err = f.UpdateReplicaSet(rs)
+			rs, err := f.UpdateReplicaSet(rs.ObjectMeta, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
+				in.Spec.Replicas = types.Int32P(1)
+				return in
+			})
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Check icinga services")
@@ -151,9 +145,7 @@ var _ = Describe("PodAlert", func() {
 			By("Wait for Running pods")
 			f.EventuallyReplicaSet(rs.ObjectMeta).Should(HaveRunningPods(*rs.Spec.Replicas))
 
-			alert.Spec.Selector = *(rs.Spec.Selector)
-
-			By("Create matching podalert :"+ alert.Name)
+			By("Create matching podalert :" + alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -167,11 +159,12 @@ var _ = Describe("PodAlert", func() {
 			oldAlertSpec := alert.Spec
 
 			By("Change LabelSelector")
-			alert.Spec.Selector.MatchLabels = map[string]string{
-				"app": rand.WithUniqSuffix("searchlight-e2e"),
-			}
-
-			alert, err = f.UpdatePodAlert(alert)
+			alert, err = f.UpdatePodAlert(alert.ObjectMeta, func(in *tapi.PodAlert) *tapi.PodAlert {
+				in.Spec.Selector.MatchLabels = map[string]string{
+					"app": rand.WithUniqSuffix("searchlight-e2e"),
+				}
+				return in
+			})
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Check icinga services")
@@ -193,9 +186,7 @@ var _ = Describe("PodAlert", func() {
 			By("Wait for Running pods")
 			f.EventuallyPodRunning(pod.ObjectMeta).Should(HaveRunningPods(1))
 
-			alert.Spec.PodName = pod.Name
-
-			By("Create matching podalert :"+ alert.Name)
+			By("Create matching podalert :" + alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -220,9 +211,7 @@ var _ = Describe("PodAlert", func() {
 			By("Wait for all pods")
 			f.EventuallyReplicaSet(rs.ObjectMeta).Should(HavePods(*rs.Spec.Replicas))
 
-			alert.Spec.Selector = *(rs.Spec.Selector)
-
-			By("Create matching podalert :"+ alert.Name)
+			By("Create matching podalert :" + alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -250,13 +239,22 @@ var _ = Describe("PodAlert", func() {
 		Context("check_pod_status", func() {
 			BeforeEach(func() {
 				alert.Spec.Check = tapi.CheckPodStatus
+				alert.Spec.Selector = *(rs.Spec.Selector)
 			})
 
 			It("should manage icinga service for Alert.Spec.Selector", shouldManageIcingaServiceForLabelSelector)
 			It("should manage icinga service for new Pod", shouldManageIcingaServiceForNewPod)
 			It("should manage icinga service for deleted Pod", shouldManageIcingaServiceForDeletedPod)
 			It("should manage icinga service for Alert.Spec.Selector changed", shouldManageIcingaServiceForLabelChanged)
-			It("should manage icinga service for Alert.Spec.PodName", shouldManageIcingaServiceForPodName)
+
+			Context("PodName", func() {
+				BeforeEach(func() {
+					alert.Spec.Selector = metav1.LabelSelector{}
+					alert.Spec.PodName = pod.Name
+				})
+
+				It("should manage icinga service for Alert.Spec.PodName", shouldManageIcingaServiceForPodName)
+			})
 
 			Context("invalid image", func() {
 				BeforeEach(func() {
@@ -282,9 +280,8 @@ var _ = Describe("PodAlert", func() {
 					"dd if=/dev/zero of=/source/data/data bs=1024 count=52500 && sleep 1d",
 				}
 				alert.Spec.Check = tapi.CheckVolume
-				alert.Spec.Vars = map[string]interface{}{
-					"volume_name": framework.TestSourceDataVolumeName,
-				}
+				alert.Spec.Selector = *(ss.Spec.Selector)
+				alert.Spec.Vars["volume_name"] = framework.TestSourceDataVolumeName
 			})
 
 			var icingaServiceState IcingaServiceState
@@ -301,9 +298,7 @@ var _ = Describe("PodAlert", func() {
 					By("Wait for Running pods")
 					f.EventuallyStatefulSet(ss.ObjectMeta).Should(HaveRunningPods(*ss.Spec.Replicas))
 
-					alert.Spec.Selector = *(ss.Spec.Selector)
-
-					By("Create matching podalert :"+ alert.Name)
+					By("Create matching podalert :" + alert.Name)
 					err = f.CreatePodAlert(alert)
 					Expect(err).NotTo(HaveOccurred())
 
@@ -354,10 +349,10 @@ var _ = Describe("PodAlert", func() {
 		Context("check_kube_exec", func() {
 			BeforeEach(func() {
 				alert.Spec.Check = tapi.CheckPodExec
-				alert.Spec.Vars = map[string]interface{}{
-					"container": "busybox",
-					"cmd":       "/bin/sh",
-				}
+				alert.Spec.Selector = *(rs.Spec.Selector)
+				alert.Spec.Vars["container"] = "busybox"
+				alert.Spec.Vars["cmd"] = "/bin/sh"
+
 			})
 
 			Context("exit 0", func() {

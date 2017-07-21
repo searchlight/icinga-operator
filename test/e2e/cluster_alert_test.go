@@ -6,8 +6,8 @@ import (
 	. "github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"k8s.io/apimachinery/pkg/labels"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
+	"k8s.io/apimachinery/pkg/labels"
 )
 
 var _ = Describe("ClusterAlert", func() {
@@ -57,7 +57,6 @@ var _ = Describe("ClusterAlert", func() {
 		Context("check_node_exists", func() {
 			BeforeEach(func() {
 				alert.Spec.Check = tapi.CheckNodeExists
-				alert.Spec.Vars = make(map[string]interface{})
 				totalNode, _ = f.CountNode()
 			})
 
@@ -90,7 +89,7 @@ var _ = Describe("ClusterAlert", func() {
 			BeforeEach(func() {
 				rs = f.ReplicaSet()
 				alert.Spec.Check = tapi.CheckPodExists
-				alert.Spec.Vars = make(map[string]interface{})
+				alert.Spec.Vars["selector"] = labels.SelectorFromSet(rs.Labels).String()
 			})
 
 			var shouldManageIcingaService = func() {
@@ -100,8 +99,6 @@ var _ = Describe("ClusterAlert", func() {
 
 				By("Wait for Running pods")
 				f.EventuallyReplicaSet(rs.ObjectMeta).Should(HaveRunningPods(*rs.Spec.Replicas))
-
-				alert.Spec.Vars["selector"] = labels.SelectorFromSet(rs.Spec.Selector.MatchLabels).String()
 
 				By("Create matching clusteralert: " + alert.Name)
 				err = f.CreateClusterAlert(alert)

@@ -3,7 +3,9 @@ package framework
 import (
 	"time"
 
+	"fmt"
 	"github.com/appscode/go/crypto/rand"
+	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e/matcher"
@@ -22,6 +24,7 @@ func (f *Invocation) ClusterAlert() *tapi.ClusterAlert {
 		},
 		Spec: tapi.ClusterAlertSpec{
 			CheckInterval: metav1.Duration{time.Second * 5},
+			Vars: make(map[string]interface{}),
 		},
 	}
 }
@@ -35,8 +38,25 @@ func (f *Framework) GetClusterAlert(meta metav1.ObjectMeta) (*tapi.ClusterAlert,
 	return f.extClient.ClusterAlerts(meta.Namespace).Get(meta.Name)
 }
 
-func (f *Framework) UpdateClusterAlert(obj *tapi.ClusterAlert) (*tapi.ClusterAlert, error) {
-	return f.extClient.ClusterAlerts(obj.Namespace).Update(obj)
+func (f *Framework) UpdateClusterAlert(meta metav1.ObjectMeta, transformer func(*tapi.ClusterAlert) *tapi.ClusterAlert) (*tapi.ClusterAlert, error) {
+	attempt := 0
+	for ; attempt < maxAttempts; attempt = attempt + 1 {
+		cur, err := f.extClient.ClusterAlerts(meta.Namespace).Get(meta.Name)
+		if err != nil {
+			return nil, err
+		}
+
+		modified := transformer(cur)
+		modified, err = f.extClient.ClusterAlerts(cur.Namespace).Update(modified)
+		if err == nil {
+			return modified, nil
+		}
+
+		log.Errorf("Attempt %d failed to update ClusterAlert %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
+		time.Sleep(updateRetryInterval)
+	}
+
+	return nil, fmt.Errorf("Failed to update ClusterAlert %s@%s after %d attempts.", meta.Name, meta.Namespace, attempt)
 }
 
 func (f *Framework) DeleteClusterAlert(meta metav1.ObjectMeta) error {

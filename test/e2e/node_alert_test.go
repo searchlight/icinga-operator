@@ -22,9 +22,9 @@ var _ = Describe("NodeAlert", func() {
 
 	BeforeEach(func() {
 		f = root.Invoke()
-		totalNode, _ = f.CountNode()
 		alert = f.NodeAlert()
 		skippingMessage = ""
+		totalNode, _ = f.CountNode()
 	})
 
 	var (
@@ -35,9 +35,6 @@ var _ = Describe("NodeAlert", func() {
 
 			By("Create matching nodealert :" + alert.Name)
 			err = f.CreateNodeAlert(alert)
-			Expect(err).NotTo(HaveOccurred())
-
-			totalNode, err = f.CountNode()
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Check icinga services")
@@ -71,7 +68,6 @@ var _ = Describe("NodeAlert", func() {
 					skippingMessage = `"node_disk will not work in minikube"`
 				}
 				alert.Spec.Check = tapi.CheckNodeDisk
-				alert.Spec.Vars = make(map[string]interface{})
 			})
 
 			Context("State OK", func() {

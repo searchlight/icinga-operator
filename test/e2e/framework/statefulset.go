@@ -3,10 +3,11 @@ package framework
 import (
 	"time"
 
+	"fmt"
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/go/types"
+	"github.com/appscode/log"
 	. "github.com/onsi/gomega"
-	kerr "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
@@ -23,7 +24,12 @@ func (f *Invocation) StatefulSet() *apps.StatefulSet {
 			},
 		},
 		Spec: apps.StatefulSetSpec{
-			Replicas:    types.Int32P(1),
+			Replicas: types.Int32P(1),
+			Selector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					"app": f.app,
+				},
+			},
 			Template:    f.PodTemplate(),
 			ServiceName: TEST_HEADLESS_SERVICE,
 		},
@@ -62,17 +68,32 @@ func (f *Framework) CreateStatefulSet(obj *apps.StatefulSet) (*apps.StatefulSet,
 	return f.kubeClient.AppsV1beta1().StatefulSets(obj.Namespace).Create(obj)
 }
 
-func (f *Framework) UpdateStatefulSet(obj *apps.StatefulSet) (*apps.StatefulSet, error) {
-	return f.kubeClient.AppsV1beta1().StatefulSets(obj.Namespace).Update(obj)
+func (f *Framework) UpdateStatefulSet(meta metav1.ObjectMeta, transformer func(*apps.StatefulSet) *apps.StatefulSet) (*apps.StatefulSet, error) {
+	attempt := 0
+	for ; attempt < maxAttempts; attempt = attempt + 1 {
+		cur, err := f.kubeClient.AppsV1beta1().StatefulSets(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
+		if err != nil {
+			return nil, err
+		}
+
+		modified := transformer(cur)
+		modified, err = f.kubeClient.AppsV1beta1().StatefulSets(cur.Namespace).Update(modified)
+		if err == nil {
+			return modified, nil
+		}
+
+		log.Errorf("Attempt %d failed to update StatefulSets %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
+		time.Sleep(updateRetryInterval)
+	}
+
+	return nil, fmt.Errorf("Failed to update StatefulSets %s@%s after %d attempts.", meta.Name, meta.Namespace, attempt)
 }
 
 func (f *Framework) EventuallyDeleteStatefulSet(meta metav1.ObjectMeta) GomegaAsyncAssertion {
-	ss, err := f.kubeClient.AppsV1beta1().StatefulSets(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
-	if kerr.IsNotFound(err) {
-		return Eventually(func() bool { return true })
-	}
-	ss.Spec.Replicas = types.Int32P(0)
-	ss, err = f.UpdateStatefulSet(ss)
+	ss, err := f.UpdateStatefulSet(meta, func(in *apps.StatefulSet) *apps.StatefulSet {
+		in.Spec.Replicas = types.Int32P(0)
+		return in
+	})
 	Expect(err).NotTo(HaveOccurred())
 
 	return Eventually(
