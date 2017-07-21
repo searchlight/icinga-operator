@@ -132,6 +132,13 @@ libbuild.BIN_MATRIX = {
             'linux': ['amd64']
         }
     },
+    'check_certificate_expiry': {
+        'type': 'go',
+        'go_version': True,
+        'distro': {
+            'linux': ['amd64']
+        }
+    },
     'notifier': {
         'type': 'go',
         'go_version': True,

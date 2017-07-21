@@ -1,6 +1,7 @@
 package hyperalert
 
 import (
+	"github.com/appscode/searchlight/plugins/check_certificate_expiry"
 	"github.com/appscode/searchlight/plugins/check_component_status"
 	"github.com/appscode/searchlight/plugins/check_influx_query"
 	"github.com/appscode/searchlight/plugins/check_json_path"
@@ -24,20 +25,27 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
+	// CheckCluster
 	c.AddCommand(check_component_status.NewCmd())
-	c.AddCommand(check_influx_query.NewCmd())
 	c.AddCommand(check_json_path.NewCmd())
 	c.AddCommand(check_node_exists.NewCmd())
+	c.AddCommand(check_pod_exists.NewCmd())
+	c.AddCommand(check_kube_event.NewCmd())
+	c.AddCommand(check_certificate_expiry.NewCmd())
+
+	// CheckNode
 	c.AddCommand(check_node_status.NewCmd())
 
-	c.AddCommand(check_pod_exists.NewCmd())
+	// CheckPod
 	c.AddCommand(check_pod_status.NewCmd())
-
-	c.AddCommand(check_volume.NewCmd())
-
-	c.AddCommand(check_kube_event.NewCmd())
 	c.AddCommand(check_kube_exec.NewCmd())
 
+	// Combined
+	c.AddCommand(check_volume.NewCmd())
+	c.AddCommand(check_influx_query.NewCmd())
+
+	// Notifier
 	c.AddCommand(notifier.NewCmd())
+
 	return c
 }

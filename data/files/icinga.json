@@ -576,6 +576,49 @@
       ]
     },
     {
+      "description": "This is used to check certificate expire date",
+      "examples": "hyperalert check_certificate_expiry",
+      "name": "certificate_expiry",
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ],
+      "vars": [
+        {
+          "description": "Warning level value (usage duration defaults to 360h)",
+          "flag": {
+            "short": "w",
+            "long": "warning"
+          },
+          "name": "warning",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        },
+        {
+          "description": "Critical level value (usage duration defaults to 120h)",
+          "flag": {
+            "short": "c",
+            "long": "critical"
+          },
+          "name": "critical",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        }
+      ],
+      "states": [
+        "OK",
+        "WARNING",
+        "CRITICAL",
+        "UNKNOWN"
+      ]
+    },
+    {
       "description": "This is used to test various stuff",
       "name": "hello_icinga",
       "envs": [
