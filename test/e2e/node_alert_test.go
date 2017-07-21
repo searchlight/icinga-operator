@@ -33,7 +33,7 @@ var _ = Describe("NodeAlert", func() {
 				Skip(skippingMessage)
 			}
 
-			By("Create matching nodealert :" + alert.Name)
+			By("Create matching nodealert: " + alert.Name)
 			err = f.CreateNodeAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 

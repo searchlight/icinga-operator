@@ -16,7 +16,7 @@ import (
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
-var _ = Describe("PodAlert", func() {
+var _ = FDescribe("PodAlert", func() {
 	var (
 		err             error
 		f               *framework.Invocation
@@ -38,14 +38,14 @@ var _ = Describe("PodAlert", func() {
 
 	var (
 		shouldManageIcingaServiceForLabelSelector = func() {
-			By("Create ReplicaSet :" + rs.Name)
+			By("Create ReplicaSet: " + rs.Name)
 			rs, err = f.CreateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Wait for Running pods")
 			f.EventuallyReplicaSet(rs.ObjectMeta).Should(HaveRunningPods(*rs.Spec.Replicas))
 
-			By("Create matching podalert :" + alert.Name)
+			By("Create matching podalert: " + alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -63,14 +63,14 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForNewPod = func() {
-			By("Create ReplicaSet :" + rs.Name)
+			By("Create ReplicaSet: " + rs.Name)
 			rs, err = f.CreateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Wait for Running pods")
 			f.EventuallyReplicaSet(rs.ObjectMeta).Should(HaveRunningPods(*rs.Spec.Replicas))
 
-			By("Create matching podalert :" + alert.Name)
+			By("Create matching podalert: " + alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -102,14 +102,14 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForDeletedPod = func() {
-			By("Create ReplicaSet :" + rs.Name)
+			By("Create ReplicaSet: " + rs.Name)
 			rs, err = f.CreateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Wait for Running pods")
 			f.EventuallyReplicaSet(rs.ObjectMeta).Should(HaveRunningPods(*rs.Spec.Replicas))
 
-			By("Create matching podalert :" + alert.Name)
+			By("Create matching podalert: " + alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -138,14 +138,14 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForLabelChanged = func() {
-			By("Create ReplicaSet :" + rs.Name)
+			By("Create ReplicaSet: " + rs.Name)
 			rs, err = f.CreateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Wait for Running pods")
 			f.EventuallyReplicaSet(rs.ObjectMeta).Should(HaveRunningPods(*rs.Spec.Replicas))
 
-			By("Create matching podalert :" + alert.Name)
+			By("Create matching podalert: " + alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -179,14 +179,14 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldManageIcingaServiceForPodName = func() {
-			By("Create Pod :" + pod.Name)
+			By("Create Pod: " + pod.Name)
 			pod, err = f.CreatePod(pod)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Wait for Running pods")
 			f.EventuallyPodRunning(pod.ObjectMeta).Should(HaveRunningPods(1))
 
-			By("Create matching podalert :" + alert.Name)
+			By("Create matching podalert: " + alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -204,14 +204,14 @@ var _ = Describe("PodAlert", func() {
 		}
 
 		shouldHandleIcingaServiceForCriticalState = func() {
-			By("Create ReplicaSet :" + rs.Name)
+			By("Create ReplicaSet: " + rs.Name)
 			rs, err = f.CreateReplicaSet(rs)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Wait for all pods")
 			f.EventuallyReplicaSet(rs.ObjectMeta).Should(HavePods(*rs.Spec.Replicas))
 
-			By("Create matching podalert :" + alert.Name)
+			By("Create matching podalert: " + alert.Name)
 			err = f.CreatePodAlert(alert)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -298,7 +298,7 @@ var _ = Describe("PodAlert", func() {
 					By("Wait for Running pods")
 					f.EventuallyStatefulSet(ss.ObjectMeta).Should(HaveRunningPods(*ss.Spec.Replicas))
 
-					By("Create matching podalert :" + alert.Name)
+					By("Create matching podalert: " + alert.Name)
 					err = f.CreatePodAlert(alert)
 					Expect(err).NotTo(HaveOccurred())
 

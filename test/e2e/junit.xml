@@ -1,2 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <testsuite tests="1" failures="0" time="222.525143495"></testsuite>
+  <testsuite tests="1" failures="0" time="222.118605286">
+      <testcase name="NodeAlert Test check_node_status should manage icinga service for Ok State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="NodeAlert Test node_disk State OK should manage icinga service for Ok State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="NodeAlert Test node_disk State Warning should manage icinga service for Warning State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="NodeAlert Test node_disk State Critical should manage icinga service for Critical State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="ClusterAlert Test check_component_status should manage icinga service for Ok State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="ClusterAlert Test check_node_exists State OK should manage icinga service for Ok State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="ClusterAlert Test check_node_exists State Critical should manage icinga service for Critical State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="ClusterAlert Test check_pod_exists State OK should manage icinga service for Ok State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="ClusterAlert Test check_pod_exists State Critical should manage icinga service for Critical State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+  </testsuite>
