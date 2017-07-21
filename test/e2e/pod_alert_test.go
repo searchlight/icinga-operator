@@ -16,7 +16,7 @@ import (
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
-var _ = FDescribe("PodAlert", func() {
+var _ = Describe("PodAlert", func() {
 	var (
 		err             error
 		f               *framework.Invocation

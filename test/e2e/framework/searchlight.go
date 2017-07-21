@@ -94,23 +94,23 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 							Name:          "web",
 						},
 					},
-					//LivenessProbe: &apiv1.Probe{
-					//	Handler: apiv1.Handler{
-					//		HTTPGet: &apiv1.HTTPGetAction{
-					//			Scheme: apiv1.URISchemeHTTPS,
-					//			Port:   intstr.FromInt(5665),
-					//			Path:   "/v1/status",
-					//			HTTPHeaders: []apiv1.HTTPHeader{
-					//				{
-					//					Name:  "Authorization",
-					//					Value: "Basic c3RhdHVzdXNlcjpzdGF0dXNwYXNz",
-					//				},
-					//			},
-					//		},
-					//	},
-					//	InitialDelaySeconds: 300,
-					//	PeriodSeconds:       120,
-					//},
+					LivenessProbe: &apiv1.Probe{
+						Handler: apiv1.Handler{
+							HTTPGet: &apiv1.HTTPGetAction{
+								Scheme: apiv1.URISchemeHTTPS,
+								Port:   intstr.FromInt(5665),
+								Path:   "/v1/status",
+								HTTPHeaders: []apiv1.HTTPHeader{
+									{
+										Name:  "Authorization",
+										Value: "Basic c3RhdHVzdXNlcjpzdGF0dXNwYXNz",
+									},
+								},
+							},
+						},
+						InitialDelaySeconds: 300,
+						PeriodSeconds:       120,
+					},
 					VolumeMounts: []apiv1.VolumeMount{
 						{
 							Name:      "data-volume",

@@ -1,13 +1,14 @@
 package framework
 
 import (
+	"fmt"
 	"time"
 
-	"fmt"
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/go/types"
 	"github.com/appscode/log"
 	. "github.com/onsi/gomega"
+	kerr "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
@@ -94,6 +95,9 @@ func (f *Framework) EventuallyDeleteStatefulSet(meta metav1.ObjectMeta) GomegaAs
 		in.Spec.Replicas = types.Int32P(0)
 		return in
 	})
+	if kerr.IsNotFound(err) {
+		return Eventually(func() bool { return true })
+	}
 	Expect(err).NotTo(HaveOccurred())
 
 	return Eventually(
