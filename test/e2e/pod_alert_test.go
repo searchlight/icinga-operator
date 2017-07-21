@@ -79,7 +79,7 @@ var _ = Describe("PodAlert", func() {
 				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
 
 			By("Increase replica")
-			rs, err := f.UpdateReplicaSet(rs.ObjectMeta, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
+			rs, err := f.UpdateReplicaSet(rs.ObjectMeta, func(in extensions.ReplicaSet) extensions.ReplicaSet {
 				in.Spec.Replicas = types.Int32P(3)
 				return in
 			})
@@ -118,7 +118,7 @@ var _ = Describe("PodAlert", func() {
 				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
 
 			By("Decreate replica")
-			rs, err := f.UpdateReplicaSet(rs.ObjectMeta, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
+			rs, err := f.UpdateReplicaSet(rs.ObjectMeta, func(in extensions.ReplicaSet) extensions.ReplicaSet {
 				in.Spec.Replicas = types.Int32P(1)
 				return in
 			})
@@ -159,7 +159,7 @@ var _ = Describe("PodAlert", func() {
 			oldAlertSpec := alert.Spec
 
 			By("Change LabelSelector")
-			alert, err = f.UpdatePodAlert(alert.ObjectMeta, func(in *tapi.PodAlert) *tapi.PodAlert {
+			alert, err = f.UpdatePodAlert(alert.ObjectMeta, func(in tapi.PodAlert) tapi.PodAlert {
 				in.Spec.Selector.MatchLabels = map[string]string{
 					"app": rand.WithUniqSuffix("searchlight-e2e"),
 				}

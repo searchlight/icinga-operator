@@ -43,7 +43,7 @@ func (f *Framework) CreateReplicaSet(obj *extensions.ReplicaSet) (*extensions.Re
 	return f.kubeClient.ExtensionsV1beta1().ReplicaSets(obj.Namespace).Create(obj)
 }
 
-func (f *Framework) UpdateReplicaSet(meta metav1.ObjectMeta, transformer func(*extensions.ReplicaSet) *extensions.ReplicaSet) (*extensions.ReplicaSet, error) {
+func (f *Framework) UpdateReplicaSet(meta metav1.ObjectMeta, transformer func(extensions.ReplicaSet) extensions.ReplicaSet) (*extensions.ReplicaSet, error) {
 	attempt := 0
 	for ; attempt < maxAttempts; attempt = attempt + 1 {
 		cur, err := f.kubeClient.ExtensionsV1beta1().ReplicaSets(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
@@ -51,10 +51,10 @@ func (f *Framework) UpdateReplicaSet(meta metav1.ObjectMeta, transformer func(*e
 			return nil, err
 		}
 
-		modified := transformer(cur)
-		modified, err = f.kubeClient.ExtensionsV1beta1().ReplicaSets(cur.Namespace).Update(modified)
+		modified := transformer(*cur)
+		updated, err := f.kubeClient.ExtensionsV1beta1().ReplicaSets(cur.Namespace).Update(&modified)
 		if err == nil {
-			return modified, nil
+			return updated, nil
 		}
 
 		log.Errorf("Attempt %d failed to update ReplicaSets %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
@@ -65,7 +65,7 @@ func (f *Framework) UpdateReplicaSet(meta metav1.ObjectMeta, transformer func(*e
 }
 
 func (f *Framework) EventuallyDeleteReplicaSet(meta metav1.ObjectMeta) GomegaAsyncAssertion {
-	rs, err := f.UpdateReplicaSet(meta, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
+	rs, err := f.UpdateReplicaSet(meta, func(in extensions.ReplicaSet) extensions.ReplicaSet {
 		in.Spec.Replicas = types.Int32P(0)
 		return in
 	})

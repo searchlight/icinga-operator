@@ -38,7 +38,7 @@ func (f *Framework) GetPodAlert(meta metav1.ObjectMeta) (*tapi.PodAlert, error) 
 	return f.extClient.PodAlerts(meta.Namespace).Get(meta.Name)
 }
 
-func (f *Framework) UpdatePodAlert(meta metav1.ObjectMeta, transformer func(*tapi.PodAlert) *tapi.PodAlert) (*tapi.PodAlert, error) {
+func (f *Framework) UpdatePodAlert(meta metav1.ObjectMeta, transformer func(tapi.PodAlert) tapi.PodAlert) (*tapi.PodAlert, error) {
 	attempt := 0
 	for ; attempt < maxAttempts; attempt = attempt + 1 {
 		cur, err := f.extClient.PodAlerts(meta.Namespace).Get(meta.Name)
@@ -46,10 +46,10 @@ func (f *Framework) UpdatePodAlert(meta metav1.ObjectMeta, transformer func(*tap
 			return nil, err
 		}
 
-		modified := transformer(cur)
-		modified, err = f.extClient.PodAlerts(cur.Namespace).Update(modified)
+		modified := transformer(*cur)
+		updated, err := f.extClient.PodAlerts(cur.Namespace).Update(&modified)
 		if err == nil {
-			return modified, nil
+			return updated, nil
 		}
 
 		log.Errorf("Attempt %d failed to update PodAlert %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)

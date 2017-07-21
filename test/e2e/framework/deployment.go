@@ -41,7 +41,7 @@ func (f *Framework) CreateDeploymentApp(obj *apps.Deployment) error {
 	return err
 }
 
-func (f *Framework) UpdateDeploymentApp(meta metav1.ObjectMeta, transformer func(*apps.Deployment) *apps.Deployment) (*apps.Deployment, error) {
+func (f *Framework) UpdateDeploymentApp(meta metav1.ObjectMeta, transformer func(apps.Deployment) apps.Deployment) (*apps.Deployment, error) {
 	attempt := 0
 	for ; attempt < maxAttempts; attempt = attempt + 1 {
 		cur, err := f.kubeClient.AppsV1beta1().Deployments(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
@@ -49,10 +49,10 @@ func (f *Framework) UpdateDeploymentApp(meta metav1.ObjectMeta, transformer func
 			return nil, err
 		}
 
-		modified := transformer(cur)
-		modified, err = f.kubeClient.AppsV1beta1().Deployments(cur.Namespace).Update(modified)
+		modified := transformer(*cur)
+		updated, err := f.kubeClient.AppsV1beta1().Deployments(cur.Namespace).Update(&modified)
 		if err == nil {
-			return modified, nil
+			return updated, nil
 		}
 
 		log.Errorf("Attempt %d failed to update Deployments %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
@@ -63,7 +63,7 @@ func (f *Framework) UpdateDeploymentApp(meta metav1.ObjectMeta, transformer func
 }
 
 func (f *Framework) EventuallyDeleteDeploymentApp(meta metav1.ObjectMeta) GomegaAsyncAssertion {
-	deployment, err := f.UpdateDeploymentApp(meta, func(in *apps.Deployment) *apps.Deployment {
+	deployment, err := f.UpdateDeploymentApp(meta, func(in apps.Deployment) apps.Deployment {
 		in.Spec.Replicas = types.Int32P(0)
 		return in
 	})
@@ -125,7 +125,7 @@ func (f *Framework) CreateDeploymentExtension(obj *extensions.Deployment) error 
 	return err
 }
 
-func (f *Framework) UpdateDeploymentExtension(meta metav1.ObjectMeta, transformer func(*extensions.Deployment) *extensions.Deployment) (*extensions.Deployment, error) {
+func (f *Framework) UpdateDeploymentExtension(meta metav1.ObjectMeta, transformer func(extensions.Deployment) extensions.Deployment) (*extensions.Deployment, error) {
 	attempt := 0
 	for ; attempt < maxAttempts; attempt = attempt + 1 {
 		cur, err := f.kubeClient.ExtensionsV1beta1().Deployments(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
@@ -133,10 +133,10 @@ func (f *Framework) UpdateDeploymentExtension(meta metav1.ObjectMeta, transforme
 			return nil, err
 		}
 
-		modified := transformer(cur)
-		modified, err = f.kubeClient.ExtensionsV1beta1().Deployments(cur.Namespace).Update(modified)
+		modified := transformer(*cur)
+		updated, err := f.kubeClient.ExtensionsV1beta1().Deployments(cur.Namespace).Update(&modified)
 		if err == nil {
-			return modified, nil
+			return updated, nil
 		}
 
 		log.Errorf("Attempt %d failed to update Deployments %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
@@ -147,7 +147,7 @@ func (f *Framework) UpdateDeploymentExtension(meta metav1.ObjectMeta, transforme
 }
 
 func (f *Framework) EventuallyDeleteDeploymentExtension(meta metav1.ObjectMeta) GomegaAsyncAssertion {
-	deployment, err := f.UpdateDeploymentExtension(meta, func(in *extensions.Deployment) *extensions.Deployment {
+	deployment, err := f.UpdateDeploymentExtension(meta, func(in extensions.Deployment) extensions.Deployment {
 		in.Spec.Replicas = types.Int32P(0)
 		return in
 	})

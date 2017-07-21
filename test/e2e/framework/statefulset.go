@@ -69,7 +69,7 @@ func (f *Framework) CreateStatefulSet(obj *apps.StatefulSet) (*apps.StatefulSet,
 	return f.kubeClient.AppsV1beta1().StatefulSets(obj.Namespace).Create(obj)
 }
 
-func (f *Framework) UpdateStatefulSet(meta metav1.ObjectMeta, transformer func(*apps.StatefulSet) *apps.StatefulSet) (*apps.StatefulSet, error) {
+func (f *Framework) UpdateStatefulSet(meta metav1.ObjectMeta, transformer func(apps.StatefulSet) apps.StatefulSet) (*apps.StatefulSet, error) {
 	attempt := 0
 	for ; attempt < maxAttempts; attempt = attempt + 1 {
 		cur, err := f.kubeClient.AppsV1beta1().StatefulSets(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
@@ -77,10 +77,10 @@ func (f *Framework) UpdateStatefulSet(meta metav1.ObjectMeta, transformer func(*
 			return nil, err
 		}
 
-		modified := transformer(cur)
-		modified, err = f.kubeClient.AppsV1beta1().StatefulSets(cur.Namespace).Update(modified)
+		modified := transformer(*cur)
+		updated, err := f.kubeClient.AppsV1beta1().StatefulSets(cur.Namespace).Update(&modified)
 		if err == nil {
-			return modified, nil
+			return updated, nil
 		}
 
 		log.Errorf("Attempt %d failed to update StatefulSets %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
@@ -91,7 +91,7 @@ func (f *Framework) UpdateStatefulSet(meta metav1.ObjectMeta, transformer func(*
 }
 
 func (f *Framework) EventuallyDeleteStatefulSet(meta metav1.ObjectMeta) GomegaAsyncAssertion {
-	ss, err := f.UpdateStatefulSet(meta, func(in *apps.StatefulSet) *apps.StatefulSet {
+	ss, err := f.UpdateStatefulSet(meta, func(in apps.StatefulSet) apps.StatefulSet {
 		in.Spec.Replicas = types.Int32P(0)
 		return in
 	})

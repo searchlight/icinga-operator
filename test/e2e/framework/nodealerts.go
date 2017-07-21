@@ -39,7 +39,7 @@ func (f *Framework) GetNodeAlert(meta metav1.ObjectMeta) (*tapi.NodeAlert, error
 	return f.extClient.NodeAlerts(meta.Namespace).Get(meta.Name)
 }
 
-func (f *Framework) UpdateNodeAlert(meta metav1.ObjectMeta, transformer func(*tapi.NodeAlert) *tapi.NodeAlert) (*tapi.NodeAlert, error) {
+func (f *Framework) UpdateNodeAlert(meta metav1.ObjectMeta, transformer func(tapi.NodeAlert) tapi.NodeAlert) (*tapi.NodeAlert, error) {
 	attempt := 0
 	for ; attempt < maxAttempts; attempt = attempt + 1 {
 		cur, err := f.extClient.NodeAlerts(meta.Namespace).Get(meta.Name)
@@ -47,10 +47,10 @@ func (f *Framework) UpdateNodeAlert(meta metav1.ObjectMeta, transformer func(*ta
 			return nil, err
 		}
 
-		modified := transformer(cur)
-		modified, err = f.extClient.NodeAlerts(cur.Namespace).Update(modified)
+		modified := transformer(*cur)
+		updated, err := f.extClient.NodeAlerts(cur.Namespace).Update(&modified)
 		if err == nil {
-			return modified, nil
+			return updated, nil
 		}
 
 		log.Errorf("Attempt %d failed to update NodeAlert %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
