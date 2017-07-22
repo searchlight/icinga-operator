@@ -35,16 +35,16 @@ cat >$DATADIR/scripts/.initdb.sh <<EOL
 #!/bin/bash
 set -x
 
-psql -c "CREATE ROLE $ICINGA_IDO_USER WITH LOGIN PASSWORD '$ICINGA_IDO_PASSWORD'";
-psql -c "CREATE DATABASE $ICINGA_IDO_DB WITH OWNER $ICINGA_IDO_USER";
+psql -U \$POSTGRES_USER -c "CREATE ROLE $ICINGA_IDO_USER WITH LOGIN PASSWORD '$ICINGA_IDO_PASSWORD'";
+psql -U \$POSTGRES_USER -c "CREATE DATABASE $ICINGA_IDO_DB WITH OWNER $ICINGA_IDO_USER";
 psql -U $ICINGA_IDO_USER -d $ICINGA_IDO_DB < \$PGDATA/../scripts/icinga2-ido.schema.sql;
 
-psql -c "CREATE ROLE $ICINGA_WEB_USER WITH LOGIN PASSWORD '$ICINGA_WEB_PASSWORD'";
-psql -c "CREATE DATABASE $ICINGA_WEB_DB WITH OWNER $ICINGA_WEB_USER";
+psql -U \$POSTGRES_USER -c "CREATE ROLE $ICINGA_WEB_USER WITH LOGIN PASSWORD '$ICINGA_WEB_PASSWORD'";
+psql -U \$POSTGRES_USER -c "CREATE DATABASE $ICINGA_WEB_DB WITH OWNER $ICINGA_WEB_USER";
 psql -U $ICINGA_WEB_USER -d $ICINGA_WEB_DB < \$PGDATA/../scripts/icingaweb2.schema.sql;
 
 # Add "Administrators" icingaweb_group; This group has admin permission
-psql -d $ICINGA_WEB_DB <<EOF
+psql -U $ICINGA_WEB_USER -d $ICINGA_WEB_DB <<EOF
 INSERT INTO icingaweb_group (id, name) VALUES (1, 'Administrators');
 EOF
 EOL
@@ -53,7 +53,7 @@ EOL
 if [ -n "$ICINGA_WEB_UI_PASSWORD" ]; then
     cat >>$DATADIR/scripts/.initdb.sh <<EOL
 passhash=\$(openssl passwd -1 "$ICINGA_WEB_UI_PASSWORD")
-psql -d $ICINGA_WEB_DB <<EOF
+psql -U $ICINGA_WEB_USER -d $ICINGA_WEB_DB <<EOF
 INSERT INTO icingaweb_user (name, active, password_hash) VALUES ('admin', 1, '\$passhash');
 INSERT INTO icingaweb_group_membership (group_id, username) VALUES (1, 'admin');
 EOF

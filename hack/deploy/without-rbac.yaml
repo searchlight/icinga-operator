@@ -6,7 +6,7 @@ metadata:
   labels:
     app: searchlight
 data:
-  ICINGA_WEB_UI_PASSWORD: changeit
+  ICINGA_WEB_UI_PASSWORD: Y2hhbmdlaXQ=
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
