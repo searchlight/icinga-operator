@@ -20,14 +20,14 @@ if [ -f "$REPO_ROOT/dist/.tag" ]; then
 fi
 
 clean() {
-    pushd $REPO_ROOT/hack/docker/icinga/alpine
+	pushd $REPO_ROOT/hack/docker/icinga/alpine
 	rm -rf icingaweb2 plugins
 	popd
 }
 
 build() {
-    pushd $REPO_ROOT/hack/docker/icinga/alpine
-    detect_tag $REPO_ROOT/dist/.tag
+	pushd $REPO_ROOT/hack/docker/icinga/alpine
+	detect_tag $REPO_ROOT/dist/.tag
 
 	rm -rf icingaweb2
 	clone git@diffusion.appscode.com:appscode/79/icingaweb.git icingaweb2
@@ -41,6 +41,8 @@ build() {
 
 	local cmd="docker build -t appscode/$IMG:$TAG-ac ."
 	echo $cmd; $cmd
+
+	rm -rf  icingaweb2 plugins
 	popd
 }
 
@@ -49,7 +51,7 @@ docker_push() {
 }
 
 docker_release() {
-    TAG="$TAG-ac" hub_up
+	TAG="$TAG-ac" hub_up
 }
 
 binary_repo $@

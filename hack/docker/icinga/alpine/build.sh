@@ -26,22 +26,24 @@ clean() {
 }
 
 build() {
-	pushd $REPO_ROOT/hack/docker/icinga/alpine
-	detect_tag $DIST/.tag
+    pushd $REPO_ROOT/hack/docker/icinga/alpine
+    detect_tag $DIST/.tag
 
-	rm -rf icingaweb2
-	clone https://github.com/Icinga/icingaweb2.git
-	cd icingaweb2
-	git checkout tags/v$ICINGAWEB_VER
-	cd ..
+    rm -rf icingaweb2
+    clone https://github.com/Icinga/icingaweb2.git
+    cd icingaweb2
+    git checkout tags/v$ICINGAWEB_VER
+    cd ..
 
-	rm -rf plugins; mkdir -p plugins
-	gsutil cp gs://appscode-dev/binaries/hyperalert/1.5.9/hyperalert-linux-amd64 plugins/hyperalert
-	chmod 755 plugins/*
+    rm -rf plugins; mkdir -p plugins
+    gsutil cp gs://appscode-dev/binaries/hyperalert/1.5.9/hyperalert-linux-amd64 plugins/hyperalert
+    chmod 755 plugins/*
 
-	local cmd="docker build -t appscode/$IMG:$TAG-k8s ."
-	echo $cmd; $cmd
-	popd
+    local cmd="docker build -t appscode/$IMG:$TAG-k8s ."
+    echo $cmd; $cmd
+
+    rm -rf  icingaweb2 plugins
+    popd
 }
 
 docker_push() {
