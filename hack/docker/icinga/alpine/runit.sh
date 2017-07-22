@@ -21,7 +21,8 @@ if [ ! -f "$DATADIR/.lib_icinga2" ]; then
     touch $DATADIR/.lib_icinga2
 fi
 chown -R icinga:icinga $DATADIR/icinga2
-ln -sv -T /var/lib $DATADIR/icinga2
+rm -rf /var/lib/icinga2
+ln -sv -T $DATADIR/icinga2 /var/lib/icinga2
 
 chown -R icinga:icinga /usr/lib/nagios/plugins
 chmod -R 755 /usr/lib/nagios/plugins
