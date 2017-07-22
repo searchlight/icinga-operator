@@ -16,7 +16,7 @@ rules:
   - thirdpartyresources
   verbs: ["get", "create"]
 - apiGroups:
-  - stash.appscode.com
+  - searchlight.appscode.com
   resources:
   - restics
   verbs: ["*"]
