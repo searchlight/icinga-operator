@@ -1,5 +1,5 @@
 hash: ba7a43d99f7ae7abee5af0d04eedced27232e183ce6fc92b1ef4f5fd22c91221
-updated: 2017-07-20T10:26:39.763227286+06:00
+updated: 2017-07-21T21:34:29.770573152-07:00
 imports:
 - name: github.com/appscode/api
   version: e5de76ae801ff8a1a3dc2f1540296ee80825abcc
@@ -18,11 +18,10 @@ imports:
   - net
   - net/httpclient
   - runtime
-  - strings
   - types
   - version
 - name: github.com/appscode/go-notify
-  version: 5af76dc1dd38fa4c71883abf4dbbdfeae3bd14e8
+  version: 984ba317a48743222422263ffc9a7ae3f54173b8
   subpackages:
   - hipchat
   - log
@@ -78,9 +77,9 @@ imports:
 - name: github.com/codegangsta/inject
   version: 33e0aa1cb7c019ccc3fbe049a8262a6403d30504
 - name: github.com/codeskyblue/go-sh
-  version: 3d593d477915b4d2f2e74b2e041495345647a46b
+  version: b097669b1569203c3ce05a6b8717d43140fdb3d5
 - name: github.com/cpuguy83/go-md2man
-  version: 23709d0847197db6021a51fdb193e66e9222d4e7
+  version: 71acacd42f85e5e82f70a55327789582a5200a90
   subpackages:
   - md2man
 - name: github.com/davecgh/go-spew
@@ -393,7 +392,7 @@ imports:
   - third_party/forked/golang/netutil
   - third_party/forked/golang/reflect
 - name: k8s.io/apiserver
-  version: d7bba18199202b51f78c048c2a8404772007f0df
+  version: 2308857ad3b8b18abf74ff734853973eda9da94d
   subpackages:
   - pkg/server/httplog
   - pkg/util/wsstream
@@ -484,7 +483,7 @@ imports:
   - util/homedir
   - util/integer
 - name: k8s.io/kubernetes
-  version: 313fd317f96265658831a576fafdd6ed85aaf428
+  version: 095136c3078ccf887b9034b7ce598a0a1faff769
   subpackages:
   - pkg/api
   - pkg/client/unversioned/remotecommand
