@@ -16,9 +16,8 @@ rules:
   - thirdpartyresources
   verbs: ["get", "create"]
 - apiGroups:
-  - searchlight.appscode.com
-  resources:
-  - restics
+  - monitoring.appscode.com
+  resources: ["*"]
   verbs: ["*"]
 - apiGroups:
   - extensions

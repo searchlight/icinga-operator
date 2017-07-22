@@ -19,80 +19,60 @@ icinga:
 
 ## Icinga configaration
 ## https://github.com/appscode/searchlight/blob/master/docs/icinga2/deployment.md#create-deployment
-##
+icinga2web:
+  password: changeit
 
-  env: |-
-    ICINGA_WEB_HOST=127.0.0.1
-    ICINGA_WEB_PORT=5432
-    ICINGA_WEB_DB=icingawebdb
-    ICINGA_WEB_USER=icingaweb
-    ICINGA_WEB_PASSWORD=12345678
-    ICINGA_WEB_UI_PASSWORD=changeit
-    ICINGA_IDO_HOST=127.0.0.1
-    ICINGA_IDO_PORT=5432
-    ICINGA_IDO_DB=icingaidodb
-    ICINGA_IDO_USER=icingaido
-    ICINGA_IDO_PASSWORD=12345678
-    ICINGA_API_USER=icingaapi
-    ICINGA_API_PASSWORD=12345678
+notifier:
+  stdout:
+    to:
 
-## Add notifyVia example: https://github.com/appscode/searchlight/blob/master/docs/notifier/mailgun.md#configure
+  ## Hipchat
+  ## ref https://github.com/appscode/searchlight/blob/master/docs/notifier/hipchat.md#set-environment-variables
+  hipchat:
+    authToken:
+    to:
 
-# notifyVia:
+  ## Mailgun
+  ## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/mailgun.md#configure
+  mailgun:
+    domain:
+    apiKey:
+    publicAPIKey:
+    from:
+    to:
 
-## Hipchat notifier
-## ref https://github.com/appscode/searchlight/blob/master/docs/notifier/hipchat.md#set-environment-variables
-##
+  ## SMTP
+  ## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/smtp.md#configure
+  smtp:
+    host:
+    port:
+    insecureSkipVerify:
+    username:
+    password:
+    from:
+    to:
 
-# hipchatAuthToken:
-# hipchatTo:
+  ## Twilio
+  ## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/twilio.md
+  twilio:
+    accountSid:
+    authToken:
+    from:
+    to:
 
-## Mailgun notifier
-## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/mailgun.md#configure
-##
+  ## Slack
+  ## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/slack.md
+  slack:
+    authToken:
+    channel:
 
-# mailgunDomain:
-# mailgunAPIKey:
-# mailgunPublicAPIKey:
-# mailgunFrom:
-# mailgunTo:
-
-## SMTP notifier
-## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/smtp.md#configure
-##
-
-# smtpHost:
-# smtpPort:
-# smtpInsecureSkipVerify:
-# smtpUsername:
-# smtpPassword:
-# smtpFrom:
-# smtpTo:
-
-## Twilio notifier
-## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/twilio.md
-##
-
-# twilioAccountSid:
-# twilioAuthToken:
-# twilioFrom:
-# twilioTo:
-
-## Slack notifier.
-## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/slack.md
-##
-
-# slackAuthToken:
-# slackChannel:
-
-## Plivo notifier
-## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/plivo.md
-##
-
-# plivoAuthId:
-# plivoAuthToken:
-# plivoFrom:
-# plivoTo:
+  ## Plivo
+  ## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/plivo.md
+  plivo:
+    authId:
+    authToken:
+    from:
+    to:
 
 ## Install Default RBAC roles and bindings
 rbac:
