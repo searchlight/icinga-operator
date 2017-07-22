@@ -82,7 +82,7 @@ spec:
           - name: script-volume
             mountPath: /var/db-script
           - name: icingaconfig
-            mountPath: /srv/icinga2/secrets
+            mountPath: /srv/searchlight/secrets
       - image: appscode/postgres:9.5-v3-db
         name: ido
         args:
