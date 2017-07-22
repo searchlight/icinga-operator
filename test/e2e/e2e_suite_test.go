@@ -101,7 +101,7 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	fmt.Println()
 	fmt.Println("Icingaweb2:     ", fmt.Sprintf("http://%v/icingaweb2", icingawebEndpoint))
-	fmt.Println("Login password: ", e2e.ICINGA_WEB_ADMIN_PASSWORD)
+	fmt.Println("Login password: ", e2e.ICINGA_WEB_UI_PASSWORD)
 	fmt.Println()
 
 	// Controller

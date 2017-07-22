@@ -21,7 +21,7 @@ ICINGA_WEB_PORT=5432
 ICINGA_WEB_DB=icingawebdb
 ICINGA_WEB_USER=icingaweb
 ICINGA_WEB_PASSWORD=12345678
-ICINGA_WEB_ADMIN_PASSWORD=admin
+ICINGA_WEB_UI_PASSWORD=changeit
 ICINGA_IDO_HOST=127.0.0.1
 ICINGA_IDO_PORT=5432
 ICINGA_IDO_DB=icingaidodb
@@ -92,6 +92,6 @@ kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/3.0.0/ha
 To login into `Icingaweb2`, use following authentication information:
 ```
 Username: admin
-Password: <ICINGA_WEB_ADMIN_PASSWORD>
+Password: <ICINGA_WEB_UI_PASSWORD>
 ```
 Password will be set from Icinga secret.

@@ -48,9 +48,9 @@ EOF
 EOL
 
 # Set icingaweb2 UI admin password, if provided
-if [ -n "$ICINGA_WEB_ADMIN_PASSWORD" ]; then
+if [ -n "$ICINGA_WEB_UI_PASSWORD" ]; then
     cat >>$PGSCRIPT/.setup-db.sh <<EOL
-passhash=\$(openssl passwd -1 "$ICINGA_WEB_ADMIN_PASSWORD")
+passhash=\$(openssl passwd -1 "$ICINGA_WEB_UI_PASSWORD")
 psql -d $ICINGA_WEB_DB <<EOF
 INSERT INTO icingaweb_user (name, active, password_hash) VALUES ('admin', 1, '\$passhash');
 INSERT INTO icingaweb_group_membership (group_id, username) VALUES (1, 'admin');

@@ -3,7 +3,7 @@
 GOPATH=$(go env GOPATH)
 MASTER_IP=$1
 
-ICINGA_WEB_ADMIN_PASSWORD=$(cat /dev/urandom | base64 | tr -d "=+/" | dd bs=16 count=1 2> /dev/null)
+ICINGA_WEB_UI_PASSWORD=$(cat /dev/urandom | base64 | tr -d "=+/" | dd bs=16 count=1 2> /dev/null)
 
 read -r -d '' env_data <<EOF
 ICINGA_WEB_HOST=127.0.0.1
@@ -11,7 +11,7 @@ ICINGA_WEB_PORT=5432
 ICINGA_WEB_DB=icingawebdb
 ICINGA_WEB_USER=icingaweb
 ICINGA_WEB_PASSWORD=$(cat /dev/urandom | base64 | tr -d "=+/" | dd bs=16 count=1 2> /dev/null)
-ICINGA_WEB_ADMIN_PASSWORD=$ICINGA_WEB_ADMIN_PASSWORD
+ICINGA_WEB_UI_PASSWORD=$ICINGA_WEB_UI_PASSWORD
 ICINGA_IDO_HOST=127.0.0.1
 ICINGA_IDO_PORT=5432
 ICINGA_IDO_DB=icingaidodb
@@ -66,4 +66,4 @@ curl https://raw.githubusercontent.com/appscode/searchlight/3.0.0/hack/deploy/de
 echo
 echo "To login into Icingaweb2, use following authentication information:"
 echo "Username: admin"
-echo "Password: $ICINGA_WEB_ADMIN_PASSWORD"
+echo "Password: $ICINGA_WEB_UI_PASSWORD"

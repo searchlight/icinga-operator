@@ -56,3 +56,24 @@ spec:
       volumes:
       - name: data
         emptyDir: {}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: searchlight-operator
+  namespace: kube-system
+  labels:
+    app: searchlight
+spec:
+  ports:
+  - name: web
+    port: 80
+    targetPort: web
+  - name: api
+    port: 5665
+    targetPort: api
+  - name: http
+    port: 56790
+    targetPort: web
+  selector:
+    app: searchlight

@@ -39,7 +39,7 @@ const (
 	ICINGA_WEB_DB               = "ICINGA_WEB_DB"
 	ICINGA_WEB_USER             = "ICINGA_WEB_USER"
 	ICINGA_WEB_PASSWORD         = "ICINGA_WEB_PASSWORD"
-	ICINGA_WEB_ADMIN_PASSWORD   = "ICINGA_WEB_ADMIN_PASSWORD"
+	ICINGA_WEB_UI_PASSWORD      = "ICINGA_WEB_UI_PASSWORD"
 )
 
 var (
@@ -62,7 +62,7 @@ var (
 		ICINGA_WEB_DB:               true,
 		ICINGA_WEB_USER:             true,
 		ICINGA_WEB_PASSWORD:         true,
-		ICINGA_WEB_ADMIN_PASSWORD:   true,
+		ICINGA_WEB_UI_PASSWORD:      true,
 	}
 )
 
@@ -214,7 +214,7 @@ func (c *Configurator) LoadIcingaConfig() (*Config, error) {
 		sec.NewKey(ICINGA_WEB_DB, "icingawebdb")
 		sec.NewKey(ICINGA_WEB_USER, "icingaweb")
 		sec.NewKey(ICINGA_WEB_PASSWORD, stringz.Val(os.Getenv(ICINGA_WEB_PASSWORD), rand.GeneratePassword()))
-		sec.NewKey(ICINGA_WEB_ADMIN_PASSWORD, stringz.Val(os.Getenv(ICINGA_WEB_ADMIN_PASSWORD), rand.GeneratePassword()))
+		sec.NewKey(ICINGA_WEB_UI_PASSWORD, stringz.Val(os.Getenv(ICINGA_WEB_UI_PASSWORD), rand.GeneratePassword()))
 
 		err = os.MkdirAll(filepath.Dir(c.ConfigFile()), 0755)
 		if err != nil {
