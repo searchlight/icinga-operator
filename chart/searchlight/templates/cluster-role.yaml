@@ -19,33 +19,20 @@ rules:
   - monitoring.appscode.com
   resources: ["*"]
   verbs: ["*"]
-- apiGroups:
-  - extensions
-  resources:
-  - deployments
-  - replicasets
-  - daemonsets
-  verbs: ["list", "watch", "update"]
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  verbs: ["list", "watch", "update"]
-- apiGroups: [""]
-  resources:
-  - namespaces
-  - replicationcontrollers
-  verbs: ["list", "watch", "update"]
 - apiGroups: [""]
   resources:
   - secrets
+  - componentStatuses
+  - persistentVolumes
+  - persistentVolumeClaims
   verbs: ["get"]
 - apiGroups: [""]
   resources:
-  - events
-  verbs: ["create"]
+  - pods
+  - nodes
+  verbs: ["get", "list"]
 - apiGroups: [""]
   resources:
-  - pods
-  verbs: ["list", delete"]
+  - events
+  verbs: ["create", "list"]
 {{ end }}
