@@ -57,7 +57,7 @@ spec:
           mountPath: /tmp
       - name: ido
         image: appscode/postgres:9.5-alpine
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata

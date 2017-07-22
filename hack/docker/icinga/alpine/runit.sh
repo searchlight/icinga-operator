@@ -27,7 +27,7 @@ ln -sv -T $DATADIR/icinga2 /var/lib/icinga2
 chown -R icinga:icinga /usr/lib/nagios/plugins
 chmod -R 755 /usr/lib/nagios/plugins
 
-mkdir -p $PGSCRIPT
+mkdir -p $DATADIR/scripts
 cp /usr/share/icinga2-ido-pgsql/schema/pgsql.sql     $DATADIR/scripts/icinga2-ido.schema.sql
 cp /usr/share/icingaweb2/etc/schema/pgsql.schema.sql $DATADIR/scripts/icingaweb2.schema.sql
 
