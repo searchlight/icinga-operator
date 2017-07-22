@@ -29,7 +29,7 @@ object Zone ZoneName {
 }
 EOL
 
-	chown -R icinga:icinga /srv/icinga2/
+	chown -R icinga:icinga /srv/icinga2/pki
 	chmod 400 /srv/icinga2/pki/icinga.key
 	cat >/etc/icinga2/features-available/api.conf <<EOL
 /**
@@ -56,6 +56,13 @@ object ApiUser "$ICINGA_API_USER" {
   // client_cn = ""
 
   permissions = [ "*" ]
+}
+
+object ApiUser "statususer" {
+  password = "statuspass"
+  // client_cn = ""
+
+  permissions = [ "status/query" ]
 }
 EOL
 
