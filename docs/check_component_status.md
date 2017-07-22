@@ -16,7 +16,7 @@ This is used to check Kubernetes components.
 
 #### Example
 ###### Command
-```sh
+```console
 hyperalert check_component_status
 ```
 ###### Output

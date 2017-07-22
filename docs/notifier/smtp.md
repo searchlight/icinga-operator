@@ -66,43 +66,43 @@ These environment variables will be set using `searchlight-icinga` Secret.
 
 ##### Key `notify_via`
 Encode and set `NOTIFY_VIA` to it
-```sh
+```console
 export NOTIFY_VIA=$(echo "smtp" | base64  -w 0)
 ```
 
 ##### Key `smtp_host`
 Encode and set `SMTP_HOST` to it
-```sh
+```console
 export SMTP_HOST=$(echo <host> | base64  -w 0)
 ```
 
 ##### Key `smtp_port`
 Encode and set `SMTP_PORT` to it
-```sh
+```console
 export SMTP_PORT=$(echo <post> | base64  -w 0)
 ```
 
 ##### Key `smtp_username`
 Encode and set `SMTP_USERNAME` to it
-```sh
+```console
 export SMTP_USERNAME=$(echo <username> | base64  -w 0)
 ```
 
 ##### Key `smtp_password`
 Encode and set `SMTP_PASSWORD` to it
-```sh
+```console
 export SMTP_PASSWORD=$(echo <password> | base64  -w 0)
 ```
 
 ##### Key `smtp_from`
 Encode and set `SMTP_FROM` to it
-```sh
+```console
 export SMTP_FROM=$(echo <sender email addresses> | base64  -w 0)
 ```
 
 
 ##### Key `smtp_to`
 Encode and set `SMTP_TO` to it
-```sh
+```console
 export SMTP_TO=$(echo <recipient email addresses> | base64  -w 0)
 ```

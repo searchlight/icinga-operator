@@ -27,7 +27,7 @@ This is used to check Kubernetes pod existence.
 
 #### Example
 ###### Command
-```sh
+```console
 hyperalert check_pod_exists --host='pod_exists@default' --count=7
 # --host is provided by Icinga2
 ```

@@ -59,36 +59,36 @@ These environment variables will be set using `searchlight-icinga` Secret.
 
 ##### Key `notify_via`
 Encode and set `NOTIFY_VIA` to it
-```sh
+```console
 export NOTIFY_VIA=$(echo "mailgun" | base64  -w 0)
 ```
 
 ##### Key `mailgun_domain`
 Encode and set `MAILGUN_DOMAIN` to it
-```sh
+```console
 export MAILGUN_DOMAIN=$(echo <domainn> | base64  -w 0)
 ```
 
 ##### Key `mailgun_api_key`
 Encode and set `MAILGUN_API_KEY` to it
-```sh
+```console
 export MAILGUN_API_KEY=$(echo <api key> | base64  -w 0)
 ```
 
 ##### Key `mailgun_public_api_key`
 Encode and set `MAILGUN_PUBLIC_API_KEY` to it
-```sh
+```console
 export MAILGUN_PUBLIC_API_KEY=$(echo <public api key> | base64  -w 0)
 ```
 
 ##### Key `mailgun_from`
 Encode and set `MAILGUN_FROM` to it
-```sh
+```console
 export MAILGUN_FROM=$(echo <sender email address> | base64  -w 0)
 ```
 
 ##### Key `mailgun_to`
 Encode and set `MAILGUN_TO` to it
-```sh
+```console
 export MAILGUN_TO=$(echo <recipient email addresses> | base64  -w 0)
 ```

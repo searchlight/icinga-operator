@@ -23,7 +23,7 @@ This is used to check Kubernetes pod status.
 
 #### Example
 ###### Command
-```sh
+```console
 hyperalert check_pod_status --host='pod_status@default'
 # --host is provided by Icinga2
 ```

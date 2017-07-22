@@ -9,12 +9,12 @@ Write `hostfacts.service` file in __systemd directory__ in your kubernetes node.
 ##### systemd directory
 * Ubuntu
 
-    ```sh
+    ```console
     /lib/systemd/system
     ```
 * RedHat
 
-    ```sh
+    ```console
     /usr/lib/systemd/system
     ```
 
@@ -38,7 +38,7 @@ Set one of the following if you want to set authentication in `hostfacts`
 
 * Basic Auth
 
-    ```sh
+    ```console
     # Use ENV
     # Add Environment in hostfacts.service under [Service] section
     Environment=HOSTFACTS_AUTH_USERNAME="<username>"
@@ -52,7 +52,7 @@ Set one of the following if you want to set authentication in `hostfacts`
     ```
 * Token
 
-    ```sh
+    ```console
     # Use ENV
     # Add Environment in hostfacts.service under [Service] section
     Environment=HOSTFACTS_AUTH_TOKEN="<token>"
@@ -69,7 +69,7 @@ If you want to set SSL certificate, do following
 1. Generate certificates and key. See process [here](../icinga2/certificate.md).
 2. Use flags to pass file directory
 
-    ```sh
+    ```console
     # Modify ExecStart in [Service] section
     ExecStart=/usr/bin/hostfacts --caCertFile="<path to ca cert file>" --certFile="<path to server cert file>" --keyFile="<path to server key file>"
     ```
@@ -83,8 +83,8 @@ You can ignore SSL when Kubernetes is running in private network like GCE, AWS.
 
 Download `hostfacts` and add binary in `/usr/bin`
 
-```sh
-curl -G  https://cdn.appscode.com/binaries/hostfacts/1.5.9/hostfacts-linux-amd64 -o /usr/bin/hostfacts
+```console
+curl -G  https://cdn.appscode.com/binaries/hostfacts/3.0.0/hostfacts-linux-amd64 -o /usr/bin/hostfacts
 
 # Change access permissions for hostfacts binary
 chmod +x /usr/bin/hostfacts
@@ -92,7 +92,7 @@ chmod +x /usr/bin/hostfacts
 
 ##### Start Service
 
-```sh
+```console
 # Configure to be automatically started at boot time
 systemctl enable hostfacts
 

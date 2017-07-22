@@ -41,18 +41,18 @@ These environment variables will be set using `searchlight-icinga` Secret.
 
 ##### Key `notify_via`
 Encode and set `NOTIFY_VIA` to it
-```sh
+```console
 export NOTIFY_VIA=$(echo "hipchat" | base64  -w 0)
 ```
 
 ##### Key `hipchat_auth_token`
 Encode and set `HIPCHAT_AUTH_TOKEN` to it
-```sh
+```console
 export HIPCHAT_AUTH_TOKEN=$(echo <toke> | base64  -w 0)
 ```
 
 ##### Key `hipchat_to`
 Encode and set `HIPCHAT_TO` to it
-```sh
+```console
 export HIPCHAT_TO=$(echo <hipchat room id> | base64  -w 0)
 ```

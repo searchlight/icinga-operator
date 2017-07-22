@@ -46,19 +46,19 @@ These environment variables will be set using `searchlight-icinga` Secret.
 
 ##### Key `notify_via`
 Encode and set `NOTIFY_VIA` to it
-```sh
+```console
 export NOTIFY_VIA=$(echo "slack" | base64  -w 0)
 ```
 
 ##### Key `slack_auth_token`
 Encode and set `SLACK_AUTH_TOKEN` to it
-```sh
+```console
 export SLACK_AUTH_TOKEN=$(echo <toke> | base64  -w 0)
 ```
 
 ##### Key `slack_channel`
 Encode and set `SLACK_CHANNEL` to it
-```sh
+```console
 export SLACK_CHANNEL=$(echo <slack channel name> | base64  -w 0)
 ```
 

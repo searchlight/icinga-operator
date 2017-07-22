@@ -20,7 +20,7 @@ This is used to check Kubernetes events. This plugin checks for all Warning even
 
 #### Example
 ###### Command
-```sh
+```console
 hyperalert check_kube_event --check_interval=1m
 # --check_interval are provided by Icinga2
 ```

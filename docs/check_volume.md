@@ -39,7 +39,7 @@ This is used to check Pod volume stat.
 
 #### Example
 ###### Command
-```sh
+```console
 hyperalert check_volume --host='monitoring-influxdb-0.12.2-n3lo2@kube-system' --volume_name=influxdb-persistent-storage --warning=70 --critical=85
 # --host are provided by Icinga2
 ```

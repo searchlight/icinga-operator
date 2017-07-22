@@ -58,7 +58,7 @@ pushd $certificate_dir
 popd
 
 # Deploy Secret
-curl https://raw.githubusercontent.com/appscode/searchlight/1.5.9/hack/deploy/deployment.yaml \
+curl https://raw.githubusercontent.com/appscode/searchlight/3.0.0/hack/deploy/deployment.yaml \
   | envsubst \
   | kubectl apply -f -
 

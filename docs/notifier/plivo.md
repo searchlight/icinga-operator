@@ -54,30 +54,30 @@ These environment variables will be set using `searchlight-icinga` Secret.
 
 ##### Key `notify_via`
 Encode and set `NOTIFY_VIA` to it
-```sh
+```console
 export NOTIFY_VIA=$(echo "plivo" | base64  -w 0)
 ```
 
 ##### Key `plivo_auth_id`
 Encode and set `PLIVO_AUTH_ID` to it
-```sh
+```console
 export PLIVO_AUTH_ID=$(echo <auth id> | base64  -w 0)
 ```
 
 ##### Key `plivo_auth_token`
 Encode and set `PLIVO_AUTH_TOKEN` to it
-```sh
+```console
 export PLIVO_AUTH_TOKEN=$(echo <authentication token> | base64  -w 0)
 ```
 
 ##### Key `plivo_from`
 Encode and set `PLIVO_FROM` to it
-```sh
+```console
 export PLIVO_FROM=$(echo <sender mobile number> | base64  -w 0)
 ```
 
 ##### Key `plivo_to`
 Encode and set `PLIVO_TO` to it
-```sh
+```console
 export PLIVO_TO=$(echo <receipent mobile numbers> | base64  -w 0)
 ```

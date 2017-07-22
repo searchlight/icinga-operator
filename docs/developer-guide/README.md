@@ -15,14 +15,14 @@ development environment, please follow [these instructions](https://golang.org/d
 
 #### Download Source
 
-```sh
+```console
 $ go get github.com/appscode/searchlight
 $ cd $(go env GOPATH)/src/github.com/appscode/searchlight
 ```
 
 #### Install Dev tools
 To install various dev tools for Searchlight, run the following command:
-```sh
+```console
 $ ./hack/builddeps.sh
 ```
 
@@ -35,7 +35,7 @@ $ searchlight version
 #### Dependency management
 Searchlight uses [Glide](https://github.com/Masterminds/glide) to manage dependencies. Dependencies are already checked in the `vendor` folder.
 If you want to update/add dependencies, run:
-```sh
+```console
 $ glide slow
 ```
 
@@ -43,7 +43,7 @@ $ glide slow
 #### Build Operator Docker image
 To build and push your custom Docker image, follow the steps below. To release a new version of Searchlight, please follow the [release guide](/docs/developer-guide/release.md).
 
-```sh
+```console
 # Build Docker image
 $ ./hack/docker/searchlight/setup.sh; ./hack/docker/searchlight/setup.sh push
 
@@ -62,13 +62,13 @@ docker push aerokite/searchlight:default
 #### Build Icinga Docker image
 
 Default Icinga also includes `hyperalert` plugin.
-```sh
+```console
 gsutil cp gs://appscode-dev/binaries/hyperalert/<tag>/hyperalert-linux-amd64 plugins/hyperalert
 ```
 
 We can add `hyperalert` plugin in Icinga downloaded from anywhere. We just need  to add plugin in plugins directory and name it as `hyperalert`.
 
-```sh
+```console
 # Build Docker image
 ./hack/docker/icinga/build.sh
 
@@ -87,6 +87,6 @@ docker push aerokite/icinga:default-k8s
 
 
 #### Generate CLI Reference Docs
-```sh
+```console
 $ ./hack/gendocs/make.sh
 ```

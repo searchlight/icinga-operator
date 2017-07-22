@@ -63,7 +63,7 @@ spec:
         - containerPort: 56790
           name: http
           protocol: TCP     
-      - image: appscode/icinga:1.5.9-k8s
+      - image: appscode/icinga:3.0.0-k8s
         name: icinga
         ports:
         - containerPort: 5665

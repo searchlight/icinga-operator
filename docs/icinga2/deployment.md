@@ -41,7 +41,7 @@ We can use following as `ICINGA_ADDRESS`:
 > KubernetesNamespace is optional. Default: default
 
 Encode Secret data and set `ICINGA_SECRET_ENV` to it
-```sh
+```console
 export ICINGA_SECRET_ENV=$(base64 secret.ini -w 0)
 ```
 
@@ -59,16 +59,16 @@ And also we need to add some keys for notifier in Icinga2 Secret. We are current
 If we don't set keys for notifier, notifications will be ignored.
 
 Substitute ENV and deploy secret
-```sh
+```console
 # Deploy Secret
-curl https://raw.githubusercontent.com/appscode/searchlight/1.5.9/hack/deploy/icinga2/secret.yaml |
+curl https://raw.githubusercontent.com/appscode/searchlight/3.0.0/hack/deploy/icinga2/secret.yaml |
 envsubst | kubectl apply -f -
 ```
 
 ###### Create Service
-```sh
+```console
 # Create Service
-kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/1.5.9/hack/deploy/icinga2/service.yaml
+kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/3.0.0/hack/deploy/icinga2/service.yaml
 ```
 
 ###### Create Deployment
@@ -82,9 +82,9 @@ To use notifier we need to set some environment variables. See following links t
 5. [Slack](../notifier/slack.md#configure)
 6. [Plivo](../notifier/plivo.md#configure)
 
-```sh
+```console
 # Create Deployment
-kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/1.5.9/hack/deploy/icinga2/deployment.yaml
+kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/3.0.0/hack/deploy/icinga2/deployment.yaml
 ```
 
 ### Login

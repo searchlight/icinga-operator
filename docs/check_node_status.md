@@ -17,7 +17,7 @@ This is used to check Kubernetes Node status.
 
 #### Example
 ###### Command
-```sh
+```console
 hyperalert check_node_status --host=ip-172-20-0-9.ec2.internal@default
 # --host is provided by Icinga2
 ```

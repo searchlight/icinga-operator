@@ -24,7 +24,7 @@ This is used to check Node Disk stat.
 
 #### Example
 ###### Command
-```sh
+```console
 hyperalert check_volume --node_stat --host ip-172-20-0-9.ec2.internal@default
 # --node_stat and --host are provided by Icinga2
 ```

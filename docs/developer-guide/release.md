@@ -6,16 +6,16 @@ The following steps must be done from a Linux x64 bit machine.
 - Push changes to the release-x branch and apply new tag.
 - Push all the changes to remote repo.
 - Now, first build all the binaries:
-```sh
+```console
 $ cd ~/go/src/github.com/appscode/searchlight
 $ ./hack/make.py build; env APPSCODE_ENV=prod ./hack/make.py push; ./hack/make.py push
 ```
 - Build and push searchlight docker image
-```sh
+```console
 ./hack/docker/searchlight/setup.sh; env APPSCODE_ENV=prod ./hack/docker/searchlight/setup.sh release
 ```
 - Build and push both forms of icinga image:
-```sh
+```console
 ./hack/docker/icinga/build.sh; ./hack/docker/icinga/build.sh release
 ./hack/docker/icinga/setup.sh; ./hack/docker/icinga/setup.sh release
 ```

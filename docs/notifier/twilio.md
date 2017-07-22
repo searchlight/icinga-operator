@@ -54,30 +54,30 @@ These environment variables will be set using `searchlight-icinga` Secret.
 
 ##### Key `notify_via`
 Encode and set `NOTIFY_VIA` to it
-```sh
+```console
 export NOTIFY_VIA=$(echo "twilio" | base64  -w 0)
 ```
 
 ##### Key `twilio_account_sid`
 Encode and set `TWILIO_ACCOUNT_SID` to it
-```sh
+```console
 export TWILIO_ACCOUNT_SID=$(echo <account sid> | base64  -w 0)
 ```
 
 ##### Key `twilio_auth_token`
 Encode and set `TWILIO_AUTH_TOKEN` to it
-```sh
+```console
 export TWILIO_AUTH_TOKEN=$(echo <authentication token> | base64  -w 0)
 ```
 
 ##### Key `twilio_from`
 Encode and set `TWILIO_FROM` to it
-```sh
+```console
 export TWILIO_FROM=$(echo <sender mobile number> | base64  -w 0)
 ```
 
 ##### Key `twilio_to`
 Encode and set `TWILIO_TO` to it
-```sh
+```console
 export TWILIO_TO=$(echo <receipent mobile numbers> | base64  -w 0)
 ```

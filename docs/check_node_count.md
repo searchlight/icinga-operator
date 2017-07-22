@@ -20,7 +20,7 @@ This is used to check total number of Kubernetes node.
 
 #### Example
 ###### Command
-```sh
+```console
 hyperalert check_node_count --count=3
 ```
 ###### Output
