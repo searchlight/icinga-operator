@@ -52,7 +52,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: searchlight-operator
-  namespace: default
+  namespace: kube-system
   labels:
     app: searchlight
 data:
@@ -62,7 +62,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: searchlight-operator
-  namespace: default
+  namespace: kube-system
   labels:
     app: searchlight
 spec:
