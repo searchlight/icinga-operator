@@ -51,8 +51,7 @@ spec:
         image: appscode/searchlight:canary
         args:
         - run
-        - --icinga-secret-name=searchlight-operator
-        - --icinga-secret-namespace=kube-system
+        - --notifier-secret-name=searchlight-operator
         - --v=3
         ports:
         - containerPort: 56790

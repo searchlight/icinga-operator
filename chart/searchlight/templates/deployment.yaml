@@ -23,8 +23,7 @@ spec:
         imagePullPolicy: '{{ .Values.operator.pullPolicy }}'
         args:
         - run
-        - --icinga-secret-name={{ template "fullname" . }}
-        - --icinga-secret-namespace={{ .Release.Namespace }}
+        - --notifier-secret-name={{ template "fullname" . }}
         - --v=3
         ports:
         - containerPort: 56790
