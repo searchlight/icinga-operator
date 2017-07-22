@@ -53,7 +53,6 @@ func namespace() string {
 }
 
 func getLoader(client clientset.Interface) (envconfig.LoaderFunc, error) {
-
 	secretName := os.Getenv(icinga.ICINGA_NOTIFIER_SECRET_NAME)
 	secretNamespace := namespace()
 
