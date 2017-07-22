@@ -40,6 +40,11 @@ RUN set -x \
 
 RUN set -x && rm -rf /etc/icinga2/conf.d/hosts.conf
 
+# Fix icinga installation location and permission
+# This is needed since we are building from source
+RUN set -x \
+  && mv /var/lib/icinga2 /scripts/lib
+
 # Icingaweb2 ##############################################
 
 # copy config templates
