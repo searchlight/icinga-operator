@@ -20,7 +20,9 @@ func NewCmdConfigure() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			flags.SetLogLevel(4)
 
-			cfg, err := mgr.LoadIcingaConfig()
+			cfg, err := mgr.LoadConfig(func(key string) (string, bool) {
+				return "", false
+			})
 			if err != nil {
 				return err
 			}
@@ -34,6 +36,7 @@ func NewCmdConfigure() *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&mgr.ConfigRoot, "config-dir", "s", mgr.ConfigRoot, "Path to directory containing icinga2 config. This should be an emptyDir inside Kubernetes.")
+	cmd.Flags().StringVar(&mgr.NotifierSecretName, "notifier-secret-name", mgr.NotifierSecretName, "Name of Kubernetes secret used to pass notifier credentials.")
 
 	return cmd
 }
