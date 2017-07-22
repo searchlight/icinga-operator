@@ -3,9 +3,7 @@ package notifier
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/appscode/envconfig"
@@ -19,7 +17,6 @@ import (
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
-	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
 type Request struct {
@@ -40,21 +37,9 @@ type Secret struct {
 	Token     string `json:"token"`
 }
 
-func namespace() string {
-	if ns := os.Getenv("OPERATOR_NAMESPACE"); ns != "" {
-		return ns
-	}
-	if data, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace"); err == nil {
-		if ns := strings.TrimSpace(string(data)); len(ns) > 0 {
-			return ns
-		}
-	}
-	return apiv1.NamespaceDefault
-}
-
 func getLoader(client clientset.Interface) (envconfig.LoaderFunc, error) {
 	secretName := os.Getenv(icinga.ICINGA_NOTIFIER_SECRET_NAME)
-	secretNamespace := namespace()
+	secretNamespace := util.OperatorNamespace()
 
 	cfg, err := client.CoreV1().
 		Secrets(secretNamespace).

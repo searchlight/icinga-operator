@@ -2,11 +2,8 @@ package cmds
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	_ "net/http/pprof"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/appscode/log"
@@ -17,11 +14,11 @@ import (
 	"github.com/appscode/searchlight/pkg/analytics"
 	"github.com/appscode/searchlight/pkg/controller"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/pkg/util"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
-	apiv1 "k8s.io/client-go/pkg/api/v1"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
@@ -76,7 +73,7 @@ func run(mgr *icinga.Configurator) {
 	kubeClient = clientset.NewForConfigOrDie(config)
 	extClient = tcs.NewForConfigOrDie(config)
 
-	secret, err := kubeClient.CoreV1().Secrets(namespace()).Get(mgr.NotifierSecretName, metav1.GetOptions{})
+	secret, err := kubeClient.CoreV1().Secrets(util.OperatorNamespace()).Get(mgr.NotifierSecretName, metav1.GetOptions{})
 	if err != nil {
 		log.Fatalf("Failed to load secret: %s", err)
 	}
@@ -121,16 +118,4 @@ func run(mgr *icinga.Configurator) {
 	http.Handle("/", m)
 	log.Infoln("Listening on", address)
 	log.Fatal(http.ListenAndServe(address, nil))
-}
-
-func namespace() string {
-	if ns := os.Getenv("OPERATOR_NAMESPACE"); ns != "" {
-		return ns
-	}
-	if data, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace"); err == nil {
-		if ns := strings.TrimSpace(string(data)); len(ns) > 0 {
-			return ns
-		}
-	}
-	return apiv1.NamespaceDefault
 }
