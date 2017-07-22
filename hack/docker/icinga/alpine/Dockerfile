@@ -1,7 +1,6 @@
 FROM appscode/alpine:3.6
 
-ENV PGROOT /srv
-ENV PGSCRIPT /srv/docker-entrypoint-initdb.d
+ENV DATADIR /srv
 
 # Install Icinga2 ###################################
 RUN set -x \

@@ -28,9 +28,9 @@ spec:
           protocol: TCP
         volumeMounts:
         - mountPath: /var/pv
-          name: data-volume
+          name: data
         - mountPath: /var/db-script
-          name: script-volume
+          name: script
         - mountPath: /srv/searchlight/secrets
           name: icingaconfig
       - args:
@@ -45,14 +45,14 @@ spec:
           protocol: TCP
         volumeMounts:
         - mountPath: /var/pv
-          name: data-volume
+          name: data
         - mountPath: /var/db-script
-          name: script-volume
+          name: script
       volumes:
       - emptyDir: {}
-        name: data-volume
+        name: data
       - emptyDir: {}
-        name: script-volume
+        name: script
       - name: icingaconfig
         secret:
           secretName: searchlight

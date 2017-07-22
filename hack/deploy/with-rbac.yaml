@@ -71,9 +71,8 @@ spec:
     metadata:
       labels:
         app: searchlight
-      annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
+      serviceAccountName: searchlight-operator
       containers:
       - name: operator
         image: appscode/searchlight:canary
@@ -90,6 +89,8 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /srv
+        - name: tmp
+          mountPath: /tmp
       - name: icinga
         image: appscode/icinga:canary
         imagePullPolicy: Always
@@ -103,6 +104,8 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /srv
+        - name: tmp
+          mountPath: /tmp
       - name: ido
         image: appscode/postgres:9.5-alpine
         imagePullPolicy: IfNotPresent
@@ -116,12 +119,13 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
+        - name: tmp
+          mountPath: /tmp
       volumes:
       - name: data
         emptyDir: {}
-      tolerations:
-      - key: "CriticalAddonsOnly"
-        operator: "Exists"
+      - name: tmp
+        emptyDir: {}
 ---
 kind: Service
 apiVersion: v1

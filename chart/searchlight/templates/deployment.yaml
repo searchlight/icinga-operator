@@ -14,8 +14,6 @@ spec:
       labels:
         app: "{{ template "name" . }}"
         release: "{{ .Release.Name }}"
-      annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
       containers:
       - name: operator
@@ -69,6 +67,3 @@ spec:
       - name: searchlight-icinga
         secret:
           secretName: {{ template "fullname" . }}
-      tolerations:
-      - key: "CriticalAddonsOnly"
-        operator: "Exists"
