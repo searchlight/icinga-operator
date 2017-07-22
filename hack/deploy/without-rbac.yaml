@@ -54,7 +54,7 @@ spec:
         - name: data
           mountPath: /srv
       - name: ido
-        image: postgres:9.6-alpine
+        image: appscode/postgres:9.5-alpine
         imagePullPolicy: IfNotPresent
         env:
         - name: PGDATA
