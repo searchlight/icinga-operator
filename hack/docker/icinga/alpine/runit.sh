@@ -27,6 +27,9 @@ ln -sv -T $DATADIR/icinga2 /var/lib/icinga2
 chown -R icinga:icinga /usr/lib/nagios/plugins
 chmod -R 755 /usr/lib/nagios/plugins
 
+# Fix bash interpreter
+sed -i 's/\/sbin\/openrc-run/\/bin\/bash/g' /etc/init.d/icinga2
+
 mkdir -p $DATADIR/scripts
 cp /usr/share/icinga2-ido-pgsql/schema/pgsql.sql     $DATADIR/scripts/icinga2-ido.schema.sql
 cp /usr/share/icingaweb2/etc/schema/pgsql.schema.sql $DATADIR/scripts/icingaweb2.schema.sql
@@ -35,12 +38,12 @@ cat >$DATADIR/scripts/.initdb.sh <<EOL
 #!/bin/bash
 set -x
 
-psql -U \$POSTGRES_USER -c "CREATE ROLE $ICINGA_IDO_USER WITH LOGIN PASSWORD '$ICINGA_IDO_PASSWORD'";
-psql -U \$POSTGRES_USER -c "CREATE DATABASE $ICINGA_IDO_DB WITH OWNER $ICINGA_IDO_USER";
+psql -U postgres -c "CREATE ROLE $ICINGA_IDO_USER WITH LOGIN PASSWORD '$ICINGA_IDO_PASSWORD'";
+psql -U postgres -c "CREATE DATABASE $ICINGA_IDO_DB WITH OWNER $ICINGA_IDO_USER";
 psql -U $ICINGA_IDO_USER -d $ICINGA_IDO_DB < \$PGDATA/../scripts/icinga2-ido.schema.sql;
 
-psql -U \$POSTGRES_USER -c "CREATE ROLE $ICINGA_WEB_USER WITH LOGIN PASSWORD '$ICINGA_WEB_PASSWORD'";
-psql -U \$POSTGRES_USER -c "CREATE DATABASE $ICINGA_WEB_DB WITH OWNER $ICINGA_WEB_USER";
+psql -U postgres -c "CREATE ROLE $ICINGA_WEB_USER WITH LOGIN PASSWORD '$ICINGA_WEB_PASSWORD'";
+psql -U postgres -c "CREATE DATABASE $ICINGA_WEB_DB WITH OWNER $ICINGA_WEB_USER";
 psql -U $ICINGA_WEB_USER -d $ICINGA_WEB_DB < \$PGDATA/../scripts/icingaweb2.schema.sql;
 
 # Add "Administrators" icingaweb_group; This group has admin permission
