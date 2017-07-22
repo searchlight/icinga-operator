@@ -36,15 +36,6 @@ icinga:
     ICINGA_API_USER=icingaapi
     ICINGA_API_PASSWORD=12345678
 
-## user must provide caCrt, icingaKey, icingaCrt
-## Details https://github.com/appscode/searchlight/blob/master/docs/icinga2/certificate.md
-##
-
-# caCrt:
-# icingaKey:
-# icingaCrt:
-
-##
 ## Add notifyVia example: https://github.com/appscode/searchlight/blob/master/docs/notifier/mailgun.md#configure
 
 # notifyVia:
@@ -102,3 +93,8 @@ icinga:
 # plivoAuthToken:
 # plivoFrom:
 # plivoTo:
+
+## Install Default RBAC roles and bindings
+rbac:
+  install: false
+  apiVersion: v1beta1
