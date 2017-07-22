@@ -205,9 +205,21 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 			sec.NewKey(ICINGA_API_PASSWORD, rand.GeneratePassword())
 		}
 		sec.NewKey(ICINGA_NOTIFIER_SECRET_NAME, c.NotifierSecretName)
-		sec.NewKey(ICINGA_CA_CERT, c.certFile("ca"))
-		sec.NewKey(ICINGA_SERVER_CERT, c.certFile("icinga"))
-		sec.NewKey(ICINGA_SERVER_KEY, c.certFile("icinga"))
+		if v, ok := userInput(ICINGA_CA_CERT); ok {
+			sec.NewKey(ICINGA_CA_CERT, v)
+		} else {
+			sec.NewKey(ICINGA_CA_CERT, c.certFile("ca"))
+		}
+		if v, ok := userInput(ICINGA_SERVER_CERT); ok {
+			sec.NewKey(ICINGA_SERVER_CERT, v)
+		} else {
+			sec.NewKey(ICINGA_SERVER_CERT, c.certFile("icinga"))
+		}
+		if v, ok := userInput(ICINGA_SERVER_KEY); ok {
+			sec.NewKey(ICINGA_SERVER_KEY, v)
+		} else {
+			sec.NewKey(ICINGA_SERVER_KEY, c.keyFile("icinga"))
+		}
 		sec.NewKey(ICINGA_IDO_HOST, "127.0.0.1")
 		sec.NewKey(ICINGA_IDO_PORT, "5432")
 		sec.NewKey(ICINGA_IDO_DB, "icingaidodb")
