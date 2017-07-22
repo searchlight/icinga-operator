@@ -3,71 +3,103 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"time"
+	"io/ioutil"
+	"net/http"
 
-	"github.com/appscode/errors"
-	"github.com/appscode/log"
+	"github.com/appscode/go/runtime"
+	"github.com/appscode/pat"
+	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/icinga"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
 const (
-	AcknowledgeTimestamp string = "acknowledgement_timestamp"
+	PathParamNamespace = ":namespace"
+	PathParamType      = ":type"
+	PathParamName      = ":name"
 )
 
-type AlertEventMessage struct {
-	IncidentEventId int64  `json:"incident_event_id,omitempty"`
-	Comment         string `json:"comment,omitempty"`
-	UserName        string `json:"username,omitempty"`
+type AcknowledgeRequest struct {
+	ObjectName string
+	Author     string
+	Comment    string
 }
 
-func (c *Controller) Acknowledge(event *apiv1.Event) error {
-	// icingaService := c.opt.Resource.Name // TODO: Fix it
-	icingaService := ""
+func Acknowledge(client *icinga.Client, w http.ResponseWriter, r *http.Request) {
+	defer runtime.HandleCrash()
 
-	var message AlertEventMessage
-	err := json.Unmarshal([]byte(event.Message), &message)
+	params, found := pat.FromContext(r.Context())
+	if !found {
+		http.Error(w, "Missing parameters", http.StatusBadRequest)
+		return
+	}
+
+	namespace := params.Get(PathParamNamespace)
+	if namespace == "" {
+		http.Error(w, "Missing parameter "+PathParamNamespace, http.StatusBadRequest)
+		return
+	}
+
+	alertType := params.Get(PathParamType)
+	if alertType == "" {
+		http.Error(w, "Missing parameter "+PathParamType, http.StatusBadRequest)
+		return
+	}
+
+	alertName := params.Get(PathParamName)
+	if alertName == "" {
+		http.Error(w, "Missing parameter "+PathParamName, http.StatusBadRequest)
+		return
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		return errors.FromErr(err).Err()
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	var ackRequest AcknowledgeRequest
+	if err := json.Unmarshal(body, &ackRequest); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	if event.Source.Host == "" {
-		return errors.New("Icinga hostname missing").Err()
-	}
-	if err = acknowledgeIcingaNotification(c.IcingaClient, event.Source.Host, icingaService, message.Comment, message.UserName); err != nil {
-		return errors.FromErr(err).Err()
+	host := &icinga.IcingaHost{
+		ObjectName:     ackRequest.ObjectName,
+		AlertNamespace: namespace,
 	}
 
-	if event.Annotations == nil {
-		event.Annotations = make(map[string]string)
+	switch alertType {
+	case tapi.ResourceTypePodAlert:
+		host.Type = icinga.TypePod
+	case tapi.ResourceNameNodeAlert:
+		host.Type = icinga.TypeNode
+	case tapi.ResourceNameClusterAlert:
+		host.Type = icinga.TypeCluster
 	}
 
-	timestamp := metav1.NewTime(time.Now().UTC())
-	event.Annotations[AcknowledgeTimestamp] = timestamp.String()
-
-	if _, err = c.KubeClient.CoreV1().Events(event.Namespace).Update(event); err != nil {
-		return errors.FromErr(err).Err()
+	hostName, err := host.Name()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
-	return nil
-}
 
-func acknowledgeIcingaNotification(client *icinga.Client, icingaHostName, icingaServiceName, comment, username string) error {
 	mp := make(map[string]interface{})
 	mp["type"] = "Service"
-	mp["filter"] = fmt.Sprintf(`service.name == "%s" && host.name == "%s"`, icingaServiceName, icingaHostName)
-	mp["comment"] = comment
+	mp["filter"] = fmt.Sprintf(`service.name == "%s" && host.name == "%s"`, alertName, hostName)
+	mp["comment"] = ackRequest.Comment
 	mp["notify"] = true
-	mp["author"] = username
+	mp["author"] = ackRequest.Author
 
 	jsonStr, err := json.Marshal(mp)
 	if err != nil {
-		return errors.FromErr(err).Err()
+		http.Error(w, "Invalid data", http.StatusBadRequest)
+		return
 	}
 	resp := client.Actions("acknowledge-problem").Update([]string{}, string(jsonStr)).Do()
 	if resp.Status == 200 {
-		log.Debugln("[Icinga] Problem acknowledged")
-		return nil
+		http.Error(w, "Problem acknowledged", http.StatusOK)
+		return
 	}
-	return errors.New("[Icinga] Problem acknowledged Error").Err()
+
+	http.Error(w, "Failed to acknowledge", http.StatusOK)
+	return
 }

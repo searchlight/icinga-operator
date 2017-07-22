@@ -1,7 +1,6 @@
 package check_pod_status
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
@@ -14,9 +13,7 @@ import (
 )
 
 type Request struct {
-	Namespace string
-	Selector  string
-	PodName   string
+	Host string
 }
 
 type objectInfo struct {
@@ -36,48 +33,30 @@ func CheckPodStatus(req *Request) (icinga.State, interface{}) {
 		return icinga.UNKNOWN, err
 	}
 
-	objectInfoList := make([]*objectInfo, 0)
-	if req.PodName != "" {
-		pod, err := kubeClient.Client.CoreV1().Pods(req.Namespace).Get(req.PodName, metav1.GetOptions{})
-		if err != nil {
-			return icinga.UNKNOWN, err
-		}
-
-		if !(pod.Status.Phase == apiv1.PodSucceeded || pod.Status.Phase == apiv1.PodRunning) {
-			objectInfoList = append(objectInfoList, &objectInfo{Name: pod.Name, Status: string(pod.Status.Phase), Namespace: pod.Namespace})
-		}
-	} else {
-		podList, err := kubeClient.Client.CoreV1().Pods(req.Namespace).List(metav1.ListOptions{LabelSelector: req.Selector})
-		if err != nil {
-			return icinga.UNKNOWN, err
-		}
-
-		for _, pod := range podList.Items {
-			if !(pod.Status.Phase == apiv1.PodSucceeded || pod.Status.Phase == apiv1.PodRunning) {
-				objectInfoList = append(objectInfoList, &objectInfo{Name: pod.Name, Status: string(pod.Status.Phase), Namespace: pod.Namespace})
-			}
-		}
+	host, err := icinga.ParseHost(req.Host)
+	if err != nil {
+		fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
+		os.Exit(3)
+	}
+	if host.Type != icinga.TypePod {
+		fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host type")
+		os.Exit(3)
 	}
 
-	if len(objectInfoList) == 0 {
-		return icinga.OK, "All pods are Ready"
-	} else {
-		output := &serviceOutput{
-			Objects: objectInfoList,
-			Message: fmt.Sprintf("Found %d not running pods(s)", len(objectInfoList)),
-		}
-		outputByte, err := json.MarshalIndent(output, "", "  ")
-		if err != nil {
-			return icinga.UNKNOWN, err
-		}
-		return icinga.CRITICAL, outputByte
+	pod, err := kubeClient.Client.CoreV1().Pods(host.AlertNamespace).Get(host.ObjectName, metav1.GetOptions{})
+	if err != nil {
+		return icinga.UNKNOWN, err
 	}
+
+	if !(pod.Status.Phase == apiv1.PodSucceeded || pod.Status.Phase == apiv1.PodRunning) {
+		return icinga.CRITICAL, pod.Status.Phase
+	}
+
+	return icinga.OK, pod.Status.Phase
 }
 
 func NewCmd() *cobra.Command {
 	var req Request
-	var icingaHost string
-
 	c := &cobra.Command{
 		Use:     "check_pod_status",
 		Short:   "Check Kubernetes Pod(s) status",
@@ -85,23 +64,9 @@ func NewCmd() *cobra.Command {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "host")
-
-			host, err := icinga.ParseHost(icingaHost)
-			if err != nil {
-				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
-				os.Exit(3)
-			}
-			if host.Type != icinga.TypePod {
-				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host type")
-				os.Exit(3)
-			}
-			req.PodName = host.ObjectName
-			req.Namespace = host.AlertNamespace
-
 			icinga.Output(CheckPodStatus(&req))
 		},
 	}
-	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
-	c.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
+	c.Flags().StringVarP(&req.Host, "host", "H", "", "Icinga host name")
 	return c
 }

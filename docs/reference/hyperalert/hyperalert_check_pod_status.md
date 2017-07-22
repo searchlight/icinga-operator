@@ -14,9 +14,8 @@ hyperalert check_pod_status [flags]
 ### Options
 
 ```
-  -h, --help              help for check_pod_status
-  -H, --host string       Icinga host name
-  -l, --selector string   Selector (label query) to filter on, supports '=', '==', and '!='.
+  -h, --help          help for check_pod_status
+  -H, --host string   Icinga host name
 ```
 
 ### SEE ALSO

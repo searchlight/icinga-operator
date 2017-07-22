@@ -6,9 +6,9 @@ import (
 	"os"
 
 	"github.com/appscode/go/runtime"
+	"github.com/appscode/searchlight/pkg/cmds"
 	"github.com/appscode/searchlight/plugins/hyperalert"
 	"github.com/spf13/cobra/doc"
-	"github.com/appscode/searchlight/pkg/cmds"
 )
 
 // ref: https://github.com/spf13/cobra/blob/master/doc/md_docs.md

@@ -10,10 +10,8 @@ import (
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
-	"k8s.io/apimachinery/pkg/apis/meta/internalversion"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
-	apiv1 "k8s.io/client-go/pkg/api/v1"
 	"k8s.io/kubernetes/pkg/client/unversioned/remotecommand"
 	remotecommandserver "k8s.io/kubernetes/pkg/kubelet/server/remotecommand"
 	utilexec "k8s.io/kubernetes/pkg/util/exec"
@@ -53,37 +51,30 @@ func CheckKubeExec(req *Request) (icinga.State, interface{}) {
 		return icinga.UNKNOWN, err
 	}
 
-	foundContainer := false
 	if req.Container != "" {
+		notFound := true
 		for _, container := range pod.Spec.Containers {
 			if container.Name == req.Container {
-				foundContainer = true
+				notFound = false
 				break
 			}
 		}
-	} else {
-		foundContainer = true
+		if notFound {
+			return icinga.UNKNOWN, fmt.Sprintf(`Container "%v" not found`, req.Container)
+		}
 	}
 
-	if !foundContainer {
-		return icinga.UNKNOWN, fmt.Sprintf(`Container "%v" not found`, req.Container)
-	}
-
-	execRequest := kubeClient.Core().RESTClient().Post().
+	execRequest := kubeClient.CoreV1().RESTClient().Post().
 		Resource("pods").
 		Name(req.Pod).
 		Namespace(req.Namespace).
 		SubResource("exec").
-		Param("container", req.Container)
-
-	execRequest.VersionedParams(&apiv1.PodExecOptions{
-		Container: req.Container,
-		Command:   []string{req.Command},
-		Stdin:     true,
-		Stdout:    false,
-		Stderr:    false,
-		TTY:       false,
-	}, internalversion.ParameterCodec)
+		Param("container", req.Container).
+		Param("command", req.Command).
+		Param("stdin", "true").
+		Param("stdout", "false").
+		Param("stderr", "false").
+		Param("tty", "false")
 
 	exec, err := remotecommand.NewExecutor(kubeConfig, "POST", execRequest.URL())
 	if err != nil {

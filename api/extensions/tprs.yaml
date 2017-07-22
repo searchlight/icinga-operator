@@ -1,5 +1,5 @@
 metadata:
-  name: alert.monitoring.appscode.com
+  name: pod-alert.monitoring.appscode.com
   labels:
     app: searchlight  
 apiVersion: extensions/v1beta1
@@ -9,7 +9,7 @@ versions:
   - name: v1alpha1
 ---
 metadata:
-  name: nodealert.monitoring.appscode.com
+  name: node-alert.monitoring.appscode.com
   labels:
     app: searchlight
 apiVersion: extensions/v1beta1
@@ -19,7 +19,7 @@ versions:
   - name: v1alpha1
 ---
 metadata:
-  name: clusteralert.monitoring.appscode.com
+  name: cluster-alert.monitoring.appscode.com
   labels:
     app: searchlight
 apiVersion: extensions/v1beta1

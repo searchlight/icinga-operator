@@ -42,6 +42,7 @@ libbuild.BIN_MATRIX = {
         'type': 'go',
         'go_version': True,
         'distro': {
+            'alpine': ['amd64'],
             'linux': ['amd64']
         }
     },
@@ -59,6 +60,7 @@ libbuild.BIN_MATRIX = {
         'go_version': True,
         'release': True,
         'distro': {
+            'alpine': ['amd64'],
             'linux': ['amd64']
         }
     },
@@ -83,7 +85,7 @@ libbuild.BIN_MATRIX = {
             'linux': ['amd64']
         }
     },
-    'check_node_count': {
+    'check_node_exists': {
         'type': 'go',
         'go_version': True,
         'distro': {
@@ -111,13 +113,6 @@ libbuild.BIN_MATRIX = {
             'linux': ['amd64']
         }
     },
-    'check_prometheus_metric': {
-        'type': 'go',
-        'go_version': True,
-        'distro': {
-            'linux': ['amd64']
-        }
-    },
     'check_volume': {
         'type': 'go',
         'go_version': True,
@@ -133,6 +128,13 @@ libbuild.BIN_MATRIX = {
         }
     },
     'check_kube_exec': {
+        'type': 'go',
+        'go_version': True,
+        'distro': {
+            'linux': ['amd64']
+        }
+    },
+    'check_certificate_expiry': {
         'type': 'go',
         'go_version': True,
         'distro': {
@@ -155,6 +157,35 @@ libbuild.BIN_MATRIX = {
         }
     },
 }
+if libbuild.ENV not in ['prod']:
+    libbuild.BIN_MATRIX = {
+        'searchlight': {
+            'type': 'go',
+            'go_version': True,
+            'distro': {
+                'alpine': ['amd64'],
+                'linux': ['amd64']
+            }
+        },
+        'hostfacts': {
+            'type': 'go',
+            'go_version': False,
+            'release': True,
+            'use_cgo': False,
+            'distro': {
+                'linux': ['amd64'],
+            }
+        },
+        'hyperalert': {
+            'type': 'go',
+            'go_version': True,
+            'release': True,
+            'distro': {
+                'alpine': ['amd64'],
+                'linux': ['amd64']
+            }
+        },
+    }
 libbuild.BUCKET_MATRIX = {
     'prod': 'gs://appscode-cdn',
     'dev': 'gs://appscode-dev'

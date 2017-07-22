@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	tapi "github.com/appscode/searchlight/api"
+	tcs "github.com/appscode/searchlight/client/clientset"
 )
 
 const (
@@ -12,9 +15,6 @@ const (
 	TypePod     = "pod"
 	TypeNode    = "node"
 	TypeCluster = "cluster"
-
-	ObjectType = "alert.appscode.com/objectType"
-	ObjectName = "alert.appscode.com/objectName"
 )
 
 type IcingaHost struct {
@@ -36,15 +36,27 @@ func (kh IcingaHost) Name() (string, error) {
 	return "", fmt.Errorf("Unknown host type %s", kh.Type)
 }
 
+func (kh IcingaHost) GetAlert(extClient tcs.ExtensionInterface, alertName string) (tapi.Alert, error) {
+	switch kh.Type {
+	case TypePod:
+		return extClient.PodAlerts(kh.AlertNamespace).Get(alertName)
+	case TypeNode:
+		return extClient.NodeAlerts(kh.AlertNamespace).Get(alertName)
+	case TypeCluster:
+		return extClient.ClusterAlerts(kh.AlertNamespace).Get(alertName)
+	}
+	return nil, fmt.Errorf("Unknown host type %s", kh.Type)
+}
+
 func ParseHost(name string) (*IcingaHost, error) {
 	parts := strings.SplitN(name, "@", 3)
-	if len(parts) == 2 || len(parts) == 3 {
+	if !(len(parts) == 2 || len(parts) == 3) {
 		return nil, fmt.Errorf("Host %s has a bad format", name)
 	}
 	t := parts[1]
 	switch t {
 	case TypePod, TypeNode:
-		if len(parts) != 2 {
+		if len(parts) != 3 {
 			return nil, fmt.Errorf("Host %s has a bad format", name)
 		}
 		return &IcingaHost{
@@ -75,6 +87,7 @@ type ResponseObject struct {
 			Name            string                 `json:"name"`
 			CheckInterval   float64                `json:"check_interval"`
 			Vars            map[string]interface{} `json:"vars"`
+			LastState       float64                `json:"last_state"`
 			Acknowledgement float64                `json:"acknowledgement"`
 		} `json:"attrs"`
 		Name string `json:"name"`

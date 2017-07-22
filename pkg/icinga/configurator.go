@@ -22,45 +22,47 @@ import (
 )
 
 const (
-	ICINGA_ADDRESS            = "ICINGA_ADDRESS" // host:port
-	ICINGA_API_USER           = "ICINGA_API_USER"
-	ICINGA_API_PASSWORD       = "ICINGA_API_PASSWORD"
-	ICINGA_CA_CERT            = "ICINGA_CA_CERT"
-	ICINGA_SERVER_KEY         = "ICINGA_SERVER_KEY"
-	ICINGA_SERVER_CERT        = "ICINGA_SERVER_CERT"
-	ICINGA_IDO_HOST           = "ICINGA_IDO_HOST"
-	ICINGA_IDO_PORT           = "ICINGA_IDO_PORT"
-	ICINGA_IDO_DB             = "ICINGA_IDO_DB"
-	ICINGA_IDO_USER           = "ICINGA_IDO_USER"
-	ICINGA_IDO_PASSWORD       = "ICINGA_IDO_PASSWORD"
-	ICINGA_WEB_HOST           = "ICINGA_WEB_HOST"
-	ICINGA_WEB_PORT           = "ICINGA_WEB_PORT"
-	ICINGA_WEB_DB             = "ICINGA_WEB_DB"
-	ICINGA_WEB_USER           = "ICINGA_WEB_USER"
-	ICINGA_WEB_PASSWORD       = "ICINGA_WEB_PASSWORD"
-	ICINGA_WEB_ADMIN_PASSWORD = "ICINGA_WEB_ADMIN_PASSWORD"
+	ICINGA_ADDRESS              = "ICINGA_ADDRESS" // host:port
+	ICINGA_API_USER             = "ICINGA_API_USER"
+	ICINGA_API_PASSWORD         = "ICINGA_API_PASSWORD"
+	ICINGA_CA_CERT              = "ICINGA_CA_CERT"
+	ICINGA_SERVER_KEY           = "ICINGA_SERVER_KEY"
+	ICINGA_SERVER_CERT          = "ICINGA_SERVER_CERT"
+	ICINGA_NOTIFIER_SECRET_NAME = "ICINGA_NOTIFIER_SECRET_NAME"
+	ICINGA_IDO_HOST             = "ICINGA_IDO_HOST"
+	ICINGA_IDO_PORT             = "ICINGA_IDO_PORT"
+	ICINGA_IDO_DB               = "ICINGA_IDO_DB"
+	ICINGA_IDO_USER             = "ICINGA_IDO_USER"
+	ICINGA_IDO_PASSWORD         = "ICINGA_IDO_PASSWORD"
+	ICINGA_WEB_HOST             = "ICINGA_WEB_HOST"
+	ICINGA_WEB_PORT             = "ICINGA_WEB_PORT"
+	ICINGA_WEB_DB               = "ICINGA_WEB_DB"
+	ICINGA_WEB_USER             = "ICINGA_WEB_USER"
+	ICINGA_WEB_PASSWORD         = "ICINGA_WEB_PASSWORD"
+	ICINGA_WEB_ADMIN_PASSWORD   = "ICINGA_WEB_ADMIN_PASSWORD"
 )
 
 var (
 	// Key -> Required (true) | Optional (false)
 	icingaKeys = map[string]bool{
-		ICINGA_ADDRESS:            false,
-		ICINGA_CA_CERT:            true,
-		ICINGA_API_USER:           true,
-		ICINGA_API_PASSWORD:       true,
-		ICINGA_SERVER_KEY:         false,
-		ICINGA_SERVER_CERT:        false,
-		ICINGA_IDO_HOST:           true,
-		ICINGA_IDO_PORT:           true,
-		ICINGA_IDO_DB:             true,
-		ICINGA_IDO_USER:           true,
-		ICINGA_IDO_PASSWORD:       true,
-		ICINGA_WEB_HOST:           true,
-		ICINGA_WEB_PORT:           true,
-		ICINGA_WEB_DB:             true,
-		ICINGA_WEB_USER:           true,
-		ICINGA_WEB_PASSWORD:       true,
-		ICINGA_WEB_ADMIN_PASSWORD: true,
+		ICINGA_ADDRESS:              false,
+		ICINGA_CA_CERT:              true,
+		ICINGA_API_USER:             true,
+		ICINGA_API_PASSWORD:         true,
+		ICINGA_SERVER_KEY:           false,
+		ICINGA_SERVER_CERT:          false,
+		ICINGA_NOTIFIER_SECRET_NAME: false,
+		ICINGA_IDO_HOST:             true,
+		ICINGA_IDO_PORT:             true,
+		ICINGA_IDO_DB:               true,
+		ICINGA_IDO_USER:             true,
+		ICINGA_IDO_PASSWORD:         true,
+		ICINGA_WEB_HOST:             true,
+		ICINGA_WEB_PORT:             true,
+		ICINGA_WEB_DB:               true,
+		ICINGA_WEB_USER:             true,
+		ICINGA_WEB_PASSWORD:         true,
+		ICINGA_WEB_ADMIN_PASSWORD:   true,
 	}
 )
 
@@ -69,12 +71,13 @@ func init() {
 }
 
 type Configurator struct {
-	ConfigRoot string
-	Expiry     time.Duration
+	ConfigRoot         string
+	NotifierSecretName string
+	Expiry             time.Duration
 }
 
 func (c *Configurator) ConfigFile() string {
-	return filepath.Join(c.ConfigRoot, "icinga2/config")
+	return filepath.Join(c.ConfigRoot, "icinga2/config.ini")
 }
 
 func (c *Configurator) PKIDir() string {
@@ -178,7 +181,7 @@ func (c *Configurator) generateCertificates() error {
 	log.Infoln("Created CA cert")
 
 	var csrReq csr.CertificateRequest
-	csrReq.KeyRequest = csr.NewBasicKeyRequest() // &csr.BasicKeyRequest{A: "rsa", S: 2048}
+	csrReq.KeyRequest = &csr.BasicKeyRequest{A: "rsa", S: 2048} // ECC does not work with icinga api
 	csrReq.CN = "icinga"
 	csrReq.Hosts = []string{"127.0.0.1"} // Add all local IPs
 	return c.createClientCert(&csrReq)
@@ -195,9 +198,12 @@ func (c *Configurator) LoadIcingaConfig() (*Config, error) {
 		cfg := ini.Empty()
 		sec := cfg.Section("")
 		sec.NewKey(ICINGA_ADDRESS, "127.0.0.1:5665")
-		sec.NewKey(ICINGA_CA_CERT, c.certFile("ca"))
 		sec.NewKey(ICINGA_API_USER, "icingaapi")
 		sec.NewKey(ICINGA_API_PASSWORD, stringz.Val(os.Getenv(ICINGA_API_PASSWORD), rand.GeneratePassword()))
+		sec.NewKey(ICINGA_NOTIFIER_SECRET_NAME, c.NotifierSecretName)
+		sec.NewKey(ICINGA_CA_CERT, c.certFile("ca"))
+		sec.NewKey(ICINGA_SERVER_CERT, c.certFile("icinga"))
+		sec.NewKey(ICINGA_SERVER_KEY, c.certFile("icinga"))
 		sec.NewKey(ICINGA_IDO_HOST, "127.0.0.1")
 		sec.NewKey(ICINGA_IDO_PORT, "5432")
 		sec.NewKey(ICINGA_IDO_DB, "icingaidodb")
@@ -244,8 +250,10 @@ func (c *Configurator) LoadIcingaConfig() (*Config, error) {
 	if key, err := sec.GetKey(ICINGA_API_PASSWORD); err == nil {
 		ctx.BasicAuth.Password = key.Value()
 	}
+
 	if caCert, err := ioutil.ReadFile(c.certFile("ca")); err == nil {
 		ctx.CACert = caCert
 	}
+
 	return ctx, nil
 }

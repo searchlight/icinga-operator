@@ -4,16 +4,12 @@
       "description": "This is used to check Kubernetes components",
       "examples": "hyperalert check_component_status",
       "name": "component_status",
-       "envs": [
-         "onebox",
-         "prod",
-         "qa",
-         "dev"
-       ],
-       "object_to_host": {
-         "cluster": "localhost"
-       },
-       "vars": [],
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ],
        "states": [
          "OK",
          "CRITICAL",
@@ -29,17 +25,6 @@
         "qa",
         "dev"
       ],
-      "object_to_host": {
-        "services": "pod",
-        "replicationcontrollers": "pod",
-        "statefulsets": "pod",
-        "replicasets": "pod",
-        "daemonsets": "pod",
-        "deployments": "pod",
-        "pods": "pod",
-        "nodes": "node",
-        "cluster": "node"
-      },
       "vars": [
         {
           "description": "URL of InfluxDB host to query",
@@ -155,7 +140,13 @@
           "visibility": true,
           "optional": false
         }
-      ]
+      ],
+      "states": [
+      "OK",
+      "WARNING",
+      "CRITICAL",
+      "UNKNOWN"
+    ]
     },
     {
       "description": "This is used to check any API response parsing JSON using JQ queries",
@@ -167,9 +158,6 @@
         "qa",
         "dev"
       ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
       "vars": [
         {
           "description": "URL to get data",
@@ -251,17 +239,14 @@
     },
     {
       "description": "This is used to check total number of Kubernetes node",
-      "examples": "hyperalert check_node_count --count=3",
-      "name": "node_count",
+      "examples": "hyperalert check_node_exists --count=3",
+      "name": "node_exists",
       "envs": [
         "onebox",
         "prod",
         "qa",
         "dev"
       ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
       "vars": [
         {
           "description": "Number of expected Kubernetes Node",
@@ -274,6 +259,30 @@
           "parameterized": false,
           "visibility": true,
           "optional": false
+        },
+        {
+          "description": "Selector (label query) to filter on, supports '=', '==', and '!='.",
+          "flag": {
+            "short": "l",
+            "long": "selector"
+          },
+          "name": "selector",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        },
+        {
+          "description": "Name of node whose existence is checked",
+          "flag": {
+            "short": "n",
+            "long": "nodename"
+          },
+          "name": "nodename",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
         }
       ],
       "states": [
@@ -292,11 +301,6 @@
         "qa",
         "dev"
       ],
-      "object_to_host": {
-        "nodes": "node",
-        "cluster": "node"
-      },
-      "vars": [],
       "states": [
         "OK",
         "CRITICAL",
@@ -312,15 +316,6 @@
         "qa",
         "dev"
       ],
-      "object_to_host": {
-        "services": "localhost",
-        "replicationcontrollers": "localhost",
-        "statefulsets": "localhost",
-        "replicasets": "localhost",
-        "daemonsets": "localhost",
-        "deployments": "localhost",
-        "cluster": "localhost"
-      },
       "vars": [
         {
           "description": "Number of expected Kubernetes Pod",
@@ -330,6 +325,30 @@
           },
           "name": "count",
           "type": "INTEGER",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        },
+        {
+          "description": "Selector (label query) to filter on, supports '=', '==', and '!='.",
+          "flag": {
+            "short": "l",
+            "long": "selector"
+          },
+          "name": "selector",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        },
+        {
+          "description": "Name of pod whose existence is checked",
+          "flag": {
+            "short": "p",
+            "long": "pod_name"
+          },
+          "name": "pod_name",
+          "type": "STRING",
           "parameterized": false,
           "visibility": true,
           "optional": true
@@ -350,128 +369,10 @@
         "qa",
         "dev"
       ],
-      "object_to_host": {
-        "services": "localhost",
-        "replicationcontrollers": "localhost",
-        "statefulsets": "localhost",
-        "replicasets": "localhost",
-        "daemonsets": "localhost",
-        "deployments": "localhost",
-        "pods": "pod",
-        "cluster": "localhost"
-      },
-      "vars": [
-      ],
       "states": [
         "OK",
         "CRITICAL",
         "UNKNOWN"
-      ]
-    },
-    {
-      "description": "This is used to check Prometheus query result",
-      "name": "prometheus_metric",
-      "envs": [
-        "onebox",
-        "prod",
-        "qa",
-        "dev"
-      ],
-      "object_to_host": {
-        "services": "pod",
-        "replicationcontrollers": "pod",
-        "statefulsets": "pod",
-        "replicasets": "pod",
-        "daemonsets": "pod",
-        "deployments": "pod",
-        "pods": "pod",
-        "nodes": "node",
-        "cluster": "localhost"
-      },
-      "vars": [
-        {
-          "description": "URL of Prometheus host to query",
-          "flag": {
-            "short": "H",
-            "long": "prom_host"
-          },
-          "name": "prom_host",
-          "type": "STRING",
-          "parameterized": false,
-          "visibility": true,
-          "optional": false
-        },
-        {
-          "description": "Prometheus query that returns a float or int",
-          "flag": {
-            "short": "q",
-            "long": "query"
-          },
-          "name": "query",
-          "type": "STRING",
-          "parameterized": true,
-          "visibility": true,
-          "optional": false
-        },
-        {
-          "description": "A name for the metric being checked",
-          "flag": {
-            "short": "n",
-            "long": "metric_name"
-          },
-          "name": "metric_name",
-          "type": "STRING",
-          "parameterized": false,
-          "visibility": false,
-          "optional": true
-        },
-        {
-          "description": "Comparison method, one of gt, ge, lt, le, eq, ne. (Defauls to \"ge\")",
-          "flag": {
-            "short": "m",
-            "long": "method"
-          },
-          "name": "method",
-          "type": "STRING",
-          "parameterized": false,
-          "visibility": true,
-          "optional": true
-        },
-        {
-          "description": "Accept NaN as an \"OK\" result",
-          "flag": {
-            "short": "O",
-            "long": "accept_nan"
-          },
-          "name": "accept_nan",
-          "parameterized": false,
-          "visibility": false,
-          "optional": true
-        },
-        {
-          "description": "Warning level value (must be zero or positive)",
-          "flag": {
-            "short": "w",
-            "long": "warning"
-          },
-          "name": "warning",
-          "type": "INTERGER",
-          "parameterized": false,
-          "visibility": true,
-          "optional": false
-        },
-        {
-          "description": "Critical level value (must be zero or positive)",
-          "flag": {
-            "short": "c",
-            "long": "critical"
-          },
-          "name": "critical",
-          "type": "INTERGER",
-          "parameterized": false,
-          "visibility": true,
-          "optional": false
-        }
       ]
     },
     {
@@ -483,30 +384,14 @@
         "qa",
         "dev"
       ],
-      "object_to_host": {
-        "nodes": "node",
-        "cluster": "node"
-      },
       "vars": [
         {
           "description": "Kubernetes secret name",
           "flag": {
             "short": "s",
-            "long": "secret_name"
+            "long": "secret"
           },
-          "name": "secret_name",
-          "type": "STRING",
-          "parameterized": false,
-          "visibility": true,
-          "optional": true
-        },
-        {
-          "description": "Kubernetes secret namespace",
-          "flag": {
-            "short": "n",
-            "long": "secret_namespace"
-          },
-          "name": "secret_namespace",
+          "name": "secret",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
@@ -552,35 +437,14 @@
         "qa",
         "dev"
       ],
-      "object_to_host": {
-        "services": "pod",
-        "replicationcontrollers": "pod",
-        "statefulsets": "pod",
-        "replicasets": "pod",
-        "daemonsets": "pod",
-        "deployments": "pod",
-        "pods": "pod"
-      },
       "vars": [
         {
           "description": "Kubernetes secret name",
           "flag": {
             "short": "s",
-            "long": "secret_name"
+            "long": "secret"
           },
-          "name": "secret_name",
-          "type": "STRING",
-          "parameterized": false,
-          "visibility": true,
-          "optional": true
-        },
-        {
-          "description": "Kubernetes secret namespace",
-          "flag": {
-            "short": "n",
-            "long": "secret_namespace"
-          },
-          "name": "secret_namespace",
+          "name": "secret",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
@@ -638,9 +502,6 @@
         "qa",
         "dev"
       ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
       "vars": [
         {
           "description": "Clock skew in Duration. [Default: 30s]. This time is added with check_interval while checking events",
@@ -670,15 +531,6 @@
         "qa",
         "dev"
       ],
-      "object_to_host": {
-        "services": "pod",
-        "replicationcontrollers": "pod",
-        "statefulsets": "pod",
-        "replicasets": "pod",
-        "daemonsets": "pod",
-        "deployments": "pod",
-        "pods": "pod"
-      },
       "vars": [
         {
           "description": "Kubernetes container name in a pod",
@@ -724,6 +576,49 @@
       ]
     },
     {
+      "description": "This is used to check certificate expire date",
+      "examples": "hyperalert check_certificate_expiry",
+      "name": "certificate_expiry",
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ],
+      "vars": [
+        {
+          "description": "Warning level value (usage duration defaults to 360h)",
+          "flag": {
+            "short": "w",
+            "long": "warning"
+          },
+          "name": "warning",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        },
+        {
+          "description": "Critical level value (usage duration defaults to 120h)",
+          "flag": {
+            "short": "c",
+            "long": "critical"
+          },
+          "name": "critical",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        }
+      ],
+      "states": [
+        "OK",
+        "WARNING",
+        "CRITICAL",
+        "UNKNOWN"
+      ]
+    },
+    {
       "description": "This is used to test various stuff",
       "name": "hello_icinga",
       "envs": [
@@ -731,10 +626,7 @@
         "prod",
         "qa",
         "dev"
-      ],
-      "object_to_host": {
-        "cluster": "localhost"
-      }
+      ]
     },
     {
       "description": "The [check_dig](https://www.monitoring-plugins.org/doc/man/check_dig.html) plugin test the DNS service on the specified host using dig.",
@@ -745,9 +637,6 @@
         "qa",
         "dev"
       ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
       "vars": [
         {
           "description": "The DNS server to query. Defaults to \"127.0.0.1\".",
@@ -854,9 +743,6 @@
         "qa",
         "dev"
       ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
       "vars": [
         {
           "description": "The hostname or IP to query the DNS for. Defaults to \"$host_name$\".",
@@ -919,9 +805,6 @@
         "qa",
         "dev"
       ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
       "vars": [
         {
           "description": "The state. Can be one of 0 (ok), 1 (warning), 2 (critical) and 3 (unknown). Defaults to 0.",
@@ -936,581 +819,6 @@
       ]
     },
     {
-      "description": "The [check_ftp](https://www.monitoring-plugins.org/doc/man/check_ftp.html) plugin tests FTP connections with the specified host (or unix socket).",
-      "name": "ftp",
-      "public": false,
-      "envs": [
-        "qa",
-        "dev"
-      ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
-      "vars": [
-        {
-          "description": "The host's address. Defaults to \"$address$\" if the host's `address` attribute is set, \"$address6$\" otherwise.",
-          "name": "ftp_address",
-          "optional": true
-        },
-        {
-          "description": "The FTP port number.",
-          "flag": {
-            "long": "port",
-            "short": "p"
-          },
-          "name": "ftp_port",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "String to expect in server response. Multiple strings must be defined as array.",
-          "flag": {
-            "long": "expect",
-            "short": "e"
-          },
-          "name": "ftp_expect",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "All expect strings need to occur in server response. Defaults to false.",
-          "name": "ftp_all",
-          "optional": true
-        },
-        {
-          "description": "Enable usage of \\\\n, \\\\r, \\\\t or \\\\\\\\ in send string.",
-          "flag": {
-            "long": "send",
-            "short": "s"
-          },
-          "name": "ftp_escape_send",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "String to send to the server.",
-          "flag": {
-            "long": "send",
-            "short": "s"
-          },
-          "name": "ftp_send",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Enable usage of \\\\n, \\\\r, \\\\t or \\\\\\\\ in quit string.",
-          "flag": {
-            "long": "quit",
-            "short": "q"
-          },
-          "name": "ftp_escape_quit",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "String to send server to initiate a clean close of the connection.",
-          "flag": {
-            "long": "quit",
-            "short": "q"
-          },
-          "name": "ftp_quit",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Accept TCP refusals with states ok, warn, crit. Defaults to crit.",
-          "flag": {
-            "long": "refuse",
-            "short": "r"
-          },
-          "format": "enum",
-          "name": "ftp_refuse",
-          "optional": true,
-          "type": "STRING",
-          "values": [
-            "ok",
-            "warn",
-            "crit"
-          ]
-        },
-        {
-          "description": "Accept expected string mismatches with states ok, warn, crit. Defaults to warn.",
-          "flag": {
-            "long": "mismatch",
-            "short": "M"
-          },
-          "format": "enum",
-          "name": "ftp_mismatch",
-          "optional": true,
-          "type": "STRING",
-          "values": [
-            "ok",
-            "warn",
-            "crit"
-          ]
-        },
-        {
-          "description": "Hide output from TCP socket.",
-          "name": "ftp_jail",
-          "optional": true
-        },
-        {
-          "description": "Close connection once more than this number of bytes are received.",
-          "flag": {
-            "long": "maxbytes",
-            "short": "m"
-          },
-          "name": "ftp_maxbytes",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Seconds to wait between sending string and polling for response.",
-          "flag": {
-            "long": "delay",
-            "short": "d"
-          },
-          "name": "ftp_delay",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Minimum number of days a certificate has to be valid. 1st value is number of days for warning, 2nd is critical (if not specified: 0) -- separated by comma.",
-          "flag": {
-            "long": "certificate",
-            "short": "D"
-          },
-          "name": "ftp_certificate",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Use SSL for the connection. Defaults to false.",
-          "name": "ftp_ssl",
-          "optional": true
-        },
-        {
-          "description": "Response time to result in warning status (seconds).",
-          "name": "ftp_wtime",
-          "optional": true
-        },
-        {
-          "description": "Response time to result in critical status (seconds).",
-          "name": "ftp_ctime",
-          "optional": true
-        },
-        {
-          "description": "Seconds before connection times out. Defaults to 10.",
-          "flag": {
-            "long": "timeout",
-            "short": "t"
-          },
-          "name": "ftp_timeout",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Use IPv4 connection. Defaults to false.",
-          "name": "ftp_ipv4",
-          "optional": true
-        },
-        {
-          "description": "Use IPv6 connection. Defaults to false.",
-          "name": "ftp_ipv6",
-          "optional": true
-        }
-      ]
-    },
-    {
-      "description": "The [check_http](https://www.monitoring-plugins.org/doc/man/check_http.html) plugin tests the HTTP service on the specified host. It can test normal (http) and secure (https) servers, follow redirects, search for strings and regular expressions, check connection times, and report on certificate expiration times.",
-      "examples": "CHECK CONTENT: check_http -w 5 -c 10 --ssl -H www.verisign.com\n\n When the 'www.verisign.com' server returns its content within 5 seconds,\n a STATE_OK will be returned. When the server returns its content but exceeds\n the 5-second threshold, a STATE_WARNING will be returned. When an error occurs,\n a STATE_CRITICAL will be returned.\n\n CHECK CERTIFICATE: check_http -H www.verisign.com -C 14\n\n When the certificate of 'www.verisign.com' is valid for more than 14 days,\n a STATE_OK is returned. When the certificate is still valid, but for less than\n 14 days, a STATE_WARNING is returned. A STATE_CRITICAL will be returned when\n the certificate is expired.\n\n CHECK CERTIFICATE: check_http -H www.verisign.com -C 30,14\n\n When the certificate of 'www.verisign.com' is valid for more than 30 days,\n a STATE_OK is returned. When the certificate is still valid, but for less than\n 30 days, but more than 14 days, a STATE_WARNING is returned.\n A STATE_CRITICAL will be returned when certificate expires in less than 14 days\n CHECK SSL WEBSERVER CONTENT VIA PROXY USING HTTP 1.1 CONNECT:\n\n check_http -I 192.168.100.35 -p 80 -u https://www.verisign.com/ -S -j CONNECT -H www.verisign.com \n all these options are needed: -I &lt;proxy&gt; -p &lt;proxy-port&gt; -u &lt;check-url&gt; -S(sl) -j CONNECT -H &lt;webserver&gt;\n a STATE_OK will be returned. When the server returns its content but exceeds\n the 5-second threshold, a STATE_WARNING will be returned. When an error occurs,\n a STATE_CRITICAL will be returned.",
-      "name": "http",
-      "public": false,
-      "envs": [
-        "qa",
-        "dev"
-      ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
-      "vars": [
-        {
-          "description": "The host's address. Defaults to \"$address$\" if the host's `address` attribute is set, \"$address6$\" otherwise.",
-          "name": "http_address",
-          "optional": true
-        },
-        {
-          "description": "The virtual host that should be sent in the \"Host\" header.",
-          "name": "http_vhost",
-          "optional": true
-        },
-        {
-          "description": "The request URI for GET or POST. Defaults to `/`.",
-          "name": "http_uri",
-          "optional": true
-        },
-        {
-          "description": "The TCP port. Defaults to 80 when not using SSL, 443 otherwise.",
-          "flag": {
-            "long": "port",
-            "short": "p"
-          },
-          "name": "http_port",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Whether to use SSL. Defaults to false.",
-          "flag": {
-            "long": "ssl",
-            "short": "S"
-          },
-          "name": "http_ssl",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Whether to force TLSv1.",
-          "flag": {
-            "long": "ssl",
-            "short": "S"
-          },
-          "name": "http_ssl_force_tlsv1",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Whether to force TLSv1.1.",
-          "flag": {
-            "long": "ssl",
-            "short": "S"
-          },
-          "name": "http_ssl_force_tlsv1_1",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Whether to force TLSv1.2.",
-          "flag": {
-            "long": "ssl",
-            "short": "S"
-          },
-          "name": "http_ssl_force_tlsv1_2",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Whether to force SSLv2.",
-          "flag": {
-            "long": "ssl",
-            "short": "S"
-          },
-          "name": "http_ssl_force_sslv2",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Whether to force SSLv3.",
-          "flag": {
-            "long": "ssl",
-            "short": "S"
-          },
-          "name": "http_ssl_force_sslv3",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Whether to force TLSv1 or higher.",
-          "flag": {
-            "long": "ssl",
-            "short": "S"
-          },
-          "name": "http_ssl_force_tlsv1_or_higher",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Whether to force TLSv1.1 or higher.",
-          "flag": {
-            "long": "ssl",
-            "short": "S"
-          },
-          "name": "http_ssl_force_tlsv1_1_or_higher",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Whether to force TLSv1.2 or higher.",
-          "flag": {
-            "long": "ssl",
-            "short": "S"
-          },
-          "name": "http_ssl_force_tlsv1_2_or_higher",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Whether to force SSLv2 or higher.",
-          "flag": {
-            "long": "ssl",
-            "short": "S"
-          },
-          "name": "http_ssl_force_sslv2_or_higher",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Whether to force SSLv3 or higher.",
-          "flag": {
-            "long": "ssl",
-            "short": "S"
-          },
-          "name": "http_ssl_force_sslv3_or_higher",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Whether to use SNI. Defaults to false.",
-          "name": "http_sni",
-          "optional": true
-        },
-        {
-          "description": "Add 'username:password' authorization pair.",
-          "name": "http_auth_pair",
-          "optional": true
-        },
-        {
-          "description": "Add 'username:password' authorization pair for proxy.",
-          "name": "http_proxy_auth_pair",
-          "optional": true
-        },
-        {
-          "description": "Don't download the body, just the headers.",
-          "name": "http_ignore_body",
-          "optional": true
-        },
-        {
-          "description": "Allow regex to span newline.",
-          "name": "http_linespan",
-          "optional": true
-        },
-        {
-          "description": "A regular expression which the body must match against. Incompatible with http_ignore_body.",
-          "flag": {
-            "long": "expect",
-            "short": "e"
-          },
-          "name": "http_expect_body_regex",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "A case-insensitive expression which the body must match against. Incompatible with http_ignore_body.",
-          "flag": {
-            "long": "eregi",
-            "short": "R"
-          },
-          "name": "http_expect_body_eregi",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Changes behaviour of http_expect_body_regex and http_expect_body_eregi to return CRITICAL if found, OK if not.",
-          "name": "http_invertregex",
-          "optional": true
-        },
-        {
-          "description": "The warning threshold.",
-          "name": "http_warn_time",
-          "optional": true
-        },
-        {
-          "description": "The critical threshold.",
-          "flag": {
-            "long": "critical",
-            "short": "c"
-          },
-          "name": "http_critical_time",
-          "optional": true,
-          "type": "DOUBLE"
-        },
-        {
-          "description": "Comma-delimited list of strings, at least one of them is expected in the first (status) line of the server response. Default: HTTP/1.",
-          "flag": {
-            "long": "expect",
-            "short": "e"
-          },
-          "name": "http_expect",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Minimum number of days a certificate has to be valid. This parameter explicitely sets the port to 443 and ignores the URL if passed.",
-          "flag": {
-            "long": "certificate",
-            "short": "C"
-          },
-          "name": "http_certificate",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Name of file contains the client certificate (PEM format).",
-          "flag": {
-            "long": "client-cert",
-            "short": "J"
-          },
-          "name": "http_clientcert",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Name of file contains the private key (PEM format).",
-          "flag": {
-            "long": "private-key",
-            "short": "K"
-          },
-          "name": "http_privatekey",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "String to expect in the response headers.",
-          "flag": {
-            "long": "header",
-            "short": "k"
-          },
-          "name": "http_headerstring",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "String to expect in the content.",
-          "flag": {
-            "long": "string",
-            "short": "s"
-          },
-          "name": "http_string",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "URL encoded http POST data.",
-          "flag": {
-            "long": "post",
-            "short": "P"
-          },
-          "name": "http_post",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Set http method (for example: HEAD, OPTIONS, TRACE, PUT, DELETE).",
-          "flag": {
-            "long": "method",
-            "short": "j"
-          },
-          "name": "http_method",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Warn if document is more than seconds old.",
-          "flag": {
-            "long": "max-age",
-            "short": "M"
-          },
-          "name": "http_maxage",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Specify Content-Type header when POSTing.",
-          "flag": {
-            "long": "content-type",
-            "short": "T"
-          },
-          "name": "http_contenttype",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "String to be sent in http header as User Agent.",
-          "flag": {
-            "long": "useragent",
-            "short": "A"
-          },
-          "name": "http_useragent",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Any other tags to be sent in http header.",
-          "flag": {
-            "long": "header",
-            "short": "k"
-          },
-          "name": "http_header",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Print additional perfdata. Defaults to false.",
-          "name": "http_extendedperfdata",
-          "optional": true
-        },
-        {
-          "description": "How to handle redirect pages. Possible values: \"ok\" (default), \"warning\", \"critical\", \"follow\", \"sticky\" (like follow but stick to address), \"stickyport\" (like sticky but also to port)",
-          "flag": {
-            "long": "onredirect",
-            "short": "f"
-          },
-          "format": "enum",
-          "name": "http_onredirect",
-          "optional": true,
-          "type": "STRING",
-          "values": [
-            "ok",
-            "warning",
-            "critical",
-            "follow",
-            "sticky",
-            "stickyport"
-          ]
-        },
-        {
-          "description": "Minimum page size required:Maximum page size required.",
-          "flag": {
-            "long": "pagesize",
-            "short": "m"
-          },
-          "name": "http_pagesize",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Seconds before connection times out.",
-          "flag": {
-            "long": "timeout",
-            "short": "t"
-          },
-          "name": "http_timeout",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Use IPv4 connection. Defaults to false.",
-          "name": "http_ipv4",
-          "optional": true
-        },
-        {
-          "description": "Use IPv6 connection. Defaults to false.",
-          "name": "http_ipv6",
-          "optional": true
-        }
-      ]
-    },
-    {
       "description": "The [check_icmp](https://www.monitoring-plugins.org/doc/man/check_icmp.html) plugin check_icmp allows for checking multiple hosts at once compared to `check_ping`. The main difference is that check_ping executes the system's ping(1) command and parses its output while check_icmp talks ICMP itself. check_icmp must be installed setuid root.",
       "name": "icmp",
       "public": false,
@@ -1518,9 +826,6 @@
         "qa",
         "dev"
       ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
       "vars": [
         {
           "description": "The host's address. This can either be a single address or an array of addresses. Defaults to \"$address$\".",
@@ -1585,937 +890,6 @@
       ]
     },
     {
-      "description": "The [check_ldap](https://www.monitoring-plugins.org/doc/man/check_ldap.html) plugin can be used to check LDAP servers.",
-      "name": "ldap",
-      "public": false,
-      "envs": [
-        "qa",
-        "dev"
-      ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
-      "vars": [
-        {
-          "description": "Host name, IP Address, or unix socket (must be an absolute path). Defaults to \"$address$\" if the host's `address` attribute is set, \"$address6$\" otherwise.",
-          "name": "ldap_address",
-          "optional": true
-        },
-        {
-          "description": "Port number. Defaults to 389.",
-          "flag": {
-            "long": "port",
-            "short": "p"
-          },
-          "name": "ldap_port",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "LDAP attribute to search for (default: \"(objectclass=*)\"",
-          "name": "ldap_attr",
-          "optional": true
-        },
-        {
-          "description": "Required LDAP base (eg. ou=myunit,o=myorg,c=at).",
-          "name": "ldap_base",
-          "optional": false
-        },
-        {
-          "description": "LDAP bind DN (if required).",
-          "name": "ldap_bind",
-          "optional": true
-        },
-        {
-          "description": "LDAP password (if required).",
-          "name": "ldap_pass",
-          "optional": true
-        },
-        {
-          "description": "Use STARTSSL mechanism introduced in protocol version 3.",
-          "name": "ldap_starttls",
-          "optional": true
-        },
-        {
-          "description": "Use LDAPS (LDAP v2 SSL method). This also sets the default port to 636.",
-          "name": "ldap_ssl",
-          "optional": true
-        },
-        {
-          "description": "Use LDAP protocol version 2 (enabled by default).",
-          "name": "ldap_v2",
-          "optional": true
-        },
-        {
-          "description": "Use LDAP protocol version 3 (disabled by default)",
-          "name": "ldap_v3",
-          "optional": true
-        },
-        {
-          "description": "Response time to result in warning status (seconds).",
-          "flag": {
-            "long": "warning",
-            "short": "w"
-          },
-          "name": "ldap_warning",
-          "optional": true,
-          "type": "DOUBLE"
-        },
-        {
-          "description": "Response time to result in critical status (seconds).",
-          "flag": {
-            "long": "critical",
-            "short": "c"
-          },
-          "name": "ldap_critical",
-          "optional": true,
-          "type": "DOUBLE"
-        },
-        {
-          "description": "Seconds before connection times out (default: 10).",
-          "flag": {
-            "long": "timeout",
-            "short": "t"
-          },
-          "name": "ldap_timeout",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Show details for command-line debugging (disabled by default)",
-          "name": "ldap_verbose",
-          "optional": true
-        }
-      ]
-    },
-    {
-      "description": "The [check_mysql](https://www.monitoring-plugins.org/doc/man/check_mysql.html) plugin tests connections to a MySQL server.",
-      "name": "mysql",
-      "public": false,
-      "envs": [
-        "qa",
-        "dev"
-      ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
-      "vars": [
-        {
-          "description": "Host name, IP Address, or unix socket (must be an absolute path).",
-          "flag": {
-            "long": "hostname",
-            "short": "H"
-          },
-          "name": "mysql_hostname",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Port number (default: 3306).",
-          "flag": {
-            "long": "port",
-            "short": "P"
-          },
-          "name": "mysql_port",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Ignore authentication failure and check for mysql connectivity only.",
-          "name": "mysql_ignore_auth",
-          "optional": true
-        },
-        {
-          "description": "Check database with indicated name.",
-          "flag": {
-            "long": "database",
-            "short": "d"
-          },
-          "name": "mysql_database",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Read from the specified client options file.",
-          "flag": {
-            "long": "file",
-            "short": "f"
-          },
-          "name": "mysql_file",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Use a client options group.",
-          "flag": {
-            "long": "group",
-            "short": "g"
-          },
-          "name": "mysql_group",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Connect using the indicated username.",
-          "flag": {
-            "long": "username",
-            "short": "u"
-          },
-          "name": "mysql_username",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Use the indicated password to authenticate the connection.",
-          "flag": {
-            "long": "password",
-            "short": "p"
-          },
-          "name": "mysql_password",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Check if the slave thread is running properly.",
-          "name": "mysql_check_slave",
-          "optional": true
-        },
-        {
-          "description": "Exit with WARNING status if slave server is more than INTEGER seconds behind master.",
-          "name": "mysql_warning",
-          "optional": true
-        },
-        {
-          "description": "Exit with CRITICAL status if slave server is more then INTEGER seconds behind master.",
-          "name": "mysql_critical",
-          "optional": true
-        },
-        {
-          "description": "Use ssl encryptation.",
-          "name": "mysql_ssl",
-          "optional": true
-        },
-        {
-          "description": "Path to CA signing the cert.",
-          "flag": {
-            "long": "cert",
-            "short": "a"
-          },
-          "name": "mysql_cacert",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Path to SSL certificate.",
-          "flag": {
-            "long": "cert",
-            "short": "a"
-          },
-          "name": "mysql_cert",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Path to private SSL key.",
-          "flag": {
-            "long": "key",
-            "short": "k"
-          },
-          "name": "mysql_key",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Path to CA directory.",
-          "flag": {
-            "long": "ca-dir",
-            "short": "D"
-          },
-          "name": "mysql_cadir",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "List of valid SSL ciphers.",
-          "flag": {
-            "long": "ciphers",
-            "short": "L"
-          },
-          "name": "mysql_ciphers",
-          "optional": true,
-          "type": "STRING"
-        }
-      ]
-    },
-    {
-      "description": "The [check_mysql_query](https://www.monitoring-plugins.org/doc/man/check_mysql_query.html) plugin checks a query result against threshold levels. The result from the query should be numeric. For extra security, create a user with minimal access.",
-      "name": "mysql_query",
-      "public": false,
-      "envs": [
-        "qa",
-        "dev"
-      ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
-      "vars": [
-        {
-          "description": "Host name, IP Address, or unix socket (must be an absolute path).",
-          "flag": {
-            "long": "hostname",
-            "short": "H"
-          },
-          "name": "mysql_query_hostname",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Port number (default: 3306).",
-          "flag": {
-            "long": "port",
-            "short": "P"
-          },
-          "name": "mysql_query_port",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Check database with indicated name.",
-          "flag": {
-            "long": "database",
-            "short": "d"
-          },
-          "name": "mysql_query_database",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Read from the specified client options file.",
-          "flag": {
-            "long": "file",
-            "short": "f"
-          },
-          "name": "mysql_query_file",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Use a client options group.",
-          "flag": {
-            "long": "group",
-            "short": "g"
-          },
-          "name": "mysql_query_group",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Connect using the indicated username.",
-          "flag": {
-            "long": "username",
-            "short": "u"
-          },
-          "name": "mysql_query_username",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Use the indicated password to authenticate the connection.",
-          "flag": {
-            "long": "password",
-            "short": "p"
-          },
-          "name": "mysql_query_password",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Required SQL Query to run on the MySQL Server.",
-          "flag": {
-            "long": "query",
-            "short": "q"
-          },
-          "name": "mysql_query_execute",
-          "optional": false,
-          "type": "STRING"
-        },
-        {
-          "description": "Exit with WARNING status if query is outside of the range (format: start:end).",
-          "flag": {
-            "long": "warning",
-            "short": "w"
-          },
-          "name": "mysql_query_warning",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Exit with CRITICAL status if query is outside of the range(format: start:end).",
-          "flag": {
-            "long": "critical",
-            "short": "c"
-          },
-          "name": "mysql_query_critical",
-          "optional": true,
-          "type": "STRING"
-        }
-      ]
-    },
-    {
-      "description": "The [check_ntp_time](https://www.monitoring-plugins.org/doc/man/check_ntp_time.html) plugin checks the clock offset between the local host and a remote NTP server.",
-      "examples": "./check_ntp_time -H ntpserv -w 0.5 -c 1",
-      "name": "ntp_time",
-      "public": false,
-      "envs": [
-        "qa",
-        "dev"
-      ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
-      "vars": [
-        {
-          "description": "The host's address. Defaults to \"$address$\" if the host's `address` attribute is set, \"$address6$\" otherwise.",
-          "name": "ntp_address",
-          "optional": true
-        },
-        {
-          "description": "Port number (default: 123).",
-          "flag": {
-            "long": "port",
-            "short": "p"
-          },
-          "name": "ntp_port",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Returns UNKNOWN instead of CRITICAL if offset cannot be found.",
-          "name": "ntp_quiet",
-          "optional": true
-        },
-        {
-          "description": "Offset to result in warning status (seconds).",
-          "flag": {
-            "long": "warning",
-            "short": "w"
-          },
-          "name": "ntp_warning",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Offset to result in critical status (seconds).",
-          "flag": {
-            "long": "critical",
-            "short": "c"
-          },
-          "name": "ntp_critical",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Expected offset of the ntp server relative to local server (seconds).",
-          "name": "ntp_timeoffset",
-          "optional": true
-        },
-        {
-          "description": "Seconds before connection times out (default: 10).",
-          "flag": {
-            "long": "timeout",
-            "short": "t"
-          },
-          "name": "ntp_timeout",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Use IPv4 connection. Defaults to false.",
-          "name": "ntp_ipv4",
-          "optional": true
-        },
-        {
-          "description": "Use IPv6 connection. Defaults to false.",
-          "name": "ntp_ipv6",
-          "optional": true
-        }
-      ]
-    },
-    {
-      "description": "The [check_ntp_peer](https://www.monitoring-plugins.org/doc/man/check_ntp_peer.html) plugin checks the health of an NTP server. It supports checking the offset with the sync peer, the jitter and stratum. This plugin will not check the clock offset between the local host and NTP  server; please use `ntp_time` for that purpose.",
-      "examples": "Simple NTP server check:\n  ./check_ntp_peer -H ntpserv -w 0.5 -c 1\n\n Check jitter too, avoiding critical notifications if jitter isn't available\n (See Notes above for more details on thresholds formats):\n  ./check_ntp_peer -H ntpserv -w 0.5 -c 1 -j -1:100 -k -1:200\n\n Only check the number of usable time sources (\"truechimers\"):\n  ./check_ntp_peer -H ntpserv -m @5 -n @3\n\n Check only stratum:\n  ./check_ntp_peer -H ntpserv -W 4 -C 6",
-      "name": "ntp_peer",
-      "public": false,
-      "envs": [
-        "qa",
-        "dev"
-      ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
-      "vars": [
-        {
-          "description": "The host's address. Defaults to \"$address$\" if the host's `address` attribute is set, \"$address6$\" otherwise.",
-          "name": "ntp_address",
-          "optional": true
-        },
-        {
-          "description": "The port to use. Default to 123.",
-          "flag": {
-            "long": "port",
-            "short": "p"
-          },
-          "name": "ntp_port",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Offset to result in warning status (seconds).",
-          "flag": {
-            "long": "warning",
-            "short": "w"
-          },
-          "name": "ntp_warning",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Offset to result in critical status (seconds).",
-          "flag": {
-            "long": "critical",
-            "short": "c"
-          },
-          "name": "ntp_critical",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Warning threshold for stratum of server's synchronization peer.",
-          "name": "ntp_wstratum",
-          "optional": true
-        },
-        {
-          "description": "Critical threshold for stratum of server's synchronization peer.",
-          "name": "ntp_cstratum",
-          "optional": true
-        },
-        {
-          "description": "Warning threshold for jitter.",
-          "name": "ntp_wjitter",
-          "optional": true
-        },
-        {
-          "description": "Critical threshold for jitter.",
-          "name": "ntp_cjitter",
-          "optional": true
-        },
-        {
-          "description": "Warning threshold for number of usable time sources.",
-          "name": "ntp_wsource",
-          "optional": true
-        },
-        {
-          "description": "Critical threshold for number of usable time sources.",
-          "name": "ntp_csource",
-          "optional": true
-        },
-        {
-          "description": "Seconds before connection times out (default: 10).",
-          "flag": {
-            "long": "timeout",
-            "short": "t"
-          },
-          "name": "ntp_timeout",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Use IPv4 connection. Defaults to false.",
-          "name": "ntp_ipv4",
-          "optional": true
-        },
-        {
-          "description": "Use IPv6 connection. Defaults to false.",
-          "name": "ntp_ipv6",
-          "optional": true
-        }
-      ]
-    },
-    {
-      "description": "The [check_pgsql](https://www.monitoring-plugins.org/doc/man/check_pgsql.html) plugin tests a PostgreSQL DBMS to determine whether it is active and accepting queries. If a query is specified using the `pgsql_query` attribute, it will be executed after connecting to the server. The result from the query has to be numeric in order to compare it against the query thresholds if set.",
-      "name": "pgsql",
-      "public": false,
-      "envs": [
-        "qa",
-        "dev"
-      ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
-      "vars": [
-        {
-          "description": "Host name, IP Address, or unix socket (must be an absolute path).",
-          "flag": {
-            "long": "hostname",
-            "short": "H"
-          },
-          "name": "pgsql_hostname",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Port number (default: 5432).",
-          "flag": {
-            "long": "port",
-            "short": "P"
-          },
-          "name": "pgsql_port",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Database to check (default: template1).",
-          "flag": {
-            "long": "database",
-            "short": "d"
-          },
-          "name": "pgsql_database",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Login name of user.",
-          "name": "pgsql_username",
-          "optional": true
-        },
-        {
-          "description": "Password (BIG SECURITY ISSUE).",
-          "name": "pgsql_password",
-          "optional": true
-        },
-        {
-          "description": "Connection parameters (keyword = value), see below.",
-          "name": "pgsql_options",
-          "optional": true
-        },
-        {
-          "description": "Response time to result in warning status (seconds).",
-          "flag": {
-            "long": "warning",
-            "short": "w"
-          },
-          "name": "pgsql_warning",
-          "optional": true,
-          "type": "DOUBLE"
-        },
-        {
-          "description": "Response time to result in critical status (seconds).",
-          "flag": {
-            "long": "critical",
-            "short": "c"
-          },
-          "name": "pgsql_critical",
-          "optional": true,
-          "type": "DOUBLE"
-        },
-        {
-          "description": "Seconds before connection times out (default: 10).",
-          "flag": {
-            "long": "timeout",
-            "short": "t"
-          },
-          "name": "pgsql_timeout",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "SQL query to run. Only first column in first row will be read.",
-          "flag": {
-            "long": "query",
-            "short": "q"
-          },
-          "name": "pgsql_query",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "SQL query value to result in warning status (double).",
-          "flag": {
-            "long": "query-warning",
-            "short": "W"
-          },
-          "name": "pgsql_query_warning",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "SQL query value to result in critical status (double).",
-          "flag": {
-            "long": "query-critical",
-            "short": "C"
-          },
-          "name": "pgsql_query_critical",
-          "optional": true,
-          "type": "STRING"
-        }
-      ]
-    },
-    {
-      "description": "The [check_tcp](https://www.monitoring-plugins.org/doc/man/check_tcp.html) plugin tests TCP connections with the specified host (or unix socket).",
-      "name": "tcp",
-      "public": false,
-      "envs": [
-        "qa",
-        "dev"
-      ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
-      "vars": [
-        {
-          "description": "The host's address. Defaults to \"$address$\" if the host's `address` attribute is set, \"$address6$\" otherwise.",
-          "name": "tcp_address",
-          "optional": true
-        },
-        {
-          "description": "Required The port that should be checked.",
-          "flag": {
-            "long": "port",
-            "short": "p"
-          },
-          "name": "tcp_port",
-          "optional": false,
-          "type": "INTEGER"
-        },
-        {
-          "description": "String to expect in server response. Multiple strings must be defined as array.",
-          "flag": {
-            "long": "expect",
-            "short": "e"
-          },
-          "name": "tcp_expect",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "All expect strings need to occur in server response. Defaults to false.",
-          "name": "tcp_all",
-          "optional": true
-        },
-        {
-          "description": "Enable usage of \\\\n, \\\\r, \\\\t or \\\\\\\\ in send string.",
-          "flag": {
-            "long": "send",
-            "short": "s"
-          },
-          "name": "tcp_escape_send",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "String to send to the server.",
-          "flag": {
-            "long": "send",
-            "short": "s"
-          },
-          "name": "tcp_send",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Enable usage of \\\\n, \\\\r, \\\\t or \\\\\\\\ in quit string.",
-          "flag": {
-            "long": "quit",
-            "short": "q"
-          },
-          "name": "tcp_escape_quit",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "String to send server to initiate a clean close of the connection.",
-          "flag": {
-            "long": "quit",
-            "short": "q"
-          },
-          "name": "tcp_quit",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Accept TCP refusals with states ok, warn, crit. Defaults to crit.",
-          "flag": {
-            "long": "refuse",
-            "short": "r"
-          },
-          "format": "enum",
-          "name": "tcp_refuse",
-          "optional": true,
-          "type": "STRING",
-          "values": [
-            "ok",
-            "warn",
-            "crit"
-          ]
-        },
-        {
-          "description": "Accept expected string mismatches with states ok, warn, crit. Defaults to warn.",
-          "flag": {
-            "long": "mismatch",
-            "short": "M"
-          },
-          "format": "enum",
-          "name": "tcp_mismatch",
-          "optional": true,
-          "type": "STRING",
-          "values": [
-            "ok",
-            "warn",
-            "crit"
-          ]
-        },
-        {
-          "description": "Hide output from TCP socket.",
-          "name": "tcp_jail",
-          "optional": true
-        },
-        {
-          "description": "Close connection once more than this number of bytes are received.",
-          "flag": {
-            "long": "maxbytes",
-            "short": "m"
-          },
-          "name": "tcp_maxbytes",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Seconds to wait between sending string and polling for response.",
-          "flag": {
-            "long": "delay",
-            "short": "d"
-          },
-          "name": "tcp_delay",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Minimum number of days a certificate has to be valid. 1st value is number of days for warning, 2nd is critical (if not specified: 0) -- separated by comma.",
-          "flag": {
-            "long": "certificate",
-            "short": "D"
-          },
-          "name": "tcp_certificate",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Use SSL for the connection. Defaults to false.",
-          "name": "tcp_ssl",
-          "optional": true
-        },
-        {
-          "description": "Response time to result in warning status (seconds).",
-          "name": "tcp_wtime",
-          "optional": true
-        },
-        {
-          "description": "Response time to result in critical status (seconds).",
-          "name": "tcp_ctime",
-          "optional": true
-        },
-        {
-          "description": "Seconds before connection times out. Defaults to 10.",
-          "flag": {
-            "long": "timeout",
-            "short": "t"
-          },
-          "name": "tcp_timeout",
-          "optional": true,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Use IPv4 connection. Defaults to false.",
-          "name": "tcp_ipv4",
-          "optional": true
-        },
-        {
-          "description": "Use IPv6 connection. Defaults to false.",
-          "name": "tcp_ipv6",
-          "optional": true
-        }
-      ]
-    },
-    {
-      "description": "The [check_udp](https://www.monitoring-plugins.org/doc/man/check_udp.html) plugin tests UDP connections with the specified host (or unix socket).",
-      "name": "udp",
-      "public": false,
-      "envs": [
-        "qa",
-        "dev"
-      ],
-      "object_to_host": {
-        "cluster": "localhost"
-      },
-      "vars": [
-        {
-          "description": "The host's address. Defaults to \"$address$\" if the host's `address` attribute is set, \"$address6$\" otherwise.",
-          "name": "udp_address",
-          "optional": true
-        },
-        {
-          "description": "Required The port that should be checked.",
-          "flag": {
-            "long": "port",
-            "short": "p"
-          },
-          "name": "udp_port",
-          "optional": false,
-          "type": "INTEGER"
-        },
-        {
-          "description": "Required The payload to send in the UDP datagram.",
-          "flag": {
-            "long": "send",
-            "short": "s"
-          },
-          "name": "udp_send",
-          "optional": false,
-          "type": "STRING"
-        },
-        {
-          "description": "Required The payload to expect in the response datagram.",
-          "flag": {
-            "long": "expect",
-            "short": "e"
-          },
-          "name": "udp_expect",
-          "optional": false,
-          "type": "STRING"
-        },
-        {
-          "description": "The payload to send to 'close' the session.",
-          "flag": {
-            "long": "quit",
-            "short": "q"
-          },
-          "name": "udp_quit",
-          "optional": true,
-          "type": "STRING"
-        },
-        {
-          "description": "Use IPv4 connection. Defaults to false.",
-          "name": "udp_ipv4",
-          "optional": true
-        },
-        {
-          "description": "Use IPv6 connection. Defaults to false.",
-          "name": "udp_ipv6",
-          "optional": true
-        }
-      ]
-    },
-    {
       "description": "Modified check_command [http] where user can provide custom http_address",
       "name": "any_http",
       "envs": [
@@ -2524,16 +898,6 @@
         "qa",
         "dev"
       ],
-      "object_to_host": {
-        "cluster": "localhost",
-        "services": "pod",
-        "replicationcontrollers": "pod",
-        "statefulsets": "pod",
-        "replicasets": "pod",
-        "daemonsets": "pod",
-        "deployments": "pod",
-        "pods": "pod"
-      },
       "vars": [
         {
           "description": "The host's address. Default empty",

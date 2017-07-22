@@ -14,7 +14,7 @@ hyperalert check_pod_exists [flags]
 ### Options
 
 ```
-  -c, --count int         Number of Kubernetes Node
+  -c, --count int         Number of Kubernetes pods
   -h, --help              help for check_pod_exists
   -H, --host string       Icinga host name
   -p, --pod_name string   Name of pod whose existence is checked

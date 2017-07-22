@@ -122,13 +122,12 @@ const (
 )
 
 type Request struct {
-	Host            string
-	VolumeName      string
-	Warning         float64
-	Critical        float64
-	NodeStat        bool
-	SecretName      string
-	SecretNamespace string
+	Host       string
+	NodeStat   bool
+	SecretName string
+	VolumeName string
+	Warning    float64
+	Critical   float64
 }
 
 type usageStat struct {
@@ -214,9 +213,9 @@ func checkResult(field string, warning, critical, result float64) (icinga.State,
 	return icinga.OK, "(Disk & Inodes)"
 }
 
-func checkDiskStat(kubeClient *util.KubeClient, req *Request, nodeIP, path string) (icinga.State, interface{}) {
-	authInfo := getHostfactsSecretData(kubeClient, req.SecretName, req.SecretNamespace)
+func checkDiskStat(kubeClient *util.KubeClient, req *Request, namespace, nodeIP, path string) (icinga.State, interface{}) {
 
+	authInfo := getHostfactsSecretData(kubeClient, req.SecretName, namespace)
 	usage, err := getUsage(authInfo, nodeIP, path)
 	if err != nil {
 		return icinga.UNKNOWN, err
@@ -245,6 +244,7 @@ func checkNodeDiskStat(req *Request) (icinga.State, interface{}) {
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
+
 	node, err := kubeClient.Client.CoreV1().Nodes().Get(host.ObjectName, metav1.GetOptions{})
 	if err != nil {
 		return icinga.UNKNOWN, err
@@ -264,7 +264,7 @@ func checkNodeDiskStat(req *Request) (icinga.State, interface{}) {
 	if hostIP == "" {
 		return icinga.UNKNOWN, "Node InternalIP not found"
 	}
-	return checkDiskStat(kubeClient, req, hostIP, "/")
+	return checkDiskStat(kubeClient, req, host.AlertNamespace, hostIP, "/")
 }
 
 func checkPodVolumeStat(req *Request) (icinga.State, interface{}) {
@@ -280,7 +280,9 @@ func checkPodVolumeStat(req *Request) (icinga.State, interface{}) {
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
+
 	pod, err := kubeClient.Client.CoreV1().Pods(host.AlertNamespace).Get(host.ObjectName, metav1.GetOptions{})
+
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
@@ -290,6 +292,7 @@ func checkPodVolumeStat(req *Request) (icinga.State, interface{}) {
 	for _, volume := range pod.Spec.Volumes {
 		if volume.Name == req.VolumeName {
 			if volume.PersistentVolumeClaim != nil {
+
 				claim, err := kubeClient.Client.CoreV1().PersistentVolumeClaims(host.AlertNamespace).Get(volume.PersistentVolumeClaim.ClaimName, metav1.GetOptions{})
 				if err != nil {
 					return icinga.UNKNOWN, err
@@ -315,7 +318,7 @@ func checkPodVolumeStat(req *Request) (icinga.State, interface{}) {
 	}
 
 	path := fmt.Sprintf("/var/lib/kubelet/pods/%v/volumes/%v/%v", pod.UID, volumeSourcePluginName, volumeSourceName)
-	return checkDiskStat(kubeClient, req, pod.Status.HostIP, path)
+	return checkDiskStat(kubeClient, req, host.AlertNamespace, pod.Status.HostIP, path)
 }
 
 func NewCmd() *cobra.Command {
@@ -328,9 +331,7 @@ func NewCmd() *cobra.Command {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "host")
-			if req.SecretName != "" {
-				flags.EnsureRequiredFlags(cmd, "secret_namespace")
-			}
+
 			if req.NodeStat {
 				icinga.Output(checkNodeDiskStat(&req))
 			} else {
@@ -342,8 +343,7 @@ func NewCmd() *cobra.Command {
 
 	c.Flags().StringVarP(&req.Host, "host", "H", "", "Icinga host name")
 	c.Flags().BoolVar(&req.NodeStat, "node_stat", false, "Checking Node disk size")
-	c.Flags().StringVarP(&req.SecretName, "secret_name", "s", "", `Kubernetes secret name`)
-	c.Flags().StringVarP(&req.SecretNamespace, "secret_namespace", "n", "", `Kubernetes secret namespace`)
+	c.Flags().StringVarP(&req.SecretName, "secret", "s", "", `Kubernetes secret name`)
 	c.Flags().StringVarP(&req.VolumeName, "volume_name", "N", "", "Volume name")
 	c.Flags().Float64VarP(&req.Warning, "warning", "w", 75.0, "Warning level value (usage percentage)")
 	c.Flags().Float64VarP(&req.Critical, "critical", "c", 90.0, "Critical level value (usage percentage)")

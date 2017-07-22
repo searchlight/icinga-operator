@@ -26,7 +26,7 @@ type ClusterAlert struct {
 
 	// Status is the current state of the ClusterAlert.
 	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#spec-and-status
-	Status AlertStatus `json:"status,omitempty"`
+	// Status AlertStatus `json:"status,omitempty"`
 }
 
 // ClusterAlertList is a collection of ClusterAlert.
@@ -104,4 +104,8 @@ func (a ClusterAlert) IsValid() (bool, error) {
 		}
 	}
 	return true, nil
+}
+
+func (a ClusterAlert) GetReceivers() []Receiver {
+	return a.Spec.Receivers
 }

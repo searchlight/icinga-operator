@@ -3,105 +3,146 @@ package notifier
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"strings"
 	"time"
 
-	api "github.com/appscode/api/kubernetes/v1beta1"
-	"github.com/appscode/client"
+	"github.com/appscode/envconfig"
+	"github.com/appscode/go-notify"
+	"github.com/appscode/go-notify/unified"
 	"github.com/appscode/go/flags"
-	"github.com/appscode/go/io"
 	"github.com/appscode/log"
 	logs "github.com/appscode/log/golog"
-	"github.com/appscode/searchlight/plugins/notifier/driver/extpoints"
-	_ "github.com/appscode/searchlight/plugins/notifier/driver/hipchat"
-	_ "github.com/appscode/searchlight/plugins/notifier/driver/mailgun"
-	_ "github.com/appscode/searchlight/plugins/notifier/driver/plivo"
-	_ "github.com/appscode/searchlight/plugins/notifier/driver/slack"
-	_ "github.com/appscode/searchlight/plugins/notifier/driver/smtp"
-	_ "github.com/appscode/searchlight/plugins/notifier/driver/twilio"
+	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	clientset "k8s.io/client-go/kubernetes"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
-const (
-	appscodeConfigPath = "/var/run/config/appscode/"
-	appscodeSecretPath = "/var/run/secrets/appscode/"
-
-	notifyVia = "NOTIFY_VIA"
-)
+type Request struct {
+	HostName  string
+	AlertName string
+	Type      string
+	State     string
+	Output    string
+	// The time object is used in icinga to send request. This
+	// indicates detection time from icinga.
+	Time    int64
+	Author  string
+	Comment string
+}
 
 type Secret struct {
 	Namespace string `json:"namespace"`
 	Token     string `json:"token"`
 }
 
-func notifyViaAppsCode(req *api.IncidentNotifyRequest) error {
-	cluster_uid, err := io.ReadFile(appscodeConfigPath + "cluster-uid")
-	if err != nil {
-		return err
+func namespace() string {
+	if ns := os.Getenv("OPERATOR_NAMESPACE"); ns != "" {
+		return ns
 	}
-	req.KubernetesCluster = cluster_uid
-
-	grpc_endpoint, err := io.ReadFile(appscodeConfigPath + "appscode-api-grpc-endpoint")
-	if err != nil {
-		return err
+	if data, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace"); err == nil {
+		if ns := strings.TrimSpace(string(data)); len(ns) > 0 {
+			return ns
+		}
 	}
-
-	apiOptions := client.NewOption(grpc_endpoint)
-
-	var secretData Secret
-	if err := io.ReadFileAs(appscodeSecretPath+"api-token", &secretData); err != nil {
-		return err
-	}
-
-	apiOptions = apiOptions.BearerAuth(secretData.Namespace, secretData.Token)
-	conn, err := client.New(apiOptions)
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
-
-	if _, err := conn.Kubernetes().V1beta1().Incident().Notify(conn.Context(), req); err != nil {
-		return err
-	}
-
-	return nil
+	return apiv1.NamespaceDefault
 }
 
-func sendNotification(req *api.IncidentNotifyRequest) {
-	if err := notifyViaAppsCode(req); err != nil {
-		log.Debug(err)
-	} else {
-		log.Debug("Notification sent via AppsCode")
-		os.Exit(0)
-	}
+func getLoader(client clientset.Interface) (envconfig.LoaderFunc, error) {
 
-	notifyVia := os.Getenv(notifyVia)
-	if notifyVia == "" {
-		log.Errorln("No fallback notifier set")
-		os.Exit(1)
-	}
+	secretName := os.Getenv(icinga.ICINGA_NOTIFIER_SECRET_NAME)
+	secretNamespace := namespace()
 
-	cluster_uid, err := io.ReadFile(appscodeConfigPath + "cluster-name")
+	cfg, err := client.CoreV1().
+		Secrets(secretNamespace).
+		Get(secretName, metav1.GetOptions{})
 	if err != nil {
-		cluster_uid = ""
+		return nil, err
 	}
 
-	req.KubernetesCluster = cluster_uid
-	driver := extpoints.Drivers.Lookup(notifyVia)
-	if driver == nil {
-		log.Errorln("Invalid failback notifier")
-		os.Exit(1)
+	return func(key string) (value string, found bool) {
+		var bytes []byte
+		bytes, found = cfg.Data[key]
+		value = string(bytes)
+		return
+	}, nil
+}
+
+func sendNotification(req *Request) {
+	client, err := util.NewClient()
+	if err != nil {
+		log.Fatalln(err)
 	}
 
-	if err := driver.Notify(req); err != nil {
-		log.Errorln(err)
-	} else {
-		log.Debug(fmt.Sprintf("Notification sent via %s", notifyVia))
+	host, err := icinga.ParseHost(req.HostName)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	alert, err := host.GetAlert(client.ExtClient, req.AlertName)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	loader, err := getLoader(client.Client)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	receivers := alert.GetReceivers()
+
+	for _, receiver := range receivers {
+		if receiver.State != req.State || len(receiver.To) == 0 {
+			continue
+		}
+		notifyVia, err := unified.LoadVia(receiver.Method, loader)
+		if err != nil {
+			log.Errorln(err)
+			continue
+		}
+
+		switch n := notifyVia.(type) {
+		case notify.ByEmail:
+			subject := "Notification"
+			if sub, found := subjectMap[req.Type]; found {
+				subject = sub
+			}
+			var mailBody string
+			mailBody, err = RenderMail(alert, req)
+			if err != nil {
+				break
+			}
+			err = n.To(receiver.To[0], receiver.To[1:]...).WithSubject(subject).WithBody(mailBody).Send()
+		case notify.BySMS:
+			var smsBody string
+			smsBody, err = RenderSMS(alert, req)
+			if err != nil {
+				break
+			}
+			err = n.To(receiver.To[0], receiver.To[1:]...).WithBody(smsBody).Send()
+		case notify.ByChat:
+			var smsBody string
+			smsBody, err = RenderSMS(alert, req)
+			if err != nil {
+				break
+			}
+			err = n.To(receiver.To[0], receiver.To[1:]...).WithBody(smsBody).Send()
+		}
+
+		if err != nil {
+			log.Errorln(err)
+		} else {
+			log.Debug(fmt.Sprintf("Notification sent using %s", receiver.Method))
+		}
 	}
 }
 
 func NewCmd() *cobra.Command {
-	var req api.IncidentNotifyRequest
+	var req Request
 	var eventTime string
 
 	c := &cobra.Command{
@@ -121,8 +162,8 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().StringVarP(&req.KubernetesAlertName, "alert", "A", "", "Kubernetes alert object name")
 	c.Flags().StringVarP(&req.HostName, "host", "H", "", "Icinga host name")
+	c.Flags().StringVarP(&req.AlertName, "alert", "A", "", "Kubernetes alert object name")
 	c.Flags().StringVar(&req.Type, "type", "", "Notification type")
 	c.Flags().StringVar(&req.State, "state", "", "Service state")
 	c.Flags().StringVar(&req.Output, "output", "", "Service output")

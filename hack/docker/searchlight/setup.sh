@@ -36,7 +36,7 @@ build_binary() {
 
 build_docker() {
 	pushd $REPO_ROOT/hack/docker/searchlight
-	cp $REPO_ROOT/dist/searchlight/searchlight-linux-amd64 searchlight
+	cp $REPO_ROOT/dist/searchlight/searchlight-alpine-amd64 searchlight
 	chmod 755 searchlight
 
 	cat >Dockerfile <<EOL
