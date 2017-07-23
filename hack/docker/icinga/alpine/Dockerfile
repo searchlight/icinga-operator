@@ -7,9 +7,19 @@ RUN set -x \
   && apk add --update --no-cache ca-certificates openssl su-exec runit socklog tzdata curl nginx gettext bash openrc \
     icinga2 nagios-plugins jq \
     postgresql \
+    php5 \
+    php5-curl \
     php5-fpm \
+    php5-gd \
+    php5-gmp \
+    php5-intl \
+    php5-json \
+    php5-ldap \
+    php5-mcrypt \
+    php5-pgsql \
   && mkdir -p /run/nginx \
   && chown nginx:nginx -R /run/nginx \
+  && sed -i 's/;date.timezone =/date.timezone ="UTC"/' /etc/php5/php.ini \
   && sed -i 's/\/var\/log\/php-fpm.log/syslog/' /etc/php5/php-fpm.conf \
   && rm -rf /etc/sv /etc/service \
   && echo 'Etc/UTC' > /etc/timezone
