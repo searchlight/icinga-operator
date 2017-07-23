@@ -1,14 +1,15 @@
-FROM appscode/alpine:3.6
+FROM alpine:3.6
 
 ENV DATADIR /srv
 
 # Install Icinga2 ###################################
 RUN set -x \
-  && apk add --update --no-cache ca-certificates openssl curl nginx gettext bash openrc \
-    icinga2 nagios-plugins \
+  && apk add --update --no-cache ca-certificates openssl su-exec runit socklog tzdata curl nginx gettext bash openrc \
+    icinga2 nagios-plugins jq \
     postgresql \
-    jq \
-    php7-fpm
+    php5-fpm \
+  && rm -rf /etc/sv /etc/service \
+  && echo 'Etc/UTC' > /etc/timezone
 
 # copy config templates
 RUN set -x && mkdir -p /scripts/icinga2
@@ -74,6 +75,12 @@ COPY plugins/* /usr/lib/nagios/plugins/
 ADD sv /etc/sv/
 RUN ln -s /etc/sv /etc/service
 
+
+COPY sv /etc/sv/
 COPY runit.sh /runit.sh
+
+ENV TZ     :/etc/localtime
+ENV LANG   en_US.utf8
+
 ENTRYPOINT ["/runit.sh"]
 EXPOSE  60006 5665
