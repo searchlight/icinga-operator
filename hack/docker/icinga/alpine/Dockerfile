@@ -8,6 +8,9 @@ RUN set -x \
     icinga2 nagios-plugins jq \
     postgresql \
     php5-fpm \
+  && mkdir -p /run/nginx \
+  && chown nginx:nginx -R /run/nginx \
+  && sed -i 's/\/var\/log\/php-fpm.log/syslog/' /etc/php5/php-fpm.conf \
   && rm -rf /etc/sv /etc/service \
   && echo 'Etc/UTC' > /etc/timezone
 
