@@ -4,4 +4,5 @@ exec 2> >(logger -s -p daemon.error -t ${PWD##*/})
 source /etc/envvars
 
 echo "Starting nginx process..."
-exec /usr/sbin/nginx -g 'daemon off; master_process on;'
+# exec /usr/sbin/nginx -g 'daemon off; master_process on;'
+exec /usr/sbin/nginx -c /etc/nginx/nginx.conf
