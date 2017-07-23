@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-set -x
 
 mkdir -p $PGDATA /docker-entrypoint-initdb.d
 
@@ -10,7 +9,7 @@ export $(cat $PGDATA/../searchlight/config.ini | xargs)
 
 if [ ! -f /docker-entrypoint-initdb.d/initdb.sh ]; then
     cp $PGDATA/../scripts/initdb.sh /docker-entrypoint-initdb.d/initdb.sh
-	chmod 755 /docker-entrypoint-initdb.d/initdb.sh
+    chmod 755 /docker-entrypoint-initdb.d/initdb.sh
 fi
 
 # exec docker-entrypoint.sh "$@"
