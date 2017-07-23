@@ -72,4 +72,8 @@ fi
 # just block on something, instead of repeated restarts by runit.
 tail -f /scripts/.icinga2
 
+
+# To Debug, run:
+# /usr/sbin/icinga2 daemon -c /etc/icinga2/icinga2.conf
+
 # exec /usr/sbin/icinga2 --no-stack-rlimit -c /etc/icinga2/icinga2.conf

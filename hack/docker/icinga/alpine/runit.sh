@@ -28,7 +28,7 @@ chown -R icinga:icinga /usr/lib/nagios/plugins
 chmod -R 755 /usr/lib/nagios/plugins
 
 # Fix bash interpreter
-sed -i 's/\/sbin\/openrc-run/\/bin\/bash/g' /etc/init.d/icinga2
+# sed -i 's/\/sbin\/openrc-run/\/bin\/bash/g' /etc/init.d/icinga2
 
 mkdir -p $DATADIR/scripts
 cp /usr/share/icinga2-ido-pgsql/schema/pgsql.sql     $DATADIR/scripts/icinga2-ido.schema.sql
@@ -63,7 +63,7 @@ EOF
 EOL
 fi
 
-chmod 755 $DATADIR/scripts/.initdb.sh
+chmod 755 $DATADIR/scripts/*
 # This line will trigger postgres. So, always keep this as the last line for db setup operations.
 mv $DATADIR/scripts/.initdb.sh $DATADIR/scripts/initdb.sh
 
