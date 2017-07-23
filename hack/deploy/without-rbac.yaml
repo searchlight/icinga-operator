@@ -47,7 +47,7 @@ spec:
         - name: api
           containerPort: 5665
           protocol: TCP
-        - name: web
+        - name: ui
           containerPort: 60006
           protocol: TCP
         volumeMounts:
@@ -85,15 +85,15 @@ metadata:
     app: searchlight
 spec:
   ports:
-  - name: web
+  - name: ui
     port: 80
-    targetPort: web
+    targetPort: ui
   - name: api
     port: 5665
     targetPort: api
   - name: http
     port: 56790
-    targetPort: web
+    targetPort: http
   selector:
     app: searchlight
   type: NodePort
