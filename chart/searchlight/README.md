@@ -48,7 +48,7 @@ The following tables lists the configurable parameters of the Searchlight chart 
 | `icinga.tag`          | icinga container image tag                                     | `3.0.0-k8s`            |
 | `icinga.pullPolicy`   | icinga container image pull policy                             | `IfNotPresent`         |
 | `ido.image`           | ido container image                                            | `appscode/postgress`   |
-| `ido.tag`             | ido container image tag                                        | `9.5-v3-db`            |
+| `ido.tag`             | ido container image tag                                        | `9.5-alpine`           |
 | `ido.pullPolicy`      | ido container image pull policy                                | `IfNotPresent`         |
 | `rbac.install`        | install required rbac service account, roles and rolebindings  | `false`                |
 | `rbac.apiVersion`     | rbac api version v1alpha1\|v1beta1                             | `v1beta1`              |
