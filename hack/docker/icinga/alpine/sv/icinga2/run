@@ -70,8 +70,9 @@ EOL
 	touch /scripts/.icinga2
 fi
 # just block on something, instead of repeated restarts by runit.
-tail -f /scripts/.icinga2
+# tail -f /scripts/.icinga2
 
+/usr/sbin/icinga2 daemon -c /etc/icinga2/icinga2.conf
 
 # To Debug, run:
 # /usr/sbin/icinga2 daemon -c /etc/icinga2/icinga2.conf
