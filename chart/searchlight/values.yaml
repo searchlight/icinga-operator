@@ -23,48 +23,31 @@ icinga2web:
   password: changeit
 
 notifier:
-  ## Hipchat
-  ## ref https://github.com/appscode/searchlight/blob/master/docs/notifier/hipchat.md#set-environment-variables
-  # hipchat:
-  #   authToken:
-
-  ## Mailgun
-  ## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/mailgun.md#configure
-  # mailgun:
-  #   domain:
-  #   apiKey:
-  #   publicAPIKey:
-  #   from:
-
-  ## SMTP
-  ## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/smtp.md#configure
-  # smtp:
-  #   host:
-  #   port:
-  #   insecureSkipVerify:
-  #   username:
-  #   password:
-  #   from:
-
-  ## Twilio
-  ## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/twilio.md
-  # twilio:
-  #   accountSid:
-  #   authToken:
-  #   from:
-
-  ## Slack
-  ## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/slack.md
-  # slack:
-  #   authToken:
-  #   channel:
-
-  ## Plivo
-  ## ref: https://github.com/appscode/searchlight/blob/master/docs/notifier/plivo.md
-  # plivo:
-  #   authId:
-  #   authToken:
-  #   from:
+  hipchat:
+    authToken: ''
+  mailgun:
+    domain: ''
+    apiKey: ''
+    publicAPIKey: ''
+    from: ''
+  smtp:
+    host: ''
+    port: ''
+    insecureSkipVerify: ''
+    username: ''
+    password: ''
+    from: ''
+  twilio:
+    accountSid: ''
+    authToken: ''
+    from: ''
+  slack:
+    authToken: ''
+    channel: ''
+  plivo:
+    authId: ''
+    authToken: ''
+    from: ''
 
 ## Install Default RBAC roles and bindings
 rbac:
