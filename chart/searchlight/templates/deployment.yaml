@@ -34,8 +34,8 @@ spec:
         - containerPort: 5665
           name: api
           protocol: TCP
-        - containerPort: 80
-          name: web
+        - containerPort: 60006
+          name: ui
           protocol: TCP
         volumeMounts:
         - mountPath: /var/pv

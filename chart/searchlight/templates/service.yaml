@@ -9,15 +9,14 @@ metadata:
     heritage: "{{ .Release.Service }}"
 spec:
   ports:
-  - name: web
+  - name: ui
     port: 80
-    targetPort: web
+    targetPort: ui
   - name: api
     port: 5665
     targetPort: api
   - name: http
     port: 56790
-    protocol: TCP
     targetPort: http
   selector:
     app: "{{ template "name" . }}"
