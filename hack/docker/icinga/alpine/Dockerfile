@@ -9,6 +9,7 @@ RUN set -x \
     postgresql \
     php5 \
     php5-ctype \
+    php5-gettext \
     php5-curl \
     php5-fpm \
     php5-gd \
@@ -17,7 +18,10 @@ RUN set -x \
     php5-json \
     php5-ldap \
     php5-mcrypt \
+    php5-pdo \
+    php5-pdo_pgsql \
     php5-pgsql \
+    php5-openssl \
   && mkdir -p /run/nginx \
   && chown nginx:nginx -R /run/nginx \
   && sed -i 's/;date.timezone =/date.timezone ="UTC"/' /etc/php5/php.ini \
