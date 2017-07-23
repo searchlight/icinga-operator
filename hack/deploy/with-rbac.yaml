@@ -23,7 +23,8 @@ rules:
   resources:
   - pods
   - nodes
-  verbs: ["get", "list"]
+  - namespaces
+  verbs: ["get", "list", "watch"]
 - apiGroups: [""]
   resources:
   - events
@@ -89,8 +90,6 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /srv
-        - name: tmp
-          mountPath: /tmp
       - name: icinga
         image: appscode/icinga:canary
         imagePullPolicy: Always
@@ -114,8 +113,6 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /srv
-        - name: tmp
-          mountPath: /tmp
       - name: ido
         image: appscode/postgres:9.5-alpine
         imagePullPolicy: IfNotPresent
@@ -129,12 +126,8 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
-        - name: tmp
-          mountPath: /tmp
       volumes:
       - name: data
-        emptyDir: {}
-      - name: tmp
         emptyDir: {}
 ---
 kind: Service

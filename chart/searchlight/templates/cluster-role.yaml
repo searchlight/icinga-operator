@@ -30,7 +30,8 @@ rules:
   resources:
   - pods
   - nodes
-  verbs: ["get", "list"]
+  - namespaces
+  verbs: ["get", "list", "watch"]
 - apiGroups: [""]
   resources:
   - events

@@ -38,8 +38,6 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /srv
-        - name: tmp
-          mountPath: /tmp
       - name: icinga
         image: appscode/icinga:canary
         imagePullPolicy: Always
@@ -63,8 +61,6 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /srv
-        - name: tmp
-          mountPath: /tmp
       - name: ido
         image: appscode/postgres:9.5-alpine
         imagePullPolicy: Always
@@ -78,12 +74,8 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
-        - name: tmp
-          mountPath: /tmp
       volumes:
       - name: data
-        emptyDir: {}
-      - name: tmp
         emptyDir: {}
 ---
 kind: Service
@@ -106,4 +98,3 @@ spec:
     targetPort: http
   selector:
     app: searchlight
-  type: NodePort

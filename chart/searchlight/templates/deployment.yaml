@@ -21,49 +21,52 @@ spec:
         imagePullPolicy: '{{ .Values.operator.pullPolicy }}'
         args:
         - run
-        - --notifier-secret-name={{ template "fullname" . }}
         - --v=3
+        - --config-dir=/srv
+        - --notifier-secret-name={{ template "fullname" . }}
         ports:
-        - containerPort: 56790
-          name: http
+        - name: http
+          containerPort: 56790
           protocol: TCP
+        volumeMounts:
+        - name: data
+          mountPath: /srv
       - name: icinga
         image: {{ .Values.icinga.image }}:{{ .Values.icinga.tag }}
         imagePullPolicy: '{{ .Values.ido.pullPolicy }}'
         ports:
-        - containerPort: 5665
-          name: api
+        - name: api
+          containerPort: 5665
           protocol: TCP
-        - containerPort: 60006
-          name: ui
+        - name: ui
+          containerPort: 60006
           protocol: TCP
+        livenessProbe:
+          httpGet:
+            scheme: HTTPS
+            port: 5665
+            path: /v1/status
+            httpHeaders:
+              - name: Authorization
+                value: "Basic c3RhdHVzdXNlcjpzdGF0dXNwYXNz"
+          initialDelaySeconds: 120
+          periodSeconds: 30
         volumeMounts:
-        - mountPath: /var/pv
-          name: data-volume
-        - mountPath: /var/db-script
-          name: script-volume
-        - mountPath: /srv/searchlight/secrets
-          name: searchlight-icinga
+        - name: data
+          mountPath: /srv
       - name: ido
         image: {{ .Values.ido.image }}:{{ .Values.ido.tag }}
         imagePullPolicy: '{{ .Values.ido.pullPolicy }}'
-        args:
-        - basic
-        - ./setup-db.sh
+        env:
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
         ports:
-        - containerPort: 5432
-          name: ido
+        - name: ido
+          containerPort: 5432
           protocol: TCP
         volumeMounts:
-        - mountPath: /var/pv
-          name: data-volume
-        - mountPath: /var/db-script
-          name: script-volume
+        - name: data
+          mountPath: /var/lib/postgresql/data
       volumes:
-      - emptyDir: {}
-        name: data-volume
-      - emptyDir: {}
-        name: script-volume
-      - name: searchlight-icinga
-        secret:
-          secretName: {{ template "fullname" . }}
+      - name: data
+        emptyDir: {}

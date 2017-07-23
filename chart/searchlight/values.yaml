@@ -10,7 +10,7 @@ operator:
 ido:
   image: appscode/postgres
   pullPolicy: IfNotPresent
-  tag: 9.5-v3-db
+  tag: 9.5-alpine
 
 icinga:
   image: appscode/icinga
