@@ -8,6 +8,7 @@ RUN set -x \
     icinga2 nagios-plugins jq \
     postgresql \
     php5 \
+    php5-ctype \
     php5-curl \
     php5-fpm \
     php5-gd \
