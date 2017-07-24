@@ -4,31 +4,42 @@ ENV DATADIR /srv
 
 # Install Icinga2 ###################################
 RUN set -x \
-  && apk add --update --no-cache ca-certificates openssl su-exec runit socklog tzdata curl nginx gettext bash openrc \
+  && apk add --update --no-cache ca-certificates openssl su-exec runit socklog tzdata curl nginx gettext bash openrc shadow \
     icinga2 nagios-plugins jq \
     postgresql \
-    php5 \
-    php5-ctype \
-    php5-gettext \
-    php5-curl \
-    php5-fpm \
-    php5-gd \
-    php5-gmp \
-    php5-intl \
-    php5-json \
-    php5-ldap \
-    php5-mcrypt \
-    php5-pdo \
-    php5-pdo_pgsql \
-    php5-pgsql \
-    php5-openssl \
+    php7 \
+    php7-common \
+    php7-ctype \
+    php7-dom \
+    php7-fpm \
+    php7-gd \
+    php7-gettext \
+    php7-gmp \
+    php7-imagick \
+    php7-intl \
+    php7-json \
+    php7-ldap \
+    php7-mcrypt \
+    php7-mysqlnd \
+    php7-openssl \
+    php7-pdo \
+    php7-pdo_mysql \
+    php7-pdo_pgsql \
+    php7-pgsql \
+    php7-session \
+    php7-sockets
+
+RUN set -x \
   && mkdir -p /run/nginx \
   && chown nginx:nginx -R /run/nginx \
   && adduser nginx icingacmd \
-  && sed -i 's/;date.timezone =/date.timezone ="UTC"/' /etc/php5/php.ini \
-  && sed -i 's/\/var\/log\/php-fpm.log/syslog/' /etc/php5/php-fpm.conf \
+  && sed -i 's/;date.timezone =/date.timezone ="UTC"/' /etc/php7/php.ini \
+  && sed -i ';s/error_log.*/error_log\ =\ syslog/' /etc/php7/php-fpm.conf \
+  && sed -i 's/;syslog.facility/syslog.facility/' /etc/php7/php-fpm.conf \
+  && sed -i 's/;syslog.ident/syslog.ident/' /etc/php7/php-fpm.conf \
   && rm -rf /etc/sv /etc/service \
-  && echo 'Etc/UTC' > /etc/timezone
+  && echo 'Etc/UTC' > /etc/timezone \
+  && usermod -a -G icingacmd,icinga nginx
 
 # copy config templates
 RUN set -x && mkdir -p /scripts/icinga2
@@ -36,7 +47,7 @@ COPY config/icinga2/ido-pgsql.conf        /scripts/icinga2/ido-pgsql.conf
 
 # Icinga 2 IDO
 # http://docs.icinga.org/icinga2/latest/doc/module/icinga2/chapter/icinga2-features
-RUN set -x && icinga2 feature enable ido-pgsql syslog
+RUN set -x && icinga2 feature enable ido-pgsql syslog checker
 
 # Command Feature
 COPY config/icinga2/appscode-commands.conf /scripts/appscode-commands.conf

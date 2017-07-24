@@ -3,5 +3,5 @@ exec 1> >(logger -s -p daemon.info -t ${PWD##*/})
 exec 2> >(logger -s -p daemon.error -t ${PWD##*/})
 source /etc/envvars
 
-echo "Starting php5-fpm process..."
-exec /usr/bin/php-fpm5 --nodaemonize --fpm-config /etc/php5/php-fpm.conf
+echo "Starting php7-fpm process..."
+exec /usr/sbin/php-fpm7 --nodaemonize --fpm-config /etc/php7/php-fpm.conf
