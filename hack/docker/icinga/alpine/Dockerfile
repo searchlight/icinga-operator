@@ -32,14 +32,13 @@ RUN set -x \
 RUN set -x \
   && mkdir -p /run/nginx \
   && chown nginx:nginx -R /run/nginx \
-  && adduser nginx icingacmd \
+  && sed -i 's/group.*/group\ =\ icingacmd/' /etc/php7/php-fpm.d/www.conf \
   && sed -i 's/;date.timezone =/date.timezone ="UTC"/' /etc/php7/php.ini \
   && sed -i ';s/error_log.*/error_log\ =\ syslog/' /etc/php7/php-fpm.conf \
   && sed -i 's/;syslog.facility/syslog.facility/' /etc/php7/php-fpm.conf \
   && sed -i 's/;syslog.ident/syslog.ident/' /etc/php7/php-fpm.conf \
   && rm -rf /etc/sv /etc/service \
-  && echo 'Etc/UTC' > /etc/timezone \
-  && usermod -a -G icingacmd,icinga nginx
+  && echo 'Etc/UTC' > /etc/timezone
 
 # copy config templates
 RUN set -x && mkdir -p /scripts/icinga2
@@ -99,7 +98,7 @@ RUN set -x \
 COPY config/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Plugins ############################################
-COPY plugins/* /usr/lib/nagios/plugins/
+COPY plugins/* /usr/lib/monitoring-plugins/
 
 # runit ##############################################
 ADD sv /etc/sv/
