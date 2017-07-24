@@ -97,7 +97,7 @@ var _ = BeforeSuite(func() {
 	root = root.SetIcingaClient(icingaClient)
 	root.EventuallyIcingaAPI().Should(Succeed())
 
-	icingawebEndpoint, err := root.GetServiceEndpoint(slService.ObjectMeta, "web")
+	icingawebEndpoint, err := root.GetServiceEndpoint(slService.ObjectMeta, "ui")
 	Expect(err).NotTo(HaveOccurred())
 	fmt.Println()
 	fmt.Println("Icingaweb2:     ", fmt.Sprintf("http://%v/icingaweb2", icingawebEndpoint))
@@ -113,7 +113,7 @@ var _ = BeforeSuite(func() {
 })
 
 var _ = AfterSuite(func() {
-	err := root.DeleteNamespace()
-	Expect(err).NotTo(HaveOccurred())
-	e2e.PrintSeparately("Deleted namespace")
+	//err := root.DeleteNamespace()
+	//Expect(err).NotTo(HaveOccurred())
+	//e2e.PrintSeparately("Deleted namespace")
 })

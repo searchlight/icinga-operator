@@ -36,7 +36,7 @@ build() {
     cd ..
 
     rm -rf plugins; mkdir -p plugins
-    gsutil cp gs://appscode-dev/binaries/hyperalert/1.5.9/hyperalert-linux-amd64 plugins/hyperalert
+    gsutil cp gs://appscode-dev/binaries/hyperalert/$TAG/hyperalert-linux-amd64 plugins/hyperalert
     chmod 755 plugins/*
 
     local cmd="docker build -t appscode/$IMG:$TAG-k8s ."

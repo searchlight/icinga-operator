@@ -242,7 +242,7 @@ var _ = Describe("PodAlert", func() {
 				alert.Spec.Selector = *(rs.Spec.Selector)
 			})
 
-			It("should manage icinga service for Alert.Spec.Selector", shouldManageIcingaServiceForLabelSelector)
+			FIt("should manage icinga service for Alert.Spec.Selector", shouldManageIcingaServiceForLabelSelector)
 			It("should manage icinga service for new Pod", shouldManageIcingaServiceForNewPod)
 			It("should manage icinga service for deleted Pod", shouldManageIcingaServiceForDeletedPod)
 			It("should manage icinga service for Alert.Spec.Selector changed", shouldManageIcingaServiceForLabelChanged)

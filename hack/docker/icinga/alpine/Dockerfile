@@ -24,6 +24,7 @@ RUN set -x \
     php5-openssl \
   && mkdir -p /run/nginx \
   && chown nginx:nginx -R /run/nginx \
+  && adduser nginx icingacmd \
   && sed -i 's/;date.timezone =/date.timezone ="UTC"/' /etc/php5/php.ini \
   && sed -i 's/\/var\/log\/php-fpm.log/syslog/' /etc/php5/php-fpm.conf \
   && rm -rf /etc/sv /etc/service \

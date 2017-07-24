@@ -62,9 +62,9 @@ func (f *Invocation) ServiceSearchlight() *apiv1.Service {
 					TargetPort: intstr.Parse("api"),
 				},
 				{
-					Name:       "web",
+					Name:       "ui",
 					Port:       80,
-					TargetPort: intstr.Parse("web"),
+					TargetPort: intstr.Parse("ui"),
 				},
 			},
 		},
@@ -82,7 +82,7 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 			Containers: []apiv1.Container{
 				{
 					Name:            "icinga",
-					Image:           "aerokite/icinga:e2e-test-k8s",
+					Image:           "aerokite/icinga:template-k8s",
 					ImagePullPolicy: apiv1.PullIfNotPresent,
 					Ports: []apiv1.ContainerPort{
 						{
@@ -91,7 +91,7 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 						},
 						{
 							ContainerPort: 60006,
-							Name:          "web",
+							Name:          "ui",
 						},
 					},
 					LivenessProbe: &apiv1.Probe{
@@ -113,26 +113,20 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 					},
 					VolumeMounts: []apiv1.VolumeMount{
 						{
-							Name:      "data-volume",
-							MountPath: "/var/pv",
-						},
-						{
-							Name:      "script-volume",
-							MountPath: "/var/db-script",
-						},
-						{
-							Name:      "icingaconfig",
+							Name:      "data",
 							MountPath: "/srv",
 						},
 					},
 				},
 				{
 					Name:            "ido",
-					Image:           "appscode/postgres:9.5-v3-db",
+					Image:           "appscode/postgres:9.5-alpine",
 					ImagePullPolicy: apiv1.PullIfNotPresent,
-					Args: []string{
-						"basic",
-						"./setup-db.sh",
+					Env: []apiv1.EnvVar{
+						{
+							Name:  "PGDATA",
+							Value: "/var/lib/postgresql/data/pgdata",
+						},
 					},
 					Ports: []apiv1.ContainerPort{
 						{
@@ -142,25 +136,34 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 					},
 					VolumeMounts: []apiv1.VolumeMount{
 						{
-							Name:      "data-volume",
-							MountPath: "/var/pv",
+							Name:      "data",
+							MountPath: "/var/lib/postgresql/data",
+						},
+					},
+				},
+				{
+					Name:  "busybox",
+					Image: "busybox",
+					Command: []string{
+						"/bin/sh",
+						"-c",
+						"cp -rf /var/searchlight /srv/searchlight && sleep 1d",
+					},
+					VolumeMounts: []apiv1.VolumeMount{
+						{
+							Name:      "data",
+							MountPath: "/srv",
 						},
 						{
-							Name:      "script-volume",
-							MountPath: "/var/db-script",
+							Name:      "icingaconfig",
+							MountPath: "/var/",
 						},
 					},
 				},
 			},
 			Volumes: []apiv1.Volume{
 				{
-					Name: "data-volume",
-					VolumeSource: apiv1.VolumeSource{
-						EmptyDir: &apiv1.EmptyDirVolumeSource{},
-					},
-				},
-				{
-					Name: "script-volume",
+					Name: "data",
 					VolumeSource: apiv1.VolumeSource{
 						EmptyDir: &apiv1.EmptyDirVolumeSource{},
 					},
