@@ -1,6 +1,7 @@
 package icinga
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -189,11 +190,6 @@ func (c *Configurator) generateCertificates() error {
 
 func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, error) {
 	if _, err := os.Stat(c.ConfigFile()); os.IsNotExist(err) {
-		err = c.generateCertificates()
-		if err != nil {
-			return nil, err
-		}
-
 		// auto generate the file
 		cfg := ini.Empty()
 		sec := cfg.Section("")
@@ -205,21 +201,39 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 			sec.NewKey(ICINGA_API_PASSWORD, rand.GeneratePassword())
 		}
 		sec.NewKey(ICINGA_NOTIFIER_SECRET_NAME, c.NotifierSecretName)
-		if v, ok := userInput(ICINGA_CA_CERT); ok {
-			sec.NewKey(ICINGA_CA_CERT, v)
+
+		caCert, caCertOK := userInput(ICINGA_CA_CERT)
+		serverCert, serverCertOK := userInput(ICINGA_SERVER_CERT)
+		serverKey, serverKeyOK := userInput(ICINGA_SERVER_KEY)
+		if caCertOK && serverCertOK && serverKeyOK {
+			err = os.MkdirAll(c.PKIDir(), 0755)
+			if err != nil {
+				return nil, err
+			}
+			err = ioutil.WriteFile(c.certFile("ca"), []byte(caCert), 0755)
+			if err != nil {
+				return nil, err
+			}
+			err = ioutil.WriteFile(c.certFile("icinga"), []byte(serverCert), 0755)
+			if err != nil {
+				return nil, err
+			}
+			err = ioutil.WriteFile(c.keyFile("icinga"), []byte(serverKey), 0644)
+			if err != nil {
+				return nil, err
+			}
+		} else if !caCertOK && !serverCertOK && !serverKeyOK {
+			err = c.generateCertificates()
+			if err != nil {
+				return nil, err
+			}
 		} else {
-			sec.NewKey(ICINGA_CA_CERT, c.certFile("ca"))
+			return nil, errors.New("Only some certs where provided.")
 		}
-		if v, ok := userInput(ICINGA_SERVER_CERT); ok {
-			sec.NewKey(ICINGA_SERVER_CERT, v)
-		} else {
-			sec.NewKey(ICINGA_SERVER_CERT, c.certFile("icinga"))
-		}
-		if v, ok := userInput(ICINGA_SERVER_KEY); ok {
-			sec.NewKey(ICINGA_SERVER_KEY, v)
-		} else {
-			sec.NewKey(ICINGA_SERVER_KEY, c.keyFile("icinga"))
-		}
+		sec.NewKey(ICINGA_CA_CERT, c.certFile("ca"))
+		sec.NewKey(ICINGA_SERVER_CERT, c.certFile("icinga"))
+		sec.NewKey(ICINGA_SERVER_KEY, c.keyFile("icinga"))
+
 		sec.NewKey(ICINGA_IDO_HOST, "127.0.0.1")
 		sec.NewKey(ICINGA_IDO_PORT, "5432")
 		sec.NewKey(ICINGA_IDO_DB, "icingaidodb")
