@@ -25,7 +25,7 @@ spec:
       containers:
       - name: operator
         image: appscode/searchlight:3.0.0
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         args:
         - run
         - --v=3
@@ -40,7 +40,7 @@ spec:
           mountPath: /srv
       - name: icinga
         image: appscode/icinga:3.0.0-k8s
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - name: api
           containerPort: 5665
@@ -63,7 +63,7 @@ spec:
           mountPath: /srv
       - name: ido
         image: appscode/postgres:9.5-alpine
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         env:
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
