@@ -113,7 +113,7 @@ var _ = BeforeSuite(func() {
 })
 
 var _ = AfterSuite(func() {
-	//err := root.DeleteNamespace()
-	//Expect(err).NotTo(HaveOccurred())
-	//e2e.PrintSeparately("Deleted namespace")
+	err := root.DeleteNamespace()
+	Expect(err).NotTo(HaveOccurred())
+	e2e.PrintSeparately("Deleted namespace")
 })
