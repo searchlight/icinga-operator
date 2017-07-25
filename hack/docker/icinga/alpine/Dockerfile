@@ -4,7 +4,7 @@ ENV DATADIR /srv
 
 # Install Icinga2 ###################################
 RUN set -x \
-  && apk add --update --no-cache ca-certificates openssl su-exec runit socklog tzdata curl nginx gettext bash openrc iputils \
+  && apk add --update --no-cache ca-certificates openssl su-exec runit socklog tzdata curl nginx gettext bash openrc shadow iputils \
     icinga2 nagios-plugins jq \
     postgresql \
     php7 \
