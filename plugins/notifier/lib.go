@@ -83,7 +83,7 @@ func sendNotification(req *Request) {
 		if receiver.State != req.State || len(receiver.To) == 0 {
 			continue
 		}
-		notifyVia, err := unified.LoadVia(receiver.NotifyVia, loader)
+		notifyVia, err := unified.LoadVia(receiver.Notifier, loader)
 		if err != nil {
 			log.Errorln(err)
 			continue
@@ -120,7 +120,7 @@ func sendNotification(req *Request) {
 		if err != nil {
 			log.Errorln(err)
 		} else {
-			log.Debug(fmt.Sprintf("Notification sent using %s", receiver.NotifyVia))
+			log.Debug(fmt.Sprintf("Notification sent using %s", receiver.Notifier))
 		}
 	}
 }
