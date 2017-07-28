@@ -48,7 +48,7 @@ spec:
           protocol: TCP
         livenessProbe:
           httpGet:
-            scheme: webS
+            scheme: HTTPS
             port: 5665
             path: /v1/status
             httpHeaders:
