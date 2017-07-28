@@ -39,9 +39,7 @@ func init() {
 }
 
 func main() {
-	rootCmd := hyperalert.NewCmd()
-	// execute commands.
-	if err := rootCmd.Execute(); err != nil {
+	if err := hyperalert.NewCmd().Execute(); err != nil {
 		os.Exit(1)
 	}
 	os.Exit(0)

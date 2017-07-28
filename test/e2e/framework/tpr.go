@@ -1,35 +1,44 @@
 package framework
 
 import (
-	"errors"
-	"time"
-
+	tapi "github.com/appscode/searchlight/api"
 	. "github.com/onsi/gomega"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/labels"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
-func (f *Framework) EventuallyTPR() GomegaAsyncAssertion {
-	label := map[string]string{
-		"app": "searchlight",
-	}
-	return Eventually(
-		func() error {
-			tprList, err := f.kubeClient.ExtensionsV1beta1().ThirdPartyResources().List(
-				metav1.ListOptions{
-					LabelSelector: labels.SelectorFromSet(label).String(),
-				},
-			)
-			if err != nil {
-				return err
-			}
+func (f *Framework) EventuallyClusterAlert() GomegaAsyncAssertion {
+	return Eventually(func() error {
+		_, err := f.kubeClient.ExtensionsV1beta1().ThirdPartyResources().Get(tapi.ResourceNameClusterAlert+"."+tapi.GroupName, metav1.GetOptions{})
+		if err != nil {
+			return err
+		}
+		// TPR group registration has 10 sec delay inside Kuberneteas api server. So, needs the extra check.
+		_, err = f.extClient.ClusterAlerts(apiv1.NamespaceDefault).List(metav1.ListOptions{})
+		return err
+	})
+}
 
-			if len(tprList.Items) != 3 {
-				return errors.New("All ThirdPartyResources are not ready")
-			}
-			return nil
-		},
-		time.Minute*2,
-		time.Second*2,
-	)
+func (f *Framework) EventuallyNodeAlert() GomegaAsyncAssertion {
+	return Eventually(func() error {
+		_, err := f.kubeClient.ExtensionsV1beta1().ThirdPartyResources().Get(tapi.ResourceNameNodeAlert+"."+tapi.GroupName, metav1.GetOptions{})
+		if err != nil {
+			return err
+		}
+		// TPR group registration has 10 sec delay inside Kuberneteas api server. So, needs the extra check.
+		_, err = f.extClient.NodeAlerts(apiv1.NamespaceDefault).List(metav1.ListOptions{})
+		return err
+	})
+}
+
+func (f *Framework) EventuallyPodAlert() GomegaAsyncAssertion {
+	return Eventually(func() error {
+		_, err := f.kubeClient.ExtensionsV1beta1().ThirdPartyResources().Get(tapi.ResourceNamePodAlert+"."+tapi.GroupName, metav1.GetOptions{})
+		if err != nil {
+			return err
+		}
+		// TPR group registration has 10 sec delay inside Kuberneteas api server. So, needs the extra check.
+		_, err = f.extClient.PodAlerts(apiv1.NamespaceDefault).List(metav1.ListOptions{})
+		return err
+	})
 }

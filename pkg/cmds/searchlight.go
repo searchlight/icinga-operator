@@ -23,12 +23,8 @@ func NewCmdSearchlight(version string) *cobra.Command {
 	// ref: https://github.com/kubernetes/kubernetes/issues/17162#issuecomment-225596212
 	flag.CommandLine.Parse([]string{})
 
-	cmd.AddCommand(NewCmdConfigure())
 	cmd.AddCommand(NewCmdRun(version))
+	cmd.AddCommand(NewCmdConfigure())
 	cmd.AddCommand(v.NewCmdVersion())
-
-	if err := cmd.Execute(); err != nil {
-		log.Fatal(err)
-	}
 	return cmd
 }

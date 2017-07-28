@@ -36,7 +36,6 @@ func NewCmdConfigure() *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&mgr.ConfigRoot, "config-dir", "s", mgr.ConfigRoot, "Path to directory containing icinga2 config. This should be an emptyDir inside Kubernetes.")
-	cmd.Flags().StringVar(&mgr.NotifierSecretName, "notifier-secret-name", mgr.NotifierSecretName, "Name of Kubernetes secret used to pass notifier credentials.")
 
 	return cmd
 }

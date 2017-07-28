@@ -23,47 +23,45 @@ import (
 )
 
 const (
-	ICINGA_ADDRESS              = "ICINGA_ADDRESS" // host:port
-	ICINGA_API_USER             = "ICINGA_API_USER"
-	ICINGA_API_PASSWORD         = "ICINGA_API_PASSWORD"
-	ICINGA_CA_CERT              = "ICINGA_CA_CERT"
-	ICINGA_SERVER_KEY           = "ICINGA_SERVER_KEY"
-	ICINGA_SERVER_CERT          = "ICINGA_SERVER_CERT"
-	ICINGA_NOTIFIER_SECRET_NAME = "ICINGA_NOTIFIER_SECRET_NAME"
-	ICINGA_IDO_HOST             = "ICINGA_IDO_HOST"
-	ICINGA_IDO_PORT             = "ICINGA_IDO_PORT"
-	ICINGA_IDO_DB               = "ICINGA_IDO_DB"
-	ICINGA_IDO_USER             = "ICINGA_IDO_USER"
-	ICINGA_IDO_PASSWORD         = "ICINGA_IDO_PASSWORD"
-	ICINGA_WEB_HOST             = "ICINGA_WEB_HOST"
-	ICINGA_WEB_PORT             = "ICINGA_WEB_PORT"
-	ICINGA_WEB_DB               = "ICINGA_WEB_DB"
-	ICINGA_WEB_USER             = "ICINGA_WEB_USER"
-	ICINGA_WEB_PASSWORD         = "ICINGA_WEB_PASSWORD"
-	ICINGA_WEB_UI_PASSWORD      = "ICINGA_WEB_UI_PASSWORD"
+	ICINGA_ADDRESS         = "ICINGA_ADDRESS" // host:port
+	ICINGA_API_USER        = "ICINGA_API_USER"
+	ICINGA_API_PASSWORD    = "ICINGA_API_PASSWORD"
+	ICINGA_CA_CERT         = "ICINGA_CA_CERT"
+	ICINGA_SERVER_KEY      = "ICINGA_SERVER_KEY"
+	ICINGA_SERVER_CERT     = "ICINGA_SERVER_CERT"
+	ICINGA_IDO_HOST        = "ICINGA_IDO_HOST"
+	ICINGA_IDO_PORT        = "ICINGA_IDO_PORT"
+	ICINGA_IDO_DB          = "ICINGA_IDO_DB"
+	ICINGA_IDO_USER        = "ICINGA_IDO_USER"
+	ICINGA_IDO_PASSWORD    = "ICINGA_IDO_PASSWORD"
+	ICINGA_WEB_HOST        = "ICINGA_WEB_HOST"
+	ICINGA_WEB_PORT        = "ICINGA_WEB_PORT"
+	ICINGA_WEB_DB          = "ICINGA_WEB_DB"
+	ICINGA_WEB_USER        = "ICINGA_WEB_USER"
+	ICINGA_WEB_PASSWORD    = "ICINGA_WEB_PASSWORD"
+	ICINGA_WEB_UI_PASSWORD = "ICINGA_WEB_UI_PASSWORD"
 )
 
 var (
 	// Key -> Required (true) | Optional (false)
 	icingaKeys = map[string]bool{
-		ICINGA_ADDRESS:              false,
-		ICINGA_CA_CERT:              true,
-		ICINGA_API_USER:             true,
-		ICINGA_API_PASSWORD:         true,
-		ICINGA_SERVER_KEY:           false,
-		ICINGA_SERVER_CERT:          false,
-		ICINGA_NOTIFIER_SECRET_NAME: false,
-		ICINGA_IDO_HOST:             true,
-		ICINGA_IDO_PORT:             true,
-		ICINGA_IDO_DB:               true,
-		ICINGA_IDO_USER:             true,
-		ICINGA_IDO_PASSWORD:         true,
-		ICINGA_WEB_HOST:             true,
-		ICINGA_WEB_PORT:             true,
-		ICINGA_WEB_DB:               true,
-		ICINGA_WEB_USER:             true,
-		ICINGA_WEB_PASSWORD:         true,
-		ICINGA_WEB_UI_PASSWORD:      true,
+		ICINGA_ADDRESS:         false,
+		ICINGA_CA_CERT:         true,
+		ICINGA_API_USER:        true,
+		ICINGA_API_PASSWORD:    true,
+		ICINGA_SERVER_KEY:      false,
+		ICINGA_SERVER_CERT:     false,
+		ICINGA_IDO_HOST:        true,
+		ICINGA_IDO_PORT:        true,
+		ICINGA_IDO_DB:          true,
+		ICINGA_IDO_USER:        true,
+		ICINGA_IDO_PASSWORD:    true,
+		ICINGA_WEB_HOST:        true,
+		ICINGA_WEB_PORT:        true,
+		ICINGA_WEB_DB:          true,
+		ICINGA_WEB_USER:        true,
+		ICINGA_WEB_PASSWORD:    true,
+		ICINGA_WEB_UI_PASSWORD: true,
 	}
 )
 
@@ -72,9 +70,9 @@ func init() {
 }
 
 type Configurator struct {
-	ConfigRoot         string
-	NotifierSecretName string
-	Expiry             time.Duration
+	ConfigRoot       string
+	IcingaSecretName string
+	Expiry           time.Duration
 }
 
 func (c *Configurator) ConfigFile() string {
@@ -200,7 +198,6 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 		} else {
 			sec.NewKey(ICINGA_API_PASSWORD, rand.GeneratePassword())
 		}
-		sec.NewKey(ICINGA_NOTIFIER_SECRET_NAME, c.NotifierSecretName)
 
 		caCert, caCertOK := userInput(ICINGA_CA_CERT)
 		serverCert, serverCertOK := userInput(ICINGA_SERVER_CERT)

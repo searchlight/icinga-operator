@@ -12,6 +12,7 @@ import (
 	"github.com/appscode/go/flags"
 	"github.com/appscode/log"
 	logs "github.com/appscode/log/golog"
+	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
@@ -37,13 +38,10 @@ type Secret struct {
 	Token     string `json:"token"`
 }
 
-func getLoader(client clientset.Interface) (envconfig.LoaderFunc, error) {
-	secretName := os.Getenv(icinga.ICINGA_NOTIFIER_SECRET_NAME)
-	secretNamespace := util.OperatorNamespace()
-
+func getLoader(client clientset.Interface, alert tapi.Alert) (envconfig.LoaderFunc, error) {
 	cfg, err := client.CoreV1().
-		Secrets(secretNamespace).
-		Get(secretName, metav1.GetOptions{})
+		Secrets(util.OperatorNamespace()).
+		Get(alert.GetNotifierSecretName(), metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +70,7 @@ func sendNotification(req *Request) {
 		log.Fatalln(err)
 	}
 
-	loader, err := getLoader(client.Client)
+	loader, err := getLoader(client.Client, alert)
 	if err != nil {
 		log.Fatalln(err)
 	}

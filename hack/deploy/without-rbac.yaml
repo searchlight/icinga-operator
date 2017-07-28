@@ -30,9 +30,14 @@ spec:
         - run
         - --v=3
         - --config-dir=/srv
-        - --notifier-secret-name=searchlight-operator
+        - --config-secret-name=searchlight-operator
+        - --api.address=:8080
+        - --web.address=:56790
         ports:
-        - name: http
+        - name: api
+          containerPort: 8080
+          protocol: TCP
+        - name: web
           containerPort: 56790
           protocol: TCP
         volumeMounts:
@@ -42,7 +47,7 @@ spec:
         image: appscode/icinga:3.0.0-k8s
         imagePullPolicy: IfNotPresent
         ports:
-        - name: api
+        - name: icinga
           containerPort: 5665
           protocol: TCP
         - name: ui
@@ -91,10 +96,10 @@ spec:
     port: 80
     targetPort: ui
   - name: api
-    port: 5665
+    port: 8080
     targetPort: api
-  - name: http
+  - name: web
     port: 56790
-    targetPort: http
+    targetPort: web
   selector:
     app: searchlight

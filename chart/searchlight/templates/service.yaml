@@ -13,11 +13,11 @@ spec:
     port: 80
     targetPort: ui
   - name: api
-    port: 5665
+    port: 8080
     targetPort: api
-  - name: http
+  - name: web
     port: 56790
-    targetPort: http
+    targetPort: web
   selector:
     app: "{{ template "name" . }}"
     release: "{{ .Release.Name }}"

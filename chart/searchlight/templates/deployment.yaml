@@ -23,9 +23,14 @@ spec:
         - run
         - --v=3
         - --config-dir=/srv
-        - --notifier-secret-name={{ template "fullname" . }}
+        - --config-secret-name={{ template "fullname" . }}
+        - --api.address=:8080
+        - --web.address=:56790
         ports:
-        - name: http
+        - name: api
+          containerPort: 8080
+          protocol: TCP
+        - name: web
           containerPort: 56790
           protocol: TCP
         volumeMounts:
@@ -35,7 +40,7 @@ spec:
         image: {{ .Values.icinga.image }}:{{ .Values.icinga.tag }}
         imagePullPolicy: '{{ .Values.ido.pullPolicy }}'
         ports:
-        - name: api
+        - name: icinga
           containerPort: 5665
           protocol: TCP
         - name: ui

@@ -17,35 +17,35 @@ import (
 )
 
 func NewCmd() *cobra.Command {
-	c := &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "hyperalert",
 		Short: "AppsCode Icinga2 plugin",
-		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Help()
+		Run: func(c *cobra.Command, args []string) {
+			c.Help()
 		},
 	}
 
 	// CheckCluster
-	c.AddCommand(check_component_status.NewCmd())
-	c.AddCommand(check_json_path.NewCmd())
-	c.AddCommand(check_node_exists.NewCmd())
-	c.AddCommand(check_pod_exists.NewCmd())
-	c.AddCommand(check_kube_event.NewCmd())
-	c.AddCommand(check_certificate_expiry.NewCmd())
+	cmd.AddCommand(check_component_status.NewCmd())
+	cmd.AddCommand(check_json_path.NewCmd())
+	cmd.AddCommand(check_node_exists.NewCmd())
+	cmd.AddCommand(check_pod_exists.NewCmd())
+	cmd.AddCommand(check_kube_event.NewCmd())
+	cmd.AddCommand(check_certificate_expiry.NewCmd())
 
 	// CheckNode
-	c.AddCommand(check_node_status.NewCmd())
+	cmd.AddCommand(check_node_status.NewCmd())
 
 	// CheckPod
-	c.AddCommand(check_pod_status.NewCmd())
-	c.AddCommand(check_kube_exec.NewCmd())
+	cmd.AddCommand(check_pod_status.NewCmd())
+	cmd.AddCommand(check_kube_exec.NewCmd())
 
 	// Combined
-	c.AddCommand(check_volume.NewCmd())
-	c.AddCommand(check_influx_query.NewCmd())
+	cmd.AddCommand(check_volume.NewCmd())
+	cmd.AddCommand(check_influx_query.NewCmd())
 
 	// Notifier
-	c.AddCommand(notifier.NewCmd())
+	cmd.AddCommand(notifier.NewCmd())
 
-	return c
+	return cmd
 }

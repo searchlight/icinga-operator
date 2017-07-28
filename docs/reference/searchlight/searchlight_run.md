@@ -14,13 +14,14 @@ searchlight run [flags]
 ### Options
 
 ```
-      --address string                Address to listen on for web interface and telemetry. (default ":56790")
-      --analytics                     Send analytical event to Google Analytics (default true)
-      --config-dir string             Path to directory containing icinga2 config. This should be an emptyDir inside Kubernetes.
-  -h, --help                          help for run
-      --kubeconfig string             Path to kubeconfig file with authorization information (the master location is set by the master flag).
-      --master string                 The address of the Kubernetes API server (overrides any value in kubeconfig)
-      --notifier-secret-name string   Name of Kubernetes secret used to pass notifier credentials. (default "searchlight-operator")
+      --analytics                   Send analytical event to Google Analytics (default true)
+      --api.address string          The address of the Searchlight API Server (default ":8080")
+      --config-dir string           Path to directory containing icinga2 config. This should be an emptyDir inside Kubernetes. (default "/srv")
+      --config-secret-name string   Name of Kubernetes secret used to pass icinga credentials. (default "searchlight-operator")
+  -h, --help                        help for run
+      --kubeconfig string           Path to kubeconfig file with authorization information (the master location is set by the master flag).
+      --master string               The address of the Kubernetes API server (overrides any value in kubeconfig)
+      --web.address string          Address to listen on for web interface and telemetry. (default ":56790")
 ```
 
 ### Options inherited from parent commands
