@@ -106,3 +106,4 @@ spec:
     targetPort: web
   selector:
     app: searchlight
+  type: NodePort
