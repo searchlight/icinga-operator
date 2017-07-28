@@ -1,11 +1,11 @@
 ## hyperalert check_pod_exec
 
-Check exit code of exec command on kubernetes container
+Check exit code of exec command on Kubernetes container
 
 ### Synopsis
 
 
-Check exit code of exec command on kubernetes container
+Check exit code of exec command on Kubernetes container
 
 ```
 hyperalert check_pod_exec [flags]
