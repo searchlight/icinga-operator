@@ -78,10 +78,10 @@ var _ = BeforeSuite(func() {
 	slService := root.Invoke().ServiceSearchlight()
 	err = root.CreateService(slService)
 	Expect(err).NotTo(HaveOccurred())
-	root.EventuallyServiceLoadBalancer(slService.ObjectMeta, "api").Should(BeTrue())
+	root.EventuallyServiceLoadBalancer(slService.ObjectMeta, "icinga").Should(BeTrue())
 
 	// Get Icinga Ingress Hostname
-	endpoint, err := root.GetServiceEndpoint(slService.ObjectMeta, "api")
+	endpoint, err := root.GetServiceEndpoint(slService.ObjectMeta, "icinga")
 	Expect(err).NotTo(HaveOccurred())
 
 	// Icinga Config
@@ -105,11 +105,13 @@ var _ = BeforeSuite(func() {
 	fmt.Println()
 
 	// Controller
-	ctrl = controller.New(kubeClient, extClient, icingaClient)
+	ctrl = controller.New(kubeClient, extClient, icingaClient, controller.Options{})
 	err = ctrl.Setup()
 	Expect(err).NotTo(HaveOccurred())
 	ctrl.Run()
-	root.EventuallyTPR().Should(Succeed())
+	root.EventuallyClusterAlert().Should(Succeed())
+	root.EventuallyNodeAlert().Should(Succeed())
+	root.EventuallyPodAlert().Should(Succeed())
 })
 
 var _ = AfterSuite(func() {
