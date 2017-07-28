@@ -15,8 +15,8 @@ searchlight configure [flags]
 
 ```
   -s, --config-dir string           Path to directory containing icinga2 config. This should be an emptyDir inside Kubernetes.
+      --config-secret-name string   Name of Kubernetes secret used to pass icinga credentials.
   -h, --help                        help for configure
-      --icinga-secret-name string   Name of Kubernetes secret used to pass icinga credentials.
 ```
 
 ### Options inherited from parent commands

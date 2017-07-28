@@ -24,7 +24,7 @@ type Options struct {
 	KubeConfig string
 
 	ConfigRoot       string
-	IcingaSecretName string
+	ConfigSecretName string
 	APIAddress       string
 	WebAddress       string
 

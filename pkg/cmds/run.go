@@ -26,7 +26,7 @@ var (
 func NewCmdRun(version string) *cobra.Command {
 	opt := controller.Options{
 		ConfigRoot:       "/srv",
-		IcingaSecretName: "searchlight-operator",
+		ConfigSecretName: "searchlight-operator",
 		APIAddress:       ":8080",
 		WebAddress:       ":56790",
 		EnableAnalytics:  true,
@@ -51,7 +51,7 @@ func NewCmdRun(version string) *cobra.Command {
 	cmd.Flags().StringVar(&opt.Master, "master", opt.Master, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
 	cmd.Flags().StringVar(&opt.KubeConfig, "kubeconfig", opt.KubeConfig, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
 	cmd.Flags().StringVar(&opt.ConfigRoot, "config-dir", opt.ConfigRoot, "Path to directory containing icinga2 config. This should be an emptyDir inside Kubernetes.")
-	cmd.Flags().StringVar(&opt.IcingaSecretName, "icinga-secret-name", opt.IcingaSecretName, "Name of Kubernetes secret used to pass icinga credentials.")
+	cmd.Flags().StringVar(&opt.ConfigSecretName, "config-secret-name", opt.ConfigSecretName, "Name of Kubernetes secret used to pass icinga credentials.")
 	cmd.Flags().StringVar(&opt.APIAddress, "api.address", opt.APIAddress, "The address of the Searchlight API Server")
 	cmd.Flags().StringVar(&opt.WebAddress, "web.address", opt.WebAddress, "Address to listen on for web interface and telemetry.")
 	cmd.Flags().BoolVar(&opt.EnableAnalytics, "analytics", opt.EnableAnalytics, "Send analytical event to Google Analytics")
@@ -68,14 +68,14 @@ func run(opt controller.Options) {
 	kubeClient = clientset.NewForConfigOrDie(config)
 	extClient = tcs.NewForConfigOrDie(config)
 
-	secret, err := kubeClient.CoreV1().Secrets(util.OperatorNamespace()).Get(opt.IcingaSecretName, metav1.GetOptions{})
+	secret, err := kubeClient.CoreV1().Secrets(util.OperatorNamespace()).Get(opt.ConfigSecretName, metav1.GetOptions{})
 	if err != nil {
 		log.Fatalf("Failed to load secret: %s", err)
 	}
 
 	mgr := &icinga.Configurator{
 		ConfigRoot:       opt.ConfigRoot,
-		IcingaSecretName: opt.IcingaSecretName,
+		IcingaSecretName: opt.ConfigSecretName,
 		Expiry:           10 * 365 * 24 * time.Hour,
 	}
 	cfg, err := mgr.LoadConfig(func(key string) (value string, found bool) {
