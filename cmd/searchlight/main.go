@@ -6,6 +6,7 @@ import (
 
 	logs "github.com/appscode/log/golog"
 	"github.com/appscode/searchlight/pkg/cmds"
+	"os"
 )
 
 func main() {
@@ -15,4 +16,5 @@ func main() {
 	if err := cmds.NewCmdSearchlight(Version).Execute(); err != nil {
 		log.Fatal(err)
 	}
+	os.Exit(0)
 }
