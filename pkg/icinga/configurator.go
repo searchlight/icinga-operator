@@ -29,7 +29,6 @@ const (
 	ICINGA_CA_CERT              = "ICINGA_CA_CERT"
 	ICINGA_SERVER_KEY           = "ICINGA_SERVER_KEY"
 	ICINGA_SERVER_CERT          = "ICINGA_SERVER_CERT"
-	ICINGA_NOTIFIER_SECRET_NAME = "ICINGA_NOTIFIER_SECRET_NAME"
 	ICINGA_IDO_HOST             = "ICINGA_IDO_HOST"
 	ICINGA_IDO_PORT             = "ICINGA_IDO_PORT"
 	ICINGA_IDO_DB               = "ICINGA_IDO_DB"
@@ -52,7 +51,6 @@ var (
 		ICINGA_API_PASSWORD:         true,
 		ICINGA_SERVER_KEY:           false,
 		ICINGA_SERVER_CERT:          false,
-		ICINGA_NOTIFIER_SECRET_NAME: false,
 		ICINGA_IDO_HOST:             true,
 		ICINGA_IDO_PORT:             true,
 		ICINGA_IDO_DB:               true,
@@ -72,9 +70,9 @@ func init() {
 }
 
 type Configurator struct {
-	ConfigRoot         string
-	NotifierSecretName string
-	Expiry             time.Duration
+	ConfigRoot       string
+	IcingaSecretName string
+	Expiry           time.Duration
 }
 
 func (c *Configurator) ConfigFile() string {
@@ -200,7 +198,6 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 		} else {
 			sec.NewKey(ICINGA_API_PASSWORD, rand.GeneratePassword())
 		}
-		sec.NewKey(ICINGA_NOTIFIER_SECRET_NAME, c.NotifierSecretName)
 
 		caCert, caCertOK := userInput(ICINGA_CA_CERT)
 		serverCert, serverCertOK := userInput(ICINGA_SERVER_CERT)

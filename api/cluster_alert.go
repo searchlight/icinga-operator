@@ -51,6 +51,9 @@ type ClusterAlertSpec struct {
 	// How frequently notifications will be send
 	AlertInterval metav1.Duration `json:"alertInterval,omitempty"`
 
+	// Secret containing notifier credentials
+	NotifierSecretName string `json:"notifierSecretName,omitempty"`
+
 	// NotifierParams contains information to send notifications for Incident
 	// State, UserUid, Method
 	Receivers []Receiver `json:"receivers,omitempty"`
@@ -104,6 +107,10 @@ func (a ClusterAlert) IsValid() (bool, error) {
 		}
 	}
 	return true, nil
+}
+
+func (a ClusterAlert) GetNotifierSecretName() string {
+	return a.Spec.NotifierSecretName
 }
 
 func (a ClusterAlert) GetReceivers() []Receiver {

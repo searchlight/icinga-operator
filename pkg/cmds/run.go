@@ -23,25 +23,22 @@ import (
 )
 
 var (
-	masterURL       string
-	kubeconfigPath  string
-	address         string = ":56790"
-	enableAnalytics bool   = true
-
 	kubeClient clientset.Interface
 	extClient  tcs.ExtensionInterface
 )
 
 func NewCmdRun(version string) *cobra.Command {
-	mgr := &icinga.Configurator{
-		NotifierSecretName: "searchlight-operator",
-		Expiry:             10 * 365 * 24 * time.Hour,
+	opt := controller.Options{
+		IcingaSecretName: "searchlight-operator",
+		APIAddress:        ":8080",
+		WebAddress:        ":56790",
+		EnableAnalytics:   true,
 	}
 	cmd := &cobra.Command{
 		Use:   "run",
 		Short: "Run operator",
 		PreRun: func(cmd *cobra.Command, args []string) {
-			if enableAnalytics {
+			if opt.EnableAnalytics {
 				analytics.Enable()
 			}
 			analytics.SendEvent("operator", "started", version)
@@ -50,22 +47,23 @@ func NewCmdRun(version string) *cobra.Command {
 			analytics.SendEvent("operator", "stopped", version)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			run(mgr)
+			run(opt)
 		},
 	}
 
-	cmd.Flags().StringVar(&masterURL, "master", masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
-	cmd.Flags().StringVar(&kubeconfigPath, "kubeconfig", kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
-	cmd.Flags().StringVar(&mgr.ConfigRoot, "config-dir", mgr.ConfigRoot, "Path to directory containing icinga2 config. This should be an emptyDir inside Kubernetes.")
-	cmd.Flags().StringVar(&mgr.NotifierSecretName, "notifier-secret-name", mgr.NotifierSecretName, "Name of Kubernetes secret used to pass notifier credentials.")
-	cmd.Flags().StringVar(&address, "address", address, "Address to listen on for web interface and telemetry.")
-	cmd.Flags().BoolVar(&enableAnalytics, "analytics", enableAnalytics, "Send analytical event to Google Analytics")
+	cmd.Flags().StringVar(&opt.Master, "master", opt.Master, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
+	cmd.Flags().StringVar(&opt.KubeConfig, "kubeconfig", opt.KubeConfig, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
+	cmd.Flags().StringVar(&opt.ConfigRoot, "config-dir", opt.ConfigRoot, "Path to directory containing icinga2 config. This should be an emptyDir inside Kubernetes.")
+	cmd.Flags().StringVar(&opt.IcingaSecretName, "icinga-secret-name", opt.IcingaSecretName, "Name of Kubernetes secret used to pass icinga credentials.")
+	cmd.Flags().StringVar(&opt.APIAddress, "address", opt.APIAddress, "The address of the Searchlight API Server")
+	cmd.Flags().StringVar(&opt.WebAddress, "address", opt.WebAddress, "Address to listen on for web interface and telemetry.")
+	cmd.Flags().BoolVar(&opt.EnableAnalytics, "analytics", opt.EnableAnalytics, "Send analytical event to Google Analytics")
 
 	return cmd
 }
 
-func run(mgr *icinga.Configurator) {
-	config, err := clientcmd.BuildConfigFromFlags(masterURL, kubeconfigPath)
+func run(opt controller.Options) {
+	config, err := clientcmd.BuildConfigFromFlags(opt.Master, opt.KubeConfig)
 	if err != nil {
 		log.Fatalf("Could not get Kubernetes config: %s", err)
 	}
@@ -73,10 +71,21 @@ func run(mgr *icinga.Configurator) {
 	kubeClient = clientset.NewForConfigOrDie(config)
 	extClient = tcs.NewForConfigOrDie(config)
 
-	secret, err := kubeClient.CoreV1().Secrets(util.OperatorNamespace()).Get(mgr.NotifierSecretName, metav1.GetOptions{})
+	secret, err := kubeClient.CoreV1().Secrets(util.OperatorNamespace()).Get(opt.IcingaSecretName, metav1.GetOptions{})
 	if err != nil {
 		log.Fatalf("Failed to load secret: %s", err)
 	}
+
+	mgr := &icinga.Configurator{
+		IcingaSecretName: "searchlight-operator",
+		Expiry:           10 * 365 * 24 * time.Hour,
+	}
+
+
+
+
+
+
 	cfg, err := mgr.LoadConfig(func(key string) (value string, found bool) {
 		var bytes []byte
 		bytes, found = secret.Data[key]
@@ -116,6 +125,13 @@ func run(mgr *icinga.Configurator) {
 	m.Post(ackPattern, http.HandlerFunc(ackHandler))
 
 	http.Handle("/", m)
-	log.Infoln("Listening on", address)
-	log.Fatal(http.ListenAndServe(address, nil))
+	log.Infoln("Listening on", apiAddress)
+	log.Fatal(http.ListenAndServe(apiAddress, nil))
+
+
+	m := pat.New()
+	m.Get("/metrics", promhttp.Handler())
+	http.Handle("/", m)
+	log.Infoln("Listening on", webAddress)
+	log.Fatal(http.ListenAndServe(webAddress, nil))
 }
