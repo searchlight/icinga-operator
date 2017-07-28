@@ -14,11 +14,11 @@ APPSCODE_ENV=prod ./hack/make.py push
 ./hack/docker/searchlight/setup.sh
 APPSCODE_ENV=prod ./hack/docker/searchlight/setup.sh release
 
-./hack/docker/postgres/build.sh
-APPSCODE_ENV=prod ./hack/docker/postgres/build.sh release
-
 ./hack/docker/icinga/alpine/build.sh
 APPSCODE_ENV=prod ./hack/docker/icinga/alpine/build.sh release
 
 # ./hack/docker/icinga/alpine/setup.sh
 # ./hack/docker/icinga/alpine/setup.sh release
+
+# ./hack/docker/postgres/build.sh
+# APPSCODE_ENV=prod ./hack/docker/postgres/build.sh release
