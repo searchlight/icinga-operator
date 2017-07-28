@@ -265,13 +265,13 @@ var _ = Describe("PodAlert", func() {
 		})
 
 		// Check "volume"
-		Context("check_volume", func() {
+		Context("check_pod_volume", func() {
 			AfterEach(func() {
 				go f.EventuallyDeleteStatefulSet(ss.ObjectMeta).Should(BeTrue())
 			})
 			BeforeEach(func() {
 				if strings.ToLower(f.Provider) == "minikube" {
-					skippingMessage = `"check_volume" will not work in minikube"`
+					skippingMessage = `"check_pod_volume" will not work in minikube"`
 				}
 
 				ss.Spec.Template.Spec.Containers[0].Command = []string{
@@ -279,7 +279,7 @@ var _ = Describe("PodAlert", func() {
 					"-c",
 					"dd if=/dev/zero of=/source/data/data bs=1024 count=52500 && sleep 1d",
 				}
-				alert.Spec.Check = tapi.CheckVolume
+				alert.Spec.Check = tapi.CheckPodVolume
 				alert.Spec.Selector = *(ss.Spec.Selector)
 				alert.Spec.Vars["volume_name"] = framework.TestSourceDataVolumeName
 			})

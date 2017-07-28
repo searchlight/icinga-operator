@@ -377,7 +377,7 @@
     },
     {
       "description": "This is used to check Node Disk stat.",
-      "name": "node_disk",
+      "name": "node_volume",
       "envs": [
         "onebox",
         "prod",
@@ -430,7 +430,7 @@
     },
     {
       "description": "This is used to check Pod volume stat.",
-      "name": "volume",
+      "name": "pod_volume",
       "envs": [
         "onebox",
         "prod",

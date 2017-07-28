@@ -61,13 +61,13 @@ var _ = Describe("NodeAlert", func() {
 			It("should manage icinga service for Ok State", shouldManageIcingaService)
 		})
 
-		// Check "node_disk"
-		Context("node_disk", func() {
+		// Check "node_volume"
+		Context("node_volume", func() {
 			BeforeEach(func() {
 				if strings.ToLower(f.Provider) == "minikube" {
-					skippingMessage = `"node_disk will not work in minikube"`
+					skippingMessage = `"node_volume will not work in minikube"`
 				}
-				alert.Spec.Check = tapi.CheckNodeDisk
+				alert.Spec.Check = tapi.CheckNodeVolume
 			})
 
 			Context("State OK", func() {

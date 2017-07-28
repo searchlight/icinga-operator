@@ -1,4 +1,4 @@
-### CheckCommand `node_disk`
+### CheckCommand `node_volume`
 
 This is used to check Node Disk stat.
 
@@ -50,7 +50,7 @@ metadata:
   labels:
     alert.appscode.com/objectType: cluster
 spec:
-  check: node_disk
+  check: node_volume
   alertInterval: 2m
   checkInterval: 1m
   receivers:

@@ -74,7 +74,7 @@ We currently supports following CheckCommands:
 * [pod_exists](check_pod_exists.md) - To check Kubernetes pod existence.
 * [pod_status](check_pod_status.md) - To check Kubernetes pod status.
 * [prometheus_metric](check_prometheus_metric.md) - To check Prometheus query result.
-* [node_disk](check_node_disk.md) - To check Node Disk stat.
-* [volume](check_volume.md) - To check Pod volume stat.
+* [node_volume](check_node_volume.md) - To check Node Disk stat.
+* [volume](check_pod_volume.md) - To check Pod volume stat.
 * [kube_event](check_kube_event.md) - To check Kubernetes events for all Warning TYPE happened in last 'c' seconds.
 * [kube_exec](check_kube_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL

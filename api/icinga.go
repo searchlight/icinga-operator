@@ -12,7 +12,7 @@ type CheckPod string
 const (
 	CheckPodInfluxQuery CheckPod = "influx_query"
 	CheckPodStatus      CheckPod = "pod_status"
-	CheckVolume         CheckPod = "volume"
+	CheckPodVolume      CheckPod = "pod_volume"
 	CheckPodExec        CheckPod = "kube_exec"
 )
 
@@ -33,7 +33,7 @@ type CheckNode string
 
 const (
 	CheckNodeInfluxQuery CheckNode = "influx_query"
-	CheckNodeDisk        CheckNode = "node_disk"
+	CheckNodeVolume      CheckNode = "node_volume"
 	CheckNodeStatus      CheckNode = "node_status"
 )
 
@@ -113,12 +113,12 @@ func init() {
 		}
 		if c.Name == string(CheckPodInfluxQuery) ||
 			c.Name == string(CheckPodStatus) ||
-			c.Name == string(CheckVolume) ||
+			c.Name == string(CheckPodVolume) ||
 			c.Name == string(CheckPodExec) {
 			PodCommands[CheckPod(c.Name)] = c
 		}
 		if c.Name == string(CheckNodeInfluxQuery) ||
-			c.Name == string(CheckNodeDisk) ||
+			c.Name == string(CheckNodeVolume) ||
 			c.Name == string(CheckNodeStatus) {
 			NodeCommands[CheckNode(c.Name)] = c
 		}
