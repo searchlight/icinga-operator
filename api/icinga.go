@@ -13,7 +13,7 @@ const (
 	CheckPodInfluxQuery CheckPod = "influx_query"
 	CheckPodStatus      CheckPod = "pod_status"
 	CheckPodVolume      CheckPod = "pod_volume"
-	CheckPodExec        CheckPod = "kube_exec"
+	CheckPodExec        CheckPod = "pod_exec"
 )
 
 func (c CheckPod) IsValid() bool {

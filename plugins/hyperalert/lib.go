@@ -6,7 +6,7 @@ import (
 	"github.com/appscode/searchlight/plugins/check_influx_query"
 	"github.com/appscode/searchlight/plugins/check_json_path"
 	"github.com/appscode/searchlight/plugins/check_kube_event"
-	"github.com/appscode/searchlight/plugins/check_kube_exec"
+	"github.com/appscode/searchlight/plugins/check_pod_exec"
 	"github.com/appscode/searchlight/plugins/check_node_exists"
 	"github.com/appscode/searchlight/plugins/check_node_status"
 	"github.com/appscode/searchlight/plugins/check_pod_exists"
@@ -38,7 +38,7 @@ func NewCmd() *cobra.Command {
 
 	// CheckPod
 	cmd.AddCommand(check_pod_status.NewCmd())
-	cmd.AddCommand(check_kube_exec.NewCmd())
+	cmd.AddCommand(check_pod_exec.NewCmd())
 
 	// Combined
 	cmd.AddCommand(check_volume.NewCmd())

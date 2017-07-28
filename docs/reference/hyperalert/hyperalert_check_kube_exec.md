@@ -1,4 +1,4 @@
-## hyperalert check_kube_exec
+## hyperalert check_pod_exec
 
 Check exit code of exec command on kubernetes container
 
@@ -8,7 +8,7 @@ Check exit code of exec command on kubernetes container
 Check exit code of exec command on kubernetes container
 
 ```
-hyperalert check_kube_exec [flags]
+hyperalert check_pod_exec [flags]
 ```
 
 ### Options
@@ -17,7 +17,7 @@ hyperalert check_kube_exec [flags]
   -a, --argv string        Arguments for exec command. [Format: 'arg; arg; arg']
   -c, --cmd string         Exec command. [Default: /bin/sh] (default "/bin/sh")
   -C, --container string   Container name in specified pod
-  -h, --help               help for check_kube_exec
+  -h, --help               help for check_pod_exec
   -H, --host string        Icinga host name
 ```
 

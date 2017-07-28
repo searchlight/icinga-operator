@@ -345,8 +345,8 @@ var _ = Describe("PodAlert", func() {
 
 		})
 
-		// Check "kube_exec"
-		Context("check_kube_exec", func() {
+		// Check "pod_exec"
+		Context("check_pod_exec", func() {
 			BeforeEach(func() {
 				alert.Spec.Check = tapi.CheckPodExec
 				alert.Spec.Selector = *(rs.Spec.Selector)

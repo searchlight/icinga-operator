@@ -1,4 +1,4 @@
-### CheckCommand `kube_exec`
+### CheckCommand `pod_exec`
 
 This is used to check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL.
 
@@ -29,7 +29,7 @@ This is used to check Kubernetes exec command. Returns OK if exit code is zero, 
 #### Example
 ###### Command
 ```console
-hyperalert check_kube_exec --host='monitoring-influxdb-0.12.2-n3lo2@kube-system' --argv="ls /var/influxdb/token.ini"
+hyperalert check_pod_exec --host='monitoring-influxdb-0.12.2-n3lo2@kube-system' --argv="ls /var/influxdb/token.ini"
 # --host are provided by Icinga2
 ```
 ###### Output
@@ -48,7 +48,7 @@ metadata:
     alert.appscode.com/objectType: pods
     alert.appscode.com/objectName: monitoring-influxdb-0.12.2-n3lo2
 spec:
-  check: kube_exec
+  check: pod_exec
   alertInterval: 2m
   checkInterval: 1m
   receivers:

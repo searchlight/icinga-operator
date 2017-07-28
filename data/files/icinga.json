@@ -524,7 +524,7 @@
     },
     {
       "description": "This is used to check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL",
-      "name": "kube_exec",
+      "name": "pod_exec",
       "envs": [
         "onebox",
         "prod",

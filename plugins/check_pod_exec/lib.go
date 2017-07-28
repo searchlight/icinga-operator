@@ -1,4 +1,4 @@
-package check_kube_exec
+package check_pod_exec
 
 import (
 	"fmt"
@@ -124,8 +124,8 @@ func NewCmd() *cobra.Command {
 	var req Request
 	var icingaHost string
 	c := &cobra.Command{
-		Use:     "check_kube_exec",
-		Short:   "Check exit code of exec command on kubernetes container",
+		Use:     "check_pod_exec",
+		Short:   "Check exit code of exec command on Kubernetes container",
 		Example: "",
 
 		Run: func(cmd *cobra.Command, args []string) {

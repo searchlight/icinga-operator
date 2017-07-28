@@ -15,8 +15,8 @@
       <testcase name="PodAlert Test check_volume State Critical should manage icinga service for Critical State" classname="e2e Suite" time="0.00876962">
           <skipped></skipped>
       </testcase>
-      <testcase name="PodAlert Test check_kube_exec exit 0 should manage icinga service for Ok State" classname="e2e Suite" time="20.223369707"></testcase>
-      <testcase name="PodAlert Test check_kube_exec exit 2 should handle icinga service for Critical State" classname="e2e Suite" time="45.265581727"></testcase>
+      <testcase name="PodAlert Test check_pod_exec exit 0 should manage icinga service for Ok State" classname="e2e Suite" time="20.223369707"></testcase>
+      <testcase name="PodAlert Test check_pod_exec exit 2 should handle icinga service for Critical State" classname="e2e Suite" time="45.265581727"></testcase>
       <testcase name="ClusterAlert Test check_component_status should manage icinga service for Ok State" classname="e2e Suite" time="15.233642566"></testcase>
       <testcase name="ClusterAlert Test check_node_exists State OK should manage icinga service for Ok State" classname="e2e Suite" time="10.151802602"></testcase>
       <testcase name="ClusterAlert Test check_node_exists State Critical should manage icinga service for Critical State" classname="e2e Suite" time="40.364765453"></testcase>
