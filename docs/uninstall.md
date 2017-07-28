@@ -11,8 +11,7 @@ deployment "searchlight-operator" deleted
 + kubectl delete service -l app=searchlight -n kube-system
 service "searchlight-operator" deleted
 + kubectl delete secret -l app=searchlight -n kube-system
-secret "azure-secret" deleted
-secret "searchlight-config" deleted
+secret "searchlight-operator" deleted
 + kubectl delete serviceaccount -l app=searchlight -n kube-system
 No resources found
 + kubectl delete clusterrolebindings -l app=searchlight -n kube-system

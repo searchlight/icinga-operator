@@ -109,3 +109,74 @@ Once the operator pods are running, you can cancel the above command by typing `
 
 ## Update Cluster Config
 If you would like to update cluster config, update the `searchlight-config` Secret and restart Searchlight operator pod(s).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$ kubectl apply -f ./hack/deploy/without-rbac.yaml
+secret "searchlight-operator" created
+deployment "searchlight-operator" created
+service "searchlight-operator" created
+
+$ kubectl get pods -n kube-system -w
+NAME                          READY     STATUS    RESTARTS   AGE
+kube-addon-manager-minikube   1/1       Running   0          14m
+kube-dns-1301475494-p8pcr   3/3       Running   0         14m
+kubernetes-dashboard-psl27   1/1       Running   0         14m
+searchlight-operator-1987091405-ghj5b   0/3       ContainerCreating   0         5s
+searchlight-operator-1987091405-ghj5b   3/3       Running   0         43s
+^C⏎
+
+$ kubectl get pods -n kube-system
+NAME                                    READY     STATUS    RESTARTS   AGE
+kube-addon-manager-minikube             1/1       Running   0          15m
+kube-dns-1301475494-p8pcr               3/3       Running   0          15m
+kubernetes-dashboard-psl27              1/1       Running   0          15m
+searchlight-operator-1987091405-ghj5b   3/3       Running   0          1m
+
+$ kubectl port-forward searchlight-operator-1987091405-ghj5b -n kube-system 60006
+Forwarding from 127.0.0.1:60006 -> 60006
+E0728 04:07:28.237822   10898 portforward.go:212] Unable to create listener: Error listen tcp6 [::1]:60006: bind: cannot assign requested address
+Handling connection for 60006
+Handling connection for 60006
+^C⏎
+
+Open http://127.0.0.1:60006
