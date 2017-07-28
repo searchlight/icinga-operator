@@ -2,21 +2,7 @@
 
 # Installation Guide
 
-[![Install Searchlight](https://img.youtube.com/vi/Po4yXrQuHtQ/0.jpg)](https://www.youtube-nocookie.com/embed/Po4yXrQuHtQ?rel=0)
-
-
-
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Po4yXrQuHtQ?rel=0" frameborder="0" allowfullscreen></iframe>
-
-
-
-<video src="https://www.youtube-nocookie.com/embed/CuQ6qvVBb0g?rel=0&amp;showinfo=0" width="320" height="200" controls preload></video>
-
-
-
-<iframe width="100%" height="400" src="https://www.youtube-nocookie.com/embed/CuQ6qvVBb0g?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
-
-<iframe  title="YouTube video player" width="480" height="390" src="http://www.youtube.com/watch?v=TheVideoID?autoplay=1" frameborder="0" allowfullscreen></iframe>
+[![Install Searchlight](https://img.youtube.com/vi/Po4yXrQuHtQ/0.jpg)](https://www.youtube-nocookie.com/embed/Po4yXrQuHtQ)
 
 ## Create Cluster Config
 Before you can install Searchlight, you need a cluster config for Searchlight. Cluster config is defined in YAML format. You find an example config in [./hack/deploy/config.yaml](/hack/deploy/config.yaml).
