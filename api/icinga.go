@@ -53,18 +53,19 @@ func ParseCheckNode(s string) (*CheckNode, error) {
 type CheckCluster string
 
 const (
-	CheckHttp              CheckCluster = "any_http"
-	CheckComponentStatus   CheckCluster = "component_status"
-	CheckJsonPath          CheckCluster = "json_path"
-	CheckNodeExists        CheckCluster = "node_exists"
-	CheckPodExists         CheckCluster = "pod_exists"
-	CheckClusterEvent      CheckCluster = "kube_event"
-	CheckCertificateExpiry CheckCluster = "certificate_expiry"
-	CheckHelloIcinga       CheckCluster = "hello_icinga"
-	CheckDIG               CheckCluster = "dig"
-	CheckDNS               CheckCluster = "dns"
-	CheckDummy             CheckCluster = "dummy"
-	CheckICMP              CheckCluster = "icmp"
+	CheckComponentStatus CheckCluster = "component_status"
+	CheckJsonPath        CheckCluster = "json_path"
+	CheckNodeExists      CheckCluster = "node_exists"
+	CheckPodExists       CheckCluster = "pod_exists"
+	CheckClusterEvent    CheckCluster = "kube_event"
+	CheckCACert          CheckCluster = "ca_cert"
+
+	CheckHttp        CheckCluster = "any_http"
+	CheckHelloIcinga CheckCluster = "hello_icinga"
+	CheckDIG         CheckCluster = "dig"
+	CheckDNS         CheckCluster = "dns"
+	CheckDummy       CheckCluster = "dummy"
+	CheckICMP        CheckCluster = "icmp"
 )
 
 func (c CheckCluster) IsValid() bool {
@@ -128,7 +129,7 @@ func init() {
 			c.Name == string(CheckNodeExists) ||
 			c.Name == string(CheckPodExists) ||
 			c.Name == string(CheckClusterEvent) ||
-			c.Name == string(CheckCertificateExpiry) ||
+			c.Name == string(CheckCACert) ||
 			c.Name == string(CheckHelloIcinga) ||
 			c.Name == string(CheckDIG) ||
 			c.Name == string(CheckDNS) ||
