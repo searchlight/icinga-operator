@@ -1,4 +1,4 @@
-package check_certificate_expiry
+package check_ca_cert
 
 import (
 	"crypto/x509"
@@ -54,7 +54,7 @@ func NewCmd() *cobra.Command {
 	var req request
 
 	c := &cobra.Command{
-		Use:     "check_certificate_expiry",
+		Use:     "check_ca_cert",
 		Short:   "Check Certificate expire date",
 		Example: "",
 

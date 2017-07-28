@@ -14,7 +14,7 @@ import (
 type Request struct {
 	Namespace string
 	Selector  string
-	PodName   string
+	Name      string
 	Count     int
 }
 
@@ -36,8 +36,8 @@ func CheckPodExists(req *Request, isCountSet bool) (icinga.State, interface{}) {
 	}
 
 	total_pod := 0
-	if req.PodName != "" {
-		pod, err := kubeClient.Client.CoreV1().Pods(req.Namespace).Get(req.PodName, metav1.GetOptions{})
+	if req.Name != "" {
+		pod, err := kubeClient.Client.CoreV1().Pods(req.Namespace).Get(req.Name, metav1.GetOptions{})
 		if err != nil {
 			return icinga.UNKNOWN, err
 		}
@@ -75,13 +75,13 @@ func NewCmd() *cobra.Command {
 	var req Request
 	var icingaHost string
 
-	c := &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "check_pod_exists",
 		Short:   "Check Kubernetes Pod(s)",
 		Example: "",
 
-		Run: func(cmd *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(cmd, "host")
+		Run: func(c *cobra.Command, args []string) {
+			flags.EnsureRequiredFlags(c, "host")
 
 			host, err := icinga.ParseHost(icingaHost)
 			if err != nil {
@@ -94,13 +94,13 @@ func NewCmd() *cobra.Command {
 			}
 			req.Namespace = host.AlertNamespace
 
-			isCountSet := cmd.Flag("count").Changed
+			isCountSet := c.Flag("count").Changed
 			icinga.Output(CheckPodExists(&req, isCountSet))
 		},
 	}
-	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
-	c.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
-	c.Flags().StringVarP(&req.PodName, "pod_name", "p", "", "Name of pod whose existence is checked")
-	c.Flags().IntVarP(&req.Count, "count", "c", 0, "Number of Kubernetes pods")
-	return c
+	cmd.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
+	cmd.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
+	cmd.Flags().StringVarP(&req.Name, "name", "p", "", "Name of pod whose existence is checked")
+	cmd.Flags().IntVarP(&req.Count, "count", "c", 0, "Number of Kubernetes pods")
+	return cmd
 }

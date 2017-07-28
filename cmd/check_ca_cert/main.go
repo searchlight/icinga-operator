@@ -4,7 +4,7 @@ import (
 	"os"
 
 	v "github.com/appscode/go/version"
-	"github.com/appscode/searchlight/plugins/check_certificate_expiry"
+	"github.com/appscode/searchlight/plugins/check_ca_cert"
 )
 
 var (
@@ -38,7 +38,7 @@ func init() {
 }
 
 func main() {
-	rootCmd := check_certificate_expiry.NewCmd()
+	rootCmd := check_ca_cert.NewCmd()
 	// execute commands.
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

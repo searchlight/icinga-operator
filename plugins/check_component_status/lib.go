@@ -8,9 +8,13 @@ import (
 	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/labels"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
+
+type Request struct {
+	Selector string
+	Name     string
+}
 
 type objectInfo struct {
 	Name   string `json:"name,omitempty"`
@@ -22,22 +26,31 @@ type serviceOutput struct {
 	Message string        `json:"message,omitempty"`
 }
 
-func CheckComponentStatus() (icinga.State, interface{}) {
+func CheckComponentStatus(req *Request) (icinga.State, interface{}) {
 	kubeClient, err := util.NewClient()
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
 
-	components, err := kubeClient.Client.CoreV1().ComponentStatuses().List(metav1.ListOptions{
-		LabelSelector: labels.Everything().String(),
-	},
-	)
-	if err != nil {
-		return icinga.UNKNOWN, err
+	var components []apiv1.ComponentStatus
+	if req.Name != "" {
+		comp, err := kubeClient.Client.CoreV1().ComponentStatuses().Get(req.Name, metav1.GetOptions{})
+		if err != nil {
+			return icinga.UNKNOWN, err
+		}
+		components = []apiv1.ComponentStatus{*comp}
+	} else {
+		comps, err := kubeClient.Client.CoreV1().ComponentStatuses().List(metav1.ListOptions{
+			LabelSelector: req.Selector,
+		})
+		if err != nil {
+			return icinga.UNKNOWN, err
+		}
+		components = comps.Items
 	}
 
 	objectInfoList := make([]*objectInfo, 0)
-	for _, component := range components.Items {
+	for _, component := range components {
 		for _, condition := range component.Conditions {
 			if condition.Type == apiv1.ComponentHealthy && condition.Status == apiv1.ConditionFalse {
 				objectInfoList = append(objectInfoList,
@@ -66,15 +79,19 @@ func CheckComponentStatus() (icinga.State, interface{}) {
 }
 
 func NewCmd() *cobra.Command {
-	c := &cobra.Command{
+	var req Request
+
+	cmd := &cobra.Command{
 		Use:     "check_component_status",
 		Short:   "Check Kubernetes Component Status",
 		Example: "",
 
-		Run: func(cmd *cobra.Command, args []string) {
-			icinga.Output(CheckComponentStatus())
+		Run: func(c *cobra.Command, args []string) {
+			icinga.Output(CheckComponentStatus(&req))
 
 		},
 	}
-	return c
+	cmd.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
+	cmd.Flags().StringVarP(&req.Name, "name", "n", "", "Name of component which should be ready")
+	return cmd
 }

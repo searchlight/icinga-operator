@@ -12,7 +12,7 @@ import (
 
 type Request struct {
 	Selector string
-	NodeName string
+	Name     string
 	Count    int
 }
 
@@ -23,8 +23,8 @@ func CheckNodeExists(req *Request, isCountSet bool) (icinga.State, interface{}) 
 	}
 
 	total_node := 0
-	if req.NodeName != "" {
-		node, err := kubeClient.Client.CoreV1().Nodes().Get(req.NodeName, metav1.GetOptions{})
+	if req.Name != "" {
+		node, err := kubeClient.Client.CoreV1().Nodes().Get(req.Name, metav1.GetOptions{})
 		if err != nil {
 			return icinga.UNKNOWN, err
 		}
@@ -61,20 +61,20 @@ func CheckNodeExists(req *Request, isCountSet bool) (icinga.State, interface{}) 
 func NewCmd() *cobra.Command {
 	var req Request
 
-	c := &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "check_node_exists",
 		Short:   "Count Kubernetes Nodes",
 		Example: "",
 
-		Run: func(cmd *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(cmd, "count")
-			isCountSet := cmd.Flag("count").Changed
+		Run: func(c *cobra.Command, args []string) {
+			flags.EnsureRequiredFlags(c, "count")
+			isCountSet := c.Flag("count").Changed
 			icinga.Output(CheckNodeExists(&req, isCountSet))
 		},
 	}
 
-	c.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
-	c.Flags().StringVarP(&req.NodeName, "nodename", "n", "", "Name of node whose existence is checked")
-	c.Flags().IntVarP(&req.Count, "count", "c", 0, "Number of expected Kubernetes Node")
-	return c
+	cmd.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
+	cmd.Flags().StringVarP(&req.Name, "name", "n", "", "Name of node whose existence is checked")
+	cmd.Flags().IntVarP(&req.Count, "count", "c", 0, "Number of expected Kubernetes Node")
+	return cmd
 }
