@@ -8,6 +8,7 @@
 
                 <iframe width="100%" height="400" src="https://www.youtube-nocookie.com/embed/CuQ6qvVBb0g?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
 
+<iframe  title="YouTube video player" width="480" height="390" src="http://www.youtube.com/watch?v=TheVideoID?autoplay=1" frameborder="0" allowfullscreen></iframe>
 
 ## Create Cluster Config
 Before you can install Searchlight, you need a cluster config for Searchlight. Cluster config is defined in YAML format. You find an example config in [./hack/deploy/config.yaml](/hack/deploy/config.yaml).
