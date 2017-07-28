@@ -25,7 +25,7 @@ func NewCmdServer(version string) *cobra.Command {
 	}
 	cmd := &cobra.Command{
 		Use:   "run",
-		Short: "Run operator",
+		Short: "Run server",
 		PreRun: func(cmd *cobra.Command, args []string) {
 			//if opt.EnableAnalytics {
 			//	analytics.Enable()

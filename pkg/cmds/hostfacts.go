@@ -12,7 +12,7 @@ import (
 func NewCmdHostfacts(version string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "hostfacts [command]",
-		Short: `Hostfacts by AppsCode - Node metrics`,
+		Short: `Hostfacts by AppsCode - Expose node metrics`,
 		PersistentPreRun: func(c *cobra.Command, args []string) {
 			c.Flags().VisitAll(func(flag *pflag.Flag) {
 				log.Printf("FLAG: --%s=%q", flag.Name, flag.Value)
