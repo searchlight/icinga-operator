@@ -51,24 +51,24 @@ spec:
         image: appscode/searchlight:canary
         args:
         - run
-        - --notifier-secret-name=searchlight-operator
+        - --config-secret-name=searchlight-operator
         - --v=3
         ports:
         - containerPort: 56790
-          name: http
+          name: web
           protocol: TCP     
       - image: appscode/icinga:3.0.0-k8s
         name: icinga
         ports:
         - containerPort: 5665
-          name: api
+          name: icinga
           protocol: TCP
         - containerPort: 60006
-          name: web
+          name: ui
           protocol: TCP
         livenessProbe:
           httpGet:
-            scheme: HTTPS
+            scheme: webS
             port: 5665
             path: /v1/status
             httpHeaders:
@@ -115,14 +115,14 @@ metadata:
     app: searchlight
 spec:
   ports:
-  - name: web
+  - name: ui
     port: 80
-    targetPort: web
-  - name: api
+    targetPort: ui
+  - name: icinga
     port: 5665
-    targetPort: api
-  - name: http
+    targetPort: icinga
+  - name: web
     port: 56790
-    targetPort: web
+    targetPort: ui
   selector:
     app: searchlight

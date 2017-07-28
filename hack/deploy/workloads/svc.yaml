@@ -7,18 +7,18 @@ metadata:
   namespace: default
 spec:
   ports:
-  - name: web
+  - name: ui
     port: 80
     protocol: TCP
-    targetPort: web
-  - name: api
+    targetPort: ui
+  - name: icinga
     port: 5665
     protocol: TCP
-    targetPort: api
-  - name: http
+    targetPort: icinga
+  - name: web
     port: 56790
     protocol: TCP
-    targetPort: web
+    targetPort: ui
   selector:
     app: searchlight
   type: NodePort

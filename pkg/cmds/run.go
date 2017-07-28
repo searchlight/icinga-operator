@@ -52,8 +52,8 @@ func NewCmdRun(version string) *cobra.Command {
 	cmd.Flags().StringVar(&opt.KubeConfig, "kubeconfig", opt.KubeConfig, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
 	cmd.Flags().StringVar(&opt.ConfigRoot, "config-dir", opt.ConfigRoot, "Path to directory containing icinga2 config. This should be an emptyDir inside Kubernetes.")
 	cmd.Flags().StringVar(&opt.IcingaSecretName, "icinga-secret-name", opt.IcingaSecretName, "Name of Kubernetes secret used to pass icinga credentials.")
-	cmd.Flags().StringVar(&opt.APIAddress, "address", opt.APIAddress, "The address of the Searchlight API Server")
-	cmd.Flags().StringVar(&opt.WebAddress, "address", opt.WebAddress, "Address to listen on for web interface and telemetry.")
+	cmd.Flags().StringVar(&opt.APIAddress, "api.address", opt.APIAddress, "The address of the Searchlight API Server")
+	cmd.Flags().StringVar(&opt.WebAddress, "web.address", opt.WebAddress, "Address to listen on for web interface and telemetry.")
 	cmd.Flags().BoolVar(&opt.EnableAnalytics, "analytics", opt.EnableAnalytics, "Send analytical event to Google Analytics")
 
 	return cmd

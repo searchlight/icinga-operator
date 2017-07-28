@@ -21,7 +21,7 @@ spec:
         name: icinga
         ports:
         - containerPort: 5665
-          name: api
+          name: icinga
           protocol: TCP
         - containerPort: 60006
           name: web
