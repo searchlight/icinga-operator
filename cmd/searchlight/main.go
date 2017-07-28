@@ -3,10 +3,10 @@ package main
 
 import (
 	"log"
+	"os"
 
 	logs "github.com/appscode/log/golog"
 	"github.com/appscode/searchlight/pkg/cmds"
-	"os"
 )
 
 func main() {

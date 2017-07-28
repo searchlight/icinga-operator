@@ -26,9 +26,5 @@ func NewCmdSearchlight(version string) *cobra.Command {
 	cmd.AddCommand(NewCmdRun(version))
 	cmd.AddCommand(NewCmdConfigure())
 	cmd.AddCommand(v.NewCmdVersion())
-
-	if err := cmd.Execute(); err != nil {
-		log.Fatal(err)
-	}
 	return cmd
 }
