@@ -36,7 +36,6 @@ func NewCmdConfigure() *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&mgr.ConfigRoot, "config-dir", "s", mgr.ConfigRoot, "Path to directory containing icinga2 config. This should be an emptyDir inside Kubernetes.")
-	cmd.Flags().StringVar(&mgr.IcingaSecretName, "config-secret-name", mgr.IcingaSecretName, "Name of Kubernetes secret used to pass icinga credentials.")
 
 	return cmd
 }
