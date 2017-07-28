@@ -1,4 +1,4 @@
-### CheckCommand `kube_event`
+### CheckCommand `event`
 
 This is used to check Kubernetes events. This plugin checks for all Warning events happened in last `c` seconds. Icinga check_interval is provided as `c`.
 
@@ -21,7 +21,7 @@ This is used to check Kubernetes events. This plugin checks for all Warning even
 #### Example
 ###### Command
 ```console
-hyperalert check_kube_event --check_interval=1m
+hyperalert check_event --check_interval=1m
 # --check_interval are provided by Icinga2
 ```
 ###### Output
@@ -59,7 +59,7 @@ metadata:
   labels:
     alert.appscode.com/objectType: cluster
 spec:
-  check: kube_event
+  check: event
   alertInterval: 2m
   checkInterval: 1m
   receivers:

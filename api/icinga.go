@@ -57,7 +57,7 @@ const (
 	CheckJsonPath        CheckCluster = "json_path"
 	CheckNodeExists      CheckCluster = "node_exists"
 	CheckPodExists       CheckCluster = "pod_exists"
-	CheckClusterEvent    CheckCluster = "kube_event"
+	CheckClusterEvent    CheckCluster = "event"
 	CheckCACert          CheckCluster = "ca_cert"
 
 	CheckHttp        CheckCluster = "any_http"

@@ -1,4 +1,4 @@
-## hyperalert check_kube_event
+## hyperalert check_event
 
 Check kubernetes events for all namespaces
 
@@ -8,7 +8,7 @@ Check kubernetes events for all namespaces
 Check kubernetes events for all namespaces
 
 ```
-hyperalert check_kube_event [flags]
+hyperalert check_event [flags]
 ```
 
 ### Options
@@ -16,7 +16,7 @@ hyperalert check_kube_event [flags]
 ```
   -c, --check_interval duration            Icinga check_interval in duration. [Format: 30s, 5m]
   -s, --clock_skew duration                Add skew with check_interval in duration. [Default: 30s] (default 30s)
-  -h, --help                               help for check_kube_event
+  -h, --help                               help for check_event
   -H, --host string                        Icinga host name
       --involved_object_kind string        Involved object kind used to select events
       --involved_object_name string        Involved object name used to select events

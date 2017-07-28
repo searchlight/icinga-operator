@@ -3,9 +3,9 @@ package hyperalert
 import (
 	"github.com/appscode/searchlight/plugins/check_ca_cert"
 	"github.com/appscode/searchlight/plugins/check_component_status"
+	"github.com/appscode/searchlight/plugins/check_event"
 	"github.com/appscode/searchlight/plugins/check_influx_query"
 	"github.com/appscode/searchlight/plugins/check_json_path"
-	"github.com/appscode/searchlight/plugins/check_kube_event"
 	"github.com/appscode/searchlight/plugins/check_node_exists"
 	"github.com/appscode/searchlight/plugins/check_node_status"
 	"github.com/appscode/searchlight/plugins/check_pod_exec"
@@ -30,7 +30,7 @@ func NewCmd() *cobra.Command {
 	cmd.AddCommand(check_json_path.NewCmd())
 	cmd.AddCommand(check_node_exists.NewCmd())
 	cmd.AddCommand(check_pod_exists.NewCmd())
-	cmd.AddCommand(check_kube_event.NewCmd())
+	cmd.AddCommand(check_event.NewCmd())
 	cmd.AddCommand(check_ca_cert.NewCmd())
 
 	// CheckNode

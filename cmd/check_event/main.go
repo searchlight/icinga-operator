@@ -4,7 +4,7 @@ import (
 	"os"
 
 	v "github.com/appscode/go/version"
-	"github.com/appscode/searchlight/plugins/check_kube_event"
+	"github.com/appscode/searchlight/plugins/check_event"
 )
 
 var (
@@ -38,7 +38,7 @@ func init() {
 }
 
 func main() {
-	rootCmd := check_kube_event.NewCmd()
+	rootCmd := check_event.NewCmd()
 	// execute commands.
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

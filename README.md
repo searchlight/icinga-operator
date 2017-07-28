@@ -35,7 +35,7 @@ Searchlight supports additional custom plugins. Followings are currently added
 | [prometheus_metric](docs/check_prometheus_metric.md) | check_prometheus_metric | To check Prometheus query result                                                              |
 | [node_volume](docs/check_node_volume.md)                 | check_node_volume         | To check Node Disk stat                                                                       |
 | [volume](docs/check_pod_volume.md)                       | check_pod_volume            | To check Pod volume stat                                                                      |
-| [kube_event](docs/check_kube_event.md)               | check_kube_event        | To check all Kubernetes Warning events happened in last `c` seconds                           |
+| [event](docs/check_event.md)               | check_event        | To check all Kubernetes Warning events happened in last `c` seconds                           |
 | [pod_exec](docs/check_pod_exec.md)                 | check_pod_exec         | To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL|
 
 > Note: All of these plugins are combined into a single plugin called `hyperalert`

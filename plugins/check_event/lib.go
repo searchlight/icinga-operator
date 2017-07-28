@@ -1,4 +1,4 @@
-package check_kube_event
+package check_event
 
 import (
 	"encoding/json"
@@ -104,7 +104,7 @@ func NewCmd() *cobra.Command {
 	var icingaHost string
 
 	cmd := &cobra.Command{
-		Use:     "check_kube_event",
+		Use:     "check_event",
 		Short:   "Check kubernetes events for all namespaces",
 		Example: "",
 
