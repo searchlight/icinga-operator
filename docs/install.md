@@ -2,6 +2,9 @@
 
 # Installation Guide
 
+<video src="https://www.youtube-nocookie.com/embed/CuQ6qvVBb0g?rel=0&amp;showinfo=0" width="320" height="200" controls preload></video>
+
+
 
                 <iframe width="100%" height="400" src="https://www.youtube-nocookie.com/embed/CuQ6qvVBb0g?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
 
