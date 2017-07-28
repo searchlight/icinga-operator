@@ -1,4 +1,4 @@
-## hyperalert check_certificate_expiry
+## hyperalert check_ca_cert
 
 Check Certificate expire date
 
@@ -8,14 +8,14 @@ Check Certificate expire date
 Check Certificate expire date
 
 ```
-hyperalert check_certificate_expiry [flags]
+hyperalert check_ca_cert [flags]
 ```
 
 ### Options
 
 ```
   -c, --critical duration   Remaining duration for critical state. [Default: 120h] (default 120h0m0s)
-  -h, --help                help for check_certificate_expiry
+  -h, --help                help for check_ca_cert
   -w, --warning duration    Remaining duration for warning state. [Default: 360h] (default 360h0m0s)
 ```
 

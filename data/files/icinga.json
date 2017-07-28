@@ -577,7 +577,7 @@
     },
     {
       "description": "This is used to check certificate expire date",
-      "examples": "hyperalert check_certificate_expiry",
+      "examples": "hyperalert check_ca_cert",
       "name": "certificate_expiry",
       "envs": [
         "onebox",
