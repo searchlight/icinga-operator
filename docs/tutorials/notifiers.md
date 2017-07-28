@@ -1,7 +1,7 @@
-> New to Kubed? Please start [here](/docs/tutorials/README.md).
+> New to Searchlight? Please start [here](/docs/tutorials/README.md).
 
 # Supported Notifiers
-Kubed can send notifications via Email, SMS or Chat for various operations using [appscode/go-notify](https://github.com/appscode/go-notify) library. To connect to these services, you need to create a Secret with the appropriate keys. Then pass the secret name to Kubed by setting `notifierSecretName` field in Kubed cluster config.
+Searchlight can send notifications via Email, SMS or Chat for various operations using [appscode/go-notify](https://github.com/appscode/go-notify) library. To connect to these services, you need to create a Secret with the appropriate keys. Then pass the secret name to Searchlight by setting `notifierSecretName` field in Searchlight cluster config.
 
 ## Hipchat
 To receive chat notifications in Hipchat, create a Secret with the following key:
@@ -12,9 +12,9 @@ To receive chat notifications in Hipchat, create a Secret with the following key
 
 ```console
 $ echo -n 'your-hipchat-auth-token' > HIPCHAT_AUTH_TOKEN
-$ kubectl create secret generic kubed-notifier -n kube-system \
+$ kubectl create secret generic searchlight-notifier -n kube-system \
     --from-file=./HIPCHAT_AUTH_TOKEN
-secret "kubed-notifier" created
+secret "searchlight-notifier" created
 ```
 ```yaml
 apiVersion: v1
@@ -23,10 +23,10 @@ data:
 kind: Secret
 metadata:
   creationTimestamp: 2017-07-25T01:54:37Z
-  name: kubed-notifier
+  name: searchlight-notifier
   namespace: kube-system
   resourceVersion: "2244"
-  selfLink: /api/v1/namespaces/kube-system/secrets/kubed-notifier
+  selfLink: /api/v1/namespaces/kube-system/secrets/searchlight-notifier
   uid: 372bc159-70dc-11e7-9b0b-080027503732
 type: Opaque
 ```
@@ -38,7 +38,7 @@ Now, to receiver notifications via Hipchat, configure receiver as below:
 ```yaml
 recycleBin:
   handleUpdates: false
-  path: /tmp/kubed/trash
+  path: /tmp/searchlight/trash
   receiver:
     notifier: hipchat
     to:
@@ -62,12 +62,12 @@ $ echo -n 'your-mailgun-domain' > MAILGUN_DOMAIN
 $ echo -n 'no-reply@example.com' > MAILGUN_FROM
 $ echo -n 'your-mailgun-api-key' > MAILGUN_API_KEY
 $ echo -n 'your-mailgun-public-api-key' > MAILGUN_PUBLIC_API_KEY
-$ kubectl create secret generic kubed-notifier -n kube-system \
+$ kubectl create secret generic searchlight-notifier -n kube-system \
     --from-file=./MAILGUN_DOMAIN \
     --from-file=./MAILGUN_FROM \
     --from-file=./MAILGUN_API_KEY \
     --from-file=./MAILGUN_PUBLIC_API_KEY
-secret "kubed-notifier" created
+secret "searchlight-notifier" created
 ```
 ```yaml
 apiVersion: v1
@@ -79,10 +79,10 @@ data:
 kind: Secret
 metadata:
   creationTimestamp: 2017-07-25T01:31:24Z
-  name: kubed-notifier
+  name: searchlight-notifier
   namespace: kube-system
   resourceVersion: "714"
-  selfLink: /api/v1/namespaces/kube-system/secrets/kubed-notifier
+  selfLink: /api/v1/namespaces/kube-system/secrets/searchlight-notifier
   uid: f8e91037-70d8-11e7-9b0b-080027503732
 type: Opaque
 ```
@@ -94,7 +94,7 @@ Now, to receiver notifications via Mailgun, configure receiver as below:
 ```yaml
 recycleBin:
   handleUpdates: false
-  path: /tmp/kubed/trash
+  path: /tmp/searchlight/trash
   receiver:
     notifier: mailgun
     to:
@@ -123,17 +123,17 @@ $ echo -n 'your-smtp-insecure-skip-verify' > SMTP_INSECURE_SKIP_VERIFY
 $ echo -n 'your-smtp-username' > SMTP_USERNAME
 $ echo -n 'your-smtp-password' > SMTP_PASSWORD
 $ echo -n 'your-smtp-from' > SMTP_FROM
-$ kubectl create secret generic kubed-notifier -n kube-system \
+$ kubectl create secret generic searchlight-notifier -n kube-system \
     --from-file=./SMTP_HOST \
     --from-file=./SMTP_PORT \
     --from-file=./SMTP_INSECURE_SKIP_VERIFY \
     --from-file=./SMTP_USERNAME \
     --from-file=./SMTP_PASSWORD \
     --from-file=./SMTP_FROM
-secret "kubed-notifier" created
+secret "searchlight-notifier" created
 ```
 
-To configure Kubed to send email notifications using a GMail account, set the Secrets like below:
+To configure Searchlight to send email notifications using a GMail account, set the Secrets like below:
 ```
 $ echo -n 'smtp.gmail.com' > SMTP_HOST
 $ echo -n '587' > SMTP_PORT
@@ -149,7 +149,7 @@ Now, to receiver notifications via SMTP, configure receiver as below:
 ```yaml
 recycleBin:
   handleUpdates: false
-  path: /tmp/kubed/trash
+  path: /tmp/searchlight/trash
   receiver:
     notifier: smtp
     to:
@@ -171,11 +171,11 @@ To receive SMS notifications via Twilio, create a Secret with the following keys
 $ echo -n 'your-twilio-account-sid' > TWILIO_ACCOUNT_SID
 $ echo -n 'your-twilio-auth-token' > TWILIO_AUTH_TOKEN
 $ echo -n 'your-twilio-from' > TWILIO_FROM
-$ kubectl create secret generic kubed-notifier -n kube-system \
+$ kubectl create secret generic searchlight-notifier -n kube-system \
     --from-file=./TWILIO_ACCOUNT_SID \
     --from-file=./TWILIO_AUTH_TOKEN \
     --from-file=./TWILIO_FROM
-secret "kubed-notifier" created
+secret "searchlight-notifier" created
 ```
 ```yaml
 apiVersion: v1
@@ -186,10 +186,10 @@ data:
 kind: Secret
 metadata:
   creationTimestamp: 2017-07-26T17:38:38Z
-  name: kubed-notifier
+  name: searchlight-notifier
   namespace: kube-system
   resourceVersion: "27787"
-  selfLink: /api/v1/namespaces/kube-system/secrets/kubed-notifier
+  selfLink: /api/v1/namespaces/kube-system/secrets/searchlight-notifier
   uid: 41f57a61-7229-11e7-af79-08002738e55e
 type: Opaque
 ```
@@ -201,7 +201,7 @@ Now, to receiver notifications via SMTP, configure receiver as below:
 ```yaml
 recycleBin:
   handleUpdates: false
-  path: /tmp/kubed/trash
+  path: /tmp/searchlight/trash
   receiver:
     notifier: twilio
     to:
@@ -219,9 +219,9 @@ To receive chat notifications in Slack, create a Secret with the following keys:
 
 ```console
 $ echo -n 'your-slack-auth-token' > SLACK_AUTH_TOKEN
-$ kubectl create secret generic kubed-notifier -n kube-system \
+$ kubectl create secret generic searchlight-notifier -n kube-system \
     --from-file=./SLACK_AUTH_TOKEN
-secret "kubed-notifier" created
+secret "searchlight-notifier" created
 ```
 ```yaml
 apiVersion: v1
@@ -230,10 +230,10 @@ data:
 kind: Secret
 metadata:
   creationTimestamp: 2017-07-25T01:58:58Z
-  name: kubed-notifier
+  name: searchlight-notifier
   namespace: kube-system
   resourceVersion: "2534"
-  selfLink: /api/v1/namespaces/kube-system/secrets/kubed-notifier
+  selfLink: /api/v1/namespaces/kube-system/secrets/searchlight-notifier
   uid: d2571817-70dc-11e7-9b0b-080027503732
 type: Opaque
 ```
@@ -245,7 +245,7 @@ Now, to receiver notifications via Hipchat, configure receiver as below:
 ```yaml
 recycleBin:
   handleUpdates: false
-  path: /tmp/kubed/trash
+  path: /tmp/searchlight/trash
   receiver:
     notifier: slack
     to:
@@ -267,11 +267,11 @@ To receive SMS notifications via Plivo, create a Secret with the following keys:
 $ echo -n 'your-plivo-auth-id' > PLIVO_AUTH_ID
 $ echo -n 'your-plivo-auth-token' > PLIVO_AUTH_TOKEN
 $ echo -n 'your-plivo-from' > PLIVO_FROM
-$ kubectl create secret generic kubed-notifier -n kube-system \
+$ kubectl create secret generic searchlight-notifier -n kube-system \
     --from-file=./PLIVO_AUTH_ID \
     --from-file=./PLIVO_AUTH_TOKEN \
     --from-file=./PLIVO_FROM
-secret "kubed-notifier" created
+secret "searchlight-notifier" created
 ```
 ```yaml
 apiVersion: v1
@@ -282,10 +282,10 @@ data:
 kind: Secret
 metadata:
   creationTimestamp: 2017-07-25T02:00:02Z
-  name: kubed-notifier
+  name: searchlight-notifier
   namespace: kube-system
   resourceVersion: "2606"
-  selfLink: /api/v1/namespaces/kube-system/secrets/kubed-notifier
+  selfLink: /api/v1/namespaces/kube-system/secrets/searchlight-notifier
   uid: f8dade1c-70dc-11e7-9b0b-080027503732
 type: Opaque
 ```
@@ -297,7 +297,7 @@ Now, to receiver notifications via SMTP, configure receiver as below:
 ```yaml
 recycleBin:
   handleUpdates: false
-  path: /tmp/kubed/trash
+  path: /tmp/searchlight/trash
   receiver:
     notifier: plivo
     to:
@@ -307,10 +307,10 @@ recycleBin:
 
 
 ## Next Steps
- - Learn how to use Kubed to take periodic snapshots of a Kubernetes cluster [here](/docs/tutorials/cluster-snapshot.md).
+ - Learn how to use Searchlight to take periodic snapshots of a Kubernetes cluster [here](/docs/tutorials/cluster-snapshot.md).
  - To setup a recycle bin for deleted and/or updated Kubernetes objects, please visit [here](/docs/tutorials/recycle-bin.md).
- - Need to keep some configuration synchronized across domains? Try [Kubed config syncer](/docs/tutorials/config-syncer.md).
- - Want to keep an eye on your cluster with automated notifications? Setup Kubed [event forwarder](/docs/tutorials/event-forwarder.md).
+ - Need to keep some configuration synchronized across domains? Try [Searchlight config syncer](/docs/tutorials/config-syncer.md).
+ - Want to keep an eye on your cluster with automated notifications? Setup Searchlight [event forwarder](/docs/tutorials/event-forwarder.md).
  - Out of disk space because of too much logs in Elasticsearch or metrics in InfluxDB? Configure [janitors](/docs/tutorials/janitors.md) to delete old data.
  - Wondering what features are coming next? Please visit [here](/ROADMAP.md).
- - Want to hack on Kubed? Check our [contribution guidelines](/CONTRIBUTING.md).
+ - Want to hack on Searchlight? Check our [contribution guidelines](/CONTRIBUTING.md).

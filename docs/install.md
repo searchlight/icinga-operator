@@ -1,9 +1,9 @@
-> New to Kubed? Please start [here](/docs/tutorials/README.md).
+> New to Searchlight? Please start [here](/docs/tutorials/README.md).
 
 # Installation Guide
 
 ## Create Cluster Config
-Before you can install Kubed, you need a cluster config for Kubed. Cluster config is defined in YAML format. You find an example config in [./hack/deploy/config.yaml](/hack/deploy/config.yaml).
+Before you can install Searchlight, you need a cluster config for Searchlight. Cluster config is defined in YAML format. You find an example config in [./hack/deploy/config.yaml](/hack/deploy/config.yaml).
 
 ```yaml
 $ cat ./hack/deploy/config.yaml
@@ -38,10 +38,10 @@ janitors:
     endpoint: https://monitoring-influxdb.kube-system:8086
   kind: InfluxDB
   ttl: 2160h0m0s
-notifierSecretName: kubed-notifier
+notifierSecretName: searchlight-notifier
 recycleBin:
   handleUpdates: false
-  path: /tmp/kubed/trash
+  path: /tmp/searchlight/trash
   receiver:
     notifier: mailgun
     to:
@@ -57,7 +57,7 @@ snapshotter:
   schedule: '@every 6h'
 ```
 
-To understand the various configuration options, check Kubed [tutorials](/docs/tutorials/README.md). Once you are satisfied with the configuration, create a Secret with the Kubed cluster config under `config.yaml` key.
+To understand the various configuration options, check Searchlight [tutorials](/docs/tutorials/README.md). Once you are satisfied with the configuration, create a Secret with the Searchlight cluster config under `config.yaml` key.
 
 You may have to create another [Secret for notifiers](/docs/tutorials/notifiers.md). If you are [storing cluster snapshots](/docs/tutorials/cluster-snapshot.md) in cloud storage, you have to create a Secret appropriately.
 
@@ -69,43 +69,43 @@ go run ./hack/config/main.go
 ```
 
 ### Verifying Cluster Config
-Kubed includes a check command to verify a cluster config. Download the pre-built binary from [appscode/kubed Github releases](https://github.com/appscode/kubed/releases) and put the binary to some directory in your `PATH`.
+Searchlight includes a check command to verify a cluster config. Download the pre-built binary from [appscode/searchlight Github releases](https://github.com/appscode/searchlight/releases) and put the binary to some directory in your `PATH`.
 
 ```console
-$ kubed check --clusterconfig=./hack/deploy/config.yaml
+$ searchlight check --clusterconfig=./hack/deploy/config.yaml
 Cluster config was parsed successfully.
 ```
 
 ## Using YAML
-Kubed can be installed using YAML files includes in the [/hack/deploy](/hack/deploy) folder.
+Searchlight can be installed using YAML files includes in the [/hack/deploy](/hack/deploy) folder.
 
 ```console
 # Install without RBAC roles
-$ curl https://raw.githubusercontent.com/appscode/kubed/0.1.0/hack/deploy/without-rbac.yaml \
+$ curl https://raw.githubusercontent.com/appscode/searchlight/0.1.0/hack/deploy/without-rbac.yaml \
   | kubectl apply -f -
 
 
 # Install with RBAC roles
-$ curl https://raw.githubusercontent.com/appscode/kubed/0.1.0/hack/deploy/with-rbac.yaml \
+$ curl https://raw.githubusercontent.com/appscode/searchlight/0.1.0/hack/deploy/with-rbac.yaml \
   | kubectl apply -f -
 ```
 
 ## Using Helm
-Kubed can be installed via [Helm](https://helm.sh/) using the [chart](/chart/kubed) included in this repository. To install the chart with the release name `my-release`:
+Searchlight can be installed via [Helm](https://helm.sh/) using the [chart](/chart/searchlight) included in this repository. To install the chart with the release name `my-release`:
 ```bash
-$ helm install chart/kubed --name my-release
+$ helm install chart/searchlight --name my-release
 ```
-To see the detailed configuration options, visit [here](/chart/kubed/README.md).
+To see the detailed configuration options, visit [here](/chart/searchlight/README.md).
 
 
 ## Verify installation
-To check if Kubed operator pods have started, run the following command:
+To check if Searchlight operator pods have started, run the following command:
 ```console
-$ kubectl get pods --all-namespaces -l app=kubed --watch
+$ kubectl get pods --all-namespaces -l app=searchlight --watch
 ```
 
 Once the operator pods are running, you can cancel the above command by typing `Ctrl+C`.
 
 
 ## Update Cluster Config
-If you would like to update cluster config, update the `kubed-config` Secret and restart Kubed operator pod(s).
+If you would like to update cluster config, update the `searchlight-config` Secret and restart Searchlight operator pod(s).
