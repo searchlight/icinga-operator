@@ -57,7 +57,7 @@ const (
 	CheckJsonPath        CheckCluster = "json_path"
 	CheckNodeExists      CheckCluster = "node_exists"
 	CheckPodExists       CheckCluster = "pod_exists"
-	CheckClusterEvent    CheckCluster = "event"
+	CheckEvent           CheckCluster = "event"
 	CheckCACert          CheckCluster = "ca_cert"
 
 	CheckHttp        CheckCluster = "any_http"
@@ -128,7 +128,7 @@ func init() {
 			c.Name == string(CheckJsonPath) ||
 			c.Name == string(CheckNodeExists) ||
 			c.Name == string(CheckPodExists) ||
-			c.Name == string(CheckClusterEvent) ||
+			c.Name == string(CheckEvent) ||
 			c.Name == string(CheckCACert) ||
 			c.Name == string(CheckHelloIcinga) ||
 			c.Name == string(CheckDIG) ||
