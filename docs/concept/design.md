@@ -42,7 +42,7 @@ Controller detects following ResourceEventType:
 
 ### Resource `Alert`
 <p align="center">
-    <img src="workflow-alerts.png" width="715">
+    <img src="/docs/images/design/workflow-alerts.png" width="715">
 </p>
 * #### EventType `ADDED`
     1. When an Alert object is created, Searchlight Controller detects it.
@@ -120,7 +120,7 @@ Controller detects following ResourceEventType:
 
 ### Resource `Pod`
 <p align="center">
-    <img src="workflow-pods.png" height="600">
+    <img src="/docs/images/design/workflow-pods.png" height="600">
 </p>
 * #### EventType `ADDED`
     ###### Icinga2 Pod
@@ -149,7 +149,7 @@ Controller detects following ResourceEventType:
 
 ### Resource `Node`
 <p align="center">
-    <img src="workflow-nodes.png" height="600">
+    <img src="/docs/images/design/workflow-nodes.png" height="600">
 </p>
 * #### EventType `ADDED`
     1. When node is created, Searchlight Controller detects it.
@@ -166,7 +166,7 @@ Controller detects following ResourceEventType:
 
 ### Resource `Service`
 <p align="center">
-    <img src="workflow-services.png" height="600">
+    <img src="/docs/images/design/workflow-services.png" height="600">
 </p>
 * #### EventType `ADDED`
 
