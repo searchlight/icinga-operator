@@ -2,6 +2,14 @@
 
 # Installation Guide
 
+[![Install Searchlight](https://img.youtube.com/vi/Po4yXrQuHtQ/0.jpg)](https://www.youtube-nocookie.com/embed/Po4yXrQuHtQ?rel=0)
+
+
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Po4yXrQuHtQ?rel=0" frameborder="0" allowfullscreen></iframe>
+
+
+
 <video src="https://www.youtube-nocookie.com/embed/CuQ6qvVBb0g?rel=0&amp;showinfo=0" width="320" height="200" controls preload></video>
 
 
