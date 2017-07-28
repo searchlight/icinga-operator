@@ -30,4 +30,13 @@ func main() {
 		log.Fatal(err)
 	}
 	doc.GenMarkdownTree(opCmd, dir)
+
+	hfCmd := cmds.NewCmdHostfacts("")
+	dir = runtime.GOPath() + "/src/github.com/appscode/searchlight/docs/reference/hostfacts"
+	fmt.Printf("Generating cli markdown tree in: %v\n", dir)
+	err = os.MkdirAll(dir, 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+	doc.GenMarkdownTree(hfCmd, dir)
 }

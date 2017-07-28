@@ -18,12 +18,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-var (
-	kubeClient clientset.Interface
-	extClient  tcs.ExtensionInterface
-)
-
-func NewCmdRun(version string) *cobra.Command {
+func NewCmdOperator(version string) *cobra.Command {
 	opt := controller.Options{
 		ConfigRoot:       "/srv",
 		ConfigSecretName: "searchlight-operator",
@@ -65,8 +60,8 @@ func run(opt controller.Options) {
 		log.Fatalf("Could not get Kubernetes config: %s", err)
 	}
 
-	kubeClient = clientset.NewForConfigOrDie(config)
-	extClient = tcs.NewForConfigOrDie(config)
+	kubeClient := clientset.NewForConfigOrDie(config)
+	extClient := tcs.NewForConfigOrDie(config)
 
 	secret, err := kubeClient.CoreV1().Secrets(util.OperatorNamespace()).Get(opt.ConfigSecretName, metav1.GetOptions{})
 	if err != nil {

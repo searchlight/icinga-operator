@@ -47,9 +47,8 @@ libbuild.BIN_MATRIX = {
     },
     'hostfacts': {
         'type': 'go',
-        'go_version': False,
+        'go_version': True,
         'release': True,
-        'use_cgo': False,
         'distro': {
             'linux': ['amd64'],
         }

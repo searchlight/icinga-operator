@@ -8,4 +8,7 @@ sed -i 's/######\ Auto\ generated\ by.*//g' *
 
 cd $GOPATH/src/github.com/appscode/searchlight/docs/reference/searchlight
 sed -i 's/######\ Auto\ generated\ by.*//g' *
+
+cd $GOPATH/src/github.com/appscode/searchlight/docs/reference/hostfacts
+sed -i 's/######\ Auto\ generated\ by.*//g' *
 popd

@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/pflag"
 )
 
-func NewCmdSearchlight(version string) *cobra.Command {
+func NewCmdHostfacts(version string) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "searchlight [command]",
-		Short: `Searchlight by AppsCode - Alerts for Kubernetes`,
+		Use:   "hostfacts [command]",
+		Short: `Hostfacts by AppsCode - Expose node metrics`,
 		PersistentPreRun: func(c *cobra.Command, args []string) {
 			c.Flags().VisitAll(func(flag *pflag.Flag) {
 				log.Printf("FLAG: --%s=%q", flag.Name, flag.Value)
@@ -23,8 +23,7 @@ func NewCmdSearchlight(version string) *cobra.Command {
 	// ref: https://github.com/kubernetes/kubernetes/issues/17162#issuecomment-225596212
 	flag.CommandLine.Parse([]string{})
 
-	cmd.AddCommand(NewCmdOperator(version))
-	cmd.AddCommand(NewCmdConfigure())
+	cmd.AddCommand(NewCmdServer(version))
 	cmd.AddCommand(v.NewCmdVersion())
 	return cmd
 }
