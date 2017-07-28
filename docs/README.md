@@ -33,8 +33,8 @@ Searchlight supports additional custom plugins. Followings are currently added
 | [pod_exists](docs/check_pod_exists.md)               | check_pod_exists        | To check Kubernetes pod existence                                                             |
 | [pod_status](docs/check_pod_status.md)               | check_pod_status        | To check Kubernetes pod status                                                                |
 | [prometheus_metric](docs/check_prometheus_metric.md) | check_prometheus_metric | To check Prometheus query result                                                              |
-| [node_disk](docs/check_node_disk.md)                 | check_node_disk         | To check Node Disk stat                                                                       |
-| [volume](docs/check_volume.md)                       | check_volume            | To check Pod volume stat                                                                      |
+| [node_volume](docs/check_node_volume.md)                 | check_node_volume         | To check Node Disk stat                                                                       |
+| [volume](docs/check_pod_volume.md)                       | check_pod_volume            | To check Pod volume stat                                                                      |
 | [kube_event](docs/check_kube_event.md)               | check_kube_event        | To check all Kubernetes Warning events happened in last `c` seconds                           |
 | [kube_exec](docs/check_kube_exec.md)                 | check_kube_exec         | To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL|
 
