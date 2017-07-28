@@ -1,13 +1,10 @@
 package cmds
 
 import (
-	"fmt"
-	"net/http"
 	_ "net/http/pprof"
 	"time"
 
 	"github.com/appscode/log"
-	"github.com/appscode/pat"
 	_ "github.com/appscode/searchlight/api/install"
 	tcs "github.com/appscode/searchlight/client/clientset"
 	_ "github.com/appscode/searchlight/client/clientset/fake"
@@ -15,7 +12,6 @@ import (
 	"github.com/appscode/searchlight/pkg/controller"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/util"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
@@ -29,10 +25,11 @@ var (
 
 func NewCmdRun(version string) *cobra.Command {
 	opt := controller.Options{
+		ConfigRoot:       "/srv",
 		IcingaSecretName: "searchlight-operator",
-		APIAddress:        ":8080",
-		WebAddress:        ":56790",
-		EnableAnalytics:   true,
+		APIAddress:       ":8080",
+		WebAddress:       ":56790",
+		EnableAnalytics:  true,
 	}
 	cmd := &cobra.Command{
 		Use:   "run",
@@ -77,15 +74,10 @@ func run(opt controller.Options) {
 	}
 
 	mgr := &icinga.Configurator{
-		IcingaSecretName: "searchlight-operator",
+		ConfigRoot:       opt.ConfigRoot,
+		IcingaSecretName: opt.IcingaSecretName,
 		Expiry:           10 * 365 * 24 * time.Hour,
 	}
-
-
-
-
-
-
 	cfg, err := mgr.LoadConfig(func(key string) (value string, found bool) {
 		var bytes []byte
 		bytes, found = secret.Data[key]
@@ -105,33 +97,11 @@ func run(opt controller.Options) {
 		time.Sleep(2 * time.Second)
 	}
 
-	ctrl := controller.New(kubeClient, extClient, icingaClient)
+	ctrl := controller.New(kubeClient, extClient, icingaClient, opt)
 	if err := ctrl.Setup(); err != nil {
 		log.Fatalln(err)
 	}
 
 	log.Infoln("Starting Searchlight operator...")
-	go ctrl.Run()
-
-	m := pat.New()
-	// For go metrics
-	m.Get("/metrics", promhttp.Handler())
-	// For notification acknowledgement
-	ackPattern := fmt.Sprintf("/monitoring.appscode.com/v1alpha1/namespaces/%s/%s/%s",
-		controller.PathParamNamespace, controller.PathParamType, controller.PathParamName)
-	ackHandler := func(w http.ResponseWriter, r *http.Request) {
-		controller.Acknowledge(icingaClient, w, r)
-	}
-	m.Post(ackPattern, http.HandlerFunc(ackHandler))
-
-	http.Handle("/", m)
-	log.Infoln("Listening on", apiAddress)
-	log.Fatal(http.ListenAndServe(apiAddress, nil))
-
-
-	m := pat.New()
-	m.Get("/metrics", promhttp.Handler())
-	http.Handle("/", m)
-	log.Infoln("Listening on", webAddress)
-	log.Fatal(http.ListenAndServe(webAddress, nil))
+	ctrl.RunAndHold()
 }

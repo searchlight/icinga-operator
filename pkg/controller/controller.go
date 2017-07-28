@@ -1,27 +1,22 @@
 package controller
 
 import (
-	"time"
-	"encoding/json"
+	"fmt"
 	"net/http"
-	"path/filepath"
-	"sync"
 	"time"
+
 	"github.com/appscode/log"
 	"github.com/appscode/pat"
-	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/api"
 	tcs "github.com/appscode/searchlight/client/clientset"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 	"k8s.io/client-go/tools/record"
-	"github.com/derekparker/delve/pkg/dwarf/op"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"fmt"
 )
 
 type Options struct {
@@ -29,9 +24,9 @@ type Options struct {
 	KubeConfig string
 
 	ConfigRoot       string
-	IcingaSecretName  string
-	APIAddress        string
-	WebAddress        string
+	IcingaSecretName string
+	APIAddress       string
+	WebAddress       string
 
 	EnableAnalytics bool
 }
@@ -41,6 +36,7 @@ type Controller struct {
 	ExtClient    tcs.ExtensionInterface
 	IcingaClient *icinga.Client // TODO: init
 
+	Opt         Options
 	clusterHost *icinga.ClusterHost
 	nodeHost    *icinga.NodeHost
 	podHost     *icinga.PodHost
@@ -48,11 +44,12 @@ type Controller struct {
 	SyncPeriod  time.Duration
 }
 
-func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, icingaClient *icinga.Client) *Controller {
+func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, icingaClient *icinga.Client, opt Options) *Controller {
 	return &Controller{
 		KubeClient:   kubeClient,
 		ExtClient:    extClient,
 		IcingaClient: icingaClient,
+		Opt:          opt,
 		clusterHost:  icinga.NewClusterHost(kubeClient, extClient, icingaClient),
 		nodeHost:     icinga.NewNodeHost(kubeClient, extClient, icingaClient),
 		podHost:      icinga.NewPodHost(kubeClient, extClient, icingaClient),
@@ -106,48 +103,20 @@ func (c *Controller) ensureThirdPartyResource(resourceName string) error {
 }
 
 func (c *Controller) RunAPIServer() {
-	m := pat.New()
+	router := pat.New()
+
 	// For notification acknowledgement
-	ackPattern := fmt.Sprintf("/monitoring.appscode.com/v1alpha1/namespaces/%s/%s/%s",PathParamNamespace, PathParamType, PathParamName)
+	ackPattern := fmt.Sprintf("/monitoring.appscode.com/v1alpha1/namespaces/%s/%s/%s", PathParamNamespace, PathParamType, PathParamName)
 	ackHandler := func(w http.ResponseWriter, r *http.Request) {
 		Acknowledge(c.IcingaClient, w, r)
 	}
-	m.Post(ackPattern, http.HandlerFunc(ackHandler))
-
-	http.Handle("/", m)
-	log.Infoln("Listening on", apiAddress)
-	log.Fatal(http.ListenAndServe(apiAddress, nil))
-
-
-	// router is default HTTP request multiplexer for kubed. It matches the URL of each
-	// incoming request against a list of registered patterns with their associated
-	// methods and calls the handler for the pattern that most closely matches the
-	// URL.
-	//
-	// Pattern matching attempts each pattern in the order in which they were
-	// registered.
-	router := pat.New()
-	if op.Config.APIServer.EnableSearchIndex {
-		op.SearchIndex.RegisterRouters(router)
-	}
-	// Enable pod -> service, service -> serviceMonitor indexing
-	if op.Config.APIServer.EnableReverseIndex {
-		router.Get("/api/v1/namespaces/:namespace/:resource/:name/services", http.HandlerFunc(op.ReverseIndex.Service.ServeHTTP))
-		if util.IsPreferredAPIResource(op.KubeClient, prom.TPRGroup+"/"+prom.TPRVersion, prom.TPRServiceMonitorsKind) {
-			// Add Indexer only if Server support this resource
-			router.Get("/apis/"+prom.TPRGroup+"/"+prom.TPRVersion+"/namespaces/:namespace/:resource/:name/"+prom.TPRServiceMonitorName, http.HandlerFunc(op.ReverseIndex.ServiceMonitor.ServeHTTP))
-		}
-		if util.IsPreferredAPIResource(op.KubeClient, prom.TPRGroup+"/"+prom.TPRVersion, prom.TPRPrometheusesKind) {
-			// Add Indexer only if Server support this resource
-			router.Get("/apis/"+prom.TPRGroup+"/"+prom.TPRVersion+"/namespaces/:namespace/:resource/:name/"+prom.TPRPrometheusName, http.HandlerFunc(op.ReverseIndex.Prometheus.ServeHTTP))
-		}
-	}
+	router.Post(ackPattern, http.HandlerFunc(ackHandler))
 
 	router.Get("/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) }))
-	router.Get("/metadata", http.HandlerFunc(op.metadataHandler))
-	log.Fatalln(http.ListenAndServe(op.Config.APIServer.Address, router))
-}
 
+	log.Infoln("Listening on", c.Opt.APIAddress)
+	log.Fatal(http.ListenAndServe(c.Opt.APIAddress, router))
+}
 
 func (c *Controller) Run() {
 	go c.WatchNamespaces()
@@ -157,4 +126,15 @@ func (c *Controller) Run() {
 	go c.WatchPodAlerts()
 	go c.WatchNodeAlerts()
 	go c.WatchClusterAlerts()
+}
+
+func (c *Controller) RunAndHold() {
+	c.Run()
+	go c.RunAPIServer()
+
+	m := pat.New()
+	m.Get("/metrics", promhttp.Handler())
+	http.Handle("/", m)
+	log.Infoln("Listening on", c.Opt.WebAddress)
+	log.Fatal(http.ListenAndServe(c.Opt.WebAddress, nil))
 }
