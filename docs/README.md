@@ -57,7 +57,7 @@ Kubernetes 1.5+
 To install Searchlight, please follow the guide [here](/docs/install.md).
 
 ## Using Searchlight
-Want to learn how to use Searchlight? Please start [here](/docs/alert.md).
+Want to learn how to use Searchlight? Please start [here](/docs/tutorials/README.md).
 
 ## Contribution guidelines
 Want to help improve Searchlight? Please start [here](/CONTRIBUTING.md).
