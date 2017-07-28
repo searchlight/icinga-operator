@@ -61,11 +61,11 @@ const (
 	CheckCACert          CheckCluster = "ca_cert"
 
 	CheckHttp        CheckCluster = "any_http"
-	CheckHelloIcinga CheckCluster = "hello_icinga"
-	CheckDIG         CheckCluster = "dig"
-	CheckDNS         CheckCluster = "dns"
-	CheckDummy       CheckCluster = "dummy"
-	CheckICMP        CheckCluster = "icmp"
+	CheckHelloIcinga CheckCluster = "hello"
+	//CheckDIG         CheckCluster = "dig"
+	//CheckDNS         CheckCluster = "dns"
+	CheckDummy CheckCluster = "dummy"
+	//CheckICMP        CheckCluster = "icmp"
 )
 
 func (c CheckCluster) IsValid() bool {
@@ -131,10 +131,10 @@ func init() {
 			c.Name == string(CheckEvent) ||
 			c.Name == string(CheckCACert) ||
 			c.Name == string(CheckHelloIcinga) ||
-			c.Name == string(CheckDIG) ||
-			c.Name == string(CheckDNS) ||
-			c.Name == string(CheckDummy) ||
-			c.Name == string(CheckICMP) {
+			// c.Name == string(CheckDIG) ||
+			// c.Name == string(CheckDNS) ||
+			// c.Name == string(CheckICMP) ||
+			c.Name == string(CheckDummy) {
 			ClusterCommands[CheckCluster(c.Name)] = c
 		}
 	}

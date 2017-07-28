@@ -4,7 +4,7 @@ import (
 	"os"
 
 	v "github.com/appscode/go/version"
-	"github.com/appscode/searchlight/plugins/hello_icinga"
+	"github.com/appscode/searchlight/plugins/hello"
 )
 
 var (
@@ -38,7 +38,7 @@ func init() {
 }
 
 func main() {
-	rootCmd := hello_icinga.NewCmd()
+	rootCmd := hello.NewCmd()
 	// execute commands.
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

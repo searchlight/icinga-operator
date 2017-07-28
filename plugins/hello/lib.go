@@ -1,4 +1,4 @@
-package hello_icinga
+package hello
 
 import (
 	"fmt"
