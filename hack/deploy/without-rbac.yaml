@@ -24,8 +24,8 @@ spec:
     spec:
       containers:
       - name: operator
-        image: appscode/searchlight:3.0.0
-        imagePullPolicy: IfNotPresent
+        image: appscode/searchlight:canary
+        imagePullPolicy: Always
         args:
         - run
         - --v=3
@@ -45,7 +45,7 @@ spec:
           mountPath: /srv
       - name: icinga
         image: appscode/icinga:3.0.0-k8s
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - name: icinga
           containerPort: 5665
