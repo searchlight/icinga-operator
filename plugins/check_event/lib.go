@@ -56,7 +56,6 @@ func CheckKubeEvent(req *Request) (icinga.State, interface{}) {
 		fields.OneTermEqualSelector(api.EventTypeField, apiv1.EventTypeWarning),
 		kubeClient.Client.CoreV1().Events(req.Namespace).GetFieldSelector(objName, objNamespace, objKind, objUID),
 	)
-	fmt.Fprintln(os.Stdout, "selector:", fs.String())
 	eventList, err := kubeClient.Client.CoreV1().Events(req.Namespace).List(metav1.ListOptions{
 		FieldSelector: fs.String(),
 	})
