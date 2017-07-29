@@ -4,6 +4,15 @@ ClusterAlert `env` prints the list of environment variables in searchlight-opera
 
 
 
+## Spec
+`env` check command has not variables. It support following states:
+- OK
+- WARNING
+- CRITICAL
+- UNKNOWN
+
+
+
 ## Tutorial
 
 ### Before You Begin
@@ -67,48 +76,6 @@ $ kubectl delete ns demo
 ```
 
 If you would like to uninstall Searchlight operator, please follow the steps [here](/docs/uninstall.md).
-
-
-
-#### Vars
-
-* `count` - Number of expected Kubernetes Node
-
-
-#### Supported Icinga2 State
-
-* OK
-* CRITICAL
-* UNKNOWN
-
-##### Configure Alert Object
-```yaml
-# This will check if any pod exists in default namespace
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: ClusterAlert
-metadata:
-  name: check-pod-exist-1
-  namespace: demo
-spec:
-  check: pod_exists
-  alertInterval: 2m
-  checkInterval: 1m
-  receivers:
-  - notifier: mailgun
-    state: CRITICAL
-    to: ["ops@example.com"]
-
-# To check with expected pod number, suppose 8, add following in spec.vars
-# vars:
-#   count: 8
-
-# To check for others kubernetes objects, set following labels
-# labels:
-#   alert.appscode.com/objectType: services
-#   alert.appscode.com/objectName: elasticsearch-logging
-```
-
-
 
 
 
