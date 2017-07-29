@@ -1,0 +1,8 @@
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: PodAlert
+metadata:
+  name: pod-status-name
+spec:
+  podName: nginx-2371676037-kv28m
+  check: pod_status
+  checkInterval: 10s
