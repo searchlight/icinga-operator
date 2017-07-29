@@ -1,7 +1,7 @@
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: node-exists-demo-0
+  name: node-exists-demo-1
   namespace: demo
 spec:
   check: node_exists
