@@ -1,11 +1,15 @@
 # Check ca_cert
-In this tutorial,
 
-ClusterAlert `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.
-
+ClusterAlert `ca_cert` checks the expiration timestamp of Kubernetes api server CA certificate. No longer you have to get a surprise that the CA certificate for your cluster has expired.
 
 ## Spec
-`env` check command has no variables. Execution of this command can result in following states:
+
+#### Vars
+`ca_cert` check command has the following variables:
+- `warning` - Condition for warning, compare with result. (Example: R > 75)
+- `critical` - Condition for critical, compare with result. (Example: R > 90)
+
+Execution of this command can result in following states:
 - OK
 - WARNING
 - CRITICAL
@@ -32,7 +36,7 @@ demo          Active    4m
 ```
 
 ### Create Alert
-In this tutorial, we are going to create an alert to check `env`.
+In this tutorial, we are going to create an alert to check `ca_cert`.
 ```yaml
 $ cat ./docs/examples/cluster-alerts/env/demo-0.yaml
 
@@ -66,7 +70,7 @@ Events:
   6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "env-demo-0"
 ```
 
-Voila! `env` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `any-notifier`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `env-demo-0`.
+Voila! `ca_cert` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `any-notifier`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `env-demo-0`.
 
 ![Demo of check_env](/docs/images/cluster-alerts/env/demo-0.gif)
 
