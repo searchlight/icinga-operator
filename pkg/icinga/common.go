@@ -38,7 +38,7 @@ func (h *commonHost) CreateIcingaHost(kh IcingaHost) error {
 		return errors.FromErr(resp.Err).Err()
 	}
 	if resp.Status != 200 {
-		return errors.New("Can't create Icinga host").Err()
+		return errors.Newf("Can't create Icinga host: %d", resp.Status).Err()
 	}
 	return nil
 }
@@ -55,13 +55,13 @@ func (h *commonHost) DeleteIcingaHost(kh IcingaHost) error {
 	in := fmt.Sprintf(`{"filter": "match(\"%s\",host.name)"}`, host)
 	var respService ResponseObject
 	if _, err := h.IcingaClient.Objects().Service("").Update([]string{}, in).Do().Into(&respService); err != nil {
-		return errors.New("Can't get Icinga service").Err()
+		return errors.FromErr(err).WithMessage("Can't get Icinga service").Err()
 	}
 
 	if len(respService.Results) <= 1 {
 		resp := h.IcingaClient.Objects().Hosts("").Delete([]string{}, in).Params(param).Do()
 		if resp.Err != nil {
-			return errors.New("Can't delete Icinga host").Err()
+			return errors.FromErr(err).WithMessage("Can't delete Icinga host").Err()
 		}
 	}
 	return nil
@@ -112,7 +112,7 @@ func (h *commonHost) UpdateIcingaService(svc string, kh IcingaHost, attrs map[st
 		return errors.FromErr(resp.Err).Err()
 	}
 	if resp.Status != 200 {
-		return errors.New("Can't update Icinga service").Err()
+		return errors.Newf("Can't update Icinga service; %d", resp.Status).Err()
 	}
 	return nil
 }
@@ -130,7 +130,7 @@ func (h *commonHost) DeleteIcingaService(svc string, kh IcingaHost) error {
 	if resp.Status == 200 || resp.Status == 404 {
 		return nil
 	}
-	return errors.New("Fail to delete service").Err()
+	return errors.Newf("Fail to delete service: %d", resp.Status).Err()
 }
 
 func (h *commonHost) CheckIcingaService(svc string, kh IcingaHost) (bool, error) {
@@ -138,7 +138,7 @@ func (h *commonHost) CheckIcingaService(svc string, kh IcingaHost) (bool, error)
 	var respService ResponseObject
 
 	if _, err := h.IcingaClient.Objects().Service("").Get([]string{}, in).Do().Into(&respService); err != nil {
-		return true, errors.New("Can't check icinga service").Err()
+		return true, errors.FromErr(err).WithMessage("Can't check icinga service").Err()
 	}
 	return len(respService.Results) > 0, nil
 }
@@ -181,7 +181,7 @@ func (h *commonHost) CreateIcingaNotification(alert tapi.Alert, kh IcingaHost) e
 	if resp.Status == 200 || strings.Contains(string(resp.ResponseBody), "already exists") {
 		return nil
 	}
-	return errors.New("Can't create Icinga notification").Err()
+	return errors.Newf("Can't create Icinga notification: %dd", resp.Status).Err()
 }
 
 func (h *commonHost) UpdateIcingaNotification(alert tapi.Alert, kh IcingaHost) error {
@@ -206,7 +206,7 @@ func (h *commonHost) UpdateIcingaNotification(alert tapi.Alert, kh IcingaHost) e
 		return errors.FromErr(resp.Err).Err()
 	}
 	if resp.Status != 200 {
-		return errors.New("Can't update Icinga notification").Err()
+		return errors.Newf("Can't update Icinga notification: %d", resp.Status).Err()
 	}
 	return nil
 }
