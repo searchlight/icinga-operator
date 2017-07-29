@@ -7,7 +7,6 @@ spec:
   check: json_path
   vars:
     url: https://api.appscode.com/health/json
-    query: .metadata.env
     critical: '.metadata.env!="prod"'
   checkInterval: 30s
   alertInterval: 2m
