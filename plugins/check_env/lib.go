@@ -1,4 +1,4 @@
-package hello
+package check_env
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 
 func NewCmd() *cobra.Command {
 	c := &cobra.Command{
-		Use: "env",
+		Use: "check_env",
 		Run: func(cmd *cobra.Command, args []string) {
 			envList := os.Environ()
 			fmt.Fprintln(os.Stdout, "Total ENV: ", len(envList))

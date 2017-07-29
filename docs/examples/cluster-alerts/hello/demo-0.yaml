@@ -1,0 +1,7 @@
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: ClusterAlert
+metadata:
+  name: hello
+spec:
+  check: hello
+  checkInterval: 10s

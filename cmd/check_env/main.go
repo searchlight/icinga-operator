@@ -4,7 +4,7 @@ import (
 	"os"
 
 	v "github.com/appscode/go/version"
-	"github.com/appscode/searchlight/plugins/hello"
+	"github.com/appscode/searchlight/plugins/check_env"
 )
 
 var (
@@ -38,7 +38,7 @@ func init() {
 }
 
 func main() {
-	rootCmd := hello.NewCmd()
+	rootCmd := check_env.NewCmd()
 	// execute commands.
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
