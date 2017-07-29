@@ -2,6 +2,7 @@ apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
 metadata:
   name: pod-status-demo-0
+  namespace: demo
 spec:
   check: pod_status
   selector:

@@ -2,6 +2,7 @@ apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
   name: any-http
+  namespace: demo
 spec:
   check: any_http
   vars:

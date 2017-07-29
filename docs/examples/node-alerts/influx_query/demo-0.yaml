@@ -2,6 +2,7 @@ apiVersion: monitoring.appscode.com/v1alpha1
 kind: NodeAlert
 metadata:
   name: influx-query-demo-0
+  namespace: demo
 spec:
   check: influx_query
   checkInterval: 30s

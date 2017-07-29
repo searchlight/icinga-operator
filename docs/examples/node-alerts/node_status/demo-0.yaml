@@ -2,6 +2,7 @@ apiVersion: monitoring.appscode.com/v1alpha1
 kind: NodeAlert
 metadata:
   name: node-status-demo-0
+  namespace: demo
 spec:
   check: node_status
   checkInterval: 30s

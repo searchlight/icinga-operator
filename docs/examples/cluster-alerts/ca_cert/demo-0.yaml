@@ -2,6 +2,7 @@ apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
   name: ca-cert-demo-0
+  namespace: demo
 spec:
   check: ca_cert
   vars:

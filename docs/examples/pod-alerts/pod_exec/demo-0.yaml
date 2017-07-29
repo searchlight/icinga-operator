@@ -2,6 +2,7 @@ apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
 metadata:
   name: pod-exec-demo-0
+  namespace: demo
 spec:
   check: pod_exec
   podName: nginx-2371676037-kv28m

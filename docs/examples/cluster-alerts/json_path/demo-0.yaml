@@ -2,6 +2,7 @@ apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
   name: json-path-demo-0
+  namespace: demo
 spec:
   check: json_path
   vars:
