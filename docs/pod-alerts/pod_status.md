@@ -182,3 +182,29 @@ NAME          READY     STATUS    RESTARTS   AGE
 nginx-sctrq   1/1       Running   0          28s
 nginx-x5rm5   1/1       Running   0          28s
 ```
+
+
+```console
+$ kubectl apply -f ./docs/examples/pod-alerts/pod_status/demo-1.yaml
+pod "busybox" created
+podalert "pod-status-demo-1" created
+
+$ kubectl get pods -n demo
+NAME      READY     STATUS    RESTARTS   AGE
+busybox   1/1       Running   0          4s
+
+$ kubectl get podalert -n demo
+NAME                KIND
+pod-status-demo-1   PodAlert.v1alpha1.monitoring.appscode.com
+
+$ kubectl describe podalert pod-status-demo-1 -n demo
+Name:		pod-status-demo-1
+Namespace:	demo
+Labels:		<none>
+Events:
+  FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
+  ---------	--------	-----	----			-------------	--------	------		-------
+  36s		36s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for PodAlert: "pod-status-demo-1". Reason: secrets "any-notifier" not found
+  36s		36s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-status-demo-1"
+  35s		35s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-status-demo-1"
+```
