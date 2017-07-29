@@ -1,4 +1,4 @@
-# Check CA Certificate check_ca_cert
+# Check ca_cert
 
 ### CheckCommand `pod_exists`
 

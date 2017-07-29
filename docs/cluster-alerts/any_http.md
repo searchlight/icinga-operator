@@ -1,4 +1,4 @@
-# Check HTTP check_http
+# Check any_http
 
 ### CheckCommand `pod_exists`
 

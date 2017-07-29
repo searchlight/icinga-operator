@@ -1,6 +1,4 @@
-# component_status
-
-# `component_status`
+# Check component_status
 
 This is used to check Kubernetes components.
 
