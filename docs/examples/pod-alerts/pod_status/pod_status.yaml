@@ -5,4 +5,10 @@ metadata:
 spec:
   check: pod_status
   checkInterval: 10s
+  alertInterval: 2m
   podName: busybox
+  notifierSecretName: searchlight-notifier
+  receivers:
+  - method: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]

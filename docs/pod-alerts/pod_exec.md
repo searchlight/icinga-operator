@@ -52,9 +52,9 @@ spec:
   alertInterval: 2m
   checkInterval: 1m
   receivers:
-  - method: EMAIL
+  - method: mailgun
     state: CRITICAL
-    to: system-admin
+    to: ["ops@example.com"]
   vars:
     argv: ls /var/influxdb/token.ini
 ```

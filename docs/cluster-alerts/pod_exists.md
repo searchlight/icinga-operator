@@ -43,15 +43,15 @@ apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
   name: check-pod-exist-1
-  namespace: default
+  namespace: demo
 spec:
   check: pod_exists
   alertInterval: 2m
   checkInterval: 1m
   receivers:
-  - method: EMAIL
+  - method: mailgun
     state: CRITICAL
-    to: system-admin
+    to: ["ops@example.com"]
 
 # To check with expected pod number, suppose 8, add following in spec.vars
 # vars:

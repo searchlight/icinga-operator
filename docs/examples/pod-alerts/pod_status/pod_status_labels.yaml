@@ -7,4 +7,9 @@ spec:
   checkInterval: 30s
   selector:
     matchLabels:
-      run: nginx
+      app: nginx
+  notifierSecretName: searchlight-notifier
+  receivers:
+  - method: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]

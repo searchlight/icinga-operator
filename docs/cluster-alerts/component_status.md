@@ -31,7 +31,7 @@ apiVersion: monitoring.appscode.com/v1alpha1
 kind: Alert
 metadata:
   name: check-component-status
-  namespace: default
+  namespace: demo
   labels:
     alert.appscode.com/objectType: cluster
 spec:
@@ -39,7 +39,7 @@ spec:
   alertInterval: 5m
   checkInterval: 1m
   receivers:
-  - method: EMAIL
+  - method: mailgun
     state: CRITICAL
-    to: system-admin
+    to: ["ops@example.com"]
 ```

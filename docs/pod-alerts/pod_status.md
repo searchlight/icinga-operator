@@ -53,15 +53,15 @@ apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
 metadata:
   name: check-pod-status
-  namespace: default
+  namespace: demo
 spec:
   check: pod_status
   alertInterval: 2m
   checkInterval: 1m
   receivers:
-  - method: EMAIL
+  - method: mailgun
     state: CRITICAL
-    to: system-admin
+    to: ["ops@example.com"]
 
 
 # To check for others kubernetes objects, set following labels

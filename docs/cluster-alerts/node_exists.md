@@ -34,15 +34,15 @@ apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
   name: check-node-count
-  namespace: default
+  namespace: demo
 spec:
   check: node_exists
   alertInterval: 2m
   checkInterval: 1m
   receivers:
-  - method: EMAIL
+  - method: mailgun
     state: CRITICAL
-    to: system-admin
+    to: ["ops@example.com"]
   vars:
     count: 3
 ```

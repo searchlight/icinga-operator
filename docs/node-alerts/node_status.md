@@ -33,15 +33,15 @@ apiVersion: monitoring.appscode.com/v1alpha1
 kind: NodeAlert
 metadata:
   name: check-node-status
-  namespace: default
+  namespace: demo
 spec:
   check: node_status
   alertInterval: 2m
   checkInterval: 1m
   receivers:
-  - method: EMAIL
+  - method: mailgun
     state: CRITICAL
-    to: system-admin
+    to: ["ops@example.com"]
 
 # To set alert on specific node, set following labels
 # labels:

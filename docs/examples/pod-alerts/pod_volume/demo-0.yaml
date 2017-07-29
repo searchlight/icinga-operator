@@ -2,7 +2,18 @@ apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
 metadata:
   name: pod-volume-demo-0
+  namespace: demo
 spec:
   check: pod_volume
-  checkInterval: 10s
+  checkInterval: 30s
+  alertInterval: 2m
   podName: nginx-2371676037-kv28m
+  vars:
+    volume_name: influxdb-persistent-storage
+    warning: 70
+    critical: 85
+  notifierSecretName: searchlight-notifier
+  receivers:
+  - method: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
