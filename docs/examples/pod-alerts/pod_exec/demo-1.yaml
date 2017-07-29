@@ -16,7 +16,7 @@ spec:
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
 metadata:
-  name: pod-exec-demo-0
+  name: pod-exec-demo-1
   namespace: demo
 spec:
   check: pod_exec
