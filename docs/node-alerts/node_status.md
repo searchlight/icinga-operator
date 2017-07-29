@@ -129,3 +129,23 @@ spec:
 #   alert.appscode.com/objectType: nodes
 #   alert.appscode.com/objectName: ip-172-20-0-9.ec2.internal
 ```
+
+
+```console
+$ kubectl apply -f ./docs/examples/node-alerts/node_status/demo-1.yaml 
+nodealert "node-status-demo-1" created
+
+$ kubectl get nodealert -n demo
+NAME                 KIND
+node-status-demo-1   NodeAlert.v1alpha1.monitoring.appscode.com
+
+$ kubectl describe nodealert -n demo node-status-demo-1
+Name:		node-status-demo-1
+Namespace:	demo
+Labels:		<none>
+Events:
+  FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
+  ---------	--------	-----	----			-------------	--------	------		-------
+  33s		33s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for NodeAlert: "node-status-demo-1". Reason: secrets "any-notifier" not found
+  33s		33s		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "node-status-demo-1"
+```
