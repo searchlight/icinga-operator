@@ -1,10 +1,21 @@
 # Check component_status
 
 This is used to check Kubernetes components.
-In this tutorial,
+
+ClusterAlert `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.
 
 
-## Before You Begin
+## Spec
+`env` check command has no variables. Execution of this command can result in following states:
+- OK
+- WARNING
+- CRITICAL
+- UNKNOWN
+
+
+## Tutorial
+
+### Before You Begin
 At first, you need to have a Kubernetes cluster, and the kubectl command-line tool must be configured to communicate with your cluster. If you do not already have a cluster, you can create one by using [Minikube](https://github.com/kubernetes/minikube).
 
 To keep things isolated, this tutorial uses a separate namespace called `demo` throughout this tutorial. Run the following command to prepare your cluster for this tutorial:
@@ -21,9 +32,46 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
+### Create Alert
+In this tutorial, we are going to create an alert to check `env`.
+```yaml
+$ cat ./docs/examples/cluster-alerts/env/demo-0.yaml
 
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: ClusterAlert
+metadata:
+  name: env-demo-0
+  namespace: demo
+spec:
+  check: env
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: any-notifier
+  receivers:
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
+```
+```console
+$ kubectl apply -f ./docs/examples/cluster-alerts/env/demo-0.yaml 
+clusteralert "env-demo-0" created
 
-## Cleaning up
+$ kubectl describe clusteralert env-demo-0 -n demo
+Name:		env-demo-0
+Namespace:	demo
+Labels:		<none>
+Events:
+  FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
+  ---------	--------	-----	----			-------------	--------	------		-------
+  6m		6m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "env-demo-0". Reason: secrets "any-notifier" not found
+  6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "env-demo-0"
+```
+
+Voila! `env` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `any-notifier`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `env-demo-0`.
+
+![Demo of check_env](/docs/images/cluster-alerts/env/demo-0.gif)
+
+### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
 ```console
 $ kubectl delete ns demo
@@ -33,6 +81,7 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 
 
 ## Next Steps
+
 
 
 #### Supported Kubernetes Objects

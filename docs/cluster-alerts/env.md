@@ -3,14 +3,12 @@
 ClusterAlert `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.
 
 
-
 ## Spec
 `env` check command has no variables. Execution of this command can result in following states:
 - OK
 - WARNING
 - CRITICAL
 - UNKNOWN
-
 
 
 ## Tutorial
@@ -80,8 +78,4 @@ $ kubectl delete ns demo
 If you would like to uninstall Searchlight operator, please follow the steps [here](/docs/uninstall.md).
 
 
-
 ## Next Steps
-
-
-
