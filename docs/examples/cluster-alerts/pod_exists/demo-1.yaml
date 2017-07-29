@@ -16,7 +16,7 @@ spec:
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: pod-exists-demo-0
+  name: pod-exists-demo-1
   namespace: demo
 spec:
   check: pod_exists
