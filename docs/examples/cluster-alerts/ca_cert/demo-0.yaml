@@ -6,7 +6,8 @@ metadata:
 spec:
   check: ca_cert
   vars:
-    count: 1
+    warning: 240h
+    critical: 72h
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: any-notifier

@@ -6,8 +6,8 @@ ClusterAlert `ca_cert` checks the expiration timestamp of Kubernetes api server 
 
 #### Vars
 `ca_cert` check command has the following variables:
-- `warning` - Condition for warning, compare with result. (Example: R > 75)
-- `critical` - Condition for critical, compare with result. (Example: R > 90)
+- `warning` - Condition for warning, compare with tiem left before expiration. (Default: TTL < 360h)
+- `critical` - Condition for critical, compare with tiem left before expiration. (Default: TTL < 120h)
 
 Execution of this command can result in following states:
 - OK
@@ -38,15 +38,18 @@ demo          Active    4m
 ### Create Alert
 In this tutorial, we are going to create an alert to check `ca_cert`.
 ```yaml
-$ cat ./docs/examples/cluster-alerts/env/demo-0.yaml
+$ cat ./docs/examples/cluster-alerts/ca_cert/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: env-demo-0
+  name: ca-cert-demo-0
   namespace: demo
 spec:
-  check: env
+  check: ca_cert
+  vars:
+    warning: 240h
+    critical: 72h
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: any-notifier
@@ -56,23 +59,23 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/env/demo-0.yaml 
-clusteralert "env-demo-0" created
+$ kubectl apply -f ./docs/examples/cluster-alerts/ca_cert/demo-0.yaml
+clusteralert "ca-cert-demo-0" created
 
-$ kubectl describe clusteralert env-demo-0 -n demo
-Name:		env-demo-0
+$ kubectl describe clusteralert ca-cert-demo-0 -n demo
+Name:		ca-cert-demo-0
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  6m		6m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "env-demo-0". Reason: secrets "any-notifier" not found
-  6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "env-demo-0"
+  6m		6m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "ca-cert-demo-0". Reason: secrets "any-notifier" not found
+  6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "ca-cert-demo-0"
 ```
 
-Voila! `ca_cert` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `any-notifier`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `env-demo-0`.
+Voila! `ca_cert` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `any-notifier`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `ca-cert-demo-0`.
 
-![Demo of check_env](/docs/images/cluster-alerts/env/demo-0.gif)
+![Demo of check_env](/docs/images/cluster-alerts/ca_cert/demo-0.gif)
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
@@ -85,66 +88,3 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 
 ## Next Steps
 
-
-This is used to check Kubernetes pod existence.
-
-#### Supported Kubernetes Objects
-
-| Kubernetes Object      | Icinga2 Host Type |
-| :---:                  | :---:             |
-| cluster                | localhost         |
-| deployments            | localhost         |
-| daemonsets             | localhost         |
-| replicasets            | localhost         |
-| statefulsets           | localhost         |
-| replicationcontrollers | localhost         |
-| services               | localhost         |
-
-#### Vars
-
-* `count` - Number of expected Kubernetes Node
-
-
-#### Supported Icinga2 State
-
-* OK
-* CRITICAL
-* UNKNOWN
-
-#### Example
-###### Command
-```console
-hyperalert check_pod_exists --host='pod_exists@default' --count=7
-# --host is provided by Icinga2
-```
-###### Output
-```
-OK: Found all pods
-```
-
-##### Configure Alert Object
-```yaml
-# This will check if any pod exists in default namespace
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: ClusterAlert
-metadata:
-  name: check-pod-exist-1
-  namespace: demo
-spec:
-  check: pod_exists
-  alertInterval: 2m
-  checkInterval: 1m
-  receivers:
-  - notifier: mailgun
-    state: CRITICAL
-    to: ["ops@example.com"]
-
-# To check with expected pod number, suppose 8, add following in spec.vars
-# vars:
-#   count: 8
-
-# To check for others kubernetes objects, set following labels
-# labels:
-#   alert.appscode.com/objectType: services
-#   alert.appscode.com/objectName: elasticsearch-logging
-```
