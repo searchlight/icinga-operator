@@ -3,6 +3,7 @@ package check_json_path
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -42,10 +43,6 @@ type JQ struct {
 	Q string `json:"q"`
 }
 
-const (
-	auth = "auth"
-)
-
 func getData(req *Request) (string, error) {
 	var hc *httpclient.Client
 
@@ -58,6 +55,9 @@ func getData(req *Request) (string, error) {
 		hc = httpclient.New(cc.Client, nil, nil)
 	} else {
 		hc = httpclient.Default().WithBaseURL(req.URL)
+		if req.URL == "" {
+			return "", errors.New("Missing URL")
+		}
 
 		if req.Secret != "" {
 			kubeClient, err := util.NewClient()
@@ -123,17 +123,17 @@ func (j *JQ) eval() (res interface{}, err error) {
 	return
 }
 
-func checkResult(evalDataString, checkQuery string) (bool, error) {
+func checkResult(response, query string) (bool, error) {
 	jqData := &JQ{
-		J: string(evalDataString),
-		Q: checkQuery,
+		J: response,
+		Q: query,
 	}
 	result, err := jqData.eval()
 	if err != nil {
 		return false, err
 	}
 	if reflect.TypeOf(result).Kind() != reflect.Bool {
-		return false, fmt.Errorf("Invalid check query: %v", checkQuery)
+		return false, fmt.Errorf("Invalid check query: %v", query)
 	}
 	return result.(bool), nil
 }
@@ -142,26 +142,8 @@ func CheckJsonPath(req *Request) (icinga.State, interface{}) {
 	jsonData, err := getData(req)
 	if err != nil {
 		return icinga.UNKNOWN, err
-
 	}
 
-	//jqData := &JQ{
-	//	J: jsonData,
-	//	Q: req.Query,
-	//}
-	//
-	//evalData, err := jqData.eval()
-	//if err != nil {
-	//	return icinga.UNKNOWN, "Invalid query. No data found"
-	//}
-	//
-	//evalDataByte, err := json.Marshal(evalData)
-	//if err != nil {
-	//	return icinga.UNKNOWN, err
-	//
-	//}
-
-	//evalDataString := string(evalDataByte)
 	if req.Critical != "" {
 		isCritical, err := checkResult(jsonData, req.Critical)
 		if err != nil {
@@ -202,7 +184,6 @@ func NewCmd() *cobra.Command {
 			}
 			req.Namespace = host.AlertNamespace
 
-			flags.EnsureRequiredFlags(cmd, "url", "query")
 			flags.EnsureAlterableFlags(cmd, "warning", "critical")
 			icinga.Output(CheckJsonPath(&req))
 		},
