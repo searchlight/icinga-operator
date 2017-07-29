@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cobra"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/spf13/cobra"
 )
 
 func NewCmd() *cobra.Command {
