@@ -62,7 +62,7 @@
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
-          "optional": false
+          "optional": true
         },
         {
           "description": "Kubernetes secret name",
