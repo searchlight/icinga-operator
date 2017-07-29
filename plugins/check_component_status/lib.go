@@ -88,7 +88,6 @@ func NewCmd() *cobra.Command {
 
 		Run: func(c *cobra.Command, args []string) {
 			icinga.Output(CheckComponentStatus(&req))
-
 		},
 	}
 	cmd.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")

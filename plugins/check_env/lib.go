@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/appscode/searchlight/pkg/icinga"
 )
 
 func NewCmd() *cobra.Command {
@@ -17,6 +18,7 @@ func NewCmd() *cobra.Command {
 			for _, env := range envList {
 				fmt.Fprintln(os.Stdout, env)
 			}
+			icinga.Output(icinga.OK, "A-OK")
 		},
 	}
 	return c
