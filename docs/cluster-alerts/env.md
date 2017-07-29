@@ -77,12 +77,37 @@ demo          Active    4m
 ```
 
 ### Create Alert
-In this tutorial, we are going to create an alert to check `env`. 
+In this tutorial, we are going to create an alert to check `env`.
 ```yaml
-$ cat ./docs/examples/cluster-alerts/env
+$ cat ./docs/examples/cluster-alerts/env/demo-0.yaml 
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: ClusterAlert
+metadata:
+  name: env-demo-0
+  namespace: demo
+spec:
+  check: env
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: any-notifier
+  receivers:
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
+```
+```console
+$ kubectl apply -f ./docs/examples/cluster-alerts/env/demo-0.yaml
+clusteralert "env-demo-0" configured
 
-
-
+$ kubectl describe clusteralert env-demo-0 -n demo
+Name:		env-demo-0
+Namespace:	demo
+Labels:		<none>
+Events:
+  FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
+  ---------	--------	-----	----			-------------	--------	------		-------
+  6m		6m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "env-demo-0". Reason: secrets "any-notifier" not found
+  6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "env-demo-0"
 ```
 
 
