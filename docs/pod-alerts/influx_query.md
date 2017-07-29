@@ -1,4 +1,4 @@
-### CheckCommand `influx_query`
+# Check influx_query
 
 This is used to check InfluxDB query result.
 

@@ -1,4 +1,4 @@
-### CheckCommand `pod_status`
+# Check pod_status
 
 This is used to check Kubernetes pod status.
 

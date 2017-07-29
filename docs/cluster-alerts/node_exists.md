@@ -1,4 +1,4 @@
-### CheckCommand `node_count`
+# Check node_exists
 
 This is used to check total number of Kubernetes node.
 
@@ -21,7 +21,7 @@ This is used to check total number of Kubernetes node.
 #### Example
 ###### Command
 ```console
-hyperalert check_node_count --count=3
+hyperalert check_node_exists --count=3
 ```
 ###### Output
 ```
@@ -36,7 +36,7 @@ metadata:
   name: check-node-count
   namespace: default
 spec:
-  check: node_count
+  check: node_exists
   alertInterval: 2m
   checkInterval: 1m
   receivers:

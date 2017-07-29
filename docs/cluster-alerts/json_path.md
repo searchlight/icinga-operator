@@ -1,4 +1,4 @@
-# Check json_path `json_path`
+# Check json_path
 
 This is used to check any API response parsing JSON using JQ queries.
 

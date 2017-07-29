@@ -1,4 +1,4 @@
-### CheckCommand `pod_exec`
+# Check pod_exec
 
 This is used to check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL.
 

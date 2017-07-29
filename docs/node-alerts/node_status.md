@@ -1,4 +1,4 @@
-### CheckCommand `node_status`
+# Check node_status
 
 This is used to check Kubernetes Node status.
 
