@@ -151,3 +151,34 @@ spec:
 #   alert.appscode.com/objectType: services
 #   alert.appscode.com/objectName: elasticsearch-logging
 ```
+
+
+
+```console
+$ kubectl create ns demo
+namespace "demo" created
+
+$ kubectl apply -f ./docs/examples/pod-alerts/pod_status/demo-0.yaml 
+replicationcontroller "nginx" created
+podalert "pod-status-demo-0" created
+
+$ kubectl get podalert -n demo
+NAME                KIND
+pod-status-demo-0   PodAlert.v1alpha1.monitoring.appscode.com
+
+$ kubectl describe podalert -n demo pod-status-demo-0
+Name:		pod-status-demo-0
+Namespace:	demo
+Labels:		<none>
+Events:
+  FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
+  ---------	--------	-----	----			-------------	--------	------		-------
+  21s		21s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for PodAlert: "pod-status-demo-0". Reason: secrets "any-notifier" not found
+  18s		18s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-status-demo-0"
+  17s		17s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-status-demo-0"
+
+$ kubectl get pods -n demo
+NAME          READY     STATUS    RESTARTS   AGE
+nginx-sctrq   1/1       Running   0          28s
+nginx-x5rm5   1/1       Running   0          28s
+```
