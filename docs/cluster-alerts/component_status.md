@@ -1,5 +1,7 @@
 # component_status
 
+# `component_status`
+
 This is used to check Kubernetes components.
 
 #### Supported Kubernetes Objects
