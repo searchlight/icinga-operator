@@ -93,48 +93,54 @@ var (
 )
 
 func init() {
-	PodCommands = map[CheckPod]IcingaCommand{}
-	NodeCommands = map[CheckNode]IcingaCommand{}
 	ClusterCommands = map[CheckCluster]IcingaCommand{}
-
-	cmdList, err := data.LoadIcingaData()
+	clusterChecks, err := data.LoadClusterChecks()
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, cmd := range cmdList.Command {
+	for _, cmd := range clusterChecks.Command {
 		vars := make(map[string]data.CommandVar)
 		for _, v := range cmd.Vars {
 			vars[v.Name] = v
 		}
-		c := IcingaCommand{
+		ClusterCommands[CheckCluster(cmd.Name)] = IcingaCommand{
 			Name:   cmd.Name,
 			Vars:   vars,
 			States: cmd.States,
 		}
-		if c.Name == string(CheckPodInfluxQuery) ||
-			c.Name == string(CheckPodStatus) ||
-			c.Name == string(CheckPodVolume) ||
-			c.Name == string(CheckPodExec) {
-			PodCommands[CheckPod(c.Name)] = c
+	}
+
+	NodeCommands = map[CheckNode]IcingaCommand{}
+	nodeChecks, err := data.LoadNodeChecks()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, cmd := range nodeChecks.Command {
+		vars := make(map[string]data.CommandVar)
+		for _, v := range cmd.Vars {
+			vars[v.Name] = v
 		}
-		if c.Name == string(CheckNodeInfluxQuery) ||
-			c.Name == string(CheckNodeVolume) ||
-			c.Name == string(CheckNodeStatus) {
-			NodeCommands[CheckNode(c.Name)] = c
+		NodeCommands[CheckNode(cmd.Name)] = IcingaCommand{
+			Name:   cmd.Name,
+			Vars:   vars,
+			States: cmd.States,
 		}
-		if c.Name == string(CheckHttp) ||
-			c.Name == string(CheckComponentStatus) ||
-			c.Name == string(CheckJsonPath) ||
-			c.Name == string(CheckNodeExists) ||
-			c.Name == string(CheckPodExists) ||
-			c.Name == string(CheckEvent) ||
-			c.Name == string(CheckCACert) ||
-			c.Name == string(CheckEnv) ||
-			// c.Name == string(CheckDIG) ||
-			// c.Name == string(CheckDNS) ||
-			// c.Name == string(CheckICMP) ||
-			c.Name == string(CheckDummy) {
-			ClusterCommands[CheckCluster(c.Name)] = c
+	}
+
+	PodCommands = map[CheckPod]IcingaCommand{}
+	podChecks, err := data.LoadPodChecks()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, cmd := range podChecks.Command {
+		vars := make(map[string]data.CommandVar)
+		for _, v := range cmd.Vars {
+			vars[v.Name] = v
+		}
+		PodCommands[CheckPod(cmd.Name)] = IcingaCommand{
+			Name:   cmd.Name,
+			Vars:   vars,
+			States: cmd.States,
 		}
 	}
 }
