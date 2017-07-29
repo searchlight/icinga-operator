@@ -5,7 +5,7 @@ ClusterAlert `env` prints the list of environment variables in searchlight-opera
 
 
 ## Spec
-`env` check command has not variables. It support following states:
+`env` check command has no variables. It support following states:
 - OK
 - WARNING
 - CRITICAL
