@@ -1,10 +1,10 @@
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
 metadata:
-  name: pod-status-nginx
+  name: pod-status-demo-0
 spec:
+  check: pod_status
+  checkInterval: 30s
   selector:
     matchLabels:
       run: nginx
-  check: pod_status
-  checkInterval: 30s

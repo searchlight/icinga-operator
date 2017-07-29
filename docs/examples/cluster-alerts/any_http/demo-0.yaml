@@ -1,9 +1,9 @@
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: node-count
+  name: any-http
 spec:
-  check: node_count
+  check: any_http
   checkInterval: 10s
   vars:
     count: 1

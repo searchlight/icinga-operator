@@ -1,7 +1,7 @@
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: NodeAlert
 metadata:
-  name: node-status
+  name: influx-query-demo-0
 spec:
-  check: node_status
+  check: influx_query
   checkInterval: 10s

@@ -1,7 +1,7 @@
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: hello
+  name: env-demo-0
 spec:
-  check: hello
+  check: env
   checkInterval: 10s
