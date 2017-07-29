@@ -91,7 +91,7 @@ func (h *commonHost) CreateIcingaService(svc string, kh IcingaHost, attrs map[st
 	if strings.Contains(string(resp.ResponseBody), "already exists") {
 		return nil
 	}
-	return errors.New("Can't create Icinga service").Err()
+	return errors.Newf("Can't create Icinga service %d", resp.Status).Err()
 }
 
 func (h *commonHost) UpdateIcingaService(svc string, kh IcingaHost, attrs map[string]interface{}) error {
