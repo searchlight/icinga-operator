@@ -167,5 +167,16 @@ Events:
 ```
 
 ```console
+$ kubectl apply -f ./docs/examples/node-alerts/node_status/demo-2.yaml 
+nodealert "node-status-demo-2" created
 
+$ kubectl describe nodealert -n demo node-status-demo-2
+Name:		node-status-demo-2
+Namespace:	demo
+Labels:		<none>
+Events:
+  FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
+  ---------	--------	-----	----			-------------	--------	------		-------
+  22s		22s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for NodeAlert: "node-status-demo-2". Reason: secrets "any-notifier" not found
+  22s		22s		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "node-status-demo-2"
 ```
