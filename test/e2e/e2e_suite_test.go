@@ -34,7 +34,7 @@ const (
 )
 
 var (
-	ctrl *operator.Operator
+	op   *operator.Operator
 	root *framework.Framework
 )
 
@@ -105,10 +105,10 @@ var _ = BeforeSuite(func() {
 	fmt.Println()
 
 	// Controller
-	ctrl = operator.New(kubeClient, extClient, icingaClient, operator.Options{})
-	err = ctrl.Setup()
+	op = operator.New(kubeClient, extClient, icingaClient, operator.Options{})
+	err = op.Setup()
 	Expect(err).NotTo(HaveOccurred())
-	ctrl.Run()
+	op.Run()
 	root.EventuallyClusterAlert().Should(Succeed())
 	root.EventuallyNodeAlert().Should(Succeed())
 	root.EventuallyPodAlert().Should(Succeed())
