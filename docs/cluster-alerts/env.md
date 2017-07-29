@@ -110,6 +110,7 @@ Events:
   6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "env-demo-0"
 ```
 
+![Demo of check_env](/docs/images/cluster-alerts/env/demo-0.gif)
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
