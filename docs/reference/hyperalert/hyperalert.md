@@ -20,6 +20,7 @@ hyperalert [flags]
 ### SEE ALSO
 * [hyperalert check_ca_cert](hyperalert_check_ca_cert.md)	 - Check Certificate expire date
 * [hyperalert check_component_status](hyperalert_check_component_status.md)	 - Check Kubernetes Component Status
+* [hyperalert check_env](hyperalert_check_env.md)	 - 
 * [hyperalert check_event](hyperalert_check_event.md)	 - Check kubernetes events for all namespaces
 * [hyperalert check_influx_query](hyperalert_check_influx_query.md)	 - Check InfluxDB Query Data
 * [hyperalert check_json_path](hyperalert_check_json_path.md)	 - Check Json Object
