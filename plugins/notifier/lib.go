@@ -130,7 +130,6 @@ func NewCmd() *cobra.Command {
 	c := &cobra.Command{
 		Use:     "notifier",
 		Short:   "AppsCode Icinga2 Notifier",
-		Example: "",
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "alert", "host", "type", "state", "output", "time")
 			t, err := time.Parse("2006-01-02 15:04:05 +0000", eventTime)
