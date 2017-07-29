@@ -12,9 +12,9 @@ To receive chat notifications in Hipchat, create a Secret with the following key
 
 ```console
 $ echo -n 'your-hipchat-auth-token' > HIPCHAT_AUTH_TOKEN
-$ kubectl create secret generic searchlight-notifier -n kube-system \
+$ kubectl create secret generic notifier-info -n kube-system \
     --from-file=./HIPCHAT_AUTH_TOKEN
-secret "searchlight-notifier" created
+secret "notifier-info" created
 ```
 ```yaml
 apiVersion: v1
@@ -23,10 +23,10 @@ data:
 kind: Secret
 metadata:
   creationTimestamp: 2017-07-25T01:54:37Z
-  name: searchlight-notifier
+  name: notifier-info
   namespace: kube-system
   resourceVersion: "2244"
-  selfLink: /api/v1/namespaces/kube-system/secrets/searchlight-notifier
+  selfLink: /api/v1/namespaces/kube-system/secrets/notifier-info
   uid: 372bc159-70dc-11e7-9b0b-080027503732
 type: Opaque
 ```
@@ -44,6 +44,7 @@ recycleBin:
     to:
     - ops-alerts
   ttl: 168h
+notifierSecretName: notifier-info
 ```
 
 
@@ -62,12 +63,12 @@ $ echo -n 'your-mailgun-domain' > MAILGUN_DOMAIN
 $ echo -n 'no-reply@example.com' > MAILGUN_FROM
 $ echo -n 'your-mailgun-api-key' > MAILGUN_API_KEY
 $ echo -n 'your-mailgun-public-api-key' > MAILGUN_PUBLIC_API_KEY
-$ kubectl create secret generic searchlight-notifier -n kube-system \
+$ kubectl create secret generic notifier-info -n kube-system \
     --from-file=./MAILGUN_DOMAIN \
     --from-file=./MAILGUN_FROM \
     --from-file=./MAILGUN_API_KEY \
     --from-file=./MAILGUN_PUBLIC_API_KEY
-secret "searchlight-notifier" created
+secret "notifier-info" created
 ```
 ```yaml
 apiVersion: v1
@@ -79,10 +80,10 @@ data:
 kind: Secret
 metadata:
   creationTimestamp: 2017-07-25T01:31:24Z
-  name: searchlight-notifier
+  name: notifier-info
   namespace: kube-system
   resourceVersion: "714"
-  selfLink: /api/v1/namespaces/kube-system/secrets/searchlight-notifier
+  selfLink: /api/v1/namespaces/kube-system/secrets/notifier-info
   uid: f8e91037-70d8-11e7-9b0b-080027503732
 type: Opaque
 ```
@@ -100,6 +101,7 @@ recycleBin:
     to:
     - ops-alerts@example.com
   ttl: 168h
+notifierSecretName: notifier-info
 ```
 
 
@@ -123,14 +125,14 @@ $ echo -n 'your-smtp-insecure-skip-verify' > SMTP_INSECURE_SKIP_VERIFY
 $ echo -n 'your-smtp-username' > SMTP_USERNAME
 $ echo -n 'your-smtp-password' > SMTP_PASSWORD
 $ echo -n 'your-smtp-from' > SMTP_FROM
-$ kubectl create secret generic searchlight-notifier -n kube-system \
+$ kubectl create secret generic notifier-info -n kube-system \
     --from-file=./SMTP_HOST \
     --from-file=./SMTP_PORT \
     --from-file=./SMTP_INSECURE_SKIP_VERIFY \
     --from-file=./SMTP_USERNAME \
     --from-file=./SMTP_PASSWORD \
     --from-file=./SMTP_FROM
-secret "searchlight-notifier" created
+secret "notifier-info" created
 ```
 
 To configure Searchlight to send email notifications using a GMail account, set the Secrets like below:
@@ -155,6 +157,7 @@ recycleBin:
     to:
     - ops-alerts@example.com
   ttl: 168h
+notifierSecretName: notifier-info
 ```
 
 
@@ -171,11 +174,11 @@ To receive SMS notifications via Twilio, create a Secret with the following keys
 $ echo -n 'your-twilio-account-sid' > TWILIO_ACCOUNT_SID
 $ echo -n 'your-twilio-auth-token' > TWILIO_AUTH_TOKEN
 $ echo -n 'your-twilio-from' > TWILIO_FROM
-$ kubectl create secret generic searchlight-notifier -n kube-system \
+$ kubectl create secret generic notifier-info -n kube-system \
     --from-file=./TWILIO_ACCOUNT_SID \
     --from-file=./TWILIO_AUTH_TOKEN \
     --from-file=./TWILIO_FROM
-secret "searchlight-notifier" created
+secret "notifier-info" created
 ```
 ```yaml
 apiVersion: v1
@@ -186,10 +189,10 @@ data:
 kind: Secret
 metadata:
   creationTimestamp: 2017-07-26T17:38:38Z
-  name: searchlight-notifier
+  name: notifier-info
   namespace: kube-system
   resourceVersion: "27787"
-  selfLink: /api/v1/namespaces/kube-system/secrets/searchlight-notifier
+  selfLink: /api/v1/namespaces/kube-system/secrets/notifier-info
   uid: 41f57a61-7229-11e7-af79-08002738e55e
 type: Opaque
 ```
@@ -207,6 +210,7 @@ recycleBin:
     to:
     - +1-999-888-1234
   ttl: 168h
+notifierSecretName: notifier-info
 ```
 
 
@@ -219,9 +223,9 @@ To receive chat notifications in Slack, create a Secret with the following keys:
 
 ```console
 $ echo -n 'your-slack-auth-token' > SLACK_AUTH_TOKEN
-$ kubectl create secret generic searchlight-notifier -n kube-system \
+$ kubectl create secret generic notifier-info -n kube-system \
     --from-file=./SLACK_AUTH_TOKEN
-secret "searchlight-notifier" created
+secret "notifier-info" created
 ```
 ```yaml
 apiVersion: v1
@@ -230,10 +234,10 @@ data:
 kind: Secret
 metadata:
   creationTimestamp: 2017-07-25T01:58:58Z
-  name: searchlight-notifier
+  name: notifier-info
   namespace: kube-system
   resourceVersion: "2534"
-  selfLink: /api/v1/namespaces/kube-system/secrets/searchlight-notifier
+  selfLink: /api/v1/namespaces/kube-system/secrets/notifier-info
   uid: d2571817-70dc-11e7-9b0b-080027503732
 type: Opaque
 ```
@@ -251,6 +255,7 @@ recycleBin:
     to:
     - #ops-alerts
   ttl: 168h
+notifierSecretName: notifier-info
 ```
 
 
@@ -267,11 +272,11 @@ To receive SMS notifications via Plivo, create a Secret with the following keys:
 $ echo -n 'your-plivo-auth-id' > PLIVO_AUTH_ID
 $ echo -n 'your-plivo-auth-token' > PLIVO_AUTH_TOKEN
 $ echo -n 'your-plivo-from' > PLIVO_FROM
-$ kubectl create secret generic searchlight-notifier -n kube-system \
+$ kubectl create secret generic notifier-info -n kube-system \
     --from-file=./PLIVO_AUTH_ID \
     --from-file=./PLIVO_AUTH_TOKEN \
     --from-file=./PLIVO_FROM
-secret "searchlight-notifier" created
+secret "notifier-info" created
 ```
 ```yaml
 apiVersion: v1
@@ -282,10 +287,10 @@ data:
 kind: Secret
 metadata:
   creationTimestamp: 2017-07-25T02:00:02Z
-  name: searchlight-notifier
+  name: notifier-info
   namespace: kube-system
   resourceVersion: "2606"
-  selfLink: /api/v1/namespaces/kube-system/secrets/searchlight-notifier
+  selfLink: /api/v1/namespaces/kube-system/secrets/notifier-info
   uid: f8dade1c-70dc-11e7-9b0b-080027503732
 type: Opaque
 ```
@@ -303,6 +308,49 @@ recycleBin:
     to:
     - +1-999-888-1234
   ttl: 168h
+notifierSecretName: notifier-info
+```
+
+
+## Using multiple notifiers
+Searchlight supports using different notifiers in different scenarios. First add the credentials for the different notifiers in the same Secret `notifier-info` and deploy that to Kubernetes. Then in the Searchlight cluster config, specify the appropriate notifier for each feature.
+
+```yaml
+apiVersion: v1
+data:
+  MAILGUN_API_KEY: eW91ci1tYWlsZ3VuLWFwaS1rZXk=
+  MAILGUN_DOMAIN: eW91ci1tYWlsZ3VuLWRvbWFpbg==
+  MAILGUN_FROM: bm8tcmVwbHlAZXhhbXBsZS5jb20=
+  SLACK_AUTH_TOKEN: eW91ci1zbGFjay1hdXRoLXRva2Vu
+kind: Secret
+metadata:
+  creationTimestamp: 2017-07-25T01:58:58Z
+  name: notifier-info
+  namespace: kube-system
+  resourceVersion: "2534"
+  selfLink: /api/v1/namespaces/kube-system/secrets/notifier-info
+  uid: d2571817-70dc-11e7-9b0b-080027503732
+type: Opaque
+
+
+eventForwarder:
+  warningEvents:
+    handle: true
+    namespaces:
+    - kube-system
+  receiver:
+    notifier: mailgun
+    to:
+    - ops@example.com
+recycleBin:
+  handleUpdates: false
+  path: /tmp/searchlight/trash
+  receiver:
+    notifier: slack
+    to:
+    - #ops-alerts
+  ttl: 168h
+notifierSecretName: notifier-info
 ```
 
 
