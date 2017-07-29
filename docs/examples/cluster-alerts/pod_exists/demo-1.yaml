@@ -21,7 +21,7 @@ metadata:
 spec:
   check: pod_exists
   vars:
-    name: busybox
+    pod: busybox
     count: 1
   checkInterval: 30s
   alertInterval: 2m

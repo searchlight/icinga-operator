@@ -37,22 +37,18 @@ func CheckPodExists(req *Request, isCountSet bool) (icinga.State, interface{}) {
 
 	total_pod := 0
 	if req.Name != "" {
-		pod, err := kubeClient.Client.CoreV1().Pods(req.Namespace).Get(req.Name, metav1.GetOptions{})
+		_, err := kubeClient.Client.CoreV1().Pods(req.Namespace).Get(req.Name, metav1.GetOptions{})
 		if err != nil {
 			return icinga.UNKNOWN, err
 		}
-		if pod != nil {
-			total_pod = 1
-		}
+		total_pod = 1
 	} else {
 		podList, err := kubeClient.Client.CoreV1().Pods(req.Namespace).List(metav1.ListOptions{
 			LabelSelector: req.Selector,
-		},
-		)
+		})
 		if err != nil {
 			return icinga.UNKNOWN, err
 		}
-
 		total_pod = len(podList.Items)
 	}
 
@@ -76,10 +72,8 @@ func NewCmd() *cobra.Command {
 	var icingaHost string
 
 	cmd := &cobra.Command{
-		Use:     "check_pod_exists",
-		Short:   "Check Kubernetes Pod(s)",
-		Example: "",
-
+		Use:   "check_pod_exists",
+		Short: "Check Kubernetes Pod(s)",
 		Run: func(c *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(c, "host")
 

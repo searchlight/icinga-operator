@@ -28,7 +28,7 @@
           "flag": {
             "long": "name"
           },
-          "name": "name",
+          "name": "component",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
@@ -171,7 +171,7 @@
             "short": "n",
             "long": "name"
           },
-          "name": "name",
+          "name": "node",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
@@ -224,7 +224,7 @@
             "short": "p",
             "long": "name"
           },
-          "name": "name",
+          "name": "pod",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
