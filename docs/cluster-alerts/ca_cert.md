@@ -59,7 +59,7 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/ca_cert/demo-0.yaml
+$ kubectl apply -f ./docs/examples/cluster-alerts/ca_cert/demo-0.yaml 
 clusteralert "ca-cert-demo-0" created
 
 $ kubectl describe clusteralert ca-cert-demo-0 -n demo
@@ -69,13 +69,12 @@ Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  6m		6m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "ca-cert-demo-0". Reason: secrets "any-notifier" not found
-  6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "ca-cert-demo-0"
+  9s		9s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "ca-cert-demo-0"
 ```
 
-Voila! `ca_cert` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `any-notifier`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `ca-cert-demo-0`.
+Voila! `ca_cert` command has been synced to Icinga2. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `ca-cert-demo-0`.
 
-![Demo of check_env](/docs/images/cluster-alerts/ca_cert/demo-0.gif)
+![Demo of check_ca_cert](/docs/images/cluster-alerts/ca_cert)
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
