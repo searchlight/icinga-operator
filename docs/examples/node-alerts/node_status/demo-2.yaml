@@ -1,0 +1,15 @@
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: NodeAlert
+metadata:
+  name: node-status-demo-0
+  namespace: demo
+spec:
+  check: node_status
+  nodeName: minikube
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: any-notifier
+  receivers:
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
