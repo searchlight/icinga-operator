@@ -620,7 +620,7 @@
     },
     {
       "description": "This is used to test various stuff",
-      "name": "hello",
+      "name": "env",
       "envs": [
         "onebox",
         "prod",
