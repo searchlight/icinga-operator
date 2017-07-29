@@ -65,18 +65,6 @@
           "optional": false
         },
         {
-          "description": "JQ query",
-          "flag": {
-            "short": "q",
-            "long": "query"
-          },
-          "name": "query",
-          "type": "STRING",
-          "parameterized": false,
-          "visibility": true,
-          "optional": false
-        },
-        {
           "description": "Kubernetes secret name",
           "flag": {
             "short": "s",
