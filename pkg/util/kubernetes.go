@@ -28,6 +28,9 @@ func OperatorNamespace() string {
 }
 
 func CheckNotifiers(kubeClient clientset.Interface, alert tapi.Alert) error {
+	if alert.GetNotifierSecretName() == "" && len(alert.GetReceivers()) == 0 {
+		return nil
+	}
 	secret, err := kubeClient.CoreV1().Secrets(alert.GetNamespace()).Get(alert.GetNotifierSecretName(), metav1.GetOptions{})
 	if err != nil {
 		return err
