@@ -62,9 +62,9 @@ const (
 	CheckHttp            CheckCluster = "any_http"
 	CheckEnv             CheckCluster = "env"
 	CheckDummy           CheckCluster = "dummy"
-	//CheckICMP        CheckCluster = "icmp"
-	//CheckDIG         CheckCluster = "dig"
-	//CheckDNS         CheckCluster = "dns"
+	//CheckICMP          CheckCluster = "icmp"
+	//CheckDIG           CheckCluster = "dig"
+	//CheckDNS           CheckCluster = "dns"
 )
 
 func (c CheckCluster) IsValid() bool {
