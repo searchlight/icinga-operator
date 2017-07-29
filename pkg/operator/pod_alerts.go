@@ -8,6 +8,7 @@ import (
 	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/eventer"
+	"github.com/appscode/searchlight/pkg/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -46,6 +47,16 @@ func (op *Operator) WatchPodAlerts() {
 						)
 						return
 					}
+					if err := util.CheckNotifiers(op.KubeClient, alert); err != nil {
+						op.recorder.Eventf(
+							alert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonBadNotifier,
+							`Bad notifier config for PodAlert: "%v". Reason: %v`,
+							alert.Name,
+							err,
+						)
+					}
 					op.EnsurePodAlert(nil, alert)
 				}
 			},
@@ -72,6 +83,16 @@ func (op *Operator) WatchPodAlerts() {
 						)
 						return
 					}
+					if err := util.CheckNotifiers(op.KubeClient, newAlert); err != nil {
+						op.recorder.Eventf(
+							newAlert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonBadNotifier,
+							`Bad notifier config for PodAlert: "%v". Reason: %v`,
+							newAlert.Name,
+							err,
+						)
+					}
 					op.EnsurePodAlert(oldAlert, newAlert)
 				}
 			},
@@ -87,6 +108,16 @@ func (op *Operator) WatchPodAlerts() {
 							err,
 						)
 						return
+					}
+					if err := util.CheckNotifiers(op.KubeClient, alert); err != nil {
+						op.recorder.Eventf(
+							alert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonBadNotifier,
+							`Bad notifier config for PodAlert: "%v". Reason: %v`,
+							alert.Name,
+							err,
+						)
 					}
 					op.EnsurePodAlertDeleted(alert)
 				}

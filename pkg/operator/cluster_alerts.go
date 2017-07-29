@@ -8,6 +8,7 @@ import (
 	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/eventer"
+	"github.com/appscode/searchlight/pkg/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -45,6 +46,16 @@ func (op *Operator) WatchClusterAlerts() {
 						)
 						return
 					}
+					if err := util.CheckNotifiers(op.KubeClient, alert); err != nil {
+						op.recorder.Eventf(
+							alert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonBadNotifier,
+							`Bad notifier config for ClusterAlert: "%v". Reason: %v`,
+							alert.Name,
+							err,
+						)
+					}
 					op.EnsureClusterAlert(nil, alert)
 				}
 			},
@@ -71,6 +82,16 @@ func (op *Operator) WatchClusterAlerts() {
 						)
 						return
 					}
+					if err := util.CheckNotifiers(op.KubeClient, newAlert); err != nil {
+						op.recorder.Eventf(
+							newAlert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonBadNotifier,
+							`Bad notifier config for ClusterAlert: "%v". Reason: %v`,
+							newAlert.Name,
+							err,
+						)
+					}
 					op.EnsureClusterAlert(oldAlert, newAlert)
 				}
 			},
@@ -86,6 +107,16 @@ func (op *Operator) WatchClusterAlerts() {
 							err,
 						)
 						return
+					}
+					if err := util.CheckNotifiers(op.KubeClient, alert); err != nil {
+						op.recorder.Eventf(
+							alert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonBadNotifier,
+							`Bad notifier config for ClusterAlert: "%v". Reason: %v`,
+							alert.Name,
+							err,
+						)
 					}
 					op.EnsureClusterAlertDeleted(alert)
 				}

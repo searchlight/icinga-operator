@@ -361,6 +361,12 @@
         "prod",
         "qa",
         "dev"
+      ],
+      "states": [
+        "OK",
+        "WARNING",
+        "CRITICAL",
+        "UNKNOWN"
       ]
     },
     {

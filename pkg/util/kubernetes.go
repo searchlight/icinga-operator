@@ -5,11 +5,13 @@ import (
 	"os"
 	"strings"
 
+	"github.com/appscode/go-notify/unified"
 	tapi "github.com/appscode/searchlight/api"
 	tcs "github.com/appscode/searchlight/client/clientset"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	clientset "k8s.io/client-go/kubernetes"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
@@ -23,6 +25,25 @@ func OperatorNamespace() string {
 		}
 	}
 	return apiv1.NamespaceDefault
+}
+
+func CheckNotifiers(kubeClient clientset.Interface, alert tapi.Alert) error {
+	secret, err := kubeClient.CoreV1().Secrets(alert.GetNamespace()).Get(alert.GetNotifierSecretName(), metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+	for _, r := range alert.GetReceivers() {
+		_, err = unified.LoadVia(r.Notifier, func(key string) (value string, found bool) {
+			var bytes []byte
+			bytes, found = secret.Data[key]
+			value = string(bytes)
+			return
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func FindPodAlert(stashClient tcs.ExtensionInterface, obj metav1.ObjectMeta) ([]*tapi.PodAlert, error) {

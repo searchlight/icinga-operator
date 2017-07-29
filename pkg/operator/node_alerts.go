@@ -8,6 +8,7 @@ import (
 	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/eventer"
+	"github.com/appscode/searchlight/pkg/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -46,6 +47,16 @@ func (op *Operator) WatchNodeAlerts() {
 						)
 						return
 					}
+					if err := util.CheckNotifiers(op.KubeClient, alert); err != nil {
+						op.recorder.Eventf(
+							alert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonBadNotifier,
+							`Bad notifier config for NodeAlert: "%v". Reason: %v`,
+							alert.Name,
+							err,
+						)
+					}
 					op.EnsureNodeAlert(nil, alert)
 				}
 			},
@@ -72,6 +83,16 @@ func (op *Operator) WatchNodeAlerts() {
 						)
 						return
 					}
+					if err := util.CheckNotifiers(op.KubeClient, newAlert); err != nil {
+						op.recorder.Eventf(
+							newAlert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonBadNotifier,
+							`Bad notifier config for NodeAlert: "%v". Reason: %v`,
+							newAlert.Name,
+							err,
+						)
+					}
 					op.EnsureNodeAlert(oldAlert, newAlert)
 				}
 			},
@@ -87,6 +108,16 @@ func (op *Operator) WatchNodeAlerts() {
 							err,
 						)
 						return
+					}
+					if err := util.CheckNotifiers(op.KubeClient, alert); err != nil {
+						op.recorder.Eventf(
+							alert,
+							apiv1.EventTypeWarning,
+							eventer.EventReasonBadNotifier,
+							`Bad notifier config for NodeAlert: "%v". Reason: %v`,
+							alert.Name,
+							err,
+						)
 					}
 					op.EnsureNodeAlertDeleted(alert)
 				}

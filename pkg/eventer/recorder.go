@@ -12,6 +12,8 @@ const (
 	EventReasonNotFound        = "NotFound"
 	EventReasonFailedToProceed = "FailedToProceed"
 
+	EventReasonBadNotifier = "BadNotifier"
+
 	// Icinga objects create event list
 	EventReasonCreating         = "Creating"
 	EventReasonFailedToCreate   = "FailedToCreate"
