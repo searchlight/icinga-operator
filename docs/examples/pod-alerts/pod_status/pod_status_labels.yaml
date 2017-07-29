@@ -4,12 +4,13 @@ metadata:
   name: pod-status-demo-0
 spec:
   check: pod_status
-  checkInterval: 30s
   selector:
     matchLabels:
       app: nginx
+  checkInterval: 30s
+  alertInterval: 2m
   notifierSecretName: searchlight-notifier
   receivers:
-  - method: mailgun
+  - notifier: mailgun
     state: CRITICAL
     to: ["ops@example.com"]

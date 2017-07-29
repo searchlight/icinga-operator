@@ -63,7 +63,7 @@ spec:
   alertInterval: 2m
   checkInterval: 1m
   receivers:
-  - method: mailgun
+  - notifier: mailgun
     state: CRITICAL
     to: ["ops@example.com"]
 ```

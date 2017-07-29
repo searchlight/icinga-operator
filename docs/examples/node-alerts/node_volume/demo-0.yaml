@@ -5,3 +5,12 @@ metadata:
 spec:
   check: node_volume
   checkInterval: 10s
+spec:
+  check: node_volume
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: searchlight-notifier
+  receivers:
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]

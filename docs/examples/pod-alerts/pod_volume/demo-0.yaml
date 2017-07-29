@@ -5,15 +5,15 @@ metadata:
   namespace: demo
 spec:
   check: pod_volume
-  checkInterval: 30s
-  alertInterval: 2m
   podName: nginx-2371676037-kv28m
   vars:
     volume_name: influxdb-persistent-storage
     warning: 70
     critical: 85
+  checkInterval: 30s
+  alertInterval: 2m
   notifierSecretName: searchlight-notifier
   receivers:
-  - method: mailgun
+  - notifier: mailgun
     state: CRITICAL
     to: ["ops@example.com"]

@@ -4,6 +4,12 @@ metadata:
   name: any-http
 spec:
   check: any_http
-  checkInterval: 10s
   vars:
     count: 1
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: searchlight-notifier
+  receivers:
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
