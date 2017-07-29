@@ -9,8 +9,8 @@ import (
 	tcs "github.com/appscode/searchlight/client/clientset"
 	_ "github.com/appscode/searchlight/client/clientset/fake"
 	"github.com/appscode/searchlight/pkg/analytics"
-	"github.com/appscode/searchlight/pkg/controller"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/pkg/operator"
 	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -19,7 +19,7 @@ import (
 )
 
 func NewCmdOperator(version string) *cobra.Command {
-	opt := controller.Options{
+	opt := operator.Options{
 		ConfigRoot:       "/srv",
 		ConfigSecretName: "searchlight-operator",
 		APIAddress:       ":8080",
@@ -54,7 +54,7 @@ func NewCmdOperator(version string) *cobra.Command {
 	return cmd
 }
 
-func run(opt controller.Options) {
+func run(opt operator.Options) {
 	config, err := clientcmd.BuildConfigFromFlags(opt.Master, opt.KubeConfig)
 	if err != nil {
 		log.Fatalf("Could not get Kubernetes config: %s", err)
@@ -92,11 +92,11 @@ func run(opt controller.Options) {
 		time.Sleep(2 * time.Second)
 	}
 
-	ctrl := controller.New(kubeClient, extClient, icingaClient, opt)
-	if err := ctrl.Setup(); err != nil {
+	op := operator.New(kubeClient, extClient, icingaClient, opt)
+	if err := op.Setup(); err != nil {
 		log.Fatalln(err)
 	}
 
 	log.Infoln("Starting Searchlight operator...")
-	ctrl.RunAndHold()
+	op.RunAndHold()
 }

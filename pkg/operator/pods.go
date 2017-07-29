@@ -1,4 +1,4 @@
-package controller
+package operator
 
 import (
 	"errors"
@@ -18,20 +18,20 @@ import (
 )
 
 // Blocks caller. Intended to be called as a Go routine.
-func (c *Controller) WatchPods() {
+func (op *Operator) WatchPods() {
 	defer acrt.HandleCrash()
 
 	lw := &cache.ListWatch{
 		ListFunc: func(opts metav1.ListOptions) (runtime.Object, error) {
-			return c.KubeClient.CoreV1().Pods(apiv1.NamespaceAll).List(metav1.ListOptions{})
+			return op.KubeClient.CoreV1().Pods(apiv1.NamespaceAll).List(metav1.ListOptions{})
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-			return c.KubeClient.CoreV1().Pods(apiv1.NamespaceAll).Watch(metav1.ListOptions{})
+			return op.KubeClient.CoreV1().Pods(apiv1.NamespaceAll).Watch(metav1.ListOptions{})
 		},
 	}
 	_, ctrl := cache.NewInformer(lw,
 		&apiv1.Pod{},
-		c.SyncPeriod,
+		op.SyncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				if pod, ok := obj.(*apiv1.Pod); ok {
@@ -41,7 +41,7 @@ func (c *Controller) WatchPods() {
 						return
 					}
 
-					alerts, err := util.FindPodAlert(c.ExtClient, pod.ObjectMeta)
+					alerts, err := util.FindPodAlert(op.ExtClient, pod.ObjectMeta)
 					if err != nil {
 						log.Errorf("Error while searching PodAlert for Pod %s@%s.", pod.Name, pod.Namespace)
 						return
@@ -51,7 +51,7 @@ func (c *Controller) WatchPods() {
 						return
 					}
 					for i := range alerts {
-						err = c.EnsurePod(pod, nil, alerts[i])
+						err = op.EnsurePod(pod, nil, alerts[i])
 						if err != nil {
 							log.Errorf("Failed to add icinga2 alert for Pod %s@%s.", pod.Name, pod.Namespace)
 							// return
@@ -74,12 +74,12 @@ func (c *Controller) WatchPods() {
 				log.Infof("Pod %s@%s updated", newPod.Name, newPod.Namespace)
 
 				if !reflect.DeepEqual(oldPod.Labels, newPod.Labels) || oldPod.Status.PodIP != newPod.Status.PodIP {
-					oldAlerts, err := util.FindPodAlert(c.ExtClient, oldPod.ObjectMeta)
+					oldAlerts, err := util.FindPodAlert(op.ExtClient, oldPod.ObjectMeta)
 					if err != nil {
 						log.Errorf("Error while searching PodAlert for Pod %s@%s.", oldPod.Name, oldPod.Namespace)
 						return
 					}
-					newAlerts, err := util.FindPodAlert(c.ExtClient, newPod.ObjectMeta)
+					newAlerts, err := util.FindPodAlert(op.ExtClient, newPod.ObjectMeta)
 					if err != nil {
 						log.Errorf("Error while searching PodAlert for Pod %s@%s.", newPod.Name, newPod.Namespace)
 						return
@@ -104,13 +104,13 @@ func (c *Controller) WatchPods() {
 					for alert := range diff {
 						ch := diff[alert]
 						if oldPod.Status.PodIP == "" && newPod.Status.PodIP != "" {
-							go c.EnsurePod(newPod, nil, ch.new)
+							go op.EnsurePod(newPod, nil, ch.new)
 						} else if ch.old == nil && ch.new != nil {
-							go c.EnsurePod(newPod, nil, ch.new)
+							go op.EnsurePod(newPod, nil, ch.new)
 						} else if ch.old != nil && ch.new == nil {
-							go c.EnsurePodDeleted(newPod, ch.old)
+							go op.EnsurePodDeleted(newPod, ch.old)
 						} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
-							go c.EnsurePod(newPod, ch.old, ch.new)
+							go op.EnsurePod(newPod, ch.old, ch.new)
 						}
 					}
 				}
@@ -119,7 +119,7 @@ func (c *Controller) WatchPods() {
 				if pod, ok := obj.(*apiv1.Pod); ok {
 					log.Infof("Pod %s@%s deleted", pod.Name, pod.Namespace)
 
-					alerts, err := util.FindPodAlert(c.ExtClient, pod.ObjectMeta)
+					alerts, err := util.FindPodAlert(op.ExtClient, pod.ObjectMeta)
 					if err != nil {
 						log.Errorf("Error while searching PodAlert for Pod %s@%s.", pod.Name, pod.Namespace)
 						return
@@ -129,7 +129,7 @@ func (c *Controller) WatchPods() {
 						return
 					}
 					for i := range alerts {
-						err = c.EnsurePodDeleted(pod, alerts[i])
+						err = op.EnsurePodDeleted(pod, alerts[i])
 						if err != nil {
 							log.Errorf("Failed to delete icinga2 alert for Pod %s@%s.", pod.Name, pod.Namespace)
 							// return
@@ -142,10 +142,10 @@ func (c *Controller) WatchPods() {
 	ctrl.Run(wait.NeverStop)
 }
 
-func (c *Controller) EnsurePod(pod *apiv1.Pod, old, new *tapi.PodAlert) (err error) {
+func (op *Operator) EnsurePod(pod *apiv1.Pod, old, new *tapi.PodAlert) (err error) {
 	defer func() {
 		if err == nil {
-			c.recorder.Eventf(
+			op.recorder.Eventf(
 				new,
 				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulSync,
@@ -154,7 +154,7 @@ func (c *Controller) EnsurePod(pod *apiv1.Pod, old, new *tapi.PodAlert) (err err
 			)
 			return
 		} else {
-			c.recorder.Eventf(
+			op.recorder.Eventf(
 				new,
 				apiv1.EventTypeWarning,
 				eventer.EventReasonFailedToSync,
@@ -168,17 +168,17 @@ func (c *Controller) EnsurePod(pod *apiv1.Pod, old, new *tapi.PodAlert) (err err
 	}()
 
 	if old == nil {
-		err = c.podHost.Create(*new, *pod)
+		err = op.podHost.Create(*new, *pod)
 	} else {
-		err = c.podHost.Update(*new, *pod)
+		err = op.podHost.Update(*new, *pod)
 	}
 	return
 }
 
-func (c *Controller) EnsurePodDeleted(pod *apiv1.Pod, alert *tapi.PodAlert) (err error) {
+func (op *Operator) EnsurePodDeleted(pod *apiv1.Pod, alert *tapi.PodAlert) (err error) {
 	defer func() {
 		if err == nil {
-			c.recorder.Eventf(
+			op.recorder.Eventf(
 				alert,
 				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulDelete,
@@ -187,7 +187,7 @@ func (c *Controller) EnsurePodDeleted(pod *apiv1.Pod, alert *tapi.PodAlert) (err
 			)
 			return
 		} else {
-			c.recorder.Eventf(
+			op.recorder.Eventf(
 				alert,
 				apiv1.EventTypeWarning,
 				eventer.EventReasonFailedToDelete,
@@ -199,6 +199,6 @@ func (c *Controller) EnsurePodDeleted(pod *apiv1.Pod, alert *tapi.PodAlert) (err
 			return
 		}
 	}()
-	err = c.podHost.Delete(*alert, *pod)
+	err = op.podHost.Delete(*alert, *pod)
 	return
 }

@@ -1,4 +1,4 @@
-package controller
+package operator
 
 import (
 	"fmt"
@@ -31,7 +31,7 @@ type Options struct {
 	EnableAnalytics bool
 }
 
-type Controller struct {
+type Operator struct {
 	KubeClient   clientset.Interface
 	ExtClient    tcs.ExtensionInterface
 	IcingaClient *icinga.Client // TODO: init
@@ -44,8 +44,8 @@ type Controller struct {
 	SyncPeriod  time.Duration
 }
 
-func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, icingaClient *icinga.Client, opt Options) *Controller {
-	return &Controller{
+func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, icingaClient *icinga.Client, opt Options) *Operator {
+	return &Operator{
 		KubeClient:   kubeClient,
 		ExtClient:    extClient,
 		IcingaClient: icingaClient,
@@ -58,23 +58,23 @@ func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, icing
 	}
 }
 
-func (c *Controller) Setup() error {
+func (op *Operator) Setup() error {
 	log.Infoln("Ensuring ThirdPartyResource")
 
-	if err := c.ensureThirdPartyResource(tapi.ResourceNamePodAlert + "." + tapi.V1alpha1SchemeGroupVersion.Group); err != nil {
+	if err := op.ensureThirdPartyResource(tapi.ResourceNamePodAlert + "." + tapi.V1alpha1SchemeGroupVersion.Group); err != nil {
 		return err
 	}
-	if err := c.ensureThirdPartyResource(tapi.ResourceNameNodeAlert + "." + tapi.V1alpha1SchemeGroupVersion.Group); err != nil {
+	if err := op.ensureThirdPartyResource(tapi.ResourceNameNodeAlert + "." + tapi.V1alpha1SchemeGroupVersion.Group); err != nil {
 		return err
 	}
-	if err := c.ensureThirdPartyResource(tapi.ResourceNameClusterAlert + "." + tapi.V1alpha1SchemeGroupVersion.Group); err != nil {
+	if err := op.ensureThirdPartyResource(tapi.ResourceNameClusterAlert + "." + tapi.V1alpha1SchemeGroupVersion.Group); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Controller) ensureThirdPartyResource(resourceName string) error {
-	_, err := c.KubeClient.ExtensionsV1beta1().ThirdPartyResources().Get(resourceName, metav1.GetOptions{})
+func (op *Operator) ensureThirdPartyResource(resourceName string) error {
+	_, err := op.KubeClient.ExtensionsV1beta1().ThirdPartyResources().Get(resourceName, metav1.GetOptions{})
 	if !kerr.IsNotFound(err) {
 		return err
 	}
@@ -98,43 +98,43 @@ func (c *Controller) ensureThirdPartyResource(resourceName string) error {
 		},
 	}
 
-	_, err = c.KubeClient.ExtensionsV1beta1().ThirdPartyResources().Create(thirdPartyResource)
+	_, err = op.KubeClient.ExtensionsV1beta1().ThirdPartyResources().Create(thirdPartyResource)
 	return err
 }
 
-func (c *Controller) RunAPIServer() {
+func (op *Operator) RunAPIServer() {
 	router := pat.New()
 
 	// For notification acknowledgement
 	ackPattern := fmt.Sprintf("/monitoring.appscode.com/v1alpha1/namespaces/%s/%s/%s", PathParamNamespace, PathParamType, PathParamName)
 	ackHandler := func(w http.ResponseWriter, r *http.Request) {
-		Acknowledge(c.IcingaClient, w, r)
+		Acknowledge(op.IcingaClient, w, r)
 	}
 	router.Post(ackPattern, http.HandlerFunc(ackHandler))
 
 	router.Get("/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) }))
 
-	log.Infoln("Listening on", c.Opt.APIAddress)
-	log.Fatal(http.ListenAndServe(c.Opt.APIAddress, router))
+	log.Infoln("Listening on", op.Opt.APIAddress)
+	log.Fatal(http.ListenAndServe(op.Opt.APIAddress, router))
 }
 
-func (c *Controller) Run() {
-	go c.WatchNamespaces()
-	go c.WatchPods()
-	go c.WatchNodes()
-	go c.WatchNamespaces()
-	go c.WatchPodAlerts()
-	go c.WatchNodeAlerts()
-	go c.WatchClusterAlerts()
+func (op *Operator) Run() {
+	go op.WatchNamespaces()
+	go op.WatchPods()
+	go op.WatchNodes()
+	go op.WatchNamespaces()
+	go op.WatchPodAlerts()
+	go op.WatchNodeAlerts()
+	go op.WatchClusterAlerts()
 }
 
-func (c *Controller) RunAndHold() {
-	c.Run()
-	go c.RunAPIServer()
+func (op *Operator) RunAndHold() {
+	op.Run()
+	go op.RunAPIServer()
 
 	m := pat.New()
 	m.Get("/metrics", promhttp.Handler())
 	http.Handle("/", m)
-	log.Infoln("Listening on", c.Opt.WebAddress)
-	log.Fatal(http.ListenAndServe(c.Opt.WebAddress, nil))
+	log.Infoln("Listening on", op.Opt.WebAddress)
+	log.Fatal(http.ListenAndServe(op.Opt.WebAddress, nil))
 }

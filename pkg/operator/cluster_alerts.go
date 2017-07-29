@@ -1,4 +1,4 @@
-package controller
+package operator
 
 import (
 	"errors"
@@ -17,25 +17,25 @@ import (
 )
 
 // Blocks caller. Intended to be called as a Go routine.
-func (c *Controller) WatchClusterAlerts() {
+func (op *Operator) WatchClusterAlerts() {
 	defer acrt.HandleCrash()
 
 	lw := &cache.ListWatch{
 		ListFunc: func(opts metav1.ListOptions) (runtime.Object, error) {
-			return c.ExtClient.ClusterAlerts(apiv1.NamespaceAll).List(metav1.ListOptions{})
+			return op.ExtClient.ClusterAlerts(apiv1.NamespaceAll).List(metav1.ListOptions{})
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-			return c.ExtClient.ClusterAlerts(apiv1.NamespaceAll).Watch(metav1.ListOptions{})
+			return op.ExtClient.ClusterAlerts(apiv1.NamespaceAll).Watch(metav1.ListOptions{})
 		},
 	}
 	_, ctrl := cache.NewInformer(lw,
 		&tapi.ClusterAlert{},
-		c.SyncPeriod,
+		op.SyncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				if alert, ok := obj.(*tapi.ClusterAlert); ok {
 					if ok, err := alert.IsValid(); !ok {
-						c.recorder.Eventf(
+						op.recorder.Eventf(
 							alert,
 							apiv1.EventTypeWarning,
 							eventer.EventReasonFailedToCreate,
@@ -45,7 +45,7 @@ func (c *Controller) WatchClusterAlerts() {
 						)
 						return
 					}
-					c.EnsureClusterAlert(nil, alert)
+					op.EnsureClusterAlert(nil, alert)
 				}
 			},
 			UpdateFunc: func(old, new interface{}) {
@@ -61,7 +61,7 @@ func (c *Controller) WatchClusterAlerts() {
 				}
 				if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
 					if ok, err := newAlert.IsValid(); !ok {
-						c.recorder.Eventf(
+						op.recorder.Eventf(
 							newAlert,
 							apiv1.EventTypeWarning,
 							eventer.EventReasonFailedToDelete,
@@ -71,13 +71,13 @@ func (c *Controller) WatchClusterAlerts() {
 						)
 						return
 					}
-					c.EnsureClusterAlert(oldAlert, newAlert)
+					op.EnsureClusterAlert(oldAlert, newAlert)
 				}
 			},
 			DeleteFunc: func(obj interface{}) {
 				if alert, ok := obj.(*tapi.ClusterAlert); ok {
 					if ok, err := alert.IsValid(); !ok {
-						c.recorder.Eventf(
+						op.recorder.Eventf(
 							alert,
 							apiv1.EventTypeWarning,
 							eventer.EventReasonFailedToDelete,
@@ -87,7 +87,7 @@ func (c *Controller) WatchClusterAlerts() {
 						)
 						return
 					}
-					c.EnsureClusterAlertDeleted(alert)
+					op.EnsureClusterAlertDeleted(alert)
 				}
 			},
 		},
@@ -95,10 +95,10 @@ func (c *Controller) WatchClusterAlerts() {
 	ctrl.Run(wait.NeverStop)
 }
 
-func (c *Controller) EnsureClusterAlert(old, new *tapi.ClusterAlert) (err error) {
+func (op *Operator) EnsureClusterAlert(old, new *tapi.ClusterAlert) (err error) {
 	defer func() {
 		if err == nil {
-			c.recorder.Eventf(
+			op.recorder.Eventf(
 				new,
 				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulSync,
@@ -107,7 +107,7 @@ func (c *Controller) EnsureClusterAlert(old, new *tapi.ClusterAlert) (err error)
 			)
 			return
 		} else {
-			c.recorder.Eventf(
+			op.recorder.Eventf(
 				new,
 				apiv1.EventTypeWarning,
 				eventer.EventReasonFailedToSync,
@@ -121,17 +121,17 @@ func (c *Controller) EnsureClusterAlert(old, new *tapi.ClusterAlert) (err error)
 	}()
 
 	if old == nil {
-		err = c.clusterHost.Create(*new)
+		err = op.clusterHost.Create(*new)
 	} else {
-		err = c.clusterHost.Update(*new)
+		err = op.clusterHost.Update(*new)
 	}
 	return
 }
 
-func (c *Controller) EnsureClusterAlertDeleted(alert *tapi.ClusterAlert) (err error) {
+func (op *Operator) EnsureClusterAlertDeleted(alert *tapi.ClusterAlert) (err error) {
 	defer func() {
 		if err == nil {
-			c.recorder.Eventf(
+			op.recorder.Eventf(
 				alert,
 				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulDelete,
@@ -140,7 +140,7 @@ func (c *Controller) EnsureClusterAlertDeleted(alert *tapi.ClusterAlert) (err er
 			)
 			return
 		} else {
-			c.recorder.Eventf(
+			op.recorder.Eventf(
 				alert,
 				apiv1.EventTypeWarning,
 				eventer.EventReasonFailedToDelete,
@@ -152,6 +152,6 @@ func (c *Controller) EnsureClusterAlertDeleted(alert *tapi.ClusterAlert) (err er
 			return
 		}
 	}()
-	err = c.clusterHost.Delete(*alert)
+	err = op.clusterHost.Delete(*alert)
 	return
 }

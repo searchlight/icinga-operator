@@ -1,4 +1,4 @@
-package controller
+package operator
 
 import (
 	"errors"
@@ -18,25 +18,25 @@ import (
 )
 
 // Blocks caller. Intended to be called as a Go routine.
-func (c *Controller) WatchPodAlerts() {
+func (op *Operator) WatchPodAlerts() {
 	defer acrt.HandleCrash()
 
 	lw := &cache.ListWatch{
 		ListFunc: func(opts metav1.ListOptions) (runtime.Object, error) {
-			return c.ExtClient.PodAlerts(apiv1.NamespaceAll).List(metav1.ListOptions{})
+			return op.ExtClient.PodAlerts(apiv1.NamespaceAll).List(metav1.ListOptions{})
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-			return c.ExtClient.PodAlerts(apiv1.NamespaceAll).Watch(metav1.ListOptions{})
+			return op.ExtClient.PodAlerts(apiv1.NamespaceAll).Watch(metav1.ListOptions{})
 		},
 	}
 	_, ctrl := cache.NewInformer(lw,
 		&tapi.PodAlert{},
-		c.SyncPeriod,
+		op.SyncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				if alert, ok := obj.(*tapi.PodAlert); ok {
 					if ok, err := alert.IsValid(); !ok {
-						c.recorder.Eventf(
+						op.recorder.Eventf(
 							alert,
 							apiv1.EventTypeWarning,
 							eventer.EventReasonFailedToCreate,
@@ -46,7 +46,7 @@ func (c *Controller) WatchPodAlerts() {
 						)
 						return
 					}
-					c.EnsurePodAlert(nil, alert)
+					op.EnsurePodAlert(nil, alert)
 				}
 			},
 			UpdateFunc: func(old, new interface{}) {
@@ -62,7 +62,7 @@ func (c *Controller) WatchPodAlerts() {
 				}
 				if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
 					if ok, err := newAlert.IsValid(); !ok {
-						c.recorder.Eventf(
+						op.recorder.Eventf(
 							newAlert,
 							apiv1.EventTypeWarning,
 							eventer.EventReasonFailedToDelete,
@@ -72,13 +72,13 @@ func (c *Controller) WatchPodAlerts() {
 						)
 						return
 					}
-					c.EnsurePodAlert(oldAlert, newAlert)
+					op.EnsurePodAlert(oldAlert, newAlert)
 				}
 			},
 			DeleteFunc: func(obj interface{}) {
 				if alert, ok := obj.(*tapi.PodAlert); ok {
 					if ok, err := alert.IsValid(); !ok {
-						c.recorder.Eventf(
+						op.recorder.Eventf(
 							alert,
 							apiv1.EventTypeWarning,
 							eventer.EventReasonFailedToDelete,
@@ -88,7 +88,7 @@ func (c *Controller) WatchPodAlerts() {
 						)
 						return
 					}
-					c.EnsurePodAlertDeleted(alert)
+					op.EnsurePodAlertDeleted(alert)
 				}
 			},
 		},
@@ -96,7 +96,7 @@ func (c *Controller) WatchPodAlerts() {
 	ctrl.Run(wait.NeverStop)
 }
 
-func (c *Controller) EnsurePodAlert(old, new *tapi.PodAlert) {
+func (op *Operator) EnsurePodAlert(old, new *tapi.PodAlert) {
 	oldObjs := make(map[string]*apiv1.Pod)
 
 	if old != nil {
@@ -105,13 +105,13 @@ func (c *Controller) EnsurePodAlert(old, new *tapi.PodAlert) {
 			return
 		}
 		if old.Spec.PodName != "" {
-			if resource, err := c.KubeClient.CoreV1().Pods(old.Namespace).Get(old.Spec.PodName, metav1.GetOptions{}); err == nil {
+			if resource, err := op.KubeClient.CoreV1().Pods(old.Namespace).Get(old.Spec.PodName, metav1.GetOptions{}); err == nil {
 				if oldSel.Matches(labels.Set(resource.Labels)) {
 					oldObjs[resource.Name] = resource
 				}
 			}
 		} else {
-			if resources, err := c.KubeClient.CoreV1().Pods(old.Namespace).List(metav1.ListOptions{LabelSelector: oldSel.String()}); err == nil {
+			if resources, err := op.KubeClient.CoreV1().Pods(old.Namespace).List(metav1.ListOptions{LabelSelector: oldSel.String()}); err == nil {
 				for i := range resources.Items {
 					oldObjs[resources.Items[i].Name] = &resources.Items[i]
 				}
@@ -124,17 +124,17 @@ func (c *Controller) EnsurePodAlert(old, new *tapi.PodAlert) {
 		return
 	}
 	if new.Spec.PodName != "" {
-		if resource, err := c.KubeClient.CoreV1().Pods(new.Namespace).Get(new.Spec.PodName, metav1.GetOptions{}); err == nil {
+		if resource, err := op.KubeClient.CoreV1().Pods(new.Namespace).Get(new.Spec.PodName, metav1.GetOptions{}); err == nil {
 			if newSel.Matches(labels.Set(resource.Labels)) {
 				delete(oldObjs, resource.Name)
 				if resource.Status.PodIP == "" {
 					log.Warningf("Skipping pod %s@%s, since it has no IP", resource.Name, resource.Namespace)
 				}
-				go c.EnsurePod(resource, old, new)
+				go op.EnsurePod(resource, old, new)
 			}
 		}
 	} else {
-		if resources, err := c.KubeClient.CoreV1().Pods(new.Namespace).List(metav1.ListOptions{LabelSelector: newSel.String()}); err == nil {
+		if resources, err := op.KubeClient.CoreV1().Pods(new.Namespace).List(metav1.ListOptions{LabelSelector: newSel.String()}); err == nil {
 			for i := range resources.Items {
 				resource := resources.Items[i]
 				delete(oldObjs, resource.Name)
@@ -142,30 +142,30 @@ func (c *Controller) EnsurePodAlert(old, new *tapi.PodAlert) {
 					log.Warningf("Skipping pod %s@%s, since it has no IP", resource.Name, resource.Namespace)
 					continue
 				}
-				go c.EnsurePod(&resource, old, new)
+				go op.EnsurePod(&resource, old, new)
 			}
 		}
 	}
 	for i := range oldObjs {
-		go c.EnsurePodDeleted(oldObjs[i], old)
+		go op.EnsurePodDeleted(oldObjs[i], old)
 	}
 }
 
-func (c *Controller) EnsurePodAlertDeleted(alert *tapi.PodAlert) {
+func (op *Operator) EnsurePodAlertDeleted(alert *tapi.PodAlert) {
 	sel, err := metav1.LabelSelectorAsSelector(&alert.Spec.Selector)
 	if err != nil {
 		return
 	}
 	if alert.Spec.PodName != "" {
-		if resource, err := c.KubeClient.CoreV1().Pods(alert.Namespace).Get(alert.Spec.PodName, metav1.GetOptions{}); err == nil {
+		if resource, err := op.KubeClient.CoreV1().Pods(alert.Namespace).Get(alert.Spec.PodName, metav1.GetOptions{}); err == nil {
 			if sel.Matches(labels.Set(resource.Labels)) {
-				go c.EnsurePodDeleted(resource, alert)
+				go op.EnsurePodDeleted(resource, alert)
 			}
 		}
 	} else {
-		if resources, err := c.KubeClient.CoreV1().Pods(alert.Namespace).List(metav1.ListOptions{LabelSelector: sel.String()}); err == nil {
+		if resources, err := op.KubeClient.CoreV1().Pods(alert.Namespace).List(metav1.ListOptions{LabelSelector: sel.String()}); err == nil {
 			for i := range resources.Items {
-				go c.EnsurePodDeleted(&resources.Items[i], alert)
+				go op.EnsurePodDeleted(&resources.Items[i], alert)
 			}
 		}
 	}

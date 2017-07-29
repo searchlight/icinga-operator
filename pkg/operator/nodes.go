@@ -1,4 +1,4 @@
-package controller
+package operator
 
 import (
 	"errors"
@@ -18,26 +18,26 @@ import (
 )
 
 // Blocks caller. Intended to be called as a Go routine.
-func (c *Controller) WatchNodes() {
+func (op *Operator) WatchNodes() {
 	defer acrt.HandleCrash()
 
 	lw := &cache.ListWatch{
 		ListFunc: func(opts metav1.ListOptions) (runtime.Object, error) {
-			return c.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{})
+			return op.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{})
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-			return c.KubeClient.CoreV1().Nodes().Watch(metav1.ListOptions{})
+			return op.KubeClient.CoreV1().Nodes().Watch(metav1.ListOptions{})
 		},
 	}
 	_, ctrl := cache.NewInformer(lw,
 		&apiv1.Node{},
-		c.SyncPeriod,
+		op.SyncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				if resource, ok := obj.(*apiv1.Node); ok {
 					log.Infof("Node %s@%s added", resource.Name, resource.Namespace)
 
-					alerts, err := util.FindNodeAlert(c.ExtClient, resource.ObjectMeta)
+					alerts, err := util.FindNodeAlert(op.ExtClient, resource.ObjectMeta)
 					if err != nil {
 						log.Errorf("Error while searching NodeAlert for Node %s@%s.", resource.Name, resource.Namespace)
 						return
@@ -47,7 +47,7 @@ func (c *Controller) WatchNodes() {
 						return
 					}
 					for i := range alerts {
-						err = c.EnsureNode(resource, nil, alerts[i])
+						err = op.EnsureNode(resource, nil, alerts[i])
 						if err != nil {
 							log.Errorf("Failed to add icinga2 alert for Node %s@%s.", resource.Name, resource.Namespace)
 							// return
@@ -67,12 +67,12 @@ func (c *Controller) WatchNodes() {
 					return
 				}
 				if !reflect.DeepEqual(oldNode.Labels, newNode.Labels) {
-					oldAlerts, err := util.FindNodeAlert(c.ExtClient, oldNode.ObjectMeta)
+					oldAlerts, err := util.FindNodeAlert(op.ExtClient, oldNode.ObjectMeta)
 					if err != nil {
 						log.Errorf("Error while searching NodeAlert for Node %s@%s.", oldNode.Name, oldNode.Namespace)
 						return
 					}
-					newAlerts, err := util.FindNodeAlert(c.ExtClient, newNode.ObjectMeta)
+					newAlerts, err := util.FindNodeAlert(op.ExtClient, newNode.ObjectMeta)
 					if err != nil {
 						log.Errorf("Error while searching NodeAlert for Node %s@%s.", newNode.Name, newNode.Namespace)
 						return
@@ -96,11 +96,11 @@ func (c *Controller) WatchNodes() {
 					for alert := range diff {
 						ch := diff[alert]
 						if ch.old == nil && ch.new != nil {
-							go c.EnsureNode(newNode, nil, ch.new)
+							go op.EnsureNode(newNode, nil, ch.new)
 						} else if ch.old != nil && ch.new == nil {
-							go c.EnsureNodeDeleted(newNode, ch.old)
+							go op.EnsureNodeDeleted(newNode, ch.old)
 						} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
-							go c.EnsureNode(newNode, ch.old, ch.new)
+							go op.EnsureNode(newNode, ch.old, ch.new)
 						}
 					}
 				}
@@ -109,7 +109,7 @@ func (c *Controller) WatchNodes() {
 				if resource, ok := obj.(*apiv1.Node); ok {
 					log.Infof("Node %s@%s deleted", resource.Name, resource.Namespace)
 
-					alerts, err := util.FindNodeAlert(c.ExtClient, resource.ObjectMeta)
+					alerts, err := util.FindNodeAlert(op.ExtClient, resource.ObjectMeta)
 					if err != nil {
 						log.Errorf("Error while searching NodeAlert for Node %s@%s.", resource.Name, resource.Namespace)
 						return
@@ -119,7 +119,7 @@ func (c *Controller) WatchNodes() {
 						return
 					}
 					for i := range alerts {
-						err = c.EnsureNodeDeleted(resource, alerts[i])
+						err = op.EnsureNodeDeleted(resource, alerts[i])
 						if err != nil {
 							log.Errorf("Failed to delete icinga2 alert for Node %s@%s.", resource.Name, resource.Namespace)
 							// return
@@ -132,10 +132,10 @@ func (c *Controller) WatchNodes() {
 	ctrl.Run(wait.NeverStop)
 }
 
-func (c *Controller) EnsureNode(node *apiv1.Node, old, new *tapi.NodeAlert) (err error) {
+func (op *Operator) EnsureNode(node *apiv1.Node, old, new *tapi.NodeAlert) (err error) {
 	defer func() {
 		if err == nil {
-			c.recorder.Eventf(
+			op.recorder.Eventf(
 				new,
 				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulSync,
@@ -144,7 +144,7 @@ func (c *Controller) EnsureNode(node *apiv1.Node, old, new *tapi.NodeAlert) (err
 			)
 			return
 		} else {
-			c.recorder.Eventf(
+			op.recorder.Eventf(
 				new,
 				apiv1.EventTypeWarning,
 				eventer.EventReasonFailedToSync,
@@ -158,17 +158,17 @@ func (c *Controller) EnsureNode(node *apiv1.Node, old, new *tapi.NodeAlert) (err
 	}()
 
 	if old == nil {
-		err = c.nodeHost.Create(*new, *node)
+		err = op.nodeHost.Create(*new, *node)
 	} else {
-		err = c.nodeHost.Update(*new, *node)
+		err = op.nodeHost.Update(*new, *node)
 	}
 	return
 }
 
-func (c *Controller) EnsureNodeDeleted(node *apiv1.Node, alert *tapi.NodeAlert) (err error) {
+func (op *Operator) EnsureNodeDeleted(node *apiv1.Node, alert *tapi.NodeAlert) (err error) {
 	defer func() {
 		if err == nil {
-			c.recorder.Eventf(
+			op.recorder.Eventf(
 				alert,
 				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulDelete,
@@ -177,7 +177,7 @@ func (c *Controller) EnsureNodeDeleted(node *apiv1.Node, alert *tapi.NodeAlert) 
 			)
 			return
 		} else {
-			c.recorder.Eventf(
+			op.recorder.Eventf(
 				alert,
 				apiv1.EventTypeWarning,
 				eventer.EventReasonFailedToDelete,
@@ -189,6 +189,6 @@ func (c *Controller) EnsureNodeDeleted(node *apiv1.Node, alert *tapi.NodeAlert) 
 			return
 		}
 	}()
-	err = c.nodeHost.Delete(*alert, *node)
+	err = op.nodeHost.Delete(*alert, *node)
 	return
 }

@@ -59,13 +59,12 @@ const (
 	CheckPodExists       CheckCluster = "pod_exists"
 	CheckEvent           CheckCluster = "event"
 	CheckCACert          CheckCluster = "ca_cert"
-
-	CheckHttp        CheckCluster = "any_http"
-	CheckHelloIcinga CheckCluster = "hello"
+	CheckHttp            CheckCluster = "any_http"
+	CheckEnv             CheckCluster = "env"
+	CheckDummy           CheckCluster = "dummy"
+	//CheckICMP        CheckCluster = "icmp"
 	//CheckDIG         CheckCluster = "dig"
 	//CheckDNS         CheckCluster = "dns"
-	CheckDummy CheckCluster = "dummy"
-	//CheckICMP        CheckCluster = "icmp"
 )
 
 func (c CheckCluster) IsValid() bool {
@@ -130,7 +129,7 @@ func init() {
 			c.Name == string(CheckPodExists) ||
 			c.Name == string(CheckEvent) ||
 			c.Name == string(CheckCACert) ||
-			c.Name == string(CheckHelloIcinga) ||
+			c.Name == string(CheckEnv) ||
 			// c.Name == string(CheckDIG) ||
 			// c.Name == string(CheckDNS) ||
 			// c.Name == string(CheckICMP) ||
