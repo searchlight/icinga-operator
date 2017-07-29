@@ -19,7 +19,6 @@ import (
 
 type Request struct {
 	URL             string
-	Query           string
 	Secret          string
 	Namespace       string
 	InClusterConfig bool
@@ -134,25 +133,25 @@ func CheckJsonPath(req *Request) (icinga.State, interface{}) {
 
 	}
 
-	jqData := &JQ{
-		J: jsonData,
-		Q: req.Query,
-	}
+	//jqData := &JQ{
+	//	J: jsonData,
+	//	Q: req.Query,
+	//}
+	//
+	//evalData, err := jqData.eval()
+	//if err != nil {
+	//	return icinga.UNKNOWN, "Invalid query. No data found"
+	//}
+	//
+	//evalDataByte, err := json.Marshal(evalData)
+	//if err != nil {
+	//	return icinga.UNKNOWN, err
+	//
+	//}
 
-	evalData, err := jqData.eval()
-	if err != nil {
-		return icinga.UNKNOWN, "Invalid query. No data found"
-	}
-
-	evalDataByte, err := json.Marshal(evalData)
-	if err != nil {
-		return icinga.UNKNOWN, err
-
-	}
-
-	evalDataString := string(evalDataByte)
+	//evalDataString := string(evalDataByte)
 	if req.Critical != "" {
-		isCritical, err := checkResult(evalDataString, req.Critical)
+		isCritical, err := checkResult(jsonData, req.Critical)
 		if err != nil {
 			return icinga.UNKNOWN, err
 		}
@@ -161,7 +160,7 @@ func CheckJsonPath(req *Request) (icinga.State, interface{}) {
 		}
 	}
 	if req.Warning != "" {
-		isWarning, err := checkResult(evalDataString, req.Warning)
+		isWarning, err := checkResult(jsonData, req.Warning)
 		if err != nil {
 			return icinga.UNKNOWN, err
 		}
@@ -199,7 +198,6 @@ func NewCmd() *cobra.Command {
 
 	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	c.Flags().StringVarP(&req.URL, "url", "u", "", "URL to get data")
-	c.Flags().StringVarP(&req.Query, "query", "q", "", `JQ query`)
 	c.Flags().StringVarP(&req.Secret, "secret", "s", "", `Kubernetes secret name`)
 	c.Flags().BoolVar(&req.InClusterConfig, "in_cluster_config", false, `Use Kubernetes InCluserConfig`)
 	c.Flags().StringVarP(&req.Warning, "warning", "w", "", `Warning JQ query which returns [true/false]`)
