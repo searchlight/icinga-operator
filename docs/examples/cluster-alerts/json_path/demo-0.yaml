@@ -6,7 +6,9 @@ metadata:
 spec:
   check: json_path
   vars:
-    count: 1
+    url: https://api.appscode.com/health/json
+    query: ".status"
+    critical: .status!="OK"
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: any-notifier

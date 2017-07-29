@@ -7,7 +7,7 @@ spec:
   containers:
   - image: busybox
     command:
-      - bad
+      - sleep
       - "3600"
     imagePullPolicy: IfNotPresent
     name: busybox
@@ -16,13 +16,13 @@ spec:
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: event-demo-0
+  name: pod-exists-demo-0
   namespace: demo
 spec:
-  check: event
+  check: pod_exists
   vars:
-    involved_object_name: busybox
-    involved_object_namespace: demo
+    name: busybox
+    count: 1
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: any-notifier

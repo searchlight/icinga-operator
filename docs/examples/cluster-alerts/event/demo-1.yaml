@@ -1,10 +1,10 @@
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: component-status-demo-0
+  name: event-demo-0
   namespace: demo
 spec:
-  check: component_status
+  check: event
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: any-notifier

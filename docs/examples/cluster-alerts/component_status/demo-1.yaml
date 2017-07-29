@@ -5,6 +5,8 @@ metadata:
   namespace: demo
 spec:
   check: component_status
+  vars:
+    name: controller-manager
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: any-notifier
