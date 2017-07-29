@@ -84,7 +84,7 @@ func CheckKubeEvent(req *Request) (icinga.State, interface{}) {
 		if err != nil {
 			return icinga.UNKNOWN, err
 		}
-		return icinga.WARNING, outputByte
+		return icinga.WARNING, string(outputByte)
 	}
 }
 

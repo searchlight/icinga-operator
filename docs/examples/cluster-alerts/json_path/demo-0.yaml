@@ -7,8 +7,8 @@ spec:
   check: json_path
   vars:
     url: https://api.appscode.com/health/json
-    query: ".status"
-    critical: .status!="OK"
+    query: .metadata.env
+    critical: '.metadata.env!="prod"'
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: any-notifier
