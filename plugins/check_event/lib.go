@@ -39,19 +39,25 @@ func CheckKubeEvent(req *Request) (icinga.State, interface{}) {
 	checkTime := time.Now().Add(-(req.CheckInterval + req.ClockSkew))
 	eventInfoList := make([]*eventInfo, 0)
 
-	fs := fields.OneTermEqualSelector(api.EventTypeField, apiv1.EventTypeWarning)
-	if req.InvolvedObjectName != "" ||
-		req.InvolvedObjectNamespace != "" ||
-		req.InvolvedObjectKind != "" ||
-		req.InvolvedObjectUID != "" {
-		fs = fields.AndSelectors(fs, kubeClient.Client.CoreV1().Events(req.Namespace).GetFieldSelector(
-			&req.InvolvedObjectName,
-			&req.InvolvedObjectNamespace,
-			&req.InvolvedObjectKind,
-			&req.InvolvedObjectUID,
-		))
+	var objName, objNamespace, objKind, objUID *string
+	if req.InvolvedObjectName != "" {
+		objName = &req.InvolvedObjectName
 	}
-	eventList, err := kubeClient.Client.CoreV1().Events(apiv1.NamespaceAll).List(metav1.ListOptions{
+	if req.InvolvedObjectNamespace != "" {
+		objNamespace = &req.InvolvedObjectNamespace
+	}
+	if req.InvolvedObjectKind != "" {
+		objKind = &req.InvolvedObjectKind
+	}
+	if req.InvolvedObjectUID != "" {
+		objUID = &req.InvolvedObjectUID
+	}
+	fs := fields.AndSelectors(
+		fields.OneTermEqualSelector(api.EventTypeField, apiv1.EventTypeWarning),
+		kubeClient.Client.CoreV1().Events(req.Namespace).GetFieldSelector(objName, objNamespace, objKind, objUID),
+	)
+	fmt.Fprintln(os.Stdout, "selector:", fs.String())
+	eventList, err := kubeClient.Client.CoreV1().Events(req.Namespace).List(metav1.ListOptions{
 		FieldSelector: fs.String(),
 	})
 	if err != nil {
