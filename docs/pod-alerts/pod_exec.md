@@ -139,3 +139,25 @@ spec:
   vars:
     argv: ls /var/influxdb/token.ini
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+```console
+$ kubectl apply -f ./docs/examples/pod-alerts/pod_exec/demo-0.yaml 
+replicationcontroller "nginx" created
+podalert "pod-exec-demo-0" created
+
+$ kubectl get pods -n demo
+NAME          READY     STATUS    RESTARTS   AGE
+nginx-c0v51   1/1       Running   0          53s
+nginx-vqhzv   1/1       Running   0          53s
+```

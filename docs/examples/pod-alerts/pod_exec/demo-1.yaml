@@ -1,21 +1,17 @@
 apiVersion: v1
-kind: ReplicationController
+kind: Pod
 metadata:
-  name: nginx
+  name: busybox
   namespace: demo
 spec:
-  replicas: 2
-  template:
-    metadata:
-      name: nginx
-      labels:
-        app: nginx
-    spec:
-      containers:
-      - name: nginx
-        image: nginx
-        ports:
-        - containerPort: 80
+  containers:
+  - image: busybox
+    command:
+      - sleep
+      - "3600"
+    imagePullPolicy: IfNotPresent
+    name: busybox
+  restartPolicy: Always
 ---
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
@@ -26,9 +22,7 @@ spec:
   check: pod_exec
   vars:
     argv: ls -l /usr
-  selector:
-    matchLabels:
-      app: nginx
+  podName: busybox
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: any-notifier
