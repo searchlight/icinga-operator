@@ -79,7 +79,8 @@ demo          Active    4m
 ### Create Alert
 In this tutorial, we are going to create an alert to check `env`.
 ```yaml
-$ cat ./docs/examples/cluster-alerts/env/demo-0.yaml 
+$ cat ./docs/examples/cluster-alerts/env/demo-0.yaml
+
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
@@ -96,8 +97,8 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/env/demo-0.yaml
-clusteralert "env-demo-0" configured
+$ kubectl apply -f ./docs/examples/cluster-alerts/env/demo-0.yaml 
+clusteralert "env-demo-0" created
 
 $ kubectl describe clusteralert env-demo-0 -n demo
 Name:		env-demo-0
