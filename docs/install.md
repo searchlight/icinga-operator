@@ -5,8 +5,6 @@
 ## Using YAML
 Searchlight can be installed using YAML files includes in the [/hack/deploy](/hack/deploy) folder.
 
-[![Install Searchlight](https://img.youtube.com/vi/Po4yXrQuHtQ/0.jpg)](https://www.youtube-nocookie.com/embed/Po4yXrQuHtQ)
-
 ```console
 # Install without RBAC roles
 $ curl https://raw.githubusercontent.com/appscode/searchlight/3.0.0/hack/deploy/without-rbac.yaml \
@@ -17,6 +15,9 @@ $ curl https://raw.githubusercontent.com/appscode/searchlight/3.0.0/hack/deploy/
 $ curl https://raw.githubusercontent.com/appscode/searchlight/3.0.0/hack/deploy/with-rbac.yaml \
   | kubectl apply -f -
 ```
+
+[![Install Searchlight](https://img.youtube.com/vi/Po4yXrQuHtQ/0.jpg)](https://www.youtube-nocookie.com/embed/Po4yXrQuHtQ)
+
 
 ## Using Helm
 Searchlight can be installed via [Helm](https://helm.sh/) using the [chart](/chart/searchlight) included in this repository. To install the chart with the release name `my-release`:
