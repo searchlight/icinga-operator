@@ -105,12 +105,27 @@ $ sudo systemctl start hostfacts
 ```
 
 ### Create Hostfacts Secret
+The last step is to create a Secret so that Searchlight operator can connect to Hostfacts server. 
 
+| Key                    | Default | Description
+|------------------------|---------|-------------|
+| HOSTFACTS_PORT         | 56977   | `Required`  |
+| HOSTFACTS_USERNAME     |         | `Optional`  |
+| HOSTFACTS_PASSWORD     |         | `Optional`  |
+| HOSTFACTS_TOKEN        |         | `Optional`  |
+| HOSTFACTS_CA_CERT_DATA |         | `Optional`  |
 
-HOSTFACTS_PORT
-HOSTFACTS_USERNAME
-HOSTFACTS_PASSWORD
-HOSTFACTS_TOKEN
-HOSTFACTS_CA_CERT_DATA
-HOSTFACTS_INSECURE_SKIP_VERIFY
-
+```console
+$ echo -n '' > HOSTFACTS_PORT
+$ echo -n '' > HOSTFACTS_USERNAME
+$ echo -n '' > HOSTFACTS_PASSWORD
+$ echo -n '' > HOSTFACTS_TOKEN
+$ echo -n '' > HOSTFACTS_CA_CERT_DATA
+$ kubectl create secret generic hostfacts -n kube-system \
+    --from-file=./HOSTFACTS_PORT \
+    --from-file=./HOSTFACTS_USERNAME \
+    --from-file=./HOSTFACTS_PASSWORD \
+    --from-file=./HOSTFACTS_TOKEN \
+    --from-file=./HOSTFACTS_CA_CERT_DATA
+secret "hostfacts" created
+```
