@@ -8,26 +8,25 @@ A `PodAlert` is a Kubernetes `Third Party Object` (TPR). It provides declarative
 ## PodAlert Spec
 As with all other Kubernetes objects, a PodAlert needs `apiVersion`, `kind`, and `metadata` fields. It also needs a `.spec` section. Below is an example Elasticsearch object.
 
-
-
-
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
-kind: Alert
+kind: PodAlert
 metadata:
-  name: check-es-logging-volume
-  namespace: kube-system
-  labels:
-    alert.appscode.com/objectType: replicationcontrollers
-    alert.appscode.com/objectName: elasticsearch-logging-v1
+  name: pod-status-demo-0
+  namespace: demo
 spec:
-  check: volume
-  checkInterval: 1m
-  alertInterval: 5m
-  Vars:
-    name: disk
-    warning: 60.0
-    critical: 75.0
+  check: pod_status
+  selector:
+    matchLabels:
+      app: nginx
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
+
 ```
 
 This object will do the followings:
