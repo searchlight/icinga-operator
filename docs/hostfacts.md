@@ -103,3 +103,14 @@ $ sudo systemctl enable hostfacts
 # Start service
 $ sudo systemctl start hostfacts
 ```
+
+### Create Hostfacts Secret
+
+
+HOSTFACTS_PORT
+HOSTFACTS_USERNAME
+HOSTFACTS_PASSWORD
+HOSTFACTS_TOKEN
+HOSTFACTS_CA_CERT_DATA
+HOSTFACTS_INSECURE_SKIP_VERIFY
+
