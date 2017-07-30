@@ -31,7 +31,7 @@ demo          Active    4m
 ```
 
 
-### Check status of all Nodes
+### Check status of all nodes
 In this tutorial, we are going to create a NodeAlert to check status of all nodes.
 ```yaml
 $ cat ./docs/examples/node-alerts/node_status/demo-0.yaml
@@ -71,7 +71,7 @@ Voila! `node_status` command has been synced to Icinga2. Please visit [here](/do
 ![check-all-nodes](/docs/images/node-alerts/node_status/demo-0.png)
 
 
-### Check status of Nodes with matching labels
+### Check status of nodes with matching labels
 
 
 ```yaml
@@ -99,8 +99,6 @@ Events:
 ![check-by-node-label](/docs/images/node-alerts/node_status/demo-1.png)
 
 
-
-
 ### Check status of a specific Node
 
 
@@ -118,20 +116,7 @@ Events:
   22s		22s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for NodeAlert: "node-status-demo-2". Reason: secrets "notifier-config" not found
   22s		22s		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "node-status-demo-2"
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+![check-by-node-name](/docs/images/node-alerts/node_status/demo-2.png)
 
 
 ### Cleaning up
@@ -144,21 +129,3 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 
 
 ## Next Steps
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
