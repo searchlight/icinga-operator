@@ -84,7 +84,7 @@ If your cluster is running inside a shared network (eg, DigitalOcean), you shoul
  - Generate certificates and key. See process [here](/docs/certificate.md).
  - Use flags to pass the path to certificates to hostfacts.
 
-```console
+```ini
 # Basic auth
 ExecStart=/usr/bin/hostfacts run --v=3 --username="<username>" --password="<password>" --caCertFile="<path to ca cert file>" --certFile="<path to server cert file>" --keyFile="<path to server key file>"
 
