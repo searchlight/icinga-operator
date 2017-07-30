@@ -2,7 +2,7 @@
 
 # Check event
 
-Check command `event` is used to check Kubernetes events. This plugin checks for all Warning events happened in the last `spec.checkInterval` duration. 
+Check command `event` is used to check Kubernetes events. This plugin checks for all Warning events happened in the last `spec.checkInterval` duration.
 
 
 ## Spec
@@ -39,18 +39,75 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Create Alert
-In this tutorial, we are going to create an alert to check `env`.
+
+### Check existence of pods with matching labels
+In this tutorial, a ClusterAlert will be used check existence of warning events occurred in the last check interval.
 ```yaml
 $ cat ./docs/examples/cluster-alerts/event/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: env-demo-0
+  name: event-demo-0
   namespace: demo
 spec:
-  check: env
+  check: event
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: mailgun
+    state: WARNING
+    to: ["ops@example.com"]
+```
+```console
+$ kubectl apply -f ./docs/examples/cluster-alerts/event/demo-0.yaml 
+replicationcontroller "nginx" created
+clusteralert "event-demo-0" created
+
+$ kubectl describe clusteralert -n demo event-demo-0
+Name:		event-demo-0
+Namespace:	demo
+Labels:		<none>
+Events:
+  FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
+  ---------	--------	-----	----			-------------	--------	------		-------
+  7s		7s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "event-demo-0". Reason: secrets "notifier-config" not found
+  7s		7s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "event-demo-0"
+
+$ kubectl get events -n demo
+LASTSEEN   FIRSTSEEN   COUNT     NAME           KIND           SUBOBJECT                TYPE      REASON           SOURCE                 MESSAGE
+15s        15s         1         nginx-9n8z7    Pod                                     Normal    Scheduled        default-scheduler      Successfully assigned nginx-9n8z7 to minikube
+15s        15s         1         nginx-9n8z7    Pod            spec.containers{nginx}   Normal    Pulling          kubelet, minikube      pulling image "nginx:bad"
+12s        12s         1         nginx-9n8z7    Pod            spec.containers{nginx}   Warning   Failed           kubelet, minikube      Failed to pull image "nginx:bad": rpc error: code = 2 desc = Tag bad not found in repository docker.io/library/nginx
+12s        12s         1         nginx-9n8z7    Pod                                     Warning   FailedSync       kubelet, minikube      Error syncing pod, skipping: failed to "StartContainer" for "nginx" with ErrImagePull: "rpc error: code = 2 desc = Tag bad not found in repository docker.io/library/nginx"
+
+12s       12s       1         nginx-9n8z7   Pod       spec.containers{nginx}   Normal    BackOff      kubelet, minikube   Back-off pulling image "nginx:bad"
+12s       12s       1         nginx-9n8z7   Pod                                Warning   FailedSync   kubelet, minikube   Error syncing pod, skipping: failed to "StartContainer" for "nginx" with ImagePullBackOff: "Back-off pulling image \"nginx:bad\""
+
+15s       15s       1         nginx     ReplicationController             Normal    SuccessfulCreate   replication-controller   Created pod: nginx-9n8z7
+```
+
+Voila! `event` command has been synced to Icinga2. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `event-demo-0`.
+
+![check-all-pods](/docs/images/cluster-alerts/event/demo-0.png)
+
+
+### Check existence of a specific pod
+In this tutorial, a ClusterAlert will be used check existence of a pod by name by setting `spec.vars.podName` field.
+```yaml
+$ cat ./docs/examples/cluster-alerts/event/demo-1.yaml
+
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: ClusterAlert
+metadata:
+  name: event-demo-1
+  namespace: demo
+spec:
+  check: event
+  vars:
+    podName: busybox
+    count: 1
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
@@ -60,23 +117,31 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/event/demo-0.yaml 
-clusteralert "env-demo-0" created
+$ kubectl apply -f ./docs/examples/cluster-alerts/event/demo-1.yaml
+pod "busybox" created
+podalert "event-demo-1" created
 
-$ kubectl describe clusteralert env-demo-0 -n demo
-Name:		env-demo-0
+$ kubectl get pods -n demo
+NAME          READY     STATUS    RESTARTS   AGE
+busybox       1/1       Running   0          5s
+
+$ kubectl get podalert -n demo
+NAME              KIND
+event-demo-1   ClusterAlert.v1alpha1.monitoring.appscode.com
+
+$ kubectl describe podalert -n demo event-demo-1
+Name:		event-demo-1
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  6m		6m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "env-demo-0". Reason: secrets "notifier-config" not found
-  6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "env-demo-0"
+  31s		31s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "event-demo-1". Reason: secrets "notifier-config" not found
+  31s		31s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "event-demo-1"
+  27s		27s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "event-demo-1"
 ```
+![check-by-pod-label](/docs/images/cluster-alerts/event/demo-1.png)
 
-Voila! `env` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `notifier-config`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `env-demo-0`.
-
-![Demo of check_env](/docs/images/cluster-alerts/event/demo-0.gif)
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
@@ -88,69 +153,3 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 
 
 ## Next Steps
-
-
-
-#### Supported Kubernetes Objects
-
-| Kubernetes Object | Icinga2 Host Type |
-| :---:             | :---:             |
-| cluster           | localhost         |
-
-#### Vars
-
-#### Supported Icinga2 State
-
-* OK
-* WARNING
-* UNKNOWN
-
-#### Example
-###### Command
-```console
-hyperalert check_event --check_interval=1m
-# --check_interval are provided by Icinga2
-```
-###### Output
-```json
-WARNING: {
-   "objects":[  
-      {  
-         "name":"tc-1916705895-ukpfx",
-         "namespace":"default",
-         "kind":"Pod",
-         "count":5984,
-         "reason":"FailedSync",
-         "message":"Error syncing pod, skipping: failed to \"StartContainer\" for \"tc\" with ImagePullBackOff: \"Back-off pulling image \\\"appscode/tillerc:765a57f\\\"\"\n"
-      },
-      {  
-         "name":"kube-apiserver-ip-172-20-0-9.ec2.internal",
-         "namespace":"kube-system",
-         "kind":"Pod",
-         "count":300167,
-         "reason":"FailedValidation",
-         "message":"Error validating pod kube-apiserver-ip-172-20-0-9.ec2.internal.kube-system from file, ignoring: metadata.name: Duplicate value: \"kube-apiserver-ip-172-20-0-9.ec2.internal\""
-      }
-   ],
-   "message":"Found 2 Warning event(s)"
-}
-```
-
-##### Configure Alert Object
-```yaml
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: Alert
-metadata:
-  name: check-kube-event
-  namespace: demo
-  labels:
-    alert.appscode.com/objectType: cluster
-spec:
-  check: event
-  alertInterval: 2m
-  checkInterval: 1m
-  receivers:
-  - notifier: mailgun
-    state: CRITICAL
-    to: ["ops@example.com"]
-```
