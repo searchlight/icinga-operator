@@ -50,19 +50,16 @@ func (h *NodeHost) expandVars(alertSpec tapi.NodeAlertSpec, kh IcingaHost, attrs
 	for key, val := range alertSpec.Vars {
 		if v, found := commandVars[key]; found {
 			if v.Parameterized {
-				host, err := kh.Name()
-				if err != nil {
-					return err
-				}
 				type Data struct {
 					NodeName string
+					NodeIP   string
 				}
 				tmpl, err := template.New("").Parse(val.(string))
 				if err != nil {
 					return err
 				}
 				var buf bytes.Buffer
-				err = tmpl.Execute(&buf, Data{host})
+				err = tmpl.Execute(&buf, Data{NodeName: kh.ObjectName, NodeIP: kh.IP})
 				if err != nil {
 					return err
 				}
