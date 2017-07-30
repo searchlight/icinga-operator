@@ -22,7 +22,7 @@ spec:
   vars:
     volumeName: website-storage
     warning: 70
-    critical: 85
+    critical: 95
   checkInterval: 30s
   alertInterval: 5m
   notifierSecretName: notifier-config
