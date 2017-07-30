@@ -21,7 +21,7 @@ If you are using kube-up scripts to provision Kubernetes cluster, you can find a
 ### Create Systemd Service
 To run hostfacts server as a Systemd service, write `hostfacts.service` file in __systemd directory__ in your node.
 ```console
-# Ubuntu (example, minikube)
+# Debian/Ubuntu (example, minikube)
 $ sudo vi /lib/systemd/system/hostfacts.service
 
 # RedHat
