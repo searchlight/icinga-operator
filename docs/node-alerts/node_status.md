@@ -2,15 +2,11 @@
 
 # Check node_status
 
-This is used to check Kubernetes Node status.
-
-NodeAlert `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.
-
+Check command `node_status` is used to check status of Kubernetes Nodes.
 
 ## Spec
 `env` check command has no variables. Execution of this command can result in following states:
 - OK
-- WARNING
 - CRITICAL
 - UNKNOWN
 
@@ -55,7 +51,7 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/env/demo-0.yaml 
+$ kubectl apply -f ./docs/examples/cluster-alerts/env/demo-0.yaml
 clusteralert "env-demo-0" created
 
 $ kubectl describe clusteralert env-demo-0 -n demo
@@ -94,10 +90,6 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 
 #### Supported Icinga2 State
 
-* OK
-* CRITICAL
-* UNKNOWN
-
 #### Example
 ###### Command
 ```console
@@ -132,9 +124,26 @@ spec:
 #   alert.appscode.com/objectName: ip-172-20-0-9.ec2.internal
 ```
 
+```yaml
+$ cat ./docs/examples/node-alerts/node_status/demo-0.yaml
 
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: NodeAlert
+metadata:
+  name: node-status-demo-0
+  namespace: demo
+spec:
+  check: node_status
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
+```
 ```console
-$ kubectl apply -f ./docs/examples/node-alerts/node_status/demo-0.yaml 
+$ kubectl apply -f ./docs/examples/node-alerts/node_status/demo-0.yaml
 nodealert "node-status-demo-0" created
 
 $ kubectl describe nodealert -n demo node-status-demo-0
@@ -150,7 +159,7 @@ Events:
 
 
 ```console
-$ kubectl apply -f ./docs/examples/node-alerts/node_status/demo-1.yaml 
+$ kubectl apply -f ./docs/examples/node-alerts/node_status/demo-1.yaml
 nodealert "node-status-demo-1" created
 
 $ kubectl get nodealert -n demo
@@ -169,7 +178,7 @@ Events:
 ```
 
 ```console
-$ kubectl apply -f ./docs/examples/node-alerts/node_status/demo-2.yaml 
+$ kubectl apply -f ./docs/examples/node-alerts/node_status/demo-2.yaml
 nodealert "node-status-demo-2" created
 
 $ kubectl describe nodealert -n demo node-status-demo-2
