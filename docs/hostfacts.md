@@ -1,12 +1,13 @@
-# Install Hostfacts
+# Hostfacts
 [Hostfacts](/docs/reference/hostfacts/hostfacts_run.md) is a http server used to expose various [node metrics](/pkg/hostfacts/server.go#L32). This is a wrapper around the wonderful [shirou/gopsutil](https://github.com/shirou/gopsutil) library. This is used by [`check_node_volume`](/docs/node-alerts/node_volume.md) and [`check_pod_volume`](/docs/pod-alerts/pod_volume.md) commands to detect available disk space. To use these check commands, hostfacts must be installed directly on every node in the cluster. Hostfacts can't be deployed using DaemonSet. This guide will walk you through how to deploy hostfacts as a Systemd service.
 
-## Deploy Hostfacts
+## Installation Guide
 First ssh into a Kubernetes node. If you are using [Minikube](https://github.com/kubernetes/minikube), run the following command:
 ```console
 $ minikube ssh
 ```
 
+### Install Hostfacts
 Now, download and install a pre-built binary using the following command:
 ```console
 curl -Lo hostfacts https://cdn.appscode.com/binaries/hostfacts/3.0.0/hostfacts-linux-amd64 \
@@ -112,12 +113,12 @@ curl -fSsL  https://cdn.appscode.com/binaries/hostfacts/3.0.0/hostfacts-linux-am
 chmod +x /usr/bin/hostfacts
 ```
 
-##### Start Service
+### Activate Systemd service
 
 ```console
 # Configure to be automatically started at boot time
-systemctl enable hostfacts
+$ sudo systemctl enable hostfacts
 
 # Start service
-systemctl start hostfacts
+$ sudo systemctl start hostfacts
 ```
