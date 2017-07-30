@@ -1,8 +1,8 @@
 package icinga
 
 import (
-	"fmt"
-	"regexp"
+	"bytes"
+	"text/template"
 
 	"github.com/appscode/errors"
 	tapi "github.com/appscode/searchlight/api"
@@ -42,15 +42,23 @@ func (h *PodHost) expandVars(alertSpec tapi.PodAlertSpec, kh IcingaHost, attrs m
 	for key, val := range alertSpec.Vars {
 		if v, found := commandVars[key]; found {
 			if v.Parameterized {
-				reg, err := regexp.Compile("pod_name[ ]*=[ ]*'[?]'")
-				if err != nil {
-					return err
-				}
 				host, err := kh.Name()
 				if err != nil {
 					return err
 				}
-				attrs[IVar(key)] = reg.ReplaceAllString(val.(string), fmt.Sprintf("pod_name='%s'", host))
+				type Data struct {
+					PodName string
+				}
+				tmpl, err := template.New("").Parse(val.(string))
+				if err != nil {
+					return err
+				}
+				var buf bytes.Buffer
+				err = tmpl.Execute(&buf, Data{host})
+				if err != nil {
+					return err
+				}
+				attrs[IVar(key)] = buf.String()
 			} else {
 				attrs[IVar(key)] = val
 			}
