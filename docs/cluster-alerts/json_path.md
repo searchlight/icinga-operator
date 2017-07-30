@@ -5,7 +5,7 @@
 Check command `json_path` is used to check JSON HTTP response using [jq](https://stedolan.github.io/jq/) queries.
 
 ## Spec
-`json_path` check command has no variables. 
+`json_path` check command has no variables.
 - `url` - URL to get data
 - `secretName` - Name of Kubernetes Secret used to call HTTP api.
 - `inClusterConfig` - Use InClusterConfig if hosted in Kubernetes
@@ -38,18 +38,22 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Create Alert
-In this tutorial, we are going to create an alert to check `env`.
+
+### Check existence of pods with matching labels
+In this tutorial, a ClusterAlert will be used check existence of pods with matching labels by setting `spec.vars.selector` field.
 ```yaml
-$ cat ./docs/examples/cluster-alerts/env/demo-0.yaml
+$ cat ./docs/examples/cluster-alerts/json_path/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: env-demo-0
+  name: json-path-demo-0
   namespace: demo
 spec:
-  check: env
+  check: json_path
+  vars:
+    url: https://api.appscode.com/health/json
+    critical: '.metadata.env!="prod"'
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
@@ -59,23 +63,24 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/env/demo-0.yaml 
-clusteralert "env-demo-0" created
+$ kubectl apply -f ./docs/examples/cluster-alerts/json_path/demo-0.yaml
+clusteralert "json-path-demo-0" created
 
-$ kubectl describe clusteralert env-demo-0 -n demo
-Name:		env-demo-0
+$ kubectl describe clusteralert -n demo json-path-demo-0
+Name:		json-path-demo-0
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  6m		6m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "env-demo-0". Reason: secrets "notifier-config" not found
-  6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "env-demo-0"
+  16s		16s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "json-path-demo-0". Reason: secrets "notifier-config" not found
+  16s		16s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "json-path-demo-0"
 ```
 
-Voila! `env` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `notifier-config`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `env-demo-0`.
+Voila! `json_path` command has been synced to Icinga2. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `json-path-demo-0`.
 
-![Demo of check_env](/docs/images/cluster-alerts/env/demo-0.gif)
+![check-all-pods](/docs/images/cluster-alerts/json_path/demo-0.png)
+
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
