@@ -2,17 +2,16 @@
 
 # Check component_status
 
-Check command `component_status` is used to check status of Kubernetes components.
+Check command `component_status` is used to check status of Kubernetes components. Returns OK if components are `Healthy`, otherwise, returns CRITICAL.
 
 
 ## Spec
 `component_status` has the following variables:
 - `selector` - Label selector for components whose existence are checked.
-- `podName` - Name of Kubernetes component whose existence is checked.
+- `componentName` - Name of Kubernetes component whose existence is checked.
 
 Execution of this command can result in following states:
 - OK
-- WARNING
 - CRITICAL
 - UNKNOWN
 
@@ -36,18 +35,18 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Create Alert
-In this tutorial, we are going to create an alert to check `env`.
+### Check status of all components
+In this tutorial, we are going to create a ClusterAlert to check status of all components.
 ```yaml
-$ cat ./docs/examples/cluster-alerts/env/demo-0.yaml
+$ cat ./docs/examples/cluster-alerts/component_status/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: env-demo-0
+  name: component-status-demo-0
   namespace: demo
 spec:
-  check: env
+  check: component_status
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
@@ -57,23 +56,62 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/env/demo-0.yaml 
-clusteralert "env-demo-0" created
+$ kubectl apply -f ./docs/examples/cluster-alerts/component_status/demo-0.yaml
+clusteralert "component-status-demo-0" created
 
-$ kubectl describe clusteralert env-demo-0 -n demo
-Name:		env-demo-0
+$ kubectl describe clusteralert -n demo component-status-demo-0
+Name:		component-status-demo-0
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  6m		6m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "env-demo-0". Reason: secrets "notifier-config" not found
-  6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "env-demo-0"
+  6s		6s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "component-status-demo-0"
 ```
 
-Voila! `env` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `notifier-config`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `env-demo-0`.
+Voila! `component_status` command has been synced to Icinga2. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `component-status-demo-0`.
 
-![Demo of check_env](/docs/images/cluster-alerts/env/demo-0.gif)
+![check-all-components](/docs/images/cluster-alerts/component_status/demo-0.png)
+
+
+### Check status of a specific component
+In this tutorial, a ClusterAlert will be used check status of a component by name by setting `spec.componentName` field.
+
+```yaml
+$ cat ./docs/examples/cluster-alerts/component_status/demo-1.yaml
+
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: ClusterAlert
+metadata:
+  name: component-status-demo-1
+  namespace: demo
+spec:
+  check: component_status
+  componentName: minikube
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
+```
+
+```console
+$ kubectl apply -f ./docs/examples/cluster-alerts/component_status/demo-1.yaml
+clusteralert "component-status-demo-1" created
+
+$ kubectl describe clusteralert -n demo component-status-demo-1
+Name:		component-status-demo-1
+Namespace:	demo
+Labels:		<none>
+Events:
+  FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
+  ---------	--------	-----	----			-------------	--------	------		-------
+  22s		22s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "component-status-demo-1"
+```
+![check-by-component-name](/docs/images/cluster-alerts/component_status/demo-1.png)
+
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
@@ -85,47 +123,3 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 
 
 ## Next Steps
-
-
-
-#### Supported Kubernetes Objects
-
-| Kubernetes Object   | Icinga2 Host Type  |
-| :---:               | :---:              |
-| cluster             | localhost          |
-
-#### Supported Icinga2 State
-
-* OK
-* CRITICAL
-* UNKNOWN
-
-#### Example
-###### Command
-```console
-hyperalert check_component_status
-```
-###### Output
-```
-OK: All components are healthy
-```
-
-##### Configure Alert Object
-
-```yaml
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: Alert
-metadata:
-  name: check-component-status
-  namespace: demo
-  labels:
-    alert.appscode.com/objectType: cluster
-spec:
-  check: component_status
-  alertInterval: 5m
-  checkInterval: 1m
-  receivers:
-  - notifier: mailgun
-    state: CRITICAL
-    to: ["ops@example.com"]
-```
