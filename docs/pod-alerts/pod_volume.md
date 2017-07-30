@@ -65,13 +65,15 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/pod-alerts/pod_volume/demo-0.yaml
-podalert "pod-volume-demo-0" created
+$ kubectl apply -f ./docs/examples/pod-alerts/pod_volume/demo-1.yaml
+persistentvolumeclaim "boxclaim" created
+pod "busybox" created
+podalert "pod-volume-demo-1" created
 
 $ kubectl get pods -n demo
 NAME      READY     STATUS    RESTARTS   AGE
-web-0     1/1       Running   0          1m
-web-1     1/1       Running   0          48s
+web-0     1/1       Running   0          10m
+web-1     1/1       Running   0          10m
 
 $ kubectl describe podalert -n demo pod-volume-demo-0
 Name:		pod-volume-demo-0
@@ -80,9 +82,9 @@ Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  2m		2m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for PodAlert: "pod-volume-demo-0". Reason: secrets "notifier-config" not found
-  2m		2m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-0"
-  2m		2m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-0"
+  11m		11m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for PodAlert: "pod-volume-demo-0". Reason: secrets "notifier-config" not found
+  11m		11m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-0"
+  11m		11m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-0"
 ```
 
 Voila! `pod_volume` command has been synced to Icinga2. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@pod@minikube` and Icinga service `pod-volume-demo-0`.
