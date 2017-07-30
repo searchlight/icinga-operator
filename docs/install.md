@@ -60,7 +60,7 @@ Searchlight installation scripts above creates a Secret called `searchlight-oper
 
 | Key                    | Default Value  | Description                                    |
 |------------------------|----------------|------------------------------------------------|
-| ICINGA_WEB_UI_PASSWORD | changeit       | Password of `admin` user for IcingaWeb
+| ICINGA_WEB_UI_PASSWORD | **changeit**   | Password of `admin` user for IcingaWeb         |
 | ICINGA_API_PASSWORD    | auto-generated |                 |
 | ICINGA_CA_CERT         | auto-generated |                   |
 | ICINGA_SERVER_CERT     | auto-generated |                   |
