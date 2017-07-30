@@ -19,13 +19,10 @@ spec:
   vars:
     selector: app=nginx
     count: 2
-  checkInterval: 5m
+  checkInterval: 60s
   alertInterval: 3m
   notifierSecretName: notifier-config
   receivers:
-  - notifier: mailgun
-    state: WARNING
-    to: ["ops@example.com"]
   - notifier: twilio
     state: CRITICAL
     to: ["+1-234-567-8901"]
@@ -33,12 +30,12 @@ spec:
 
 This object will do the followings:
 
-- This Alert is set on pods with matching label `app=nginx` in `demo` namespace.
-- Check command `pod_volume` will be applied on volume named `webstore`.
-- Icinga will check for volume size every 60s.
-- Notifications will be sent every 5m if any problem is detected, until acknowledged.
-- When the disk is 70% full, it will reach `WARNING` state and emails will be sent to _ops@example.com_ via Mailgun as notification.
-- When the disk is 95% full, it will reach `CRITICAL` state and SMSes will be sent to _+1-234-567-8901_ via Twilio as notification.
+- This Alert is set at cluster level in `demo` namespace.
+- Check command `pod_exists` will check for 2 pods matching the label `app=nginx` in `demo` namespace.
+- Icinga will check for the existence of pods every 60s.
+- Notifications will be sent every 3m if any problem is detected, until acknowledged.
+- When the number of pods with label app=nginx is not 2, it will reach `CRITICAL` state and SMSes will be sent to _+1-234-567-8901_ via Twilio as notification.
+
 
 Any ClusterAlert object has 2 main sections:
 

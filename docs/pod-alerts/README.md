@@ -39,8 +39,8 @@ This object will do the followings:
 
 - This Alert is set on pods with matching label `app=nginx` in `demo` namespace.
 - Check command `pod_volume` will be applied on volume named `webstore`.
-- Icinga will check for volume size every 60s.
-- Notifications will be sent every 5m if any problem is detected, until acknowledged.
+- Icinga will check for volume size every 5m.
+- Notifications will be sent every 3m if any problem is detected, until acknowledged.
 - When the disk is 70% full, it will reach `WARNING` state and emails will be sent to _ops@example.com_ via Mailgun as notification.
 - When the disk is 95% full, it will reach `CRITICAL` state and SMSes will be sent to _+1-234-567-8901_ via Twilio as notification.
 
