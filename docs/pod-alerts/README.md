@@ -67,11 +67,9 @@ This object will do the followings:
 
 > `NotifierParams` is only used when notification is sent via `AppsCode`.
 
-#### CheckCommand
-
-We currently supports following CheckCommands:
-
-* [influx_query](influx_query.md) - To check InfluxDB query result.
-* [pod_exec](pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
-* [pod_status](pod_status.md) - To check Kubernetes pod status.
-* [pod_volume](pod_volume.md) - To check Pod volume stat.
+## Check Commands
+The following check command are supported for pods:
+- [influx_query](influx_query.md) - To check InfluxDB query result.
+- [pod_exec](pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
+- [pod_status](pod_status.md) - To check Kubernetes pod status.
+- [pod_volume](pod_volume.md) - To check Pod volume stat.
