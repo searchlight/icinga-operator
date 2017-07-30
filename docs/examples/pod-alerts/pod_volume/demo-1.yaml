@@ -41,7 +41,7 @@ spec:
   podName: busybox
   check: pod_volume
   vars:
-    volumeName: webstore
+    volumeName: mypd
     warning: 70
     critical: 95
   checkInterval: 5m
