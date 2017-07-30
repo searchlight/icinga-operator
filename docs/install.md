@@ -3,6 +3,8 @@
 # Installation Guide
 
 ## Using YAML
+[![Install Searchlight](https://img.youtube.com/vi/Po4yXrQuHtQ/0.jpg)](https://www.youtube-nocookie.com/embed/Po4yXrQuHtQ)
+
 Searchlight can be installed using YAML files includes in the [/hack/deploy](/hack/deploy) folder.
 
 ```console
