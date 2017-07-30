@@ -40,7 +40,7 @@ demo          Active    4m
 ```
 
 
-### Check existence of pods with matching labels
+### Check existence of any warning event
 In this tutorial, a ClusterAlert will be used check existence of warning events occurred in the last check interval.
 ```yaml
 $ cat ./docs/examples/cluster-alerts/event/demo-0.yaml
@@ -90,8 +90,8 @@ Voila! `event` command has been synced to Icinga2. Please visit [here](/docs/tut
 ![check-all-pods](/docs/images/cluster-alerts/event/demo-0.png)
 
 
-### Check existence of a specific pod
-In this tutorial, a ClusterAlert will be used check existence of a pod by name by setting `spec.vars.podName` field.
+### Check existence of events for a specific object
+In this tutorial, a ClusterAlert will be used check existence of events for a specific object by setting one or more `spec.vars.involvedObject*` fields.
 ```yaml
 $ cat ./docs/examples/cluster-alerts/event/demo-1.yaml
 
@@ -103,14 +103,14 @@ metadata:
 spec:
   check: event
   vars:
-    podName: busybox
-    count: 1
+    involvedObjectName: busybox
+    involvedObjectNamespace: demo
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
   receivers:
   - notifier: mailgun
-    state: CRITICAL
+    state: WARNING
     to: ["ops@example.com"]
 ```
 ```console
