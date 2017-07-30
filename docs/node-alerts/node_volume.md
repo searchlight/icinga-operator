@@ -2,11 +2,12 @@
 
 # Check node_volume
 
-Check command `node_volume` is used to check status of Kubernetes Nodes.
+Check command `node_volume` is used to check percentage of available space in Kubernetes Nodes.
 
 ## Spec
 `env` check command has no variables. Execution of this command can result in following states:
 - OK
+- WARNING
 - CRITICAL
 - UNKNOWN
 
