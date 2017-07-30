@@ -12,7 +12,7 @@ As with all other Kubernetes objects, a PodAlert needs `apiVersion`, `kind`, and
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
 metadata:
-  name: pod-volume
+  name: nginx-webstore
   namespace: demo
 spec:
   selector:
@@ -20,11 +20,11 @@ spec:
       app: nginx
   check: pod_volume
   vars:
-    volumeName: website-storage
+    volumeName: webstore
     warning: 70
     critical: 95
-  checkInterval: 30s
-  alertInterval: 5m
+  checkInterval: 5m
+  alertInterval: 3m
   notifierSecretName: notifier-config
   receivers:
   - notifier: mailgun
@@ -37,39 +37,36 @@ spec:
 
 This object will do the followings:
 
-* This Alert is set on ReplicationController named `elasticsearch-logging-v1` in `kube-system` namespace.
-* CheckCommand `volume` will be applied.
-* Icinga2 Service will check volume every 60s.
-* Notifications will be send every 5m if any problem is detected.
-* Email will be sent as a notification to admin user for `CRITICAL` state. For other states, no notification will be sent.
-* On each Pod under specified RC, volume named `disk` will be checked. If volume is used more than 60%, it is `WARNING`. For 75%, it is `CRITICAL`.
+- This Alert is set on pods with matching label `app=nginx` in `demo` namespace.
+- Check command `pod_volume` will be applied on volume named `webstore`.
+- Icinga will check for volume size every 60s.
+- Notifications will be sent every 5m if any problem is detected, until acknowledged.
+- When the disk is 70% full, it will reach `WARNING` state and emails will be sent to _ops@example.com_ via Mailgun as notification.
+- When the disk is 95% full, it will reach `CRITICAL` state and SMSes will be sent to _+1-234-567-8901_ via Twilio as notification.
 
-## Explanation
+Any PodAlert object has 3 main sections:
 
-### Alert Object Fields
+### Pod Selection
+Any PodAlert can specify pods in 2 ways:
 
-* apiVersion - The Kubernetes API version.
-* kind - The Kubernetes object type.
-* metadata.name - The name of the Alert object.
-* metadata.namespace - The namespace of the Alert object
-* metadata.labels - The Kubernetes object labels. This labels are used to determine for which object this alert will be set.
-* spec.check - Icinga CheckCommand name
-* spec.checkInterval - How frequently Icinga Service will be checked
-* spec.alertInterval - How frequently notifications will be send
-* spec.receivers - NotifierParams contains array of information to send notifications for Incident
-* spec.vars - Vars contains array of Icinga Service variables to be used in CheckCommand.
+- `spec.podName` can be used to specify a pod by name. Use this if you are creating pods directly.
 
-#### NotifierParam Fields
+- `spec.selector` is a label selector for pods. This should be used if pods are created by workload controllers like Deployment, ReplicaSet, StatefulSet, DaemonSet, ReplicationController, etc. Searchlight operator will update Icinga as pods with matching labels are created/deleted by workload controllers.
 
-* state - For which state notification will be sent
-* to - To whom notification will be sent
-* method - How this notification will be sent
-
-> `NotifierParams` is only used when notification is sent via `AppsCode`.
-
-## Check Commands
-The following check command are supported for pods:
+### Check Command
+Check commands are used by Icinga to periodically test some condition. If the test return positive appropriate notifications are sent. The following check commands are supported for pods:
 - [influx_query](influx_query.md) - To check InfluxDB query result.
 - [pod_exec](pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
 - [pod_status](pod_status.md) - To check Kubernetes pod status.
 - [pod_volume](pod_volume.md) - To check Pod volume stat.
+
+Each check command has a name specified in `spec.check` field. Optionally each check command can take one or more parameters. These are specified in `spec.vars` field. To learn about the available parameters for each check command, please visit their documentation. `spec.checkInterval` specifies how frequently Icinga will perform this check. Some examples are: 30s, 5m, 6h, etc.
+
+### Notifiers
+When a check fails, Icinga will keep sending notifications until acknowledged via IcingaWeb dashboard. `spec.alertInterval` specifies how frequently notifications are sent. Icinga can send notifications to different targets based on alert state. `spec.receivers` contains that list of targets:
+
+| Name                       | Description                                                  |
+|----------------------------|--------------------------------------------------------------|
+| `spec.receivers[*].state`  | `Required` Name of state for which notification will be sent |
+| `spec.receivers[*].to`     | `Required` To whom notifications will be sent                |
+| `spec.receivers[*].method` | `Required` How this notification will be sent                |

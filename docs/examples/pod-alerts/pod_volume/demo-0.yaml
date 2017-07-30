@@ -1,19 +1,24 @@
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
 metadata:
-  name: pod-volume-demo-0
+  name: nginx-webstore
   namespace: demo
 spec:
+  selector:
+    matchLabels:
+      app: nginx
   check: pod_volume
-  podName: nginx-2371676037-kv28m
   vars:
-    volumeName: influxdb-persistent-storage
+    volumeName: webstore
     warning: 70
-    critical: 85
-  checkInterval: 30s
-  alertInterval: 2m
+    critical: 95
+  checkInterval: 5m
+  alertInterval: 3m
   notifierSecretName: notifier-config
   receivers:
   - notifier: mailgun
-    state: CRITICAL
+    state: WARNING
     to: ["ops@example.com"]
+  - notifier: twilio
+    state: CRITICAL
+    to: ["+1-234-567-8901"]
