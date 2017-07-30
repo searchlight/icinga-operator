@@ -4,7 +4,7 @@
 
 This is used to check Kubernetes Node status.
 
-ClusterAlert `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.
+NodeAlert `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.
 
 
 ## Spec
@@ -40,7 +40,7 @@ In this tutorial, we are going to create an alert to check `env`.
 $ cat ./docs/examples/cluster-alerts/env/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
-kind: ClusterAlert
+kind: NodeAlert
 metadata:
   name: env-demo-0
   namespace: demo
@@ -65,8 +65,8 @@ Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  6m		6m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "env-demo-0". Reason: secrets "notifier-config" not found
-  6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "env-demo-0"
+  6m		6m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for NodeAlert: "env-demo-0". Reason: secrets "notifier-config" not found
+  6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "env-demo-0"
 ```
 
 Voila! `env` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `notifier-config`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `env-demo-0`.
