@@ -157,7 +157,17 @@ Events:
   6s		6s		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "node-status-demo-0"
 ```
 
+![](/docs/images/node-alerts/node_status/demo-0.png)
 
+
+
+
+
+
+```yaml
+
+
+```
 ```console
 $ kubectl apply -f ./docs/examples/node-alerts/node_status/demo-1.yaml
 nodealert "node-status-demo-1" created
