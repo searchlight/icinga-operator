@@ -1,6 +1,27 @@
-# Deployment Guide
+# Install Hostfacts
+Hostfacts is a http server used to expose various [node metrics](/pkg/hostfacts/server.go#L32). This is used by `check_node_volume` and `check_pod_volume` commands to detect available disk space. To use these check commands, hostfacts must be installed directly on every node in the cluster. Hostfacts can't be deployed using DaemonSet. This guide will walk you through how to deploy hostfacts as a Systemd service in minikube.
 
-This guide will walk you through how to deploy hostfacts service in kubernetes node.
+## Deploy Hostfacts
+First ssh into a Kubernetes node. If you are using [Minikube](https://github.com/kubernetes/minikube), run the following command:
+```console
+$ minikube ssh
+```
+
+Now, download and install a pre-built binary using the following command:
+```console
+curl -Lo hostfacts https://cdn.appscode.com/binaries/hostfacts/3.0.0/hostfacts-linux-amd64 \
+  && chmod +x hostfacts \
+  && sudo mv hostfacts /usr/bin/
+```
+
+
+
+
+
+
+
+
+
 
 ### Deploy Hostfacts
 
@@ -10,12 +31,12 @@ Write `hostfacts.service` file in __systemd directory__ in your kubernetes node.
 * Ubuntu
 
     ```console
-    /lib/systemd/system
+    /lib/systemd/system/hostfacts.service
     ```
 * RedHat
 
     ```console
-    /usr/lib/systemd/system
+    /usr/lib/systemd/system/hostfacts.service
     ```
 
 
@@ -84,7 +105,7 @@ You can ignore SSL when Kubernetes is running in private network like GCE, AWS.
 Download `hostfacts` and add binary in `/usr/bin`
 
 ```console
-curl -G  https://cdn.appscode.com/binaries/hostfacts/3.0.0/hostfacts-linux-amd64 -o /usr/bin/hostfacts
+curl -fSsL  https://cdn.appscode.com/binaries/hostfacts/3.0.0/hostfacts-linux-amd64 -o /usr/bin/hostfacts
 
 # Change access permissions for hostfacts binary
 chmod +x /usr/bin/hostfacts
