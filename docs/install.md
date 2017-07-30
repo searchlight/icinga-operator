@@ -52,7 +52,7 @@ Handling connection for 60006
 ^C⏎
 ```
 
-Now, open http://127.0.0.1:60006 URL on your broswer. To login, use username `admin` and password `changeit`. If you want to change the password, read the next section.
+Now, open URL http://127.0.0.1:60006 on your browser. To login, use username `admin` and password `changeit`. If you want to change the password, read the next section.
 
 
 ## Configuring Icinga
