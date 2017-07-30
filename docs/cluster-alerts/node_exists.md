@@ -50,8 +50,8 @@ metadata:
 spec:
   check: node_exists
   vars:
-    selector: app=nginx
-    count: 2
+    selector: beta.kubernetes.io/os=linux
+    count: 1
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
@@ -94,7 +94,7 @@ metadata:
 spec:
   check: node_exists
   vars:
-    nodeName: busybox
+    nodeName: minikube
     count: 1
   checkInterval: 30s
   alertInterval: 2m
