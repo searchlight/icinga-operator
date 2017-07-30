@@ -4,6 +4,7 @@ metadata:
   name: node-volume-demo-0
   namespace: demo
 spec:
+  nodeName: minikube
   check: node_volume
   vars:
     warning: 70
