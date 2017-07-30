@@ -2,7 +2,63 @@
 
 # Installation Guide
 
+## Using YAML
+Searchlight can be installed using YAML files includes in the [/hack/deploy](/hack/deploy) folder.
+
 [![Install Searchlight](https://img.youtube.com/vi/Po4yXrQuHtQ/0.jpg)](https://www.youtube-nocookie.com/embed/Po4yXrQuHtQ)
+
+```console
+# Install without RBAC roles
+$ curl https://raw.githubusercontent.com/appscode/searchlight/3.0.0/hack/deploy/without-rbac.yaml \
+  | kubectl apply -f -
+
+
+# Install with RBAC roles
+$ curl https://raw.githubusercontent.com/appscode/searchlight/3.0.0/hack/deploy/with-rbac.yaml \
+  | kubectl apply -f -
+```
+
+## Using Helm
+Searchlight can be installed via [Helm](https://helm.sh/) using the [chart](/chart/searchlight) included in this repository. To install the chart with the release name `my-release`:
+```bash
+$ helm install chart/searchlight --name my-release
+```
+To see the detailed configuration options, visit [here](/chart/searchlight/README.md).
+
+
+## Verify installation
+To check if Searchlight operator pods have started, run the following command:
+```console
+$ kubectl get pods --all-namespaces -l app=searchlight --watch
+```
+
+Once the operator pods are running, you can cancel the above command by typing `Ctrl+C`.
+
+
+## Update Cluster Config
+If you would like to update cluster config, update the `searchlight-config` Secret and restart Searchlight operator pod(s).
+
+
+
+
+
+
+
+
+
+
+	ICINGA_WEB_UI_PASSWORD
+
+	ICINGA_API_PASSWORD
+	ICINGA_CA_CERT
+	ICINGA_SERVER_CERT
+	ICINGA_SERVER_KEY
+
+	ICINGA_IDO_PASSWORD
+	ICINGA_WEB_PASSWORD
+
+
+
 
 ## Create Cluster Config
 Before you can install Searchlight, you need a cluster config for Searchlight. Cluster config is defined in YAML format. You find an example config in [./hack/deploy/config.yaml](/hack/deploy/config.yaml).
@@ -77,42 +133,6 @@ Searchlight includes a check command to verify a cluster config. Download the pr
 $ searchlight check --clusterconfig=./hack/deploy/config.yaml
 Cluster config was parsed successfully.
 ```
-
-## Using YAML
-Searchlight can be installed using YAML files includes in the [/hack/deploy](/hack/deploy) folder.
-
-```console
-# Install without RBAC roles
-$ curl https://raw.githubusercontent.com/appscode/searchlight/0.1.0/hack/deploy/without-rbac.yaml \
-  | kubectl apply -f -
-
-
-# Install with RBAC roles
-$ curl https://raw.githubusercontent.com/appscode/searchlight/0.1.0/hack/deploy/with-rbac.yaml \
-  | kubectl apply -f -
-```
-
-## Using Helm
-Searchlight can be installed via [Helm](https://helm.sh/) using the [chart](/chart/searchlight) included in this repository. To install the chart with the release name `my-release`:
-```bash
-$ helm install chart/searchlight --name my-release
-```
-To see the detailed configuration options, visit [here](/chart/searchlight/README.md).
-
-
-## Verify installation
-To check if Searchlight operator pods have started, run the following command:
-```console
-$ kubectl get pods --all-namespaces -l app=searchlight --watch
-```
-
-Once the operator pods are running, you can cancel the above command by typing `Ctrl+C`.
-
-
-## Update Cluster Config
-If you would like to update cluster config, update the `searchlight-config` Secret and restart Searchlight operator pod(s).
-
-
 
 
 
