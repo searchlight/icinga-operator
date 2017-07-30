@@ -2,9 +2,7 @@
 
 # Check pod_status
 
-This is used to check Kubernetes pod status.
-
-Check command `pod_status` is used to check status of a command run inside Kubernetes pods. Returns OK if exit code is zero, otherwise, returns CRITICAL.
+Check command `pod_status` is used to check status of Kubernetes pods. Returns OK if `status.phase` of a pod is `Succeeded` or `Running`, otherwise, returns CRITICAL.
 
 
 ## Spec
