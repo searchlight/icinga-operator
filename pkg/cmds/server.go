@@ -2,7 +2,6 @@ package cmds
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/appscode/go/net"
 	"github.com/appscode/log"
