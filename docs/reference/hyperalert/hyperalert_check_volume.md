@@ -18,7 +18,7 @@ hyperalert check_volume [flags]
   -h, --help                 help for check_volume
   -H, --host string          Icinga host name
       --node_stat            Checking Node disk size
-  -s, --secret string        Kubernetes secret name
+  -s, --secret string        Kubernetes secret name (default "hostfacts")
   -N, --volume_name string   Volume name
   -w, --warning float        Warning level value (usage percentage) (default 75)
 ```
