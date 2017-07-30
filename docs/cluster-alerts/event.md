@@ -61,7 +61,7 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/event/demo-0.yaml 
+$ kubectl apply -f ./docs/examples/cluster-alerts/event/demo-0.yaml
 replicationcontroller "nginx" created
 clusteralert "event-demo-0" created
 
@@ -116,26 +116,37 @@ spec:
 ```console
 $ kubectl apply -f ./docs/examples/cluster-alerts/event/demo-1.yaml
 pod "busybox" created
-podalert "event-demo-1" created
+clusteralert "event-demo-1" created
 
-$ kubectl get pods -n demo
-NAME          READY     STATUS    RESTARTS   AGE
-busybox       1/1       Running   0          5s
-
-$ kubectl get podalert -n demo
-NAME              KIND
-event-demo-1   ClusterAlert.v1alpha1.monitoring.appscode.com
-
-$ kubectl describe podalert -n demo event-demo-1
+$ kubectl describe clusteralert -n demo event-demo-1
 Name:		event-demo-1
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  31s		31s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "event-demo-1". Reason: secrets "notifier-config" not found
-  31s		31s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "event-demo-1"
-  27s		27s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "event-demo-1"
+  13s		13s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "event-demo-1". Reason: secrets "notifier-config" not found
+  13s		13s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "event-demo-1"
+
+$ kubectl get events -n demo
+LASTSEEN   FIRSTSEEN   COUNT     NAME      KIND      SUBOBJECT                  TYPE      REASON       SOURCE              MESSAGE
+19s        19s         1         busybox   Pod                                  Normal    Scheduled    default-scheduler   Successfully assigned busybox to minikube
+3s         18s         5         busybox   Pod       spec.containers{busybox}   Normal    Pulled       kubelet, minikube   Container image "busybox" already present on machine
+18s        18s         1         busybox   Pod       spec.containers{busybox}   Normal    Created      kubelet, minikube   Created container with id fa40f0698ed44706774a504be7b0eb6bd776b67082e76c4376a432b04c6e4f26
+18s        18s         1         busybox   Pod       spec.containers{busybox}   Warning   Failed       kubelet, minikube   Failed to start container with id fa40f0698ed44706774a504be7b0eb6bd776b67082e76c4376a432b04c6e4f26 with error: rpc error: code = 2 desc = failed to start container "fa40f0698ed44706774a504be7b0eb6bd776b67082e76c4376a432b04c6e4f26": Error response from daemon: Container command 'bad' not found or does not exist.
+18s        18s         1         busybox   Pod                                  Warning   FailedSync   kubelet, minikube   Error syncing pod, skipping: failed to "StartContainer" for "busybox" with rpc error: code = 2 desc = failed to start container "fa40f0698ed44706774a504be7b0eb6bd776b67082e76c4376a432b04c6e4f26": Error response from daemon: Container command 'bad' not found or does not exist.: "Start Container Failed"
+17s        17s         1         busybox   Pod       spec.containers{busybox}   Normal    Created      kubelet, minikube   Created container with id 6774cff0d7e0b9487ad87fd2dd712028102d0f2854be47561898cbe72cf10e4d
+17s        17s         1         busybox   Pod       spec.containers{busybox}   Warning   Failed       kubelet, minikube   Failed to start container with id 6774cff0d7e0b9487ad87fd2dd712028102d0f2854be47561898cbe72cf10e4d with error: rpc error: code = 2 desc = failed to start container "6774cff0d7e0b9487ad87fd2dd712028102d0f2854be47561898cbe72cf10e4d": Error response from daemon: Container command 'bad' not found or does not exist.
+17s        17s         1         busybox   Pod                                  Warning   FailedSync   kubelet, minikube   Error syncing pod, skipping: failed to "StartContainer" for "busybox" with rpc error: code = 2 desc = failed to start container "6774cff0d7e0b9487ad87fd2dd712028102d0f2854be47561898cbe72cf10e4d": Error response from daemon: Container command 'bad' not found or does not exist.: "Start Container Failed"
+6s         6s          1         busybox   Pod       spec.containers{busybox}   Normal    Created      kubelet, minikube   Created container with id 49455114b6bc1a626eb217fcf23cd1172dfd03d75d7f4650fbe52dd5940a1b24
+5s         5s          1         busybox   Pod       spec.containers{busybox}   Warning   Failed       kubelet, minikube   Failed to start container with id 49455114b6bc1a626eb217fcf23cd1172dfd03d75d7f4650fbe52dd5940a1b24 with error: rpc error: code = 2 desc = failed to start container "49455114b6bc1a626eb217fcf23cd1172dfd03d75d7f4650fbe52dd5940a1b24": Error response from daemon: Container command 'bad' not found or does not exist.
+5s         5s          1         busybox   Pod                                  Warning   FailedSync   kubelet, minikube   Error syncing pod, skipping: failed to "StartContainer" for "busybox" with rpc error: code = 2 desc = failed to start container "49455114b6bc1a626eb217fcf23cd1172dfd03d75d7f4650fbe52dd5940a1b24": Error response from daemon: Container command 'bad' not found or does not exist.: "Start Container Failed"
+4s         4s          1         busybox   Pod       spec.containers{busybox}   Normal    Created      kubelet, minikube   Created container with id a6e4a7734965f039faf72d60c131fe312a974b08100e787295ea1a5bb6cc3806
+4s         4s          1         busybox   Pod       spec.containers{busybox}   Warning   Failed       kubelet, minikube   Failed to start container with id a6e4a7734965f039faf72d60c131fe312a974b08100e787295ea1a5bb6cc3806 with error: rpc error: code = 2 desc = failed to start container "a6e4a7734965f039faf72d60c131fe312a974b08100e787295ea1a5bb6cc3806": Error response from daemon: Container command 'bad' not found or does not exist.
+4s         4s          1         busybox   Pod                                  Warning   FailedSync   kubelet, minikube   Error syncing pod, skipping: failed to "StartContainer" for "busybox" with rpc error: code = 2 desc = failed to start container "a6e4a7734965f039faf72d60c131fe312a974b08100e787295ea1a5bb6cc3806": Error response from daemon: Container command 'bad' not found or does not exist.: "Start Container Failed"
+3s         3s          1         busybox   Pod       spec.containers{busybox}   Normal    Created      kubelet, minikube   Created container with id 8ef27cb9fd83b61a6a99b838bc55fb61b1f76c33f0a55b25b104ccb08e743e28
+3s         3s          1         busybox   Pod       spec.containers{busybox}   Warning   Failed       kubelet, minikube   Failed to start container with id 8ef27cb9fd83b61a6a99b838bc55fb61b1f76c33f0a55b25b104ccb08e743e28 with error: rpc error: code = 2 desc = failed to start container "8ef27cb9fd83b61a6a99b838bc55fb61b1f76c33f0a55b25b104ccb08e743e28": Error response from daemon: Container command 'bad' not found or does not exist.
+3s         3s          1         busybox   Pod                                  Warning   FailedSync   kubelet, minikube   Error syncing pod, skipping: failed to "StartContainer" for "busybox" with rpc error: code = 2 desc = failed to start container "8ef27cb9fd83b61a6a99b838bc55fb61b1f76c33f0a55b25b104ccb08e743e28": Error response from daemon: Container command 'bad' not found or does not exist.: "Start Container Failed"
 ```
 ![check-by-pod-label](/docs/images/cluster-alerts/event/demo-1.png)
 
