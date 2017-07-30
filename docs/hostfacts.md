@@ -90,7 +90,7 @@ ExecStart=/usr/bin/hostfacts run --v=3 --username="<username>" --password="<pass
 
 
 # Bearer token
-ExecStart=/usr/bin/hostfacts run --v=3 --token="<token>" --caCertFile="<path to ca cert file>" --certFile="<path to server cert file>" --keyFile="<path to server key file>'
+ExecStart=/usr/bin/hostfacts run --v=3 --token="<token>" --caCertFile="<path to ca cert file>" --certFile="<path to server cert file>" --keyFile="<path to server key file>"
 ```
 
 ### Activate Systemd service
