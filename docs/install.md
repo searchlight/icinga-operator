@@ -36,6 +36,26 @@ $ kubectl get pods --all-namespaces -l app=searchlight --watch
 Once the operator pods are running, you can cancel the above command by typing `Ctrl+C`.
 
 
+# Accesing IcingaWeb2
+Icinga comes with its own web dashboard called IcingaWeb. You can access IcingaWeb on your workstation by forwarding port 60006 of Searchlight operator pod.
+
+```console
+$ kubectl get pods --all-namespaces -l app=searchlight
+NAME                                    READY     STATUS    RESTARTS   AGE
+searchlight-operator-1987091405-ghj5b   3/3       Running   0          1m
+
+$ kubectl port-forward searchlight-operator-1987091405-ghj5b -n kube-system 60006
+Forwarding from 127.0.0.1:60006 -> 60006
+E0728 04:07:28.237822   10898 portforward.go:212] Unable to create listener: Error listen tcp6 [::1]:60006: bind: cannot assign requested address
+Handling connection for 60006
+Handling connection for 60006
+^C⏎
+```
+
+Now, open http://127.0.0.1:60006 URL on your broswer.
+
+
+
 ## Update Cluster Config
 If you would like to update cluster config, update the `searchlight-config` Secret and restart Searchlight operator pod(s).
 
