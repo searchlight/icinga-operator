@@ -5,12 +5,12 @@
 Check command `json_path` is used to check JSON HTTP response using [jq](https://stedolan.github.io/jq/) queries.
 
 ## Spec
-`env` check command has no variables. 
+`json_path` check command has no variables. 
 - `url` - URL to get data
 - `secretName` - Name of Kubernetes Secret used to call HTTP api.
 - `inClusterConfig` - Use InClusterConfig if hosted in Kubernetes
-- `warning` - Warning JQ query which returns [true/false]
-- `critical` - Critical JQ query which returns [true/false]
+- `warning` - Warning [jq query](https://stedolan.github.io/jq/manual/#ConditionalsandComparisons) which returns [true/false]
+- `critical` - Critical [jq query](https://stedolan.github.io/jq/manual/#ConditionalsandComparisons) which returns [true/false]
 
 Execution of this command can result in following states:
 - OK
@@ -87,59 +87,3 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 
 
 ## Next Steps
-
-#### Supported Kubernetes Objects
-
-| Kubernetes Object | Icinga2 Host Type |
-| :---:             | :---:             |
-| cluster           | localhost         |
-
-#### Vars
-
-* `url` - URL to get data
-* `query` - JQ query
-* `secret` - Kubernetes secret name.
-* `inClusterConfig` - Use InClusterConfig if hosted in Kubernetes
-* `warning` - Warning JQ query which returns [true/false]
-* `critical` - Critical JQ query which returns [true/false]
-
-#### Supported Icinga2 State
-
-* OK
-* WARNING
-* CRITICAL
-* UNKNOWN
-
-#### Example
-###### Command
-```console
-hyperalert check_json_path --url='https://api.appscode.com/health' --query='.status' --critical='.status!="OK"'
-```
-###### Output
-```
-OK: Response looks good
-```
-
-##### Configure Alert Object
-
-```yaml
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: Alert
-metadata:
-  name: check-api-health
-  namespace: demo
-  labels:
-    alert.appscode.com/objectType: cluster
-spec:
-  check: json_path
-  alertInterval: 2m
-  checkInterval: 1m
-  receivers:
-  - notifier: mailgun
-    state: CRITICAL
-    to: ["ops@example.com"]
-  vars:
-    query: ".status"
-    url: https://api.appscode.com/health
-    critical: .status!="OK"
-```
