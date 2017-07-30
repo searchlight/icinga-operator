@@ -63,26 +63,23 @@ spec:
 ```console
 $ kubectl apply -f ./docs/examples/cluster-alerts/pod_exists/demo-0.yaml
 replicationcontroller "nginx" created
-podalert "pod-status-demo-0" created
+clusteralert "pod-exists-demo-0" created
 
-$ kubectl get pods -n demo
-NAME          READY     STATUS    RESTARTS   AGE
-nginx-c0v51   1/1       Running   0          53s
-nginx-vqhzv   1/1       Running   0          53s
-
-$ kubectl describe podalert -n demo pod-status-demo-0
-Name:		pod-status-demo-0
+$ kubectl get clusteralert -n demo
+NAME                KIND
+pod-exists-demo-0   ClusterAlert.v1alpha1.monitoring.appscode.com
+~/g/s/g/a/searchlight (d7) $ kubectl describe clusteralert -n demo pod-exists-demo-0
+Name:		pod-exists-demo-0
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  3m		3m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "pod-status-demo-0". Reason: secrets "notifier-config" not found
-  3m		3m		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "pod-status-demo-0"
-  3m		3m		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "pod-status-demo-0"
+  19s		19s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "pod-exists-demo-0". Reason: secrets "notifier-config" not found
+  19s		19s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "pod-exists-demo-0"
 ```
 
-Voila! `pod_exists` command has been synced to Icinga2. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@pod@minikube` and Icinga service `pod-status-demo-0`.
+Voila! `pod_exists` command has been synced to Icinga2. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `pod-exists-demo-0`.
 
 ![check-all-pods](/docs/images/cluster-alerts/pod_exists/demo-0.png)
 
@@ -113,7 +110,7 @@ spec:
 ```console
 $ kubectl apply -f ./docs/examples/cluster-alerts/pod_exists/demo-1.yaml
 pod "busybox" created
-podalert "pod-status-demo-1" created
+podalert "pod-exists-demo-1" created
 
 $ kubectl get pods -n demo
 NAME          READY     STATUS    RESTARTS   AGE
@@ -121,18 +118,18 @@ busybox       1/1       Running   0          5s
 
 $ kubectl get podalert -n demo
 NAME              KIND
-pod-status-demo-1   ClusterAlert.v1alpha1.monitoring.appscode.com
+pod-exists-demo-1   ClusterAlert.v1alpha1.monitoring.appscode.com
 
-$ kubectl describe podalert -n demo pod-status-demo-1
-Name:		pod-status-demo-1
+$ kubectl describe podalert -n demo pod-exists-demo-1
+Name:		pod-exists-demo-1
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  31s		31s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "pod-status-demo-1". Reason: secrets "notifier-config" not found
-  31s		31s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "pod-status-demo-1"
-  27s		27s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "pod-status-demo-1"
+  31s		31s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "pod-exists-demo-1". Reason: secrets "notifier-config" not found
+  31s		31s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "pod-exists-demo-1"
+  27s		27s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "pod-exists-demo-1"
 ```
 ![check-by-pod-label](/docs/images/cluster-alerts/pod_exists/demo-1.png)
 
