@@ -107,17 +107,9 @@ spec:
 ```console
 $ kubectl apply -f ./docs/examples/cluster-alerts/node_exists/demo-1.yaml
 node "busybox" created
-nodealert "node-exists-demo-1" created
+clusteralert "node-exists-demo-1" created
 
-$ kubectl get nodes -n demo
-NAME          READY     STATUS    RESTARTS   AGE
-busybox       1/1       Running   0          5s
-
-$ kubectl get nodealert -n demo
-NAME              KIND
-node-exists-demo-1   ClusterAlert.v1alpha1.monitoring.appscode.com
-
-$ kubectl describe nodealert -n demo node-exists-demo-1
+$ kubectl describe clusteralert -n demo node-exists-demo-1
 Name:		node-exists-demo-1
 Namespace:	demo
 Labels:		<none>
