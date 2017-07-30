@@ -30,7 +30,6 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-
 ### Check status of all nodes
 In this tutorial, we are going to create a NodeAlert to check status of all nodes.
 ```yaml
@@ -62,7 +61,6 @@ Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  6s		6s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for NodeAlert: "node-status-demo-0". Reason: secrets "notifier-config" not found
   6s		6s		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "node-status-demo-0"
 ```
 
@@ -72,11 +70,27 @@ Voila! `node_status` command has been synced to Icinga2. Please visit [here](/do
 
 
 ### Check status of nodes with matching labels
-
+In this tutorial, a NodeAlert will be used check status of nodes with matching labels by setting `spec.selector` field.
 
 ```yaml
+$ cat ./docs/examples/node-alerts/node_status/demo-1.yaml
 
-
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: NodeAlert
+metadata:
+  name: node-status-demo-1
+  namespace: demo
+spec:
+  check: node_status
+  selector:
+    beta.kubernetes.io/os: linux
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
 ```
 ```console
 $ kubectl apply -f ./docs/examples/node-alerts/node_status/demo-1.yaml
@@ -93,14 +107,33 @@ Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  33s		33s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for NodeAlert: "node-status-demo-1". Reason: secrets "notifier-config" not found
   33s		33s		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "node-status-demo-1"
 ```
 ![check-by-node-label](/docs/images/node-alerts/node_status/demo-1.png)
 
 
 ### Check status of a specific node
+In this tutorial, a NodeAlert will be used check status of a node by name by setting `spec.nodeName` field.
 
+```yaml
+$ cat ./docs/examples/node-alerts/node_status/demo-2.yaml
+
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: NodeAlert
+metadata:
+  name: node-status-demo-2
+  namespace: demo
+spec:
+  check: node_status
+  nodeName: minikube
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
+```
 
 ```console
 $ kubectl apply -f ./docs/examples/node-alerts/node_status/demo-2.yaml
@@ -113,7 +146,6 @@ Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  22s		22s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for NodeAlert: "node-status-demo-2". Reason: secrets "notifier-config" not found
   22s		22s		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "node-status-demo-2"
 ```
 ![check-by-node-name](/docs/images/node-alerts/node_status/demo-2.png)
