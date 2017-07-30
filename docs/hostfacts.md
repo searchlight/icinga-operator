@@ -28,10 +28,11 @@ $ sudo vi /lib/systemd/system/hostfacts.service
 $ sudo vi /usr/lib/systemd/system/hostfacts.service
 ```
 
+Hostfacts supports various types of authentication mechanism. Write the `hostfacts.service` accordingly.
 
+#### Hostfacts without authentication
+If you are running Kubernetes cluster inside a private network in AWS or GCP, you may ignore authentication and SSL. In that case, use a `hostfacts.service` file like below:
 
-
-Below is a systemd service file for Hostfacts without any authentication.
 ```ini
 [Unit]
 Description=Provide host facts
@@ -45,39 +46,50 @@ RestartSec=5
 WantedBy=multi-user.target
 ```
 
-Set one of the following if you want to set authentication in `hostfacts`
+#### Hostfacts with Basic auth
+If you want to use a username/password pair with your Hostfacts binary, pass it via flag. Please note that, all nodes on your cluster must use the same username/password.
 
-* Basic Auth
+```ini
+[Unit]
+Description=Provide host facts
 
-    You can pass flags instead of using environment variables
-    ```
-    # Use Flags
-    # Modify ExecStart in [Service] section
-    ExecStart=/usr/bin/hostfacts --username="<username>" --password="<password>"
-    ```
-* Token
+[Service]
+ExecStart=/usr/bin/hostfacts run --v=3 --username="<username>" --password="<password>"
+Restart=always
+RestartSec=5
 
-    You can pass flag instead of using environment variable
-    ```
-    # Use Flags
-    # Modify ExecStart in [Service] section
-    ExecStart=/usr/bin/hostfacts --token="<token>"
-    ```
+[Install]
+WantedBy=multi-user.target
+```
 
-If you want to set SSL certificate, do following
+#### Hostfacts with Bearer token
+If you want to use a bearer token with your Hostfacts binary, pass it via flag. Please note that, all nodes on your cluster must use the same token and ca certificate if any.
 
-1. Generate certificates and key. See process [here](../icinga2/certificate.md).
-2. Use flags to pass file directory
+```ini
+[Unit]
+Description=Provide host facts
 
-    ```console
-    # Modify ExecStart in [Service] section
-    ExecStart=/usr/bin/hostfacts --caCertFile="<path to ca cert file>" --certFile="<path to server cert file>" --keyFile="<path to server key file>"
-    ```
+[Service]
+ExecStart=/usr/bin/hostfacts run --v=3 --token="<token>"
+Restart=always
+RestartSec=5
 
-You can ignore SSL when Kubernetes is running in private network like GCE, AWS.
+[Install]
+WantedBy=multi-user.target
+```
 
-> __Note:__ Modify `ExecStart` in `hostfacts.service`
+If your cluster is running inside a shared network (eg, DigitalOcean), you should enable SSL. If you want to set SSL certificate, do the following:
+ - Generate certificates and key. See process [here](../icinga2/certificate.md).
+ - Use flags to pass file directory
 
+```console
+# Basic auth
+ExecStart=/usr/bin/hostfacts run --v=3 --username="<username>" --password="<password>" --caCertFile="<path to ca cert file>" --certFile="<path to server cert file>" --keyFile="<path to server key file>"
+
+
+# Bearer token
+ExecStart=/usr/bin/hostfacts run --v=3 --token="<token>" --caCertFile="<path to ca cert file>" --certFile="<path to server cert file>" --keyFile="<path to server key file>'
+```
 
 ### Activate Systemd service
 
