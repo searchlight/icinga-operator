@@ -391,19 +391,19 @@
       "vars": [
         {
           "description": "The host's address. Default empty",
-          "name": "http_address",
+          "name": "httpAddress",
           "type": "STRING",
           "optional": true
         },
         {
           "description": "The virtual host that should be sent in the \"Host\" header.",
-          "name": "http_vhost",
+          "name": "httpVhost",
           "type": "STRING",
           "optional": true
         },
         {
           "description": "The request URI for GET or POST. Defaults to `/`.",
-          "name": "http_uri",
+          "name": "httpURI",
           "type": "STRING",
           "optional": true
         },
@@ -413,7 +413,7 @@
             "long": "port",
             "short": "p"
           },
-          "name": "http_port",
+          "name": "httpPort",
           "optional": true,
           "type": "INTEGER"
         },
@@ -423,7 +423,7 @@
             "long": "ssl",
             "short": "S"
           },
-          "name": "http_ssl",
+          "name": "httpSSL",
           "optional": true,
           "type": "STRING"
         },
@@ -433,7 +433,7 @@
             "long": "ssl",
             "short": "S"
           },
-          "name": "http_ssl_force_tlsv1",
+          "name": "httpSSLForceTLSv1",
           "optional": true,
           "type": "STRING"
         },
@@ -443,7 +443,7 @@
             "long": "ssl",
             "short": "S"
           },
-          "name": "http_ssl_force_tlsv1_1",
+          "name": "httpSSLForceTLSv1_1",
           "optional": true,
           "type": "STRING"
         },
@@ -453,7 +453,7 @@
             "long": "ssl",
             "short": "S"
           },
-          "name": "http_ssl_force_tlsv1_2",
+          "name": "httpSSLForceTLSv1_2",
           "optional": true,
           "type": "STRING"
         },
@@ -463,7 +463,7 @@
             "long": "ssl",
             "short": "S"
           },
-          "name": "http_ssl_force_sslv2",
+          "name": "httpSSLForceSSLv2",
           "optional": true,
           "type": "STRING"
         },
@@ -473,7 +473,7 @@
             "long": "ssl",
             "short": "S"
           },
-          "name": "http_ssl_force_sslv3",
+          "name": "httpSSLForceSSLv3",
           "optional": true,
           "type": "STRING"
         },
@@ -483,7 +483,7 @@
             "long": "ssl",
             "short": "S"
           },
-          "name": "http_ssl_force_tlsv1_or_higher",
+          "name": "httpSSLForceTLSv1_or_higher",
           "optional": true,
           "type": "STRING"
         },
@@ -493,7 +493,7 @@
             "long": "ssl",
             "short": "S"
           },
-          "name": "http_ssl_force_tlsv1_1_or_higher",
+          "name": "httpSSLForceTLSv1_1_or_higher",
           "optional": true,
           "type": "STRING"
         },
@@ -503,7 +503,7 @@
             "long": "ssl",
             "short": "S"
           },
-          "name": "http_ssl_force_tlsv1_2_or_higher",
+          "name": "httpSSLForceTLSv1_2_or_higher",
           "optional": true,
           "type": "STRING"
         },
@@ -513,7 +513,7 @@
             "long": "ssl",
             "short": "S"
           },
-          "name": "http_ssl_force_sslv2_or_higher",
+          "name": "httpSSLForceSSLv2_or_higher",
           "optional": true,
           "type": "STRING"
         },
@@ -523,63 +523,63 @@
             "long": "ssl",
             "short": "S"
           },
-          "name": "http_ssl_force_sslv3_or_higher",
+          "name": "httpSSLForceSSLv3_or_higher",
           "optional": true,
           "type": "STRING"
         },
         {
           "description": "Whether to use SNI. Defaults to false.",
-          "name": "http_sni",
+          "name": "httpSNI",
           "optional": true
         },
         {
           "description": "Add 'username:password' authorization pair.",
-          "name": "http_auth_pair",
+          "name": "httpAuthPair",
           "optional": true
         },
         {
           "description": "Add 'username:password' authorization pair for proxy.",
-          "name": "http_proxy_auth_pair",
+          "name": "httpProxyAuthPair",
           "optional": true
         },
         {
           "description": "Don't download the body, just the headers.",
-          "name": "http_ignore_body",
+          "name": "httpIgnoreBody",
           "optional": true
         },
         {
           "description": "Allow regex to span newline.",
-          "name": "http_linespan",
+          "name": "httpLinespan",
           "optional": true
         },
         {
-          "description": "A regular expression which the body must match against. Incompatible with http_ignore_body.",
+          "description": "A regular expression which the body must match against. Incompatible with httpIgnoreBody.",
           "flag": {
             "long": "expect",
             "short": "e"
           },
-          "name": "http_expect_body_regex",
+          "name": "httpExpectBodyRegex",
           "optional": true,
           "type": "STRING"
         },
         {
-          "description": "A case-insensitive expression which the body must match against. Incompatible with http_ignore_body.",
+          "description": "A case-insensitive expression which the body must match against. Incompatible with httpIgnoreBody.",
           "flag": {
             "long": "eregi",
             "short": "R"
           },
-          "name": "http_expect_body_eregi",
+          "name": "httpExpectBodyEregi",
           "optional": true,
           "type": "STRING"
         },
         {
-          "description": "Changes behaviour of http_expect_body_regex and http_expect_body_eregi to return CRITICAL if found, OK if not.",
-          "name": "http_invertregex",
+          "description": "Changes behaviour of httpExpectBodyRegex and httpExpectBodyEregi to return CRITICAL if found, OK if not.",
+          "name": "httpInvertregex",
           "optional": true
         },
         {
           "description": "The warning threshold.",
-          "name": "http_warn_time",
+          "name": "httpWarnTime",
           "optional": true
         },
         {
@@ -588,7 +588,7 @@
             "long": "critical",
             "short": "c"
           },
-          "name": "http_critical_time",
+          "name": "httpCriticalTime",
           "optional": true,
           "type": "DOUBLE"
         },
@@ -598,7 +598,7 @@
             "long": "expect",
             "short": "e"
           },
-          "name": "http_expect",
+          "name": "httpExpect",
           "optional": true,
           "type": "STRING"
         },
@@ -608,7 +608,7 @@
             "long": "certificate",
             "short": "C"
           },
-          "name": "http_certificate",
+          "name": "httpCertificate",
           "optional": true,
           "type": "INTEGER"
         },
@@ -618,7 +618,7 @@
             "long": "client-cert",
             "short": "J"
           },
-          "name": "http_clientcert",
+          "name": "httpClientcert",
           "optional": true,
           "type": "STRING"
         },
@@ -628,7 +628,7 @@
             "long": "private-key",
             "short": "K"
           },
-          "name": "http_privatekey",
+          "name": "httpPrivatekey",
           "optional": true,
           "type": "STRING"
         },
@@ -638,7 +638,7 @@
             "long": "header",
             "short": "k"
           },
-          "name": "http_headerstring",
+          "name": "httpHeaderstring",
           "optional": true,
           "type": "STRING"
         },
@@ -648,7 +648,7 @@
             "long": "string",
             "short": "s"
           },
-          "name": "http_string",
+          "name": "httpString",
           "optional": true,
           "type": "STRING"
         },
@@ -658,7 +658,7 @@
             "long": "post",
             "short": "P"
           },
-          "name": "http_post",
+          "name": "httpPost",
           "optional": true,
           "type": "STRING"
         },
@@ -668,7 +668,7 @@
             "long": "method",
             "short": "j"
           },
-          "name": "http_method",
+          "name": "httpMethod",
           "optional": true,
           "type": "STRING"
         },
@@ -678,7 +678,7 @@
             "long": "max-age",
             "short": "M"
           },
-          "name": "http_maxage",
+          "name": "httpMaxage",
           "optional": true,
           "type": "INTEGER"
         },
@@ -688,7 +688,7 @@
             "long": "content-type",
             "short": "T"
           },
-          "name": "http_contenttype",
+          "name": "httpContenttype",
           "optional": true,
           "type": "STRING"
         },
@@ -698,7 +698,7 @@
             "long": "useragent",
             "short": "A"
           },
-          "name": "http_useragent",
+          "name": "httpUseragent",
           "optional": true,
           "type": "STRING"
         },
@@ -708,13 +708,13 @@
             "long": "header",
             "short": "k"
           },
-          "name": "http_header",
+          "name": "httpHeader",
           "optional": true,
           "type": "STRING"
         },
         {
           "description": "Print additional perfdata. Defaults to false.",
-          "name": "http_extendedperfdata",
+          "name": "httpExtendedperfdata",
           "optional": true
         },
         {
@@ -724,7 +724,7 @@
             "short": "f"
           },
           "format": "enum",
-          "name": "http_onredirect",
+          "name": "httpOnredirect",
           "optional": true,
           "type": "STRING",
           "values": [
@@ -742,7 +742,7 @@
             "long": "pagesize",
             "short": "m"
           },
-          "name": "http_pagesize",
+          "name": "httpPagesize",
           "optional": true,
           "type": "STRING"
         },
@@ -752,18 +752,18 @@
             "long": "timeout",
             "short": "t"
           },
-          "name": "http_timeout",
+          "name": "httpTimeout",
           "optional": true,
           "type": "INTEGER"
         },
         {
           "description": "Use IPv4 connection. Defaults to false.",
-          "name": "http_ipv4",
+          "name": "httpIPv4",
           "optional": true
         },
         {
           "description": "Use IPv6 connection. Defaults to false.",
-          "name": "http_ipv6",
+          "name": "httpIPv6",
           "optional": true
         }
       ]
