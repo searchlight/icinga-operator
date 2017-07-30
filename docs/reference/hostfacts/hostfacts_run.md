@@ -14,7 +14,7 @@ hostfacts run [flags]
 ### Options
 
 ```
-      --address string      Http server address (default "192.168.0.101:56977")
+      --address string      Http server address (default ":56977")
       --caCertFile string   File containing CA certificate
       --certFile string     File container server TLS certificate
   -h, --help                help for run
