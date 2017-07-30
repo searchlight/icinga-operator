@@ -333,7 +333,7 @@ func NewCmd() *cobra.Command {
 	c.Flags().BoolVar(&req.NodeStat, "nodeStat", false, "Checking Node disk size")
 	c.Flags().StringVarP(&req.SecretName, "secretName", "s", "", `Kubernetes secret name`)
 	c.Flags().StringVarP(&req.VolumeName, "volumeName", "N", "", "Volume name")
-	c.Flags().Float64VarP(&req.Warning, "warning", "w", 75.0, "Warning level value (usage percentage)")
-	c.Flags().Float64VarP(&req.Critical, "critical", "c", 90.0, "Critical level value (usage percentage)")
+	c.Flags().Float64VarP(&req.Warning, "warning", "w", 80.0, "Warning level value (usage percentage)")
+	c.Flags().Float64VarP(&req.Critical, "critical", "c", 95.0, "Critical level value (usage percentage)")
 	return c
 }
