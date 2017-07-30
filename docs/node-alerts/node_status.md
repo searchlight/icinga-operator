@@ -157,7 +157,7 @@ Events:
   6s		6s		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "node-status-demo-0"
 ```
 
-![](/docs/images/node-alerts/node_status/demo-0.png)
+![ff](/docs/images/node-alerts/node_status/demo-0.png)
 
 
 
