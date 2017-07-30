@@ -87,7 +87,8 @@ metadata:
   namespace: demo
 spec:
   check: component_status
-  componentName: minikube
+  vars:
+    componentName: etcd-0
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config

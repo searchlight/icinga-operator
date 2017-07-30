@@ -2,15 +2,20 @@
 
 # Check event
 
-This is used to check Kubernetes events. This plugin checks for all Warning events happened in last `c` seconds. Icinga check_interval is provided as `c`.
-
-ClusterAlert `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.
+Check command `event` is used to check Kubernetes events. This plugin checks for all Warning events happened in the last `spec.checkInterval` duration. 
 
 
 ## Spec
-`env` check command has no variables. Execution of this command can result in following states:
+`event` check command has the following variables:
+
+- `clockSkew` - Clock skew in Duration. [Default: 30s]. This time is added with `spec.checkInterval` while checking events
+- `involvedObjectKind` - Kind of involved object used to select events
+- `involvedObjectName` - Name of involved object used to select events
+- `involvedObjectNamespace` - Namespace of involved object used to select events
+- `involvedObjectUID` - UID of involved object used to select events
+
+Execution of this command can result in following states:
 - OK
-- WARNING
 - CRITICAL
 - UNKNOWN
 
@@ -37,7 +42,7 @@ demo          Active    4m
 ### Create Alert
 In this tutorial, we are going to create an alert to check `env`.
 ```yaml
-$ cat ./docs/examples/cluster-alerts/env/demo-0.yaml
+$ cat ./docs/examples/cluster-alerts/event/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
@@ -55,7 +60,7 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/env/demo-0.yaml 
+$ kubectl apply -f ./docs/examples/cluster-alerts/event/demo-0.yaml 
 clusteralert "env-demo-0" created
 
 $ kubectl describe clusteralert env-demo-0 -n demo
@@ -71,7 +76,7 @@ Events:
 
 Voila! `env` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `notifier-config`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `env-demo-0`.
 
-![Demo of check_env](/docs/images/cluster-alerts/env/demo-0.gif)
+![Demo of check_env](/docs/images/cluster-alerts/event/demo-0.gif)
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
@@ -93,8 +98,6 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 | cluster           | localhost         |
 
 #### Vars
-
-* `clock_skew` - Clock skew in Duration. [Default: 30s]. This time is added with check_interval while checking events
 
 #### Supported Icinga2 State
 
