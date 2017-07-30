@@ -99,7 +99,7 @@ Events:
 ![check-by-node-label](/docs/images/node-alerts/node_status/demo-1.png)
 
 
-### Check status of a specific Node
+### Check status of a specific node
 
 
 ```console
