@@ -48,9 +48,12 @@ metadata:
   name: pod-volume-demo-0
   namespace: demo
 spec:
+  selector:
+    matchLabels:
+      app: nginx
   check: pod_volume
   vars:
-    volumeName: /mnt/sda1
+    volumeName: www
     warning: 70
     critical: 95
   checkInterval: 5m
@@ -65,6 +68,11 @@ spec:
 $ kubectl apply -f ./docs/examples/pod-alerts/pod_volume/demo-0.yaml
 podalert "pod-volume-demo-0" created
 
+$ kubectl get pods -n demo
+NAME      READY     STATUS    RESTARTS   AGE
+web-0     1/1       Running   0          1m
+web-1     1/1       Running   0          48s
+
 $ kubectl describe podalert -n demo pod-volume-demo-0
 Name:		pod-volume-demo-0
 Namespace:	demo
@@ -72,7 +80,9 @@ Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  6s		6s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-0"
+  2m		2m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for PodAlert: "pod-volume-demo-0". Reason: secrets "notifier-config" not found
+  2m		2m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-0"
+  2m		2m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-0"
 ```
 
 Voila! `pod_volume` command has been synced to Icinga2. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@pod@minikube` and Icinga service `pod-volume-demo-0`.
@@ -92,11 +102,10 @@ metadata:
   name: pod-volume-demo-1
   namespace: demo
 spec:
-  selector:
-    beta.kubernetes.io/os: linux
+  podName: busybox
   check: pod_volume
   vars:
-    volumeName: /mnt/sda1
+    volumeName: mypd
     warning: 70
     critical: 95
   checkInterval: 5m
@@ -108,8 +117,10 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/pod-alerts/pod_volume/demo-1.yaml
-podalert "pod-volume-demo-1" created
+$ kubectl apply -f ./docs/examples/pod-alerts/pod_volume/demo-0.yaml 
+service "nginx" created
+statefulset "web" created
+podalert "pod-volume-demo-0" created
 
 $ kubectl get podalert -n demo
 NAME                 KIND
@@ -155,17 +166,21 @@ spec:
 ```
 
 ```console
-$ kubectl apply -f ./docs/examples/pod-alerts/pod_volume/demo-2.yaml
-podalert "pod-volume-demo-2" created
+$ kubectl apply -f ./docs/examples/pod-alerts/pod_volume/demo-1.yaml 
+persistentvolumeclaim "boxclaim" created
+pod "busybox" created
+podalert "pod-volume-demo-1" created
 
-$ kubectl describe podalert -n demo pod-volume-demo-2
-Name:		pod-volume-demo-2
+$ kubectl describe podalert -n demo pod-volume-demo-1
+Name:		pod-volume-demo-1
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  22s		22s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-2"
+  14s		14s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for PodAlert: "pod-volume-demo-1". Reason: secrets "notifier-config" not found
+  14s		14s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-1"
+  10s		10s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-1"
 ```
 ![check-by-pod-name](/docs/images/pod-alerts/pod_volume/demo-2.png)
 
