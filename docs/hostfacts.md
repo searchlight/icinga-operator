@@ -109,11 +109,11 @@ The last step is to create a Secret so that Searchlight operator can connect to 
 
 | Key                    | Default | Description
 |------------------------|---------|-------------|
-| HOSTFACTS_PORT         | 56977   | `Required`  |
-| HOSTFACTS_USERNAME     |         | `Optional`  |
-| HOSTFACTS_PASSWORD     |         | `Optional`  |
-| HOSTFACTS_TOKEN        |         | `Optional`  |
-| HOSTFACTS_CA_CERT_DATA |         | `Optional`  |
+| HOSTFACTS_PORT         | 56977   | `Required` Port used by hostfacts server. To change the default value, use `--address` flag |
+| HOSTFACTS_USERNAME     |         | `Optional` Username for basic auth                                                          |
+| HOSTFACTS_PASSWORD     |         | `Optional` Password for basic auth                                                          |
+| HOSTFACTS_TOKEN        |         | `Optional` Token for bearer auth                                                            |
+| HOSTFACTS_CA_CERT_DATA |         | `Optional` PEM encoded CA certificate used by Hostfacts server                              |
 
 ```console
 $ echo -n '' > HOSTFACTS_PORT
