@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/appscode/envconfig"
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/net/httpclient"
 	"github.com/appscode/searchlight/pkg/icinga"
@@ -117,10 +118,6 @@ func getPersistentVolumePluginName(volumeSource *apiv1.PersistentVolumeSource) s
 	return ""
 }
 
-const (
-	hostFactPort = 56977
-)
-
 type Request struct {
 	Host       string
 	NodeStat   bool
@@ -143,63 +140,52 @@ type usageStat struct {
 	InodesUsedPercent float64 `json:"inodesUsedPercent"`
 }
 
-type authInfo struct {
-	ca        []byte
-	key       []byte
-	crt       []byte
-	authToken string
-	username  string
-	password  string
+type AuthInfo struct {
+	Port       int    `envconfig:"PORT" default:"56977"`
+	Username   string `envconfig:"USERNAME"`
+	Password   string `envconfig:"PASSWORD"`
+	Token      string `envconfig:"TOKEN"`
+	CACertData string `envconfig:"CA_CERT_DATA"`
 }
 
-const (
-	ca        = "ca.crt"
-	key       = "hostfacts.key"
-	crt       = "hostfacts.crt"
-	authToken = "auth_token"
-	username  = "username"
-	password  = "password"
-)
-
-func getHostfactsSecretData(kubeClient *util.KubeClient, secretName, secretNamespace string) *authInfo {
+func getAuthInfo(kubeClient *util.KubeClient, secretName, secretNamespace string) (*AuthInfo, error) {
 	if secretName == "" {
-		return nil
+		return &AuthInfo{Port: 56977}, nil
 	}
 
 	secret, err := kubeClient.Client.CoreV1().Secrets(secretNamespace).Get(secretName, metav1.GetOptions{})
 	if err != nil {
-		return nil
+		return nil, err
 	}
-
-	authData := &authInfo{
-		ca:        secret.Data[ca],
-		key:       secret.Data[key],
-		crt:       secret.Data[crt],
-		authToken: string(secret.Data[authToken]),
-		username:  string(secret.Data[username]),
-		password:  string(secret.Data[password]),
-	}
-
-	return authData
-}
-
-func getUsage(authInfo *authInfo, hostIP, path string) (*usageStat, error) {
-	scheme := "http"
-	httpClient := httpclient.Default()
-	if authInfo != nil && authInfo.ca != nil {
-		scheme = "https"
-		httpClient.WithBasicAuth(authInfo.username, authInfo.password).
-			WithBearerToken(authInfo.authToken).
-			WithTLSConfig(authInfo.ca, authInfo.crt, authInfo.key)
-	}
-
-	urlStr := fmt.Sprintf("%v://%v:%v/du?p=%v", scheme, hostIP, hostFactPort, path)
-	usages := make([]*usageStat, 1)
-	_, err := httpClient.Call(http.MethodGet, urlStr, nil, &usages, true)
+	var au AuthInfo
+	err = envconfig.Load("hostfacts", &au, func(key string) (string, bool) {
+		v, ok := secret.Data[key]
+		if !ok {
+			return "", false
+		}
+		return string(v), true
+	})
 	if err != nil {
 		return nil, err
 	}
+	return &au, nil
+}
 
+func getStats(au *AuthInfo, hostIP, path string) (*usageStat, error) {
+	hc := httpclient.Default().
+		WithBasicAuth(au.Username, au.Password).
+		WithBearerToken(au.Token)
+	if au.CACertData != "" {
+		hc = hc.WithBaseURL(fmt.Sprintf("https://%s:%d/du?p=%s", hostIP, au.Port, path)).
+			WithTLSConfig([]byte(au.CACertData))
+	} else {
+		hc = hc.WithBaseURL(fmt.Sprintf("http://%s:%d/du?p=%s", hostIP, au.Port, path))
+	}
+	usages := make([]*usageStat, 1)
+	_, err := hc.Call(http.MethodGet, "", nil, &usages, true)
+	if err != nil {
+		return nil, err
+	}
 	return usages[0], nil
 }
 
@@ -213,10 +199,12 @@ func checkResult(field string, warning, critical, result float64) (icinga.State,
 	return icinga.OK, "(Disk & Inodes)"
 }
 
-func checkDiskStat(kubeClient *util.KubeClient, req *Request, namespace, nodeIP, path string) (icinga.State, interface{}) {
-
-	authInfo := getHostfactsSecretData(kubeClient, req.SecretName, namespace)
-	usage, err := getUsage(authInfo, nodeIP, path)
+func checkVolume(kubeClient *util.KubeClient, req *Request, namespace, ip, path string) (icinga.State, interface{}) {
+	authInfo, err := getAuthInfo(kubeClient, req.SecretName, namespace)
+	if err != nil {
+		return icinga.UNKNOWN, err
+	}
+	usage, err := getStats(authInfo, ip, path)
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
@@ -231,7 +219,7 @@ func checkDiskStat(kubeClient *util.KubeClient, req *Request, namespace, nodeIP,
 	return state, message
 }
 
-func checkNodeDiskStat(req *Request) (icinga.State, interface{}) {
+func checkNodeVolume(req *Request) (icinga.State, interface{}) {
 	host, err := icinga.ParseHost(req.Host)
 	if err != nil {
 		return icinga.UNKNOWN, "Invalid icinga host.name"
@@ -264,10 +252,10 @@ func checkNodeDiskStat(req *Request) (icinga.State, interface{}) {
 	if hostIP == "" {
 		return icinga.UNKNOWN, "Node InternalIP not found"
 	}
-	return checkDiskStat(kubeClient, req, host.AlertNamespace, hostIP, "/")
+	return checkVolume(kubeClient, req, host.AlertNamespace, hostIP, "/")
 }
 
-func checkPodVolumeStat(req *Request) (icinga.State, interface{}) {
+func checkPodVolume(req *Request) (icinga.State, interface{}) {
 	host, err := icinga.ParseHost(req.Host)
 	if err != nil {
 		return icinga.UNKNOWN, "Invalid icinga host.name"
@@ -318,7 +306,7 @@ func checkPodVolumeStat(req *Request) (icinga.State, interface{}) {
 	}
 
 	path := fmt.Sprintf("/var/lib/kubelet/pods/%v/volumes/%v/%v", pod.UID, volumeSourcePluginName, volumeSourceName)
-	return checkDiskStat(kubeClient, req, host.AlertNamespace, pod.Status.HostIP, path)
+	return checkVolume(kubeClient, req, host.AlertNamespace, pod.Status.HostIP, path)
 }
 
 func NewCmd() *cobra.Command {
@@ -333,17 +321,17 @@ func NewCmd() *cobra.Command {
 			flags.EnsureRequiredFlags(cmd, "host")
 
 			if req.NodeStat {
-				icinga.Output(checkNodeDiskStat(&req))
+				icinga.Output(checkNodeVolume(&req))
 			} else {
 				flags.EnsureRequiredFlags(cmd, "volume_name")
-				icinga.Output(checkPodVolumeStat(&req))
+				icinga.Output(checkPodVolume(&req))
 			}
 		},
 	}
 
 	c.Flags().StringVarP(&req.Host, "host", "H", "", "Icinga host name")
 	c.Flags().BoolVar(&req.NodeStat, "nodeStat", false, "Checking Node disk size")
-	c.Flags().StringVarP(&req.SecretName, "secretName", "s", "hostfacts", `Kubernetes secret name`)
+	c.Flags().StringVarP(&req.SecretName, "secretName", "s", "", `Kubernetes secret name`)
 	c.Flags().StringVarP(&req.VolumeName, "volumeName", "N", "", "Volume name")
 	c.Flags().Float64VarP(&req.Warning, "warning", "w", 75.0, "Warning level value (usage percentage)")
 	c.Flags().Float64VarP(&req.Critical, "critical", "c", 90.0, "Critical level value (usage percentage)")

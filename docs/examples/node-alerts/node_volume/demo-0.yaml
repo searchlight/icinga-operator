@@ -4,12 +4,15 @@ metadata:
   name: node-volume-demo-0
   namespace: demo
 spec:
+  selector:
+    beta.kubernetes.io/os: linux
   check: node_volume
-  checkInterval: 10s
-spec:
-  check: node_volume
-  checkInterval: 30s
-  alertInterval: 2m
+  vars:
+    volumeName: webstore
+    warning: 70
+    critical: 95
+  checkInterval: 5m
+  alertInterval: 3m
   notifierSecretName: notifier-config
   receivers:
   - notifier: mailgun
