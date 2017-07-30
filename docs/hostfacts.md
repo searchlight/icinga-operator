@@ -15,35 +15,23 @@ curl -Lo hostfacts https://cdn.appscode.com/binaries/hostfacts/3.0.0/hostfacts-l
   && sudo mv hostfacts /usr/bin/
 ```
 
+If you are using kube-up scripts to provision Kubernetes cluster, you can find a salt formula [here](https://github.com/appscode/kubernetes/tree/1.5.7-ac/cluster/saltbase/salt/appscode-hostfacts).
+
+
+### Create Systemd Service
+To run hostfacts server as a System service, write `hostfacts.service` file in __systemd directory__ in your node.
+```console
+# Ubuntu (example, minikube)
+$ sudo vi /lib/systemd/system/hostfacts.service
+
+# RedHat
+$ sudo vi /usr/lib/systemd/system/hostfacts.service
+```
 
 
 
-https://github.com/appscode/kubernetes/tree/1.5.7-ac/cluster/saltbase/salt/appscode-hostfacts
 
-
-
-
-
-
-### Deploy Hostfacts
-
-Write `hostfacts.service` file in __systemd directory__ in your kubernetes node.
-
-##### systemd directory
-* Ubuntu
-
-    ```console
-    /lib/systemd/system/hostfacts.service
-    ```
-* RedHat
-
-    ```console
-    /usr/lib/systemd/system/hostfacts.service
-    ```
-
-
-##### `hostfacts.service`
-
+Below is a systemd service file for Hostfacts without any authentication.
 ```ini
 [Unit]
 Description=Provide host facts
@@ -61,12 +49,6 @@ Set one of the following if you want to set authentication in `hostfacts`
 
 * Basic Auth
 
-    ```console
-    # Use ENV
-    # Add Environment in hostfacts.service under [Service] section
-    Environment=HOSTFACTS_AUTH_USERNAME="<username>"
-    Environment=HOSTFACTS_AUTH_PASSWORD="<password>"
-    ```
     You can pass flags instead of using environment variables
     ```
     # Use Flags
@@ -75,11 +57,6 @@ Set one of the following if you want to set authentication in `hostfacts`
     ```
 * Token
 
-    ```console
-    # Use ENV
-    # Add Environment in hostfacts.service under [Service] section
-    Environment=HOSTFACTS_AUTH_TOKEN="<token>"
-    ```
     You can pass flag instead of using environment variable
     ```
     # Use Flags
