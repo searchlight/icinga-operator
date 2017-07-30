@@ -2,15 +2,17 @@
 
 # Check node_exists
 
-This is used to check total number of Kubernetes node.
-
-ClusterAlert `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.
+Check command `node_exists` is used to check existence of nodes in a Kubernetes cluster.
 
 
 ## Spec
-`env` check command has no variables. Execution of this command can result in following states:
+`node_exists` has the following variables:
+- `selector` - Label selector for nodes whose existence are checked.
+- `nodeName` - Name of Kubernetes node whose existence is checked.
+- `count` - Number of expected Kubernetes nodes
+
+Execution of this command can result in following states:
 - OK
-- WARNING
 - CRITICAL
 - UNKNOWN
 
@@ -34,18 +36,22 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Create Alert
-In this tutorial, we are going to create an alert to check `env`.
+
+### Check existence of nodes with matching labels
+In this tutorial, a ClusterAlert will be used check existence of nodes with matching labels by setting `spec.vars.selector` field.
 ```yaml
-$ cat ./docs/examples/cluster-alerts/env/demo-0.yaml
+$ cat ./docs/examples/cluster-alerts/node_exists/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: env-demo-0
+  name: node-exists-demo-0
   namespace: demo
 spec:
-  check: env
+  check: node_exists
+  vars:
+    selector: app=nginx
+    count: 2
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
@@ -55,23 +61,75 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/env/demo-0.yaml 
-clusteralert "env-demo-0" created
+$ kubectl apply -f ./docs/examples/cluster-alerts/node_exists/demo-0.yaml
+replicationcontroller "nginx" created
+clusteralert "node-exists-demo-0" created
 
-$ kubectl describe clusteralert env-demo-0 -n demo
-Name:		env-demo-0
+$ kubectl describe clusteralert -n demo node-exists-demo-0
+Name:		node-exists-demo-0
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  6m		6m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "env-demo-0". Reason: secrets "notifier-config" not found
-  6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "env-demo-0"
+  19s		19s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "node-exists-demo-0". Reason: secrets "notifier-config" not found
+  19s		19s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "node-exists-demo-0"
 ```
 
-Voila! `env` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `notifier-config`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `env-demo-0`.
+Voila! `node_exists` command has been synced to Icinga2. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `node-exists-demo-0`.
 
-![Demo of check_env](/docs/images/cluster-alerts/env/demo-0.gif)
+![check-all-nodes](/docs/images/cluster-alerts/node_exists/demo-0.png)
+
+
+### Check existence of a specific node
+In this tutorial, a ClusterAlert will be used check existence of a node by name by setting `spec.vars.nodeName` field.
+```yaml
+$ cat ./docs/examples/cluster-alerts/node_exists/demo-1.yaml
+
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: ClusterAlert
+metadata:
+  name: node-exists-demo-1
+  namespace: demo
+spec:
+  check: node_exists
+  vars:
+    nodeName: busybox
+    count: 1
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
+```
+```console
+$ kubectl apply -f ./docs/examples/cluster-alerts/node_exists/demo-1.yaml
+node "busybox" created
+nodealert "node-exists-demo-1" created
+
+$ kubectl get nodes -n demo
+NAME          READY     STATUS    RESTARTS   AGE
+busybox       1/1       Running   0          5s
+
+$ kubectl get nodealert -n demo
+NAME              KIND
+node-exists-demo-1   ClusterAlert.v1alpha1.monitoring.appscode.com
+
+$ kubectl describe nodealert -n demo node-exists-demo-1
+Name:		node-exists-demo-1
+Namespace:	demo
+Labels:		<none>
+Events:
+  FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
+  ---------	--------	-----	----			-------------	--------	------		-------
+  31s		31s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "node-exists-demo-1". Reason: secrets "notifier-config" not found
+  31s		31s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "node-exists-demo-1"
+  27s		27s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "node-exists-demo-1"
+```
+![check-by-node-label](/docs/images/cluster-alerts/node_exists/demo-1.png)
+
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
@@ -83,50 +141,3 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 
 
 ## Next Steps
-
-
-
-#### Supported Kubernetes Objects
-
-| Kubernetes Object | Icinga2 Host Type |
-| :---:             | :---:             |
-| cluster           | localhost         |
-
-#### Vars
-
-* `count` - Number of expected Kubernetes Node
-
-#### Supported Icinga2 State
-
-* OK
-* CRITICAL
-* UNKNOWN
-
-#### Example
-###### Command
-```console
-hyperalert check_node_exists --count=3
-```
-###### Output
-```
-CRITICAL: Found 2 node(s) instead of 3
-```
-
-##### Configure Alert Object
-```yaml
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: ClusterAlert
-metadata:
-  name: check-node-count
-  namespace: demo
-spec:
-  check: node_exists
-  alertInterval: 2m
-  checkInterval: 1m
-  receivers:
-  - notifier: mailgun
-    state: CRITICAL
-    to: ["ops@example.com"]
-  vars:
-    count: 3
-```
