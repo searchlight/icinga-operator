@@ -3,15 +3,18 @@
 # Check pod_status
 
 This is used to check Kubernetes pod status.
-In this tutorial,
 
-PodAlert `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.
+Check command `pod_status` is used to check status of a command run inside Kubernetes pods. Returns OK if exit code is zero, otherwise, returns CRITICAL.
 
 
 ## Spec
-`env` check command has no variables. Execution of this command can result in following states:
+`pod_status` check command has the following variables:
+- `container` - Container name in a Kubernetes Pod
+- `cmd` - Exec command. [Default: '/bin/sh']
+- `argv` - Exec command arguments. [Format: 'arg; arg; arg']
+
+Execution of this command can result in following states:
 - OK
-- WARNING
 - CRITICAL
 - UNKNOWN
 
@@ -35,18 +38,18 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Create Alert
-In this tutorial, we are going to create an alert to check `env`.
+### Check status of pods with matching labels
+In this tutorial, a PodAlert will be used check status of pods with matching labels by setting `spec.selector` field.
 ```yaml
-$ cat ./docs/examples/cluster-alerts/env/demo-0.yaml
+$ cat ./docs/examples/pod-alerts/pod_status/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
 metadata:
-  name: env-demo-0
+  name: pod-status-demo-0
   namespace: demo
 spec:
-  check: env
+  check: pod_status
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
@@ -56,23 +59,80 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/env/demo-0.yaml 
-clusteralert "env-demo-0" created
+$ kubectl apply -f ./docs/examples/pod-alerts/pod_status/demo-0.yaml
+replicationcontroller "nginx" created
+podalert "pod-status-demo-0" created
 
-$ kubectl describe clusteralert env-demo-0 -n demo
-Name:		env-demo-0
+$ kubectl get pods -n demo
+NAME          READY     STATUS    RESTARTS   AGE
+nginx-c0v51   1/1       Running   0          53s
+nginx-vqhzv   1/1       Running   0          53s
+
+$ kubectl describe podalert -n demo pod-status-demo-0
+Name:		pod-status-demo-0
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  6m		6m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for PodAlert: "env-demo-0". Reason: secrets "notifier-config" not found
-  6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "env-demo-0"
+  3m		3m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for PodAlert: "pod-status-demo-0". Reason: secrets "notifier-config" not found
+  3m		3m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-status-demo-0"
+  3m		3m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-status-demo-0"
 ```
 
-Voila! `env` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `notifier-config`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `env-demo-0`.
+Voila! `pod_status` command has been synced to Icinga2. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@pod@minikube` and Icinga service `pod-status-demo-0`.
 
-![Demo of check_env](/docs/images/cluster-alerts/env/demo-0.gif)
+![check-all-pods](/docs/images/pod-alerts/pod_status/demo-0.png)
+
+
+### Check status of a specific pod
+In this tutorial, a PodAlert will be used check status of a pod by name by setting `spec.podName` field.
+```yaml
+$ cat ./docs/examples/pod-alerts/pod_status/demo-1.yaml
+
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: PodAlert
+metadata:
+  name: pod-status-demo-1
+  namespace: demo
+spec:
+  check: pod_status
+  selector:
+    beta.kubernetes.io/os: linux
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
+```
+```console
+$ kubectl apply -f ./docs/examples/pod-alerts/pod_status/demo-1.yaml
+pod "busybox" created
+podalert "pod-status-demo-1" created
+
+$ kubectl get pods -n demo
+NAME          READY     STATUS    RESTARTS   AGE
+busybox       1/1       Running   0          5s
+
+$ kubectl get podalert -n demo
+NAME              KIND
+pod-status-demo-1   PodAlert.v1alpha1.monitoring.appscode.com
+
+$ kubectl describe podalert -n demo pod-status-demo-1
+Name:		pod-status-demo-1
+Namespace:	demo
+Labels:		<none>
+Events:
+  FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
+  ---------	--------	-----	----			-------------	--------	------		-------
+  31s		31s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for PodAlert: "pod-status-demo-1". Reason: secrets "notifier-config" not found
+  31s		31s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-status-demo-1"
+  27s		27s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-status-demo-1"
+```
+![check-by-pod-label](/docs/images/pod-alerts/pod_status/demo-1.png)
+
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
@@ -86,73 +146,46 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 ## Next Steps
 
 
-#### Supported Kubernetes Objects
-
-| Kubernetes Object      | Icinga2 Host Type |
-| :---:                  | :---:             |
-| cluster                | localhost         |
-| deployments            | localhost         |
-| daemonsets             | localhost         |
-| replicasets            | localhost         |
-| statefulsets           | localhost         |
-| replicationcontrollers | localhost         |
-| services               | localhost         |
-| pods                   | pod               |
-
-#### Supported Icinga2 State
-
-* OK
-* CRITICAL
-* UNKNOWN
-
-#### Example
-###### Command
-```console
-hyperalert check_pod_status --host='pod_status@default'
-# --host is provided by Icinga2
-```
-###### Output
-```json
-CRITICAL: {
-  "objects": [
-    {
-      "name": "test-pod-0",
-      "namespace": "default",
-      "status": "Pending"
-    },
-    {
-      "name": "test-pod-1",
-      "namespace": "default",
-      "status": "Pending"
-    }
-  ],
-  "message": "Found 2 not running pods(s)"
-}
-```
-
-##### Configure Alert Object
-```yaml
-# This will check all pod status in default namespace
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: PodAlert
-metadata:
-  name: check-pod-status
-  namespace: demo
-spec:
-  check: pod_status
-  alertInterval: 2m
-  checkInterval: 1m
-  receivers:
-  - notifier: mailgun
-    state: CRITICAL
-    to: ["ops@example.com"]
 
 
-# To check for others kubernetes objects, set following labels
-# labels:
-#   alert.appscode.com/objectType: services
-#   alert.appscode.com/objectName: elasticsearch-logging
-```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
