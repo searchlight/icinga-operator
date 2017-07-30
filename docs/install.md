@@ -37,7 +37,7 @@ Once the operator pods are running, you can cancel the above command by typing `
 
 
 ## Accesing IcingaWeb2
-Icinga comes with its own web dashboard called IcingaWeb. You can access IcingaWeb on your workstation by forwarding port 60006 of Searchlight operator pod.
+Icinga comes with its own web dashboard called IcingaWeb. You can access IcingaWeb on your workstation by forwarding port `60006` of Searchlight operator pod.
 
 ```console
 $ kubectl get pods --all-namespaces -l app=searchlight
@@ -52,9 +52,18 @@ Handling connection for 60006
 ^C⏎
 ```
 
-Now, open http://127.0.0.1:60006 URL on your broswer.
+Now, open http://127.0.0.1:60006 URL on your broswer. To login, use username `admin` and password `changeit`.
 
 
+## Configuring Icinga
+
+ - ICINGA_WEB_UI_PASSWORD
+ - ICINGA_API_PASSWORD
+ - ICINGA_CA_CERT
+ - ICINGA_SERVER_CERT
+ - ICINGA_SERVER_KEY
+ - ICINGA_IDO_PASSWORD
+ - ICINGA_WEB_PASSWORD
 
 ## Update Cluster Config
 If you would like to update cluster config, update the `searchlight-config` Secret and restart Searchlight operator pod(s).
@@ -68,15 +77,6 @@ If you would like to update cluster config, update the `searchlight-config` Secr
 
 
 
-	ICINGA_WEB_UI_PASSWORD
-
-	ICINGA_API_PASSWORD
-	ICINGA_CA_CERT
-	ICINGA_SERVER_CERT
-	ICINGA_SERVER_KEY
-
-	ICINGA_IDO_PASSWORD
-	ICINGA_WEB_PASSWORD
 
 
 
