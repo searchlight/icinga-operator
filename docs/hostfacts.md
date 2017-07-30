@@ -78,9 +78,11 @@ RestartSec=5
 WantedBy=multi-user.target
 ```
 
+#### Using SSL
 If your cluster is running inside a shared network (eg, DigitalOcean), you should enable SSL. If you want to set SSL certificate, do the following:
- - Generate certificates and key. See process [here](../icinga2/certificate.md).
- - Use flags to pass file directory
+
+ - Generate certificates and key. See process [here](/docs/certificate.md).
+ - Use flags to pass the path to certificates to hostfacts.
 
 ```console
 # Basic auth
