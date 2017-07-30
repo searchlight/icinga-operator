@@ -176,7 +176,7 @@
             "short": "N",
             "long": "volumeName"
           },
-          "name": "volumeName",
+          "name": "mountpoint",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
