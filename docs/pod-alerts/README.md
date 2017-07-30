@@ -3,7 +3,7 @@
 # PodAlerts
 
 ## What is PodAlert
-A `PodAlert` is a Kubernetes `Third Party Object` (TPR). It provides declarative configuration for [Icinga services](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#service) for pods in a Kubernetes native way. You only need to describe the desired check command and notifier in a PodAlert object, and the Searchlight operator will configure Icinga to the desired state for you.
+A `PodAlert` is a Kubernetes `Third Party Object` (TPR). It provides declarative configuration of [Icinga services](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#service) for pods in a Kubernetes native way. You only need to describe the desired check command and notifier in a PodAlert object, and the Searchlight operator will configure Icinga to the desired state for you.
 
 
 ## PodAlert Spec
