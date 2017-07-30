@@ -59,14 +59,14 @@ Now, open http://127.0.0.1:60006 URL on your broswer. To login, use username `ad
 Searchlight installation scripts above creates a Secret called `searchlight-operator` to store icinga configuration. This following keys are supported in this Secret.
 
 | Key                    | Default Value  | Description                                    |
-|------------------------|-----------------------------------------------------------------|
+|------------------------|----------------|------------------------------------------------|
 | ICINGA_WEB_UI_PASSWORD | changeit       | Password of `admin` user for IcingaWeb
 | ICINGA_API_PASSWORD    | auto-generated |                 |
-| ICINGA_CA_CERT         | auto-generated |
-| ICINGA_SERVER_CERT     | auto-generated |
-| ICINGA_SERVER_KEY      | auto-generated |
-| ICINGA_IDO_PASSWORD    | auto-generated |
-| ICINGA_WEB_PASSWORD    | auto-generated |
+| ICINGA_CA_CERT         | auto-generated |                   |
+| ICINGA_SERVER_CERT     | auto-generated |                   |
+| ICINGA_SERVER_KEY      | auto-generated |                   |
+| ICINGA_IDO_PASSWORD    | auto-generated |                   |
+| ICINGA_WEB_PASSWORD    | auto-generated |                   |
 
 Before you can install Searchlight, you need a cluster config for Searchlight. Cluster config is defined in YAML format. You find an example config in [./hack/deploy/config.yaml](/hack/deploy/config.yaml).
 
