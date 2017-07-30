@@ -171,6 +171,18 @@
           "optional": true
         },
         {
+          "description": "Volume name",
+          "flag": {
+            "short": "N",
+            "long": "volumeName"
+          },
+          "name": "volumeName",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        },
+        {
           "description": "Warning level value (usage percentage defaults to 75.0)",
           "flag": {
             "short": "w",
