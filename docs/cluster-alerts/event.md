@@ -81,11 +81,8 @@ LASTSEEN   FIRSTSEEN   COUNT     NAME           KIND           SUBOBJECT        
 15s        15s         1         nginx-9n8z7    Pod            spec.containers{nginx}   Normal    Pulling          kubelet, minikube      pulling image "nginx:bad"
 12s        12s         1         nginx-9n8z7    Pod            spec.containers{nginx}   Warning   Failed           kubelet, minikube      Failed to pull image "nginx:bad": rpc error: code = 2 desc = Tag bad not found in repository docker.io/library/nginx
 12s        12s         1         nginx-9n8z7    Pod                                     Warning   FailedSync       kubelet, minikube      Error syncing pod, skipping: failed to "StartContainer" for "nginx" with ErrImagePull: "rpc error: code = 2 desc = Tag bad not found in repository docker.io/library/nginx"
-
-12s       12s       1         nginx-9n8z7   Pod       spec.containers{nginx}   Normal    BackOff      kubelet, minikube   Back-off pulling image "nginx:bad"
-12s       12s       1         nginx-9n8z7   Pod                                Warning   FailedSync   kubelet, minikube   Error syncing pod, skipping: failed to "StartContainer" for "nginx" with ImagePullBackOff: "Back-off pulling image \"nginx:bad\""
-
-15s       15s       1         nginx     ReplicationController             Normal    SuccessfulCreate   replication-controller   Created pod: nginx-9n8z7
+12s        12s         1         nginx-9n8z7    Pod            spec.containers{nginx}   Normal    BackOff          kubelet, minikube      Back-off pulling image "nginx:bad"
+12s        12s         1         nginx-9n8z7    Pod                                     Warning   FailedSync       kubelet, minikube      Error syncing pod, skipping: failed to "StartContainer" for "nginx" with ImagePullBackOff: "Back-off pulling image \"nginx:bad\""
 ```
 
 Voila! `event` command has been synced to Icinga2. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `event-demo-0`.
