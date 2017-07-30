@@ -71,15 +71,7 @@ This object will do the followings:
 
 We currently supports following CheckCommands:
 
-* [component_status](check_component_status.md) - To check Kubernetes components.
 * [influx_query](check_influx_query.md) - To check InfluxDB query result.
-* [json_path](check_json_path.md) - To check any API response by parsing JSON using JQ queries.
-* [node_count](check_node_count.md) - To check total number of Kubernetes node.
-* [node_status](check_node_status.md) - To check Kubernetes Node status.
-* [pod_exists](check_pod_exists.md) - To check Kubernetes pod existence.
-* [pod_status](check_pod_status.md) - To check Kubernetes pod status.
-* [prometheus_metric](check_prometheus_metric.md) - To check Prometheus query result.
-* [node_volume](check_node_volume.md) - To check Node Disk stat.
 * [volume](check_pod_volume.md) - To check Pod volume stat.
-* [event](check_event.md) - To check Kubernetes events for all Warning TYPE happened in last 'c' seconds.
 * [pod_exec](check_pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
+* [pod_status](check_pod_status.md) - To check Kubernetes pod status.
