@@ -12,13 +12,12 @@ As with all other Kubernetes objects, a NodeAlert needs `apiVersion`, `kind`, an
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: NodeAlert
 metadata:
-  name: nginx-webstore
+  name: webstore
   namespace: demo
 spec:
   selector:
-    matchLabels:
-      app: nginx
-  check: pod_volume
+    beta.kubernetes.io/os: linux
+  check: node_volume
   vars:
     volumeName: webstore
     warning: 70
@@ -37,24 +36,24 @@ spec:
 
 This object will do the followings:
 
-- This Alert is set on pods with matching label `app=nginx` in `demo` namespace.
-- Check command `pod_volume` will be applied on volume named `webstore`.
-- Icinga will check for volume size every 60s.
-- Notifications will be sent every 5m if any problem is detected, until acknowledged.
+- This Alert is set on nodes with matching label `beta.kubernetes.io/os=linux`.
+- Check command `node_volume` will be applied on volume named `webstore`.
+- Icinga will check for volume size every 5m.
+- Notifications will be sent every 3m if any problem is detected, until acknowledged.
 - When the disk is 70% full, it will reach `WARNING` state and emails will be sent to _ops@example.com_ via Mailgun as notification.
 - When the disk is 95% full, it will reach `CRITICAL` state and SMSes will be sent to _+1-234-567-8901_ via Twilio as notification.
 
 Any NodeAlert object has 3 main sections:
 
-### Pod Selection
-Any NodeAlert can specify pods in 2 ways:
+### Node Selection
+Any NodeAlert can specify nodes in 2 ways:
 
-- `spec.podName` can be used to specify a pod by name. Use this if you are creating pods directly.
+- `spec.nodeName` can be used to specify a node by name.
 
-- `spec.selector` is a label selector for pods. This should be used if pods are created by workload controllers like Deployment, ReplicaSet, StatefulSet, DaemonSet, ReplicationController, etc. Searchlight operator will update Icinga as pods with matching labels are created/deleted by workload controllers.
+- `spec.selector` is a node selector. Searchlight operator will update Icinga as nodes with matching labels are added/removed.
 
 ### Check Command
-Check commands are used by Icinga to periodically test some condition. If the test return positive appropriate notifications are sent. The following check commands are supported for pods:
+Check commands are used by Icinga to periodically test some condition. If the test return positive appropriate notifications are sent. The following check commands are supported for nodes:
 - [influx_query](influx_query.md) - To check InfluxDB query result.
 - [node_status](node_status.md) - To check Kubernetes Node status.
 - [node_volume](node_volume.md) - To check Node Disk stat.
