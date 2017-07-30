@@ -16,15 +16,17 @@ spec:
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
 metadata:
-  name: pod-exec-demo-1
+  name: pod-volume-demo-1
   namespace: demo
 spec:
   podName: busybox
-  check: pod_exec
+  check: pod_volume
   vars:
-    argv: ls -l /usr
-  checkInterval: 30s
-  alertInterval: 2m
+    volumeName: webstore
+    warning: 70
+    critical: 95
+  checkInterval: 5m
+  alertInterval: 3m
   notifierSecretName: notifier-config
   receivers:
   - notifier: mailgun

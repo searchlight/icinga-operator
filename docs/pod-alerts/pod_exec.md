@@ -99,16 +99,6 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 
 #### Vars
 
-* `container` - Container name in a Kubernetes Pod
-* `cmd` - Exec command. [Default: '/bin/sh']
-* `argv` - Exec command arguments. [Format: 'arg; arg; arg']
-
-#### Supported Icinga2 State
-
-* OK
-* CRITICAL
-* UNKNOWN
-
 #### Example
 ###### Command
 ```console
@@ -149,6 +139,16 @@ spec:
 
 
 
+
+* `container` - Container name in a Kubernetes Pod
+* `cmd` - Exec command. [Default: '/bin/sh']
+* `argv` - Exec command arguments. [Format: 'arg; arg; arg']
+
+#### Supported Icinga2 State
+
+* OK
+* CRITICAL
+* UNKNOWN
 
 
 

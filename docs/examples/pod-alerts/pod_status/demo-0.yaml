@@ -23,10 +23,10 @@ metadata:
   name: pod-status-demo-0
   namespace: demo
 spec:
-  check: pod_status
   selector:
     matchLabels:
       app: nginx
+  check: pod_status
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config

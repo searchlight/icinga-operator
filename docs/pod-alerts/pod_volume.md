@@ -50,7 +50,7 @@ metadata:
 spec:
   check: pod_volume
   vars:
-    mountpoint: /mnt/sda1
+    volumeName: /mnt/sda1
     warning: 70
     critical: 95
   checkInterval: 5m
@@ -96,7 +96,7 @@ spec:
     beta.kubernetes.io/os: linux
   check: pod_volume
   vars:
-    mountpoint: /mnt/sda1
+    volumeName: /mnt/sda1
     warning: 70
     critical: 95
   checkInterval: 5m
@@ -142,7 +142,7 @@ spec:
   podName: minikube
   check: pod_volume
   vars:
-    mountpoint: /mnt/sda1
+    volumeName: /mnt/sda1
     warning: 70
     critical: 95
   checkInterval: 5m

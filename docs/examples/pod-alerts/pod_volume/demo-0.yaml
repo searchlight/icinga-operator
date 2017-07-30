@@ -1,7 +1,26 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: nginx
+  namespace: demo
+spec:
+  replicas: 2
+  template:
+    metadata:
+      name: nginx
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+---
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
 metadata:
-  name: nginx-webstore
+  name: pod-volume-demo-0
   namespace: demo
 spec:
   selector:
@@ -17,8 +36,5 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: mailgun
-    state: WARNING
-    to: ["ops@example.com"]
-  - notifier: twilio
     state: CRITICAL
-    to: ["+1-234-567-8901"]
+    to: ["ops@example.com"]

@@ -19,8 +19,8 @@ metadata:
   name: pod-status-demo-1
   namespace: demo
 spec:
-  check: pod_status
   podName: busybox
+  check: pod_status
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
