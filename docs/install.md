@@ -36,7 +36,7 @@ $ kubectl get pods --all-namespaces -l app=searchlight --watch
 Once the operator pods are running, you can cancel the above command by typing `Ctrl+C`.
 
 
-# Accesing IcingaWeb2
+## Accesing IcingaWeb2
 Icinga comes with its own web dashboard called IcingaWeb. You can access IcingaWeb on your workstation by forwarding port 60006 of Searchlight operator pod.
 
 ```console
