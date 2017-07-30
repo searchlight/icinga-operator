@@ -52,18 +52,26 @@ Handling connection for 60006
 ^C⏎
 ```
 
-Now, open http://127.0.0.1:60006 URL on your broswer. To login, use username `admin` and password `changeit`.
+Now, open http://127.0.0.1:60006 URL on your broswer. To login, use username `admin` and password `changeit`. If you want to change the password, check the next section.
 
 
 ## Configuring Icinga
+Searchlight installation scripts above creates a Secret called `searchlight-operator` to store icinga configuration. This following keys are supported in this Secret.
 
- - ICINGA_WEB_UI_PASSWORD
- - ICINGA_API_PASSWORD
- - ICINGA_CA_CERT
- - ICINGA_SERVER_CERT
- - ICINGA_SERVER_KEY
- - ICINGA_IDO_PASSWORD
- - ICINGA_WEB_PASSWORD
+| Key                    | Default Value  | Description                                    |
+|------------------------|-----------------------------------------------------------------|
+| ICINGA_WEB_UI_PASSWORD | changeit       | Password of `admin` user for IcingaWeb
+| ICINGA_API_PASSWORD    | auto-generated |                 |
+| ICINGA_CA_CERT         | auto-generated |
+| ICINGA_SERVER_CERT     | auto-generated |
+| ICINGA_SERVER_KEY      | auto-generated |
+| ICINGA_IDO_PASSWORD    | auto-generated |
+| ICINGA_WEB_PASSWORD    | auto-generated |
+
+Before you can install Searchlight, you need a cluster config for Searchlight. Cluster config is defined in YAML format. You find an example config in [./hack/deploy/config.yaml](/hack/deploy/config.yaml).
+
+
+
 
 ## Update Cluster Config
 If you would like to update cluster config, update the `searchlight-config` Secret and restart Searchlight operator pod(s).
