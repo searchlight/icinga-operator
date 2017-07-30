@@ -62,10 +62,6 @@ This object will do the followings:
 
 > `NotifierParams` is only used when notification is sent via `AppsCode`.
 
-#### Metadata Labels
-* alert.appscode.com/objectType - The Kubernetes object type
-* alert.appscode.com/objectName - The Kubernetes object name
-
 #### CheckCommand
 
 We currently supports following CheckCommands:
