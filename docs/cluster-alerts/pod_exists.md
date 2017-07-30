@@ -65,10 +65,7 @@ $ kubectl apply -f ./docs/examples/cluster-alerts/pod_exists/demo-0.yaml
 replicationcontroller "nginx" created
 clusteralert "pod-exists-demo-0" created
 
-$ kubectl get clusteralert -n demo
-NAME                KIND
-pod-exists-demo-0   ClusterAlert.v1alpha1.monitoring.appscode.com
-~/g/s/g/a/searchlight (d7) $ kubectl describe clusteralert -n demo pod-exists-demo-0
+$ kubectl describe clusteralert -n demo pod-exists-demo-0
 Name:		pod-exists-demo-0
 Namespace:	demo
 Labels:		<none>
