@@ -8,7 +8,6 @@ spec:
     beta.kubernetes.io/os: linux
   check: node_volume
   vars:
-    volumeName: webstore
     warning: 70
     critical: 95
   checkInterval: 5m

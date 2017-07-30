@@ -19,7 +19,6 @@ spec:
     beta.kubernetes.io/os: linux
   check: node_volume
   vars:
-    volumeName: webstore
     warning: 70
     critical: 95
   checkInterval: 5m
@@ -37,7 +36,7 @@ spec:
 This object will do the followings:
 
 - This Alert is set on nodes with matching label `beta.kubernetes.io/os=linux`.
-- Check command `node_volume` will be applied on volume named `webstore`.
+- Check command `node_volume` will be used.
 - Icinga will check for volume size every 5m.
 - Notifications will be sent every 3m if any problem is detected, until acknowledged.
 - When the disk is 70% full, it will reach `WARNING` state and emails will be sent to _ops@example.com_ via Mailgun as notification.
