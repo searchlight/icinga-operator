@@ -3,7 +3,7 @@
 # PodAlerts
 
 ## What is PodAlert
-A `PodAlert` is a Kubernetes `Third Party Object` (TPR). It provides declarative configuration of [Icinga services](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#service) for pods in a Kubernetes native way. You only need to describe the desired check command and notifier in a PodAlert object, and the Searchlight operator will create Icinga2 hosts, services and notifications to the desired state for you.
+A `PodAlert` is a Kubernetes `Third Party Object` (TPR). It provides declarative configuration of [Icinga services](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#service) for Pods in a Kubernetes native way. You only need to describe the desired check command and notifier in a PodAlert object, and the Searchlight operator will create Icinga2 hosts, services and notifications to the desired state for you.
 
 ## PodAlert Spec
 As with all other Kubernetes objects, a PodAlert needs `apiVersion`, `kind`, and `metadata` fields. It also needs a `.spec` section. Below is an example PodAlert object.
@@ -70,3 +70,11 @@ When a check fails, Icinga will keep sending notifications until acknowledged vi
 | `spec.receivers[*].state`  | `Required` Name of state for which notification will be sent |
 | `spec.receivers[*].to`     | `Required` To whom notifications will be sent                |
 | `spec.receivers[*].method` | `Required` How this notification will be sent                |
+
+
+## Icinga Objects
+Searchlight operator watches for PodAlert objects and turns them into [Icinga objects](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/) accordingly. For each Kubernetes pod which has an PodAlert configured, an Icinga Host is created with the name `{namespace}@pod@{pod-name}`
+
+
+
+
