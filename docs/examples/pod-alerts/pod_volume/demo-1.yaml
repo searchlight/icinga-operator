@@ -1,3 +1,16 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: boxclaim
+  namespace: demo
+spec:
+  storageClassName: "standard"
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Mi
+---
 apiVersion: v1
 kind: Pod
 metadata:
@@ -11,7 +24,13 @@ spec:
       - "3600"
     imagePullPolicy: IfNotPresent
     name: busybox
-  restartPolicy: Always
+    volumeMounts:
+    - mountPath: "/var/www/html"
+      name: mypd
+  volumes:
+    - name: mypd
+      persistentVolumeClaim:
+        claimName: boxclaim
 ---
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
