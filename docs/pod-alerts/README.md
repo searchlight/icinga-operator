@@ -73,8 +73,4 @@ When a check fails, Icinga will keep sending notifications until acknowledged vi
 
 
 ## Icinga Objects
-Searchlight operator watches for PodAlert objects and turns them into [Icinga objects](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/) accordingly. For each Kubernetes pod which has an PodAlert configured, an Icinga Host is created with the name `{namespace}@pod@{pod-name}`
-
-
-
-
+You can skip this section if you are unfamiliar with how Icinga works. Searchlight operator watches for PodAlert objects and turns them into [Icinga objects](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/) accordingly. For each Kubernetes Pod which has an PodAlert configured, an [Icinga Host](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#host) is created with the name `{namespace}@pod@{pod-name}` and address matching the IP of the Pod. Now for each PodAlert, an [Icinga service](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#service) is created with name matching the PodAlert name.
