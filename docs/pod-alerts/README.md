@@ -1,11 +1,15 @@
-# Alert Objects
+> New to Searchlight? Please start [here](/docs/tutorials/README.md).
+
+# PodAlerts
+
+## What is PodAlert
+A `Elasticsearch` is a Kubernetes `Third Party Object` (TPR). It provides declarative configuration for [Elasticsearch](https://www.elastic.co/products/elasticsearch) in a Kubernetes native way. You only need to describe the desired database configuration in a Elasticsearch object, and the KubeDB operator will create Kubernetes objects in the desired state for you.
+
+## PodAlert Spec
+As with all other Kubernetes objects, a Elasticsearch needs `apiVersion`, `kind`, and `metadata` fields. It also needs a `.spec` section. Below is an example Elasticsearch object.
+
 
 Alert objects are consumed by Searchlight Controller to create Icinga2 hosts, services and notifications.
-
-Before we can create an Alert object, we must create the `Third Party Resource` in our Kubernetes cluster.
-
-
-##### Alert Object
 
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
