@@ -44,7 +44,7 @@ $ cat ./docs/examples/node-alerts/node_volume/demo-0.yaml
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: NodeAlert
 metadata:
-  name: node-status-demo-0
+  name: node-volume-demo-0
   namespace: demo
 spec:
   check: node_volume
@@ -58,19 +58,19 @@ spec:
 ```
 ```console
 $ kubectl apply -f ./docs/examples/node-alerts/node_volume/demo-0.yaml
-nodealert "node-status-demo-0" created
+nodealert "node-volume-demo-0" created
 
-$ kubectl describe nodealert -n demo node-status-demo-0
-Name:		node-status-demo-0
+$ kubectl describe nodealert -n demo node-volume-demo-0
+Name:		node-volume-demo-0
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  6s		6s		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "node-status-demo-0"
+  6s		6s		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "node-volume-demo-0"
 ```
 
-Voila! `node_volume` command has been synced to Icinga2. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@node@minikube` and Icinga service `node-status-demo-0`.
+Voila! `node_volume` command has been synced to Icinga2. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@node@minikube` and Icinga service `node-volume-demo-0`.
 
 ![check-all-nodes](/docs/images/node-alerts/node_volume/demo-0.png)
 
@@ -84,7 +84,7 @@ $ cat ./docs/examples/node-alerts/node_volume/demo-1.yaml
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: NodeAlert
 metadata:
-  name: node-status-demo-1
+  name: node-volume-demo-1
   namespace: demo
 spec:
   check: node_volume
@@ -100,20 +100,20 @@ spec:
 ```
 ```console
 $ kubectl apply -f ./docs/examples/node-alerts/node_volume/demo-1.yaml
-nodealert "node-status-demo-1" created
+nodealert "node-volume-demo-1" created
 
 $ kubectl get nodealert -n demo
 NAME                 KIND
-node-status-demo-1   NodeAlert.v1alpha1.monitoring.appscode.com
+node-volume-demo-1   NodeAlert.v1alpha1.monitoring.appscode.com
 
-$ kubectl describe nodealert -n demo node-status-demo-1
-Name:		node-status-demo-1
+$ kubectl describe nodealert -n demo node-volume-demo-1
+Name:		node-volume-demo-1
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  33s		33s		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "node-status-demo-1"
+  33s		33s		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "node-volume-demo-1"
 ```
 ![check-by-node-label](/docs/images/node-alerts/node_volume/demo-1.png)
 
@@ -127,7 +127,7 @@ $ cat ./docs/examples/node-alerts/node_volume/demo-2.yaml
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: NodeAlert
 metadata:
-  name: node-status-demo-2
+  name: node-volume-demo-2
   namespace: demo
 spec:
   check: node_volume
@@ -143,16 +143,16 @@ spec:
 
 ```console
 $ kubectl apply -f ./docs/examples/node-alerts/node_volume/demo-2.yaml
-nodealert "node-status-demo-2" created
+nodealert "node-volume-demo-2" created
 
-$ kubectl describe nodealert -n demo node-status-demo-2
-Name:		node-status-demo-2
+$ kubectl describe nodealert -n demo node-volume-demo-2
+Name:		node-volume-demo-2
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  22s		22s		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "node-status-demo-2"
+  22s		22s		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "node-volume-demo-2"
 ```
 ![check-by-node-name](/docs/images/node-alerts/node_volume/demo-2.png)
 
