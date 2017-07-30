@@ -343,7 +343,7 @@ func NewCmd() *cobra.Command {
 
 	c.Flags().StringVarP(&req.Host, "host", "H", "", "Icinga host name")
 	c.Flags().BoolVar(&req.NodeStat, "node_stat", false, "Checking Node disk size")
-	c.Flags().StringVarP(&req.SecretName, "secret", "s", "", `Kubernetes secret name`)
+	c.Flags().StringVarP(&req.SecretName, "secret", "s", "hostfacts", `Kubernetes secret name`)
 	c.Flags().StringVarP(&req.VolumeName, "volume_name", "N", "", "Volume name")
 	c.Flags().Float64VarP(&req.Warning, "warning", "w", 75.0, "Warning level value (usage percentage)")
 	c.Flags().Float64VarP(&req.Critical, "critical", "c", 90.0, "Critical level value (usage percentage)")
