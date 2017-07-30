@@ -82,6 +82,7 @@ WantedBy=multi-user.target
 If your cluster is running inside a shared network (eg, DigitalOcean), you should enable SSL. If you want to set SSL certificate, do the following:
 
  - Generate a single pair of CA certificate and key. Then generate a separate SSL certificate pair for each node in your cluster. See the steps [here](/docs/certificate.md).
+ - Now, copy the ca.crt and node specific server.crt and server.key to the appropriate node. We recommend using folder `/srv/hostfacts/pki/`.
  - Use flags to pass the path to node specific certificates to its hostfact binary.
 
 ```ini
