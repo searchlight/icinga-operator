@@ -6,27 +6,33 @@
 A `PodAlert` is a Kubernetes `Third Party Object` (TPR). It provides declarative configuration of [Icinga services](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#service) for pods in a Kubernetes native way. You only need to describe the desired check command and notifier in a PodAlert object, and the Searchlight operator will create Icinga2 hosts, services and notifications to the desired state for you.
 
 ## PodAlert Spec
-As with all other Kubernetes objects, a PodAlert needs `apiVersion`, `kind`, and `metadata` fields. It also needs a `.spec` section. Below is an example Elasticsearch object.
+As with all other Kubernetes objects, a PodAlert needs `apiVersion`, `kind`, and `metadata` fields. It also needs a `.spec` section. Below is an example PodAlert object.
 
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
 metadata:
-  name: pod-status-demo-0
+  name: pod-volume
   namespace: demo
 spec:
-  check: pod_status
   selector:
     matchLabels:
       app: nginx
+  check: pod_volume
+  vars:
+    volumeName: website-storage
+    warning: 70
+    critical: 85
   checkInterval: 30s
-  alertInterval: 2m
+  alertInterval: 5m
   notifierSecretName: notifier-config
   receivers:
   - notifier: mailgun
-    state: CRITICAL
+    state: WARNING
     to: ["ops@example.com"]
-
+  - notifier: twilio
+    state: CRITICAL
+    to: ["+1-234-567-8901"]
 ```
 
 This object will do the followings:
