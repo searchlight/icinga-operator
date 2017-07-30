@@ -1,16 +1,15 @@
 > New to Searchlight? Please start [here](/docs/tutorials/README.md).
 
-# Check volume
+# Check pod_volume
 
-PodAlert `pod_volume` checks the usage stats for of a volume of pods.
-
+Check command `pod_volume` is used to check percentage of available space in Kubernetes Pods.
 
 ## Spec
 `pod_volume` check command has the following variables:
-- `mountpoint` - Path to voume mounted Volume name
-- `secret` - Kubernetes secret name for hostfacts authentication
-- `warning` - Warning level value (usage percentage defaults to 75.0)
-- `critical` - Critical level value (usage percentage defaults to 90.0)
+- `volumeName` - Name of volume whose usage stats will be checked
+- `secretName` - Name of Kubernetes Secret used to pass [hostfacts auth info](/docs/hostfacts.md#create-hostfacts-secret)
+- `warning` - Warning level value (usage percentage defaults to 80.0)
+- `critical` - Critical level value (usage percentage defaults to 95.0)
 
 Execution of this command can result in following states:
 - OK
@@ -38,23 +37,24 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-To `pod_volume` command, you also have to deploy Hostfacts server in your cluster. Please follow the instructions [here](/docs/hostfacts.md) to deploy hostfacts.
-
-
-### Create Alert
-In this tutorial, we are going to create an alert to check `env`.
+### Check status of all pods
+In this tutorial, we are going to create a PodAlert to check status of all pods.
 ```yaml
 $ cat ./docs/examples/pod-alerts/pod_volume/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
 metadata:
-  name: env-demo-0
+  name: pod-volume-demo-0
   namespace: demo
 spec:
-  check: env
-  checkInterval: 30s
-  alertInterval: 2m
+  check: pod_volume
+  vars:
+    mountpoint: /mnt/sda1
+    warning: 70
+    critical: 95
+  checkInterval: 5m
+  alertInterval: 3m
   notifierSecretName: notifier-config
   receivers:
   - notifier: mailgun
@@ -63,22 +63,112 @@ spec:
 ```
 ```console
 $ kubectl apply -f ./docs/examples/pod-alerts/pod_volume/demo-0.yaml
-clusteralert "env-demo-0" created
+podalert "pod-volume-demo-0" created
 
-$ kubectl describe clusteralert env-demo-0 -n demo
-Name:		env-demo-0
+$ kubectl describe podalert -n demo pod-volume-demo-0
+Name:		pod-volume-demo-0
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  6m		6m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for PodAlert: "env-demo-0". Reason: secrets "notifier-config" not found
-  6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "env-demo-0"
+  6s		6s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-0"
 ```
 
-Voila! `env` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `notifier-config`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `env-demo-0`.
+Voila! `pod_volume` command has been synced to Icinga2. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@pod@minikube` and Icinga service `pod-volume-demo-0`.
 
-![Demo of check_env](/docs/images/pod-alerts/pod_volume/demo-0.gif)
+![check-all-pods](/docs/images/pod-alerts/pod_volume/demo-0.png)
+
+
+### Check status of pods with matching labels
+In this tutorial, a PodAlert will be used check status of pods with matching labels by setting `spec.selector` field.
+
+```yaml
+$ cat ./docs/examples/pod-alerts/pod_volume/demo-1.yaml
+
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: PodAlert
+metadata:
+  name: pod-volume-demo-1
+  namespace: demo
+spec:
+  selector:
+    beta.kubernetes.io/os: linux
+  check: pod_volume
+  vars:
+    mountpoint: /mnt/sda1
+    warning: 70
+    critical: 95
+  checkInterval: 5m
+  alertInterval: 3m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
+```
+```console
+$ kubectl apply -f ./docs/examples/pod-alerts/pod_volume/demo-1.yaml
+podalert "pod-volume-demo-1" created
+
+$ kubectl get podalert -n demo
+NAME                 KIND
+pod-volume-demo-1   PodAlert.v1alpha1.monitoring.appscode.com
+
+$ kubectl describe podalert -n demo pod-volume-demo-1
+Name:		pod-volume-demo-1
+Namespace:	demo
+Labels:		<none>
+Events:
+  FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
+  ---------	--------	-----	----			-------------	--------	------		-------
+  33s		33s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-1"
+```
+![check-by-pod-label](/docs/images/pod-alerts/pod_volume/demo-1.png)
+
+
+### Check status of a specific pod
+In this tutorial, a PodAlert will be used check status of a pod by name by setting `spec.podName` field.
+
+```yaml
+$ cat ./docs/examples/pod-alerts/pod_volume/demo-2.yaml
+
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: PodAlert
+metadata:
+  name: pod-volume-demo-2
+  namespace: demo
+spec:
+  podName: minikube
+  check: pod_volume
+  vars:
+    mountpoint: /mnt/sda1
+    warning: 70
+    critical: 95
+  checkInterval: 5m
+  alertInterval: 3m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
+```
+
+```console
+$ kubectl apply -f ./docs/examples/pod-alerts/pod_volume/demo-2.yaml
+podalert "pod-volume-demo-2" created
+
+$ kubectl describe podalert -n demo pod-volume-demo-2
+Name:		pod-volume-demo-2
+Namespace:	demo
+Labels:		<none>
+Events:
+  FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
+  ---------	--------	-----	----			-------------	--------	------		-------
+  22s		22s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-2"
+```
+![check-by-pod-name](/docs/images/pod-alerts/pod_volume/demo-2.png)
+
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
@@ -90,53 +180,3 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 
 
 ## Next Steps
-
-
-
-#### Hostfacts Secret keys
-
-* `ca.crt`
-* `hostfacts.key`
-* `hostfacts.crt`
-* `auth_token`
-* `username`
-* `password`
-
-#### Example
-###### Command
-```console
-hyperalert check_volume --host='monitoring-influxdb-0.12.2-n3lo2@kube-system' --volumeName=influxdb-persistent-storage --warning=70 --critical=85
-# --host are provided by Icinga2
-```
-###### Output
-```
-WARNING: Disk used more than 70%
-```
-
-#### Required Hostfacts
-Before using this CheckCommand, you must need to run `hostfacts` service in each Kubernetes node.
-Volume stat of kubernetes pod is collected from `hostfacts` service.
-
-See Hostfacts [deployment guide](hostfacts.md)
-
-
-##### Configure Alert Object
-```yaml
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: PodAlert
-metadata:
-  name: check-pod-volume-1
-  namespace: kube-system
-spec:
-  check: volume
-  alertInterval: 2m
-  checkInterval: 1m
-  receivers:
-  - notifier: mailgun
-    state: CRITICAL
-    to: ["ops@example.com"]
-  vars:
-    volumeName: influxdb-persistent-storage
-    warning: 70
-    critical: 85
-```
