@@ -12,6 +12,9 @@ rules:
   - monitoring.appscode.com
   resources: ["*"]
   verbs: ["*"]
+- apiGroups: ["storage.k8s.io"]
+  resources: ["*"]
+  verbs: ["get"]
 - apiGroups: [""]
   resources:
   - secrets

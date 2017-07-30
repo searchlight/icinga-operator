@@ -275,38 +275,40 @@ func checkPodVolume(req *Request) (icinga.State, interface{}) {
 		return icinga.UNKNOWN, err
 	}
 
-	var volumeSourcePluginName = ""
-	var volumeSourceName = ""
 	for _, volume := range pod.Spec.Volumes {
 		if volume.Name == req.VolumeName {
 			if volume.PersistentVolumeClaim != nil {
-
 				claim, err := kubeClient.Client.CoreV1().PersistentVolumeClaims(host.AlertNamespace).Get(volume.PersistentVolumeClaim.ClaimName, metav1.GetOptions{})
 				if err != nil {
 					return icinga.UNKNOWN, err
-
 				}
 				volume, err := kubeClient.Client.CoreV1().PersistentVolumes().Get(claim.Spec.VolumeName, metav1.GetOptions{})
 				if err != nil {
 					return icinga.UNKNOWN, err
 				}
-				volumeSourcePluginName = getPersistentVolumePluginName(&volume.Spec.PersistentVolumeSource)
-				volumeSourceName = volume.Name
-
+				volumePluginName := getPersistentVolumePluginName(&volume.Spec.PersistentVolumeSource)
+				if volumePluginName == hostPathPluginName {
+					if claim.Spec.StorageClassName != nil {
+						class, err := kubeClient.Client.StorageV1beta1().StorageClasses().Get(*claim.Spec.StorageClassName, metav1.GetOptions{})
+						if err != nil {
+							return icinga.UNKNOWN, err
+						}
+						if class.Provisioner == "k8s.io/minikube-hostpath" {
+							path := fmt.Sprintf("/tmp/hostpath-provisioner/%s", volume.Name)
+							return checkVolume(kubeClient, req, host.AlertNamespace, pod.Status.HostIP, path)
+						}
+					}
+				}
+				path := fmt.Sprintf("/var/lib/kubelet/pods/%v/volumes/%v/%v", pod.UID, volumePluginName, volume.Name)
+				return checkVolume(kubeClient, req, host.AlertNamespace, pod.Status.HostIP, path)
 			} else {
-				volumeSourcePluginName = getVolumePluginName(&volume.VolumeSource)
-				volumeSourceName = volume.Name
+				path := fmt.Sprintf("/var/lib/kubelet/pods/%v/volumes/%v/%v", pod.UID, getVolumePluginName(&volume.VolumeSource), volume.Name)
+				return checkVolume(kubeClient, req, host.AlertNamespace, pod.Status.HostIP, path)
 			}
 			break
 		}
 	}
-
-	if volumeSourcePluginName == "" {
-		return icinga.UNKNOWN, errors.New("Invalid volume source")
-	}
-
-	path := fmt.Sprintf("/var/lib/kubelet/pods/%v/volumes/%v/%v", pod.UID, volumeSourcePluginName, volumeSourceName)
-	return checkVolume(kubeClient, req, host.AlertNamespace, pod.Status.HostIP, path)
+	return icinga.UNKNOWN, errors.New("Invalid volume source")
 }
 
 func NewCmd() *cobra.Command {
