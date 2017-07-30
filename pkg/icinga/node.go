@@ -1,8 +1,8 @@
 package icinga
 
 import (
-	"fmt"
-	"regexp"
+	"bytes"
+	"text/template"
 
 	"github.com/appscode/errors"
 	tapi "github.com/appscode/searchlight/api"
@@ -50,15 +50,23 @@ func (h *NodeHost) expandVars(alertSpec tapi.NodeAlertSpec, kh IcingaHost, attrs
 	for key, val := range alertSpec.Vars {
 		if v, found := commandVars[key]; found {
 			if v.Parameterized {
-				reg, err := regexp.Compile("nodename[ ]*=[ ]*'[?]'")
-				if err != nil {
-					return err
-				}
 				host, err := kh.Name()
 				if err != nil {
 					return err
 				}
-				attrs[IVar(key)] = reg.ReplaceAllString(val.(string), fmt.Sprintf("nodename='%s'", host))
+				type Data struct {
+					NodeName string
+				}
+				tmpl, err := template.New("").Parse(val.(string))
+				if err != nil {
+					return err
+				}
+				var buf bytes.Buffer
+				err = tmpl.Execute(&buf, Data{host})
+				if err != nil {
+					return err
+				}
+				attrs[IVar(key)] = buf.String()
 			} else {
 				attrs[IVar(key)] = val
 			}
