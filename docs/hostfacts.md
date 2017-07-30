@@ -102,17 +102,6 @@ You can ignore SSL when Kubernetes is running in private network like GCE, AWS.
 > __Note:__ Modify `ExecStart` in `hostfacts.service`
 
 
-### Add `hostfacts` binary
-
-Download `hostfacts` and add binary in `/usr/bin`
-
-```console
-curl -fSsL  https://cdn.appscode.com/binaries/hostfacts/3.0.0/hostfacts-linux-amd64 -o /usr/bin/hostfacts
-
-# Change access permissions for hostfacts binary
-chmod +x /usr/bin/hostfacts
-```
-
 ### Activate Systemd service
 
 ```console
