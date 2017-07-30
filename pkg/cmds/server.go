@@ -3,21 +3,14 @@ package cmds
 import (
 	"fmt"
 
-	"github.com/appscode/go/net"
-	"github.com/appscode/log"
 	"github.com/appscode/searchlight/pkg/analytics"
 	"github.com/appscode/searchlight/pkg/hostfacts"
 	"github.com/spf13/cobra"
 )
 
 func NewCmdServer(version string) *cobra.Command {
-	_, nodeIP, err := net.NodeIP()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	log.Infoln("Detected IP for hostfacts server:", nodeIP.String())
 	srv := hostfacts.Server{
-		Address: fmt.Sprintf("%s:%d", nodeIP, 56977),
+		Address: fmt.Sprintf(":%d", 56977),
 	}
 	cmd := &cobra.Command{
 		Use:   "run",

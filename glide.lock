@@ -1,5 +1,5 @@
 hash: ba7a43d99f7ae7abee5af0d04eedced27232e183ce6fc92b1ef4f5fd22c91221
-updated: 2017-07-27T19:29:05.987830957-07:00
+updated: 2017-07-30T11:12:16.293344178-07:00
 imports:
 - name: github.com/appscode/api
   version: d98df977c923189d5e4856bf8d428f5528b6bdd1
@@ -15,7 +15,6 @@ imports:
   - crypto/rand
   - env
   - flags
-  - net
   - net/httpclient
   - runtime
   - types
@@ -278,7 +277,7 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
 - name: github.com/spf13/cobra
-  version: 34594c771f2c18301dc152640ad40ece28795373
+  version: d7ba19510d17ff09130f842c8c2eb48f4196b6ee
   subpackages:
   - doc
 - name: github.com/spf13/pflag
