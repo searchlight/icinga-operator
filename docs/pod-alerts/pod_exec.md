@@ -47,7 +47,12 @@ metadata:
   name: pod-exec-demo-0
   namespace: demo
 spec:
+  selector:
+    matchLabels:
+      app: nginx
   check: pod_exec
+  vars:
+    argv: ls -l /usr
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
@@ -94,9 +99,10 @@ metadata:
   name: pod-exec-demo-1
   namespace: demo
 spec:
+  podName: busybox
   check: pod_exec
-  selector:
-    beta.kubernetes.io/os: linux
+  vars:
+    argv: ls -l /usr
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
