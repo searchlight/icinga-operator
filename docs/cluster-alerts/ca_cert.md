@@ -2,7 +2,7 @@
 
 # Check ca_cert
 
-ClusterAlert `ca_cert` checks the expiration timestamp of Kubernetes api server CA certificate. No longer you have to get a surprise that the CA certificate for your cluster has expired.
+Check command `ca_cert` checks the expiration timestamp of Kubernetes api server CA certificate. No longer you have to get a surprise that the CA certificate for your cluster has expired.
 
 ## Spec
 `ca_cert` check command has the following variables:
