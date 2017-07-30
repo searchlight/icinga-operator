@@ -2,15 +2,17 @@
 
 # Check pod_exists
 
-This is used to check Kubernetes pod existence.
-
-ClusterAlert `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.
+Check command `pod_exists` is used to check existence of pods in a Kubernetes cluster.
 
 
 ## Spec
-`env` check command has no variables. Execution of this command can result in following states:
+`pod_exists` has the following variables:
+- `selector` - Label selector for pods whose existence are checked.
+- `podName` - Name of Kubernetes pod whose existence is checked.
+- `count` - Number of expected Kubernetes pods
+
+Execution of this command can result in following states:
 - OK
-- WARNING
 - CRITICAL
 - UNKNOWN
 
@@ -37,7 +39,7 @@ demo          Active    4m
 ### Create Alert
 In this tutorial, we are going to create an alert to check `env`.
 ```yaml
-$ cat ./docs/examples/cluster-alerts/env/demo-0.yaml
+$ cat ./docs/examples/cluster-alerts/pod_exists/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
@@ -55,7 +57,7 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/env/demo-0.yaml 
+$ kubectl apply -f ./docs/examples/cluster-alerts/pod_exists/demo-0.yaml
 clusteralert "env-demo-0" created
 
 $ kubectl describe clusteralert env-demo-0 -n demo
@@ -71,7 +73,7 @@ Events:
 
 Voila! `env` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `notifier-config`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `env-demo-0`.
 
-![Demo of check_env](/docs/images/cluster-alerts/env/demo-0.gif)
+![Demo of check_env](/docs/images/cluster-alerts/pod_exists/demo-0.gif)
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
@@ -98,8 +100,6 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 | services               | localhost         |
 
 #### Vars
-
-* `count` - Number of expected Kubernetes Node
 
 
 #### Supported Icinga2 State
