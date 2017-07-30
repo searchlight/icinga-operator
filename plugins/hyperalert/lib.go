@@ -1,6 +1,8 @@
 package hyperalert
 
 import (
+	"flag"
+
 	"github.com/appscode/searchlight/plugins/check_ca_cert"
 	"github.com/appscode/searchlight/plugins/check_component_status"
 	"github.com/appscode/searchlight/plugins/check_env"
@@ -25,6 +27,9 @@ func NewCmd() *cobra.Command {
 			c.Help()
 		},
 	}
+	cmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
+	// ref: https://github.com/kubernetes/kubernetes/issues/17162#issuecomment-225596212
+	flag.CommandLine.Parse([]string{})
 
 	// CheckCluster
 	cmd.AddCommand(check_component_status.NewCmd())
