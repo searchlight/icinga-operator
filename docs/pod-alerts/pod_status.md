@@ -6,12 +6,7 @@ Check command `pod_status` is used to check status of Kubernetes pods. Returns O
 
 
 ## Spec
-`pod_status` check command has the following variables:
-- `container` - Container name in a Kubernetes Pod
-- `cmd` - Exec command. [Default: '/bin/sh']
-- `argv` - Exec command arguments. [Format: 'arg; arg; arg']
-
-Execution of this command can result in following states:
+`pod_status` check command has no variables. Execution of this command can result in following states:
 - OK
 - CRITICAL
 - UNKNOWN
@@ -47,6 +42,9 @@ metadata:
   name: pod-status-demo-0
   namespace: demo
 spec:
+  selector:
+    matchLabels:
+      app: nginx
   check: pod_status
   checkInterval: 30s
   alertInterval: 2m
@@ -94,9 +92,8 @@ metadata:
   name: pod-status-demo-1
   namespace: demo
 spec:
+  podName: busybox
   check: pod_status
-  selector:
-    beta.kubernetes.io/os: linux
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
@@ -142,102 +139,3 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 
 
 ## Next Steps
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```console
-$ kubectl create ns demo
-namespace "demo" created
-
-$ kubectl apply -f ./docs/examples/pod-alerts/pod_status/demo-0.yaml 
-replicationcontroller "nginx" created
-podalert "pod-status-demo-0" created
-
-$ kubectl get podalert -n demo
-NAME                KIND
-pod-status-demo-0   PodAlert.v1alpha1.monitoring.appscode.com
-
-$ kubectl describe podalert -n demo pod-status-demo-0
-Name:		pod-status-demo-0
-Namespace:	demo
-Labels:		<none>
-Events:
-  FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
-  ---------	--------	-----	----			-------------	--------	------		-------
-  21s		21s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for PodAlert: "pod-status-demo-0". Reason: secrets "notifier-config" not found
-  18s		18s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-status-demo-0"
-  17s		17s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-status-demo-0"
-
-$ kubectl get pods -n demo
-NAME          READY     STATUS    RESTARTS   AGE
-nginx-sctrq   1/1       Running   0          28s
-nginx-x5rm5   1/1       Running   0          28s
-```
-
-
-```console
-$ kubectl apply -f ./docs/examples/pod-alerts/pod_status/demo-1.yaml
-pod "busybox" created
-podalert "pod-status-demo-1" created
-
-$ kubectl get pods -n demo
-NAME      READY     STATUS    RESTARTS   AGE
-busybox   1/1       Running   0          4s
-
-$ kubectl get podalert -n demo
-NAME                KIND
-pod-status-demo-1   PodAlert.v1alpha1.monitoring.appscode.com
-
-$ kubectl describe podalert pod-status-demo-1 -n demo
-Name:		pod-status-demo-1
-Namespace:	demo
-Labels:		<none>
-Events:
-  FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
-  ---------	--------	-----	----			-------------	--------	------		-------
-  36s		36s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for PodAlert: "pod-status-demo-1". Reason: secrets "notifier-config" not found
-  36s		36s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-status-demo-1"
-  35s		35s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-status-demo-1"
-```
