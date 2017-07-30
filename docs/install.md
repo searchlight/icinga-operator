@@ -52,7 +52,7 @@ Handling connection for 60006
 ^C⏎
 ```
 
-Now, open http://127.0.0.1:60006 URL on your broswer. To login, use username `admin` and password `changeit`. If you want to change the password, check the next section.
+Now, open http://127.0.0.1:60006 URL on your broswer. To login, use username `admin` and password `changeit`. If you want to change the password, read the next section.
 
 
 ## Configuring Icinga
@@ -71,6 +71,9 @@ Searchlight installation scripts above creates a Secret called `searchlight-oper
 To change the `admin` user login password in IcingaWeb, change the value of `ICINGA_WEB_UI_PASSWORD` key in Secret `searchlight-operator` and restart Searchlight operator pod(s).
 
 ```console
+$ kubectl edit secret searchlight-operator -n kube-system
+# Update the value of ICINGA_WEB_UI_PASSWORD key
+
 $ kubectl get pods --all-namespaces -l app=searchlight
 NAME                                    READY     STATUS    RESTARTS   AGE
 searchlight-operator-1987091405-ghj5b   3/3       Running   0          1m
