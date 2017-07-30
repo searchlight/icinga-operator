@@ -71,7 +71,7 @@ This object will do the followings:
 
 We currently supports following CheckCommands:
 
-* [influx_query](check_influx_query.md) - To check InfluxDB query result.
-* [volume](check_pod_volume.md) - To check Pod volume stat.
-* [pod_exec](check_pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
-* [pod_status](check_pod_status.md) - To check Kubernetes pod status.
+* [influx_query](influx_query.md) - To check InfluxDB query result.
+* [pod_exec](pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
+* [pod_status](pod_status.md) - To check Kubernetes pod status.
+* [pod_volume](pod_volume.md) - To check Pod volume stat.
