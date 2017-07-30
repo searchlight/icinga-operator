@@ -18,8 +18,6 @@ $ curl https://raw.githubusercontent.com/appscode/searchlight/3.0.0/hack/deploy/
   | kubectl apply -f -
 ```
 
-[![Install Searchlight](https://img.youtube.com/vi/Po4yXrQuHtQ/0.jpg)](https://www.youtube-nocookie.com/embed/Po4yXrQuHtQ)
-
 
 ## Using Helm
 Searchlight can be installed via [Helm](https://helm.sh/) using the [chart](/chart/searchlight) included in this repository. To install the chart with the release name `my-release`:
