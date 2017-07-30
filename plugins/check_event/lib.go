@@ -132,13 +132,13 @@ func NewCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
-	cmd.Flags().DurationVarP(&req.CheckInterval, "check_interval", "c", time.Second*0, "Icinga check_interval in duration. [Format: 30s, 5m]")
-	cmd.Flags().DurationVarP(&req.ClockSkew, "clock_skew", "s", time.Second*30, "Add skew with check_interval in duration. [Default: 30s]")
+	cmd.Flags().DurationVarP(&req.CheckInterval, "checkInterval", "c", time.Second*0, "Icinga check_interval in duration. [Format: 30s, 5m]")
+	cmd.Flags().DurationVarP(&req.ClockSkew, "clockSkew", "s", time.Second*30, "Add skew with check_interval in duration. [Default: 30s]")
 
-	cmd.Flags().StringVar(&req.InvolvedObjectName, "involved_object_name", "", "Involved object name used to select events")
-	cmd.Flags().StringVar(&req.InvolvedObjectNamespace, "involved_object_namespace", "", "Involved object namespace used to select events")
-	cmd.Flags().StringVar(&req.InvolvedObjectKind, "involved_object_kind", "", "Involved object kind used to select events")
-	cmd.Flags().StringVar(&req.InvolvedObjectUID, "involved_object_uid", "", "Involved object uid used to select events")
+	cmd.Flags().StringVar(&req.InvolvedObjectName, "involvedObjectName", "", "Involved object name used to select events")
+	cmd.Flags().StringVar(&req.InvolvedObjectNamespace, "involvedObjectNamespace", "", "Involved object namespace used to select events")
+	cmd.Flags().StringVar(&req.InvolvedObjectKind, "involvedObjectKind", "", "Involved object kind used to select events")
+	cmd.Flags().StringVar(&req.InvolvedObjectUID, "involvedObjectUID", "", "Involved object uid used to select events")
 
 	return cmd
 }

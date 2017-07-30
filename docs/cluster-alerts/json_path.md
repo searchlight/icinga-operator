@@ -93,7 +93,7 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 * `url` - URL to get data
 * `query` - JQ query
 * `secret` - Kubernetes secret name.
-* `in_cluster_config` - Use InClusterConfig if hosted in Kubernetes
+* `inClusterConfig` - Use InClusterConfig if hosted in Kubernetes
 * `warning` - Warning JQ query which returns [true/false]
 * `critical` - Critical JQ query which returns [true/false]
 

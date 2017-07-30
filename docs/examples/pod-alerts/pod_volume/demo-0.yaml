@@ -7,7 +7,7 @@ spec:
   check: pod_volume
   podName: nginx-2371676037-kv28m
   vars:
-    volume_name: influxdb-persistent-storage
+    volumeName: influxdb-persistent-storage
     warning: 70
     critical: 85
   checkInterval: 30s

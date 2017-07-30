@@ -16,7 +16,7 @@ hyperalert check_node_exists [flags]
 ```
   -c, --count int         Number of expected Kubernetes Node
   -h, --help              help for check_node_exists
-  -n, --name string       Name of node whose existence is checked
+  -n, --nodeName string   Name of node whose existence is checked
   -l, --selector string   Selector (label query) to filter on, supports '=', '==', and '!='.
 ```
 

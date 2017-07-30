@@ -14,9 +14,9 @@
           "description": "URL of InfluxDB host to query",
           "flag": {
             "short": "h",
-            "long": "influx_host"
+            "long": "influxHost"
           },
-          "name": "influx_host",
+          "name": "influxHost",
           "type": "STRING",
           "parameterized": false,
           "visibility": false,
@@ -26,9 +26,9 @@
           "description": "Kubernetes secret name",
           "flag": {
             "short": "s",
-            "long": "secret"
+            "long": "secretName"
           },
-          "name": "secret",
+          "name": "secretName",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
@@ -162,9 +162,9 @@
           "description": "Kubernetes secret name",
           "flag": {
             "short": "s",
-            "long": "secret"
+            "long": "secretName"
           },
-          "name": "secret",
+          "name": "secretName",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,

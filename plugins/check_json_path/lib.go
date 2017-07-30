@@ -21,7 +21,7 @@ import (
 
 type Request struct {
 	URL             string
-	Secret          string
+	SecretName      string
 	Namespace       string
 	InClusterConfig bool
 	Warning         string
@@ -59,12 +59,12 @@ func getData(req *Request) (string, error) {
 			return "", errors.New("Missing URL")
 		}
 
-		if req.Secret != "" {
+		if req.SecretName != "" {
 			kubeClient, err := util.NewClient()
 			if err != nil {
 				return "", err
 			}
-			secret, err := kubeClient.Client.CoreV1().Secrets(req.Namespace).Get(req.Secret, metav1.GetOptions{})
+			secret, err := kubeClient.Client.CoreV1().Secrets(req.Namespace).Get(req.SecretName, metav1.GetOptions{})
 			if err != nil {
 				return "", err
 			}
@@ -191,8 +191,8 @@ func NewCmd() *cobra.Command {
 
 	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	c.Flags().StringVarP(&req.URL, "url", "u", "", "URL to get data")
-	c.Flags().StringVarP(&req.Secret, "secret", "s", "", `Kubernetes secret name`)
-	c.Flags().BoolVar(&req.InClusterConfig, "in_cluster_config", false, `Use Kubernetes InCluserConfig`)
+	c.Flags().StringVarP(&req.SecretName, "secretName", "s", "", `Kubernetes secret name`)
+	c.Flags().BoolVar(&req.InClusterConfig, "inClusterConfig", false, `Use Kubernetes InCluserConfig`)
 	c.Flags().StringVarP(&req.Warning, "warning", "w", "", `Warning JQ query which returns [true/false]`)
 	c.Flags().StringVarP(&req.Critical, "critical", "c", "", `Critical JQ query which returns [true/false]`)
 	return c

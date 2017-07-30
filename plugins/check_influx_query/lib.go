@@ -22,7 +22,7 @@ type Request struct {
 	R             string
 	Warning       string
 	Critical      string
-	Secret        string
+	SecretName    string
 	Namespace     string
 }
 
@@ -138,7 +138,7 @@ func checkResult(checkQuery string, valueMap map[string]interface{}) (bool, erro
 }
 
 func CheckInfluxQuery(req *Request) (icinga.State, interface{}) {
-	authData, err := influxdb.GetInfluxDBSecretData(req.Secret, req.Namespace)
+	authData, err := influxdb.GetInfluxDBSecretData(req.SecretName, req.Namespace)
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
@@ -211,7 +211,6 @@ func NewCmd() *cobra.Command {
 			}
 			req.Namespace = host.AlertNamespace
 
-			flags.EnsureRequiredFlags(cmd, "secret", "R")
 			flags.EnsureAlterableFlags(cmd, "A", "B", "C", "D", "E")
 			flags.EnsureAlterableFlags(cmd, "warning", "critical")
 			icinga.Output(CheckInfluxQuery(&req))
@@ -219,8 +218,8 @@ func NewCmd() *cobra.Command {
 	}
 
 	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
-	c.Flags().StringVar(&req.Host, "influx_host", "", "URL of InfluxDB host to query")
-	c.Flags().StringVarP(&req.Secret, "secret", "s", "", `Kubernetes secret name`)
+	c.Flags().StringVar(&req.Host, "influxHost", "", "URL of InfluxDB host to query")
+	c.Flags().StringVarP(&req.SecretName, "secretName", "s", "", `Kubernetes secret name`)
 	c.Flags().StringVar(&req.A, "A", "", "InfluxDB query A")
 	c.Flags().StringVar(&req.B, "B", "", "InfluxDB query B")
 	c.Flags().StringVar(&req.C, "C", "", "InfluxDB query C")

@@ -14,7 +14,7 @@ import (
 type Request struct {
 	Namespace string
 	Selector  string
-	Name      string
+	PodName   string
 	Count     int
 }
 
@@ -36,8 +36,8 @@ func CheckPodExists(req *Request, isCountSet bool) (icinga.State, interface{}) {
 	}
 
 	total_pod := 0
-	if req.Name != "" {
-		_, err := kubeClient.Client.CoreV1().Pods(req.Namespace).Get(req.Name, metav1.GetOptions{})
+	if req.PodName != "" {
+		_, err := kubeClient.Client.CoreV1().Pods(req.Namespace).Get(req.PodName, metav1.GetOptions{})
 		if err != nil {
 			return icinga.UNKNOWN, err
 		}
@@ -94,7 +94,7 @@ func NewCmd() *cobra.Command {
 	}
 	cmd.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	cmd.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
-	cmd.Flags().StringVarP(&req.Name, "name", "p", "", "Name of pod whose existence is checked")
+	cmd.Flags().StringVarP(&req.PodName, "podName", "p", "", "Name of pod whose existence is checked")
 	cmd.Flags().IntVarP(&req.Count, "count", "c", 0, "Number of Kubernetes pods")
 	return cmd
 }

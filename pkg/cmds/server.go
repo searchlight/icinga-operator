@@ -17,7 +17,7 @@ func NewCmdServer(version string) *cobra.Command {
 	}
 	log.Infoln("Detected IP for hostfacts server:", nodeIP.String())
 	srv := hostfacts.Server{
-		Address:  fmt.Sprintf("%s:%d", nodeIP, 56977),
+		Address: fmt.Sprintf("%s:%d", nodeIP, 56977),
 	}
 	cmd := &cobra.Command{
 		Use:   "run",

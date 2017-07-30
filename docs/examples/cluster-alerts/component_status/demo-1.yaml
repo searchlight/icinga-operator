@@ -6,7 +6,7 @@ metadata:
 spec:
   check: component_status
   vars:
-    component: etcd-0
+    componentName: etcd-0
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config

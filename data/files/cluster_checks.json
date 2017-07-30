@@ -26,9 +26,9 @@
         {
           "description": "Name of component whose status is checked",
           "flag": {
-            "long": "name"
+            "long": "componentName"
           },
-          "name": "component",
+          "name": "componentName",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
@@ -68,9 +68,9 @@
           "description": "Kubernetes secret name",
           "flag": {
             "short": "s",
-            "long": "secret"
+            "long": "secretName"
           },
-          "name": "secret",
+          "name": "secretName",
           "type": "STRING",
           "parameterized": false,
           "visibility": false,
@@ -79,9 +79,9 @@
         {
           "description": "Use InClusterConfig",
           "flag": {
-            "long": "in_cluster_config"
+            "long": "inClusterConfig"
           },
-          "name": "in_cluster_config",
+          "name": "inClusterConfig",
           "parameterized": false,
           "visibility": false,
           "optional": true
@@ -157,9 +157,9 @@
           "description": "Name of node whose existence is checked",
           "flag": {
             "short": "n",
-            "long": "name"
+            "long": "nodeName"
           },
-          "name": "node",
+          "name": "nodeName",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
@@ -210,9 +210,9 @@
           "description": "Name of pod whose existence is checked",
           "flag": {
             "short": "p",
-            "long": "name"
+            "long": "podName"
           },
-          "name": "pod",
+          "name": "podName",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
@@ -239,9 +239,9 @@
           "description": "Clock skew in Duration. [Default: 30s]. This time is added with check_interval while checking events",
           "flag": {
             "short": "s",
-            "long": "clock_skew"
+            "long": "clockSkew"
           },
-          "name": "clock_skew",
+          "name": "clockSkew",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
@@ -250,9 +250,9 @@
         {
           "description": "Name of object involved in an event",
           "flag": {
-            "long": "involved_object_name"
+            "long": "involvedObjectName"
           },
-          "name": "involved_object_name",
+          "name": "involvedObjectName",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
@@ -261,9 +261,9 @@
         {
           "description": "Namespace of object involved in an event",
           "flag": {
-            "long": "involved_object_namespace"
+            "long": "involvedObjectNamespace"
           },
-          "name": "involved_object_namespace",
+          "name": "involvedObjectNamespace",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
@@ -272,9 +272,9 @@
         {
           "description": "Kind of object involved in an event",
           "flag": {
-            "long": "involved_object_kind"
+            "long": "involvedObjectKind"
           },
-          "name": "involved_object_kind",
+          "name": "involvedObjectKind",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,
@@ -283,9 +283,9 @@
         {
           "description": "UID of object involved in an event",
           "flag": {
-            "long": "involved_object_uid"
+            "long": "involvedObjectUID"
           },
-          "name": "involved_object_uid",
+          "name": "involvedObjectUID",
           "type": "STRING",
           "parameterized": false,
           "visibility": true,

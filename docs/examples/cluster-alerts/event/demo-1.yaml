@@ -21,8 +21,8 @@ metadata:
 spec:
   check: event
   vars:
-    involved_object_name: busybox
-    involved_object_namespace: demo
+    involvedObjectName: busybox
+    involvedObjectNamespace: demo
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config

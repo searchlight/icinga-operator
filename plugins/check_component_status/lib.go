@@ -12,8 +12,8 @@ import (
 )
 
 type Request struct {
-	Selector string
-	Name     string
+	Selector      string
+	ComponentName string
 }
 
 type objectInfo struct {
@@ -33,8 +33,8 @@ func CheckComponentStatus(req *Request) (icinga.State, interface{}) {
 	}
 
 	var components []apiv1.ComponentStatus
-	if req.Name != "" {
-		comp, err := kubeClient.Client.CoreV1().ComponentStatuses().Get(req.Name, metav1.GetOptions{})
+	if req.ComponentName != "" {
+		comp, err := kubeClient.Client.CoreV1().ComponentStatuses().Get(req.ComponentName, metav1.GetOptions{})
 		if err != nil {
 			return icinga.UNKNOWN, err
 		}
@@ -91,6 +91,6 @@ func NewCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
-	cmd.Flags().StringVarP(&req.Name, "name", "n", "", "Name of component which should be ready")
+	cmd.Flags().StringVarP(&req.ComponentName, "componentName", "n", "", "Name of component which should be ready")
 	return cmd
 }

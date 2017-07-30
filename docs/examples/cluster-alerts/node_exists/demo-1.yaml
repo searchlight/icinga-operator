@@ -6,7 +6,7 @@ metadata:
 spec:
   check: node_exists
   vars:
-    node: minikube
+    nodeName: minikube
     count: 1
   checkInterval: 30s
   alertInterval: 2m

@@ -5,7 +5,7 @@ PodAlert `pod_volume` checks the usage stats for of a volume of pods.
 
 ## Spec
 `pod_volume` check command has the following variables:
-- `volume_name` - Volume name
+- `volumeName` - Volume name
 - `secret` - Kubernetes secret name for hostfacts authentication
 - `warning` - Warning level value (usage percentage defaults to 75.0)
 - `critical` - Critical level value (usage percentage defaults to 90.0)
@@ -103,7 +103,7 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 #### Example
 ###### Command
 ```console
-hyperalert check_volume --host='monitoring-influxdb-0.12.2-n3lo2@kube-system' --volume_name=influxdb-persistent-storage --warning=70 --critical=85
+hyperalert check_volume --host='monitoring-influxdb-0.12.2-n3lo2@kube-system' --volumeName=influxdb-persistent-storage --warning=70 --critical=85
 # --host are provided by Icinga2
 ```
 ###### Output
@@ -134,7 +134,7 @@ spec:
     state: CRITICAL
     to: ["ops@example.com"]
   vars:
-    volume_name: influxdb-persistent-storage
+    volumeName: influxdb-persistent-storage
     warning: 70
     critical: 85
 ```

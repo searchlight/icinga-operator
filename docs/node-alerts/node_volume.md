@@ -92,8 +92,8 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 
 #### Vars
 
-* `secret_name` - Kubernetes secret name for hostfacts authentication
-* `secret_namespace` - Kubernetes namespace of secret
+* `secretName` - Kubernetes secret name for hostfacts authentication
+* `secretNamespace` - Kubernetes namespace of secret
 * `warning` - Warning level value (usage percentage defaults to 75.0)
 * `critical` - Critical level value (usage percentage defaults to 90.0)
 

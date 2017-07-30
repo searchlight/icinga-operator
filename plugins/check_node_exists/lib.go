@@ -12,7 +12,7 @@ import (
 
 type Request struct {
 	Selector string
-	Name     string
+	NodeName string
 	Count    int
 }
 
@@ -23,8 +23,8 @@ func CheckNodeExists(req *Request, isCountSet bool) (icinga.State, interface{}) 
 	}
 
 	total_node := 0
-	if req.Name != "" {
-		node, err := kubeClient.Client.CoreV1().Nodes().Get(req.Name, metav1.GetOptions{})
+	if req.NodeName != "" {
+		node, err := kubeClient.Client.CoreV1().Nodes().Get(req.NodeName, metav1.GetOptions{})
 		if err != nil {
 			return icinga.UNKNOWN, err
 		}
@@ -74,7 +74,7 @@ func NewCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
-	cmd.Flags().StringVarP(&req.Name, "name", "n", "", "Name of node whose existence is checked")
+	cmd.Flags().StringVarP(&req.NodeName, "nodeName", "n", "", "Name of node whose existence is checked")
 	cmd.Flags().IntVarP(&req.Count, "count", "c", 0, "Number of expected Kubernetes Node")
 	return cmd
 }

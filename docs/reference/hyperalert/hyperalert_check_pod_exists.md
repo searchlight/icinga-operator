@@ -17,7 +17,7 @@ hyperalert check_pod_exists [flags]
   -c, --count int         Number of Kubernetes pods
   -h, --help              help for check_pod_exists
   -H, --host string       Icinga host name
-  -p, --name string       Name of pod whose existence is checked
+  -p, --podName string    Name of pod whose existence is checked
   -l, --selector string   Selector (label query) to filter on, supports '=', '==', and '!='.
 ```
 
