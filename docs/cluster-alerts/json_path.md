@@ -12,6 +12,17 @@ Check command `json_path` is used to check JSON HTTP response using [jq](https:/
 - `warning` - Warning [jq query](https://stedolan.github.io/jq/manual/#ConditionalsandComparisons) which returns [true/false]
 - `critical` - Critical [jq query](https://stedolan.github.io/jq/manual/#ConditionalsandComparisons) which returns [true/false]
 
+The following keys are supported for Secret passed via `secretName` flag.
+| Key                    | Description                                                 |
+-------------------------|-------------------------------------------------------------|
+| `USERNAME`             | `Optional` Username used with Basic auth for HTTP URL.      |
+| `PASSWORD`             | `Optional` Password used with Basic auth for HTTP URL.      |
+| `TOKEN`                | `Optional` Token used as Bearer auth for HTTP URL.          |
+| `CA_CERT_DATA`         | `Optional` PEM encoded CA certificate used by HTTP URL.     |
+| `CLIENT_CERT_DATA`     | `Optional` PEM encoded Client certificate used by HTTP URL. |
+| `CLIENT_KEY_DATA`      | `Optional` PEM encoded Client private key used by HTTP URL. |
+| `INSECURE_SKIP_VERIFY` | `Optional` If set to `true`, skip certificate verification. |
+
 Execution of this command can result in following states:
 - OK
 - WARNING
@@ -39,8 +50,8 @@ demo          Active    4m
 ```
 
 
-### Check existence of pods with matching labels
-In this tutorial, a ClusterAlert will be used check existence of pods with matching labels by setting `spec.vars.selector` field.
+### Check JSON response of HTTP api
+In this tutorial, a ClusterAlert will be used check JSON response of a HTTP api.
 ```yaml
 $ cat ./docs/examples/cluster-alerts/json_path/demo-0.yaml
 
