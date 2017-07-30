@@ -252,7 +252,7 @@ func checkNodeVolume(req *Request) (icinga.State, interface{}) {
 	if hostIP == "" {
 		return icinga.UNKNOWN, "Node InternalIP not found"
 	}
-	return checkVolume(kubeClient, req, host.AlertNamespace, hostIP, "/")
+	return checkVolume(kubeClient, req, host.AlertNamespace, hostIP, req.VolumeName)
 }
 
 func checkPodVolume(req *Request) (icinga.State, interface{}) {
