@@ -31,7 +31,7 @@ $ sudo vi /usr/lib/systemd/system/hostfacts.service
 Hostfacts supports various types of authentication mechanism. Write the `hostfacts.service` accordingly.
 
 #### Hostfacts without authentication
-If you are running Kubernetes cluster inside a private network in AWS or GCP, you may ignore authentication and SSL. In that case, use a `hostfacts.service` file like below:
+If you are running Kubernetes cluster inside a private network in AWS or GCP or just for testing in minikube, you may ignore authentication and SSL. In that case, use a `hostfacts.service` file like below:
 
 ```ini
 [Unit]
