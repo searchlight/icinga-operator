@@ -58,35 +58,26 @@ Now, open http://127.0.0.1:60006 URL on your broswer. To login, use username `ad
 ## Configuring Icinga
 Searchlight installation scripts above creates a Secret called `searchlight-operator` to store icinga configuration. This following keys are supported in this Secret.
 
-| Key                    | Default Value  | Description                                    |
-|------------------------|----------------|------------------------------------------------|
-| ICINGA_WEB_UI_PASSWORD | _**changeit**_   | Password of `admin` user for IcingaWeb         |
-| ICINGA_API_PASSWORD    | auto-generated |                 |
-| ICINGA_CA_CERT         | auto-generated |                   |
-| ICINGA_SERVER_CERT     | auto-generated |                   |
-| ICINGA_SERVER_KEY      | auto-generated |                   |
-| ICINGA_IDO_PASSWORD    | auto-generated |                   |
-| ICINGA_WEB_PASSWORD    | auto-generated |                   |
+| Key                    | Default Value  | Description                                             |
+|------------------------|----------------|---------------------------------------------------------|
+| ICINGA_WEB_UI_PASSWORD | _**changeit**_ | Password of `admin` user in IcingaWeb2                  |
+| ICINGA_API_PASSWORD    | auto-generated | Password of icinga api user `icingaapi`                 |
+| ICINGA_CA_CERT         | auto-generated | PEM encoded CA certificate used for icinga api endpoint |
+| ICINGA_SERVER_CERT     | auto-generated | PEM encoded certificate used for icinga api endpoint    |
+| ICINGA_SERVER_KEY      | auto-generated | PEM encoded private key used for icinga api endpoint    |
+| ICINGA_IDO_PASSWORD    | auto-generated | Password of postgres user `icingaido`                   |
+| ICINGA_WEB_PASSWORD    | auto-generated | Password of postgres user `icingaweb`                   |
 
-Before you can install Searchlight, you need a cluster config for Searchlight. Cluster config is defined in YAML format. You find an example config in [./hack/deploy/config.yaml](/hack/deploy/config.yaml).
+To change the `admin` user login password in IcingaWeb, change the value of `ICINGA_WEB_UI_PASSWORD` key in Secret `searchlight-operator` and restart Searchlight operator pod(s).
 
+```console
+$ kubectl get pods --all-namespaces -l app=searchlight
+NAME                                    READY     STATUS    RESTARTS   AGE
+searchlight-operator-1987091405-ghj5b   3/3       Running   0          1m
 
-
-
-## Update Cluster Config
-If you would like to update cluster config, update the `searchlight-config` Secret and restart Searchlight operator pod(s).
-
-
-
-
-
-
-
-
-
-
-
-
+$ kubectl delete pods -n kube-system searchlight-operator-1987091405-ghj5b
+pod "searchlight-operator-1987091405-ghj5b" deleted
+```
 
 
 ## Create Cluster Config
