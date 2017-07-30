@@ -1,3 +1,5 @@
+> New to Searchlight? Please start [here](/docs/tutorials/README.md).
+
 # Check node_exists
 
 This is used to check total number of Kubernetes node.

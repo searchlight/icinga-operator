@@ -1,3 +1,5 @@
+> New to Searchlight? Please start [here](/docs/tutorials/README.md).
+
 # Check influx_query
 
 This is used to check InfluxDB query result.

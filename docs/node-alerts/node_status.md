@@ -1,3 +1,5 @@
+> New to Searchlight? Please start [here](/docs/tutorials/README.md).
+
 # Check node_status
 
 This is used to check Kubernetes Node status.

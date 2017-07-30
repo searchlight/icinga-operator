@@ -1,3 +1,5 @@
+> New to Searchlight? Please start [here](/docs/tutorials/README.md).
+
 # Check volume
 
 PodAlert `pod_volume` checks the usage stats for of a volume of pods.

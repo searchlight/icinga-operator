@@ -1,3 +1,5 @@
+> New to Searchlight? Please start [here](/docs/tutorials/README.md).
+
 # Check env
 
 ClusterAlert `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.

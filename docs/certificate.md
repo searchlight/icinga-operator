@@ -1,3 +1,5 @@
+> New to Searchlight? Please start [here](/docs/tutorials/README.md).
+
 # Certificate
 
 This article shows you how to generate SSL certificates using **`openssl`** or **`easyrsa`**.

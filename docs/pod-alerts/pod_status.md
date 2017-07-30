@@ -1,3 +1,5 @@
+> New to Searchlight? Please start [here](/docs/tutorials/README.md).
+
 # Check pod_status
 
 This is used to check Kubernetes pod status.

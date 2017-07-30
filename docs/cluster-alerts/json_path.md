@@ -1,3 +1,5 @@
+> New to Searchlight? Please start [here](/docs/tutorials/README.md).
+
 # Check json_path
 
 This is used to check any API response parsing JSON using JQ queries.
