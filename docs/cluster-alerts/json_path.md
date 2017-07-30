@@ -2,13 +2,17 @@
 
 # Check json_path
 
-This is used to check any API response parsing JSON using JQ queries.
-
-ClusterAlert `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.
-
+Check command `json_path` is used to check JSON HTTP response using [jq](https://stedolan.github.io/jq/) queries.
 
 ## Spec
-`env` check command has no variables. Execution of this command can result in following states:
+`env` check command has no variables. 
+- `url` - URL to get data
+- `secretName` - Name of Kubernetes Secret used to call HTTP api.
+- `inClusterConfig` - Use InClusterConfig if hosted in Kubernetes
+- `warning` - Warning JQ query which returns [true/false]
+- `critical` - Critical JQ query which returns [true/false]
+
+Execution of this command can result in following states:
 - OK
 - WARNING
 - CRITICAL

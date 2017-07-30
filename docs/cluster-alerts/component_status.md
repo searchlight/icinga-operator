@@ -2,13 +2,15 @@
 
 # Check component_status
 
-This is used to check Kubernetes components.
-
-ClusterAlert `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.
+Check command `component_status` is used to check status of Kubernetes components.
 
 
 ## Spec
-`env` check command has no variables. Execution of this command can result in following states:
+`component_status` has the following variables:
+- `selector` - Label selector for components whose existence are checked.
+- `podName` - Name of Kubernetes component whose existence is checked.
+
+Execution of this command can result in following states:
 - OK
 - WARNING
 - CRITICAL

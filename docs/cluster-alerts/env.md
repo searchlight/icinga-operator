@@ -2,7 +2,7 @@
 
 # Check env
 
-ClusterAlert `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.
+Check command `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.
 
 
 ## Spec
