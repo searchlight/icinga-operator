@@ -2,15 +2,17 @@
 
 # Check pod_exec
 
-This is used to check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL.
-
-PodAlert `env` prints the list of environment variables in searchlight-operator pods. This check command is used to test Searchlight.
+Check command `pod_exec` is used to check status of a command run inside Kubernetes pods. Returns OK if exit code is zero, otherwise, returns CRITICAL.
 
 
 ## Spec
-`env` check command has no variables. Execution of this command can result in following states:
+`pod_exec` check command has the following variables:
+- `container` - Container name in a Kubernetes Pod
+- `cmd` - Exec command. [Default: '/bin/sh']
+- `argv` - Exec command arguments. [Format: 'arg; arg; arg']
+
+Execution of this command can result in following states:
 - OK
-- WARNING
 - CRITICAL
 - UNKNOWN
 
@@ -34,18 +36,18 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Create Alert
-In this tutorial, we are going to create an alert to check `env`.
+### Check status of pods with matching labels
+In this tutorial, a PodAlert will be used check status of pods with matching labels by setting `spec.selector` field.
 ```yaml
-$ cat ./docs/examples/cluster-alerts/env/demo-0.yaml
+$ cat ./docs/examples/pod-alerts/pod_exec/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
 metadata:
-  name: env-demo-0
+  name: pod-exec-demo-0
   namespace: demo
 spec:
-  check: env
+  check: pod_exec
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
@@ -55,106 +57,7 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/env/demo-0.yaml 
-clusteralert "env-demo-0" created
-
-$ kubectl describe clusteralert env-demo-0 -n demo
-Name:		env-demo-0
-Namespace:	demo
-Labels:		<none>
-Events:
-  FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
-  ---------	--------	-----	----			-------------	--------	------		-------
-  6m		6m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for PodAlert: "env-demo-0". Reason: secrets "notifier-config" not found
-  6m		6m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "env-demo-0"
-```
-
-Voila! `env` command has been synced to Icinga2. Searchlight also logged a warning event, we have not created the notifier secret `notifier-config`. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `env-demo-0`.
-
-![Demo of check_env](/docs/images/cluster-alerts/env/demo-0.gif)
-
-### Cleaning up
-To cleanup the Kubernetes resources created by this tutorial, run:
-```console
-$ kubectl delete ns demo
-```
-
-If you would like to uninstall Searchlight operator, please follow the steps [here](/docs/uninstall.md).
-
-
-## Next Steps
-
-
-#### Supported Kubernetes Objects
-
-| Kubernetes Object      | Icinga2 Host Type |
-| :---:                  | :---:             |
-| deployments            | pod               |
-| daemonsets             | pod               |
-| replicasets            | pod               |
-| statefulsets           | pod               |
-| replicationcontrollers | pod               |
-| services               | pod               |
-| pods                   | pod               |
-
-#### Vars
-
-#### Example
-###### Command
-```console
-hyperalert check_pod_exec --host='monitoring-influxdb-0.12.2-n3lo2@kube-system' --argv="ls /var/influxdb/token.ini"
-# --host are provided by Icinga2
-```
-###### Output
-```
-CRITICAL: Exit Code: 2
-```
-
-##### Configure Alert Object
-```yaml
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: PodAlert
-metadata:
-  name: check-kube-exec
-  namespace: kube-system
-  labels:
-    alert.appscode.com/objectType: pods
-    alert.appscode.com/objectName: monitoring-influxdb-0.12.2-n3lo2
-spec:
-  check: pod_exec
-  alertInterval: 2m
-  checkInterval: 1m
-  receivers:
-  - notifier: mailgun
-    state: CRITICAL
-    to: ["ops@example.com"]
-  vars:
-    argv: ls /var/influxdb/token.ini
-```
-
-
-
-
-
-
-
-
-
-* `container` - Container name in a Kubernetes Pod
-* `cmd` - Exec command. [Default: '/bin/sh']
-* `argv` - Exec command arguments. [Format: 'arg; arg; arg']
-
-#### Supported Icinga2 State
-
-* OK
-* CRITICAL
-* UNKNOWN
-
-
-
-
-```console
-$ kubectl apply -f ./docs/examples/pod-alerts/pod_exec/demo-0.yaml 
+$ kubectl apply -f ./docs/examples/pod-alerts/pod_exec/demo-0.yaml
 replicationcontroller "nginx" created
 podalert "pod-exec-demo-0" created
 
@@ -173,11 +76,37 @@ Events:
   3m		3m		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for PodAlert: "pod-exec-demo-0". Reason: secrets "notifier-config" not found
   3m		3m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-exec-demo-0"
   3m		3m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-exec-demo-0"
-
 ```
 
+Voila! `pod_exec` command has been synced to Icinga2. Please visit [here](/docs/tutorials/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@pod@minikube` and Icinga service `pod-exec-demo-0`.
+
+![check-all-pods](/docs/images/pod-alerts/pod_exec/demo-0.png)
+
+
+### Check status of a specific pod
+In this tutorial, a PodAlert will be used check status of a pod by name by setting `spec.podName` field.
+```yaml
+$ cat ./docs/examples/pod-alerts/pod_exec/demo-1.yaml
+
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: PodAlert
+metadata:
+  name: pod-exec-demo-1
+  namespace: demo
+spec:
+  check: pod_exec
+  selector:
+    beta.kubernetes.io/os: linux
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
+```
 ```console
-$ kubectl apply -f ./docs/examples/pod-alerts/pod_exec/demo-1.yaml 
+$ kubectl apply -f ./docs/examples/pod-alerts/pod_exec/demo-1.yaml
 pod "busybox" created
 podalert "pod-exec-demo-1" created
 
@@ -200,3 +129,16 @@ Events:
   31s		31s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-exec-demo-1"
   27s		27s		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-exec-demo-1"
 ```
+![check-by-pod-label](/docs/images/pod-alerts/pod_exec/demo-1.png)
+
+
+### Cleaning up
+To cleanup the Kubernetes resources created by this tutorial, run:
+```console
+$ kubectl delete ns demo
+```
+
+If you would like to uninstall Searchlight operator, please follow the steps [here](/docs/uninstall.md).
+
+
+## Next Steps
