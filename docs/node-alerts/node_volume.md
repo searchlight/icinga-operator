@@ -6,6 +6,7 @@ Check command `node_volume` is used to check percentage of available space in Ku
 
 ## Spec
 `node_volume` check command has the following variables:
+- `mountpoint` - Mountpoint of volume whose free space will be checked
 - `secretName` - Name of Kubernetes Secret used to pass [hostfacts auth info](/docs/hostfacts.md#create-hostfacts-secret)
 - `warning` - Warning level value (usage percentage defaults to 80.0)
 - `critical` - Critical level value (usage percentage defaults to 95.0)
@@ -48,8 +49,12 @@ metadata:
   namespace: demo
 spec:
   check: node_volume
-  checkInterval: 30s
-  alertInterval: 2m
+  vars:
+    mountpoint: /mnt/sda1
+    warning: 70
+    critical: 95
+  checkInterval: 5m
+  alertInterval: 3m
   notifierSecretName: notifier-config
   receivers:
   - notifier: mailgun
@@ -87,11 +92,15 @@ metadata:
   name: node-volume-demo-1
   namespace: demo
 spec:
-  check: node_volume
   selector:
     beta.kubernetes.io/os: linux
-  checkInterval: 30s
-  alertInterval: 2m
+  check: node_volume
+  vars:
+    mountpoint: /mnt/sda1
+    warning: 70
+    critical: 95
+  checkInterval: 5m
+  alertInterval: 3m
   notifierSecretName: notifier-config
   receivers:
   - notifier: mailgun
@@ -130,10 +139,14 @@ metadata:
   name: node-volume-demo-2
   namespace: demo
 spec:
-  check: node_volume
   nodeName: minikube
-  checkInterval: 30s
-  alertInterval: 2m
+  check: node_volume
+  vars:
+    mountpoint: /mnt/sda1
+    warning: 70
+    critical: 95
+  checkInterval: 5m
+  alertInterval: 3m
   notifierSecretName: notifier-config
   receivers:
   - notifier: mailgun

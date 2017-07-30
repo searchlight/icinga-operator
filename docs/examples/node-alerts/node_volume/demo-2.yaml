@@ -1,12 +1,13 @@
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: NodeAlert
 metadata:
-  name: node-volume-demo-0
+  name: node-volume-demo-2
   namespace: demo
 spec:
   nodeName: minikube
   check: node_volume
   vars:
+    mountpoint: /mnt/sda1
     warning: 70
     critical: 95
   checkInterval: 5m
