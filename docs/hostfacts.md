@@ -105,7 +105,7 @@ $ sudo systemctl start hostfacts
 ```
 
 ### Create Hostfacts Secret
-The last step is to create a Secret so that Searchlight operator can connect to Hostfacts server. 
+The last step is to create a Secret so that Searchlight operator can connect to Hostfacts server. This secret must be created in the same namespace where Searchlight operator is running.
 
 | Key                    | Default | Description
 |------------------------|---------|-------------|
