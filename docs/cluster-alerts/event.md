@@ -16,7 +16,7 @@ Check command `event` is used to check Kubernetes events. This plugin checks for
 
 Execution of this command can result in following states:
 - OK
-- CRITICAL
+- WARNING
 - UNKNOWN
 
 
