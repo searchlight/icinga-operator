@@ -58,7 +58,7 @@ Check commands are used by Icinga to periodically test some condition. If the te
 - [influx_query](/docs/pod-alerts/influx_query.md) - To check InfluxDB query result.
 - [pod_exec](/docs/pod-alerts/pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
 - [pod_status](/docs/pod-alerts/pod_status.md) - To check Kubernetes pod status.
-- [pod_volume](/docs/pod-alerts/pod_volume.md) - To check Pod volume stat.
+- [pod_volume](/docs/pod-alerts/pod_volume.md) - To check Pod volume usage stat.
 
 Each check command has a name specified in `spec.check` field. Optionally each check command can take one or more parameters. These are specified in `spec.vars` field. To learn about the available parameters for each check command, please visit their documentation. `spec.checkInterval` specifies how frequently Icinga will perform this check. Some examples are: 30s, 5m, 6h, etc.
 
