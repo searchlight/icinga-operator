@@ -89,30 +89,16 @@ func sendNotification(req *Request) {
 
 		switch n := notifyVia.(type) {
 		case notify.ByEmail:
-			subject := "Notification"
-			if sub, found := subjectMap[req.Type]; found {
-				subject = sub
-			}
-			var mailBody string
-			mailBody, err = RenderMail(alert, req)
+			var body string
+			body, err = RenderMail(alert, req)
 			if err != nil {
 				break
 			}
-			err = n.To(receiver.To[0], receiver.To[1:]...).WithSubject(subject).WithBody(mailBody).SendHtml()
+			err = n.To(receiver.To[0], receiver.To[1:]...).WithSubject(RenderSubject(alert, req)).WithBody(body).SendHtml()
 		case notify.BySMS:
-			var smsBody string
-			smsBody, err = RenderSMS(alert, req)
-			if err != nil {
-				break
-			}
-			err = n.To(receiver.To[0], receiver.To[1:]...).WithBody(smsBody).Send()
+			err = n.To(receiver.To[0], receiver.To[1:]...).WithBody(RenderSMS(alert, req)).Send()
 		case notify.ByChat:
-			var smsBody string
-			smsBody, err = RenderSMS(alert, req)
-			if err != nil {
-				break
-			}
-			err = n.To(receiver.To[0], receiver.To[1:]...).WithBody(smsBody).Send()
+			err = n.To(receiver.To[0], receiver.To[1:]...).WithBody(RenderSMS(alert, req)).Send()
 		}
 
 		if err != nil {
