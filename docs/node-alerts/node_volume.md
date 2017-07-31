@@ -111,10 +111,6 @@ spec:
 $ kubectl apply -f ./docs/examples/node-alerts/node_volume/demo-1.yaml
 nodealert "node-volume-demo-1" created
 
-$ kubectl get nodealert -n demo
-NAME                 KIND
-node-volume-demo-1   NodeAlert.v1alpha1.monitoring.appscode.com
-
 $ kubectl describe nodealert -n demo node-volume-demo-1
 Name:		node-volume-demo-1
 Namespace:	demo

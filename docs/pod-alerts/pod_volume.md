@@ -124,10 +124,6 @@ persistentvolumeclaim "boxclaim" created
 pod "busybox" created
 podalert "pod-volume-demo-1" created
 
-$ kubectl get podalert -n demo
-NAME                 KIND
-pod-volume-demo-1   PodAlert.v1alpha1.monitoring.appscode.com
-
 $ kubectl describe podalert -n demo pod-volume-demo-1
 Name:		pod-volume-demo-1
 Namespace:	demo

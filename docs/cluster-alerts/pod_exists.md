@@ -113,10 +113,6 @@ $ kubectl get pods -n demo
 NAME          READY     STATUS    RESTARTS   AGE
 busybox       1/1       Running   0          5s
 
-$ kubectl get podalert -n demo
-NAME              KIND
-pod-exists-demo-1   ClusterAlert.v1alpha1.monitoring.appscode.com
-
 $ kubectl describe podalert -n demo pod-exists-demo-1
 Name:		pod-exists-demo-1
 Namespace:	demo

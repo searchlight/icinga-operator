@@ -96,10 +96,6 @@ spec:
 $ kubectl apply -f ./docs/examples/node-alerts/node_status/demo-1.yaml
 nodealert "node-status-demo-1" created
 
-$ kubectl get nodealert -n demo
-NAME                 KIND
-node-status-demo-1   NodeAlert.v1alpha1.monitoring.appscode.com
-
 $ kubectl describe nodealert -n demo node-status-demo-1
 Name:		node-status-demo-1
 Namespace:	demo
