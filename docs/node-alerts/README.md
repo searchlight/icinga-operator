@@ -71,3 +71,18 @@ When a check fails, Icinga will keep sending notifications until acknowledged vi
 
 ## Icinga Objects
 You can skip this section if you are unfamiliar with how Icinga works. Searchlight operator watches for NodeAlert objects and turns them into [Icinga objects](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/) accordingly. For each Kubernetes Node which has an NodeAlert configured, an [Icinga Host](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#host) is created with the name `{namespace}@node@{node-name}` and address matching the internal IP of the Node. Now for each NodeAlert, an [Icinga service](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#service) is created with name matching the NodeAlert name.
+
+
+## Next Steps
+ - Visit the links below to learn about the available check commands for a cluster:
+    - [ca_cert](/docs/cluster-alerts/ca_cert.md) - To check expiration of CA certificate used by Kubernetes api server.
+    - [component_status](/docs/cluster-alerts/component_status.md) - To check Kubernetes component status.
+    - [event](/docs/cluster-alerts/event.md) - To check Kubernetes Warning events.
+    - [json_path](/docs/cluster-alerts/json_path.md) - To check any JSON HTTP response using [jq](https://stedolan.github.io/jq/).
+    - [node_exists](/docs/cluster-alerts/node_exists.md) - To check existence of Kubernetes nodes.
+    - [pod_exists](/docs/cluster-alerts/pod_exists.md) - To check existence of Kubernetes pods.
+ - To periodically run various checks on nodes in a Kubernetes cluster, use [NodeAlerts](/docs/node-alerts/README.md).
+ - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/pod-alerts/README.md).
+ - See the list of supported notifiers [here](/docs/tutorials/notifiers.md).
+ - Wondering what features are coming next? Please visit [here](/ROADMAP.md).
+ - Want to hack on Searchlight? Check our [contribution guidelines](/CONTRIBUTING.md).
