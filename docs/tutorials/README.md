@@ -21,4 +21,4 @@ This section contains tutorials on how to use Searchlight. Please visit the link
     - [pod_status](/docs/pod-alerts/pod_status.md) - To check Kubernetes pod status.
     - [pod_volume](/docs/pod-alerts/pod_volume.md) - To check Pod volume stat.
 
- - [Supported Notifiers](/docs/tutorials/notifiers.md): This article documents how to configure Kubed to send notifications via Email, SMS or Chat
+ - [Supported Notifiers](/docs/tutorials/notifiers.md): This article documents how to configure Kubed to send notifications via Email, SMS or Chat.
