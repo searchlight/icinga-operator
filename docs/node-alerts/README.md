@@ -74,14 +74,11 @@ You can skip this section if you are unfamiliar with how Icinga works. Searchlig
 
 
 ## Next Steps
- - Visit the links below to learn about the available check commands for a cluster:
-    - [ca_cert](/docs/cluster-alerts/ca_cert.md) - To check expiration of CA certificate used by Kubernetes api server.
-    - [component_status](/docs/cluster-alerts/component_status.md) - To check Kubernetes component status.
-    - [event](/docs/cluster-alerts/event.md) - To check Kubernetes Warning events.
-    - [json_path](/docs/cluster-alerts/json_path.md) - To check any JSON HTTP response using [jq](https://stedolan.github.io/jq/).
-    - [node_exists](/docs/cluster-alerts/node_exists.md) - To check existence of Kubernetes nodes.
-    - [pod_exists](/docs/cluster-alerts/pod_exists.md) - To check existence of Kubernetes pods.
- - To periodically run various checks on nodes in a Kubernetes cluster, use [NodeAlerts](/docs/node-alerts/README.md).
+ - Visit the links below to learn about the available check commands for nodes:
+    - [influx_query](/docs/node-alerts/influx_query.md) - To check InfluxDB query result.
+    - [node_status](/docs/node-alerts/node_status.md) - To check Kubernetes Node status.
+    - [node_volume](/docs/node-alerts/node_volume.md) - To check Node Disk stat.
+ - To periodically run various checks on a Kubernetes cluster, use [ClusterAlerts](/docs/cluster-alerts/README.md).
  - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/pod-alerts/README.md).
  - See the list of supported notifiers [here](/docs/tutorials/notifiers.md).
  - Wondering what features are coming next? Please visit [here](/ROADMAP.md).
