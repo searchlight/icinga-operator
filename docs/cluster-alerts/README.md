@@ -41,11 +41,11 @@ Any ClusterAlert object has 2 main sections:
 
 ### Check Command
 Check commands are used by Icinga to periodically test some condition. If the test return positive appropriate notifications are sent. The following check commands are supported for pods:
-- [any_http](any_http.md) - To check any HTTP response.
+
 - [ca_cert](ca_cert.md) - To check expiration of CA certificate used by Kubernetes api server.
 - [component_status](component_status.md) - To check Kubernetes component status.
 - [event](event.md) - To check Kubernetes Warning events.
-- [json_path](json_path.md) - To check any HTTP response by parsing as JSON using [jq](https://stedolan.github.io/jq/).
+- [json_path](json_path.md) - To check any JSON HTTP response using [jq](https://stedolan.github.io/jq/).
 - [node_exists](node_count.md) - To check existence of Kubernetes nodes.
 - [pod_exists](pod_exists.md) - To check existence of Kubernetes pods.
 
