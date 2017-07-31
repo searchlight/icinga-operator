@@ -98,7 +98,7 @@ func sendNotification(req *Request) {
 			if err != nil {
 				break
 			}
-			err = n.To(receiver.To[0], receiver.To[1:]...).WithSubject(subject).WithBody(mailBody).Send()
+			err = n.To(receiver.To[0], receiver.To[1:]...).WithSubject(subject).WithBody(mailBody).SendHtml()
 		case notify.BySMS:
 			var smsBody string
 			smsBody, err = RenderSMS(alert, req)

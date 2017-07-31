@@ -52,7 +52,7 @@ RUN set -x && icinga2 feature enable ido-pgsql syslog checker
 COPY config/icinga2/appscode-commands.conf /scripts/appscode-commands.conf
 COPY config/icinga2/modified-commands.conf /scripts/modified-commands.conf
 RUN set -x \
-  && icinga2 feature enable command \
+  && icinga2 feature enable command notification \
   && mkdir -p /run/icinga2/cmd \
   && chown icinga:icinga -R /run/icinga2 \
   && cat /scripts/*-commands.conf >> /etc/icinga2/conf.d/commands.conf \
