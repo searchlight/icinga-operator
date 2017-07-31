@@ -42,12 +42,12 @@ Any ClusterAlert object has 2 main sections:
 ### Check Command
 Check commands are used by Icinga to periodically test some condition. If the test return positive appropriate notifications are sent. The following check commands are supported for pods:
 
-- [ca_cert](ca_cert.md) - To check expiration of CA certificate used by Kubernetes api server.
-- [component_status](component_status.md) - To check Kubernetes component status.
-- [event](event.md) - To check Kubernetes Warning events.
-- [json_path](json_path.md) - To check any JSON HTTP response using [jq](https://stedolan.github.io/jq/).
-- [node_exists](node_count.md) - To check existence of Kubernetes nodes.
-- [pod_exists](pod_exists.md) - To check existence of Kubernetes pods.
+- [ca_cert](/docs/cluster-alerts/ca_cert.md) - To check expiration of CA certificate used by Kubernetes api server.
+- [component_status](/docs/cluster-alerts/component_status.md) - To check Kubernetes component status.
+- [event](/docs/cluster-alerts/event.md) - To check Kubernetes Warning events.
+- [json_path](/docs/cluster-alerts/json_path.md) - To check any JSON HTTP response using [jq](https://stedolan.github.io/jq/).
+- [node_exists](/docs/cluster-alerts/node_count.md) - To check existence of Kubernetes nodes.
+- [pod_exists](/docs/cluster-alerts/pod_exists.md) - To check existence of Kubernetes pods.
 
 Each check command has a name specified in `spec.check` field. Optionally each check command can take one or more parameters. These are specified in `spec.vars` field. To learn about the available parameters for each check command, please visit their documentation. `spec.checkInterval` specifies how frequently Icinga will perform this check. Some examples are: 30s, 5m, 6h, etc.
 

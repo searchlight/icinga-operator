@@ -2,12 +2,14 @@
 
 This section contains tutorials on how to use Searchlight. Please visit the links below to learn more:
 
- - [Running PostgreSQL](/docs/tutorials/postgres.md): This tutorial will show you how to use KubeDB to run a PostgreSQL database.
+ - [Cluster Snapshots](/docs/tutorials/cluster-snapshot.md): This tutorial will show you how to use Kubed to take periodic snapshots of a Kubernetes cluster objects.
 
- - [Running Elasticsearch](/docs/tutorials/elasticsearch.md): This tutorial will show you how to use KubeDB to run an Elasticsearch database.
+ - [Kubernetes Recycle Bin](/docs/tutorials/recycle-bin.md): Kubed provides a recycle bin for deleted and/or updated Kubernetes objects. This tutorial will show you how to use Kubed to setup a recycle bin for Kubernetes cluster objects.
 
- - [Manage KubeDB objects using CLIs](/docs/tutorials/cli.md): KubeDB comes with its own cli. It is called `kubedb` cli. kubedb can be used to deploy KubeDB operator in a cluster and manage all KubeDB tprs.
+ - [Synchronize Configuration across Namespaces](/docs/tutorials/config-syncer.md): This tutorial will show you how Kubed can sync ConfigMaps/Secrets across Kubernetes namespaces.
 
- - [Using Prometheus with KubeDB](/docs/tutorials/monitoring.md): This tutorial will show you how to monitor KubeDB databases using Prometheus via [CoreOS Prometheus Operator](https://github.com/coreos/prometheus-operator).
- 
- - [Using RBAC with KubeDB](/docs/tutorials/rbac.md): This tutorial will show you how to use KubeDB in a [RBAC](https://kubernetes.io/docs/admin/authorization/rbac/) enabled cluster.
+ - [Forward Cluster Events](/docs/tutorials/event-forwarder.md): This tutorial will show you how to use Kubed to send notifications via Email, SMS or Chat for various cluster events.
+
+ - [Using Janitors](/docs/tutorials/janitors.md): Kubernetes supports storing cluster logs in Elasticsearch and cluster metrics in InfluxDB. This tutorial will show you how to use kubed janitors to delete old data from Elasticsearch and InfluxDB.
+
+ - [Supported Notifiers](/docs/tutorials/notifiers.md): This article documents how to configure Kubed to send notifications via Email, SMS or Chat
