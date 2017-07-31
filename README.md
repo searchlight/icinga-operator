@@ -5,12 +5,12 @@
 <img src="/cover.jpg">
 
 
-Searchlight by AppsCode is a Kubernetes operator for [Icinga](https://www.icinga.com/). If you are running production workloads in Kubernetes, you probably want to be alerted when things go wrong. Icinga periodically runs various checks on a Kubernetes cluster and sends notifications if detects an issue. It also nicely supplements whitebox monitoring tools like, [Prometheus](https://prometheus.io/) with blackbox monitoring can catch problems that are otherwise invisible, and also serves as a fallback in case internal systems completely fail. Accordingly, have alerts to ensure that Prometheus servers, Alertmanagers, PushGateways, and other monitoring infrastructure are available and running correctly. Searchlight is a TPR controller for Kubernetes built around Icinga to address these issues. Searchlight can do the following things for you:
+Searchlight by AppsCode is a Kubernetes operator for [Icinga](https://www.icinga.com/). If you are running production workloads in Kubernetes, you probably want to be alerted when things go wrong. Icinga periodically runs various checks on a Kubernetes cluster and sends notifications if detects an issue. It also nicely supplements whitebox monitoring tools like, [Prometheus](https://prometheus.io/) with blackbox monitoring can catch problems that are otherwise invisible, and also serves as a fallback in case internal systems completely fail. Searchlight is a TPR controller for Kubernetes built around Icinga to address these issues. Searchlight can do the following things for you:
 
  - Periodically run various checks on a Kubernetes cluster and its nodes or pods.
  - Includes a suite of check commands written specifically for Kubernetes.
  - Searchlight can send notifications via Email, SMS or Chat.
- - [Supplements](https://prometheus.io/docs/practices/alerting/#metamonitoring) the whitebox monitoring of [Prometheus](https://prometheus.io) as a blackbox monitoring solution.
+ - [Supplements](https://prometheus.io/docs/practices/alerting/#metamonitoring) the whitebox monitoring of [Prometheus](https://prometheus.io). Accordingly, have alerts to ensure that Prometheus servers, Alertmanagers, PushGateways, and other monitoring infrastructure are available and running correctly.
 
 ## Supported Versions
 Kubernetes 1.5+
