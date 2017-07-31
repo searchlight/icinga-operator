@@ -10,7 +10,7 @@ Searchlight by AppsCode is a Kubernetes operator for [Icinga](https://www.icinga
  - Periodically run various checks on a Kubernetes cluster and its nodes or pods.
  - Includes a suite of check commands written specifically for Kubernetes.
  - Searchlight can send notifications via Email, SMS or Chat.
- - [Supplements](https://prometheus.io/docs/practices/alerting/#metamonitoring) the whitebox monitoring of [Prometheus](https://prometheus.io). Accordingly, have alerts to ensure that Prometheus servers, Alertmanagers, PushGateways, and other monitoring infrastructure are available and running correctly.
+ - [Supplements](https://prometheus.io/docs/practices/alerting/#metamonitoring) the whitebox monitoring tools like [Prometheus](https://prometheus.io). Accordingly, have alerts to ensure that Prometheus servers, Alertmanagers, PushGateways, and other monitoring infrastructure are available and running correctly.
 
 ## Supported Versions
 Kubernetes 1.5+
