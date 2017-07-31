@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: nginx
+  namespace: demo
+spec:
+  replicas: 2
+  template:
+    metadata:
+      name: nginx
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+---
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: NodeAlert
+metadata:
+  name: influx-query-demo-0
+  namespace: demo
+spec:
+  check: influx_query
+  vars:
+    influxHost: "monitoring-influxdb.demo:8086"
+    secretName: "appscode-influx"
+    A: "select value from \"memory/limit\" where nodename='{{.NodeName}}';"
+    B: "select value from \"memory/usage\" where nodename='{{.NodeName}}';"
+    R: "(B/A)*100"
+    warning: "R > 75"
+    critical: "R > 90"
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: mailgun
+    state: WARNING
+    to: ["ops@example.com"]
+  - notifier: mailgun
+    state: CRITICAL
+    to: ["ops@example.com"]
