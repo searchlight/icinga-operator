@@ -46,7 +46,7 @@ Check commands are used by Icinga to periodically test some condition. If the te
 - [component_status](/docs/cluster-alerts/component_status.md) - To check Kubernetes component status.
 - [event](/docs/cluster-alerts/event.md) - To check Kubernetes Warning events.
 - [json_path](/docs/cluster-alerts/json_path.md) - To check any JSON HTTP response using [jq](https://stedolan.github.io/jq/).
-- [node_exists](/docs/cluster-alerts/node_count.md) - To check existence of Kubernetes nodes.
+- [node_exists](/docs/cluster-alerts/node_exists.md) - To check existence of Kubernetes nodes.
 - [pod_exists](/docs/cluster-alerts/pod_exists.md) - To check existence of Kubernetes pods.
 
 Each check command has a name specified in `spec.check` field. Optionally each check command can take one or more parameters. These are specified in `spec.vars` field. To learn about the available parameters for each check command, please visit their documentation. `spec.checkInterval` specifies how frequently Icinga will perform this check. Some examples are: 30s, 5m, 6h, etc.
