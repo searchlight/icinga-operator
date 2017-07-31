@@ -55,10 +55,10 @@ Any PodAlert can specify pods in 2 ways:
 
 ### Check Command
 Check commands are used by Icinga to periodically test some condition. If the test return positive appropriate notifications are sent. The following check commands are supported for pods:
-- [influx_query](influx_query.md) - To check InfluxDB query result.
-- [pod_exec](pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
-- [pod_status](pod_status.md) - To check Kubernetes pod status.
-- [pod_volume](pod_volume.md) - To check Pod volume stat.
+- [influx_query](/docs/pod-alerts/influx_query.md) - To check InfluxDB query result.
+- [pod_exec](/docs/pod-alerts/pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
+- [pod_status](/docs/pod-alerts/pod_status.md) - To check Kubernetes pod status.
+- [pod_volume](/docs/pod-alerts/pod_volume.md) - To check Pod volume usage stat.
 
 Each check command has a name specified in `spec.check` field. Optionally each check command can take one or more parameters. These are specified in `spec.vars` field. To learn about the available parameters for each check command, please visit their documentation. `spec.checkInterval` specifies how frequently Icinga will perform this check. Some examples are: 30s, 5m, 6h, etc.
 
@@ -74,3 +74,16 @@ When a check fails, Icinga will keep sending notifications until acknowledged vi
 
 ## Icinga Objects
 You can skip this section if you are unfamiliar with how Icinga works. Searchlight operator watches for PodAlert objects and turns them into [Icinga objects](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/) accordingly. For each Kubernetes Pod which has an PodAlert configured, an [Icinga Host](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#host) is created with the name `{namespace}@pod@{pod-name}` and address matching the IP of the Pod. Now for each PodAlert, an [Icinga service](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#service) is created with name matching the PodAlert name.
+
+
+## Next Steps
+ - Visit the links below to learn about the available check commands for pods:
+    - [influx_query](/docs/pod-alerts/influx_query.md) - To check InfluxDB query result.
+    - [pod_exec](/docs/pod-alerts/pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
+    - [pod_status](/docs/pod-alerts/pod_status.md) - To check Kubernetes pod status.
+    - [pod_volume](/docs/pod-alerts/pod_volume.md) - To check Pod volume stat.
+ - To periodically run various checks on a Kubernetes cluster, use [ClusterAlerts](/docs/cluster-alerts/README.md).
+ - To periodically run various checks on nodes in a Kubernetes cluster, use [NodeAlerts](/docs/node-alerts/README.md).
+ - See the list of supported notifiers [here](/docs/tutorials/notifiers.md).
+ - Wondering what features are coming next? Please visit [here](/ROADMAP.md).
+ - Want to hack on Searchlight? Check our [contribution guidelines](/CONTRIBUTING.md).

@@ -23,13 +23,15 @@ Execution of this command can result in following states:
 ### Before You Begin
 At first, you need to have a Kubernetes cluster, and the kubectl command-line tool must be configured to communicate with your cluster. If you do not already have a cluster, you can create one by using [Minikube](https://github.com/kubernetes/minikube).
 
+Now, install Searchlight operator in your cluster following the steps [here](/docs/install.md). To use `node_volume` command, please also [install Hostfacts](/docs/hostfacts.md) server in your cluster.
+
 To keep things isolated, this tutorial uses a separate namespace called `demo` throughout this tutorial. Run the following command to prepare your cluster for this tutorial:
 
 ```console
 $ kubectl create namespace demo
 namespace "demo" created
 
-~ $ kubectl get namespaces
+$ kubectl get namespaces
 NAME          STATUS    AGE
 default       Active    6h
 kube-public   Active    6h
@@ -111,10 +113,6 @@ spec:
 $ kubectl apply -f ./docs/examples/node-alerts/node_volume/demo-1.yaml
 nodealert "node-volume-demo-1" created
 
-$ kubectl get nodealert -n demo
-NAME                 KIND
-node-volume-demo-1   NodeAlert.v1alpha1.monitoring.appscode.com
-
 $ kubectl describe nodealert -n demo node-volume-demo-1
 Name:		node-volume-demo-1
 Namespace:	demo
@@ -180,3 +178,8 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 
 
 ## Next Steps
+ - To periodically run various checks on a Kubernetes cluster, use [ClusterAlerts](/docs/cluster-alerts/README.md).
+ - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/pod-alerts/README.md).
+ - See the list of supported notifiers [here](/docs/tutorials/notifiers.md).
+ - Wondering what features are coming next? Please visit [here](/ROADMAP.md).
+ - Want to hack on Searchlight? Check our [contribution guidelines](/CONTRIBUTING.md).
