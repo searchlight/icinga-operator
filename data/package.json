@@ -1,6 +1,6 @@
 {
   "name": "searchlight-data",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Static data files used by AppsCode Searchlight",
   "main": "files/icinga.json",
   "scripts": {
