@@ -1,5 +1,5 @@
-hash: 96cd61498005d9c3047aeef1ecabef40c8f3277e693e5c95d7feb78009de0ed0
-updated: 2017-08-22T11:09:11.559872402+06:00
+hash: 67500d50ea4f83801f1261b9a64b75b9febe0474263236cb935e055fa492f5d7
+updated: 2017-08-22T13:08:18.856138331+06:00
 imports:
 - name: github.com/appscode/api
   version: d08eb9170a272525352bf85fb3414ee0e3af2c13
@@ -35,7 +35,7 @@ imports:
 - name: github.com/appscode/go-version
   version: 97adb342c1792e9f59701c1d96bf3612d0fc7621
 - name: github.com/appscode/kutil
-  version: 190fce8b75c5c6aa1b3ccb22ddb136698e072cb6
+  version: d2765d4795d08015da47a8463961931f65155dda
   subpackages:
   - apps/v1beta1
   - core/v1
