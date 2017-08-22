@@ -39,8 +39,8 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Check status of all nodes
-In this tutorial, we are going to create a NodeAlert to check status of all nodes.
+### Check volume stats of all nodes
+In this tutorial, we are going to create a NodeAlert to check volume stats of all nodes.
 ```yaml
 $ cat ./docs/examples/node-alerts/node_volume/demo-0.yaml
 
@@ -82,8 +82,8 @@ Voila! `node_volume` command has been synced to Icinga2. Please visit [here](/do
 ![check-all-nodes](/docs/images/node-alerts/node_volume/demo-0.png)
 
 
-### Check status of nodes with matching labels
-In this tutorial, a NodeAlert will be used check status of nodes with matching labels by setting `spec.selector` field.
+### Check volume stats of nodes with matching labels
+In this tutorial, a NodeAlert will be used check volume stats of nodes with matching labels by setting `spec.selector` field.
 
 ```yaml
 $ cat ./docs/examples/node-alerts/node_volume/demo-1.yaml
@@ -125,8 +125,8 @@ Events:
 ![check-by-node-label](/docs/images/node-alerts/node_volume/demo-1.png)
 
 
-### Check status of a specific node
-In this tutorial, a NodeAlert will be used check status of a node by name by setting `spec.nodeName` field.
+### Check volume stats of a specific node
+In this tutorial, a NodeAlert will be used check volume stats of a node by name by setting `spec.nodeName` field.
 
 ```yaml
 $ cat ./docs/examples/node-alerts/node_volume/demo-2.yaml

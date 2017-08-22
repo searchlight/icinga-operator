@@ -4,6 +4,7 @@ import (
 	tapi "github.com/appscode/searchlight/api"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	types "k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/testing"
 )
@@ -91,4 +92,14 @@ func (mock *FakePodAlert) UpdateStatus(srv *tapi.PodAlert) (*tapi.PodAlert, erro
 func (mock *FakePodAlert) Watch(opts metav1.ListOptions) (watch.Interface, error) {
 	return mock.Fake.
 		InvokesWatch(testing.NewWatchAction(resourcePodAlert, mock.ns, opts))
+}
+
+func (mock *FakePodAlert) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (*tapi.PodAlert, error) {
+	obj, err := mock.Fake.
+		Invokes(testing.NewPatchSubresourceAction(resourcePodAlert, mock.ns, name, data, subresources...), &tapi.PodAlert{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*tapi.PodAlert), err
 }

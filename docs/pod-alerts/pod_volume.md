@@ -94,7 +94,7 @@ Voila! `pod_volume` command has been synced to Icinga2. Please visit [here](/doc
 ![check-pods-by-label](/docs/images/pod-alerts/pod_volume/demo-0.png)
 
 
-### Check status of a specific pod
+### Check volume stats of a specific pod
 In this tutorial, a PodAlert will be used check volume stats of a pod by name by setting `spec.podName` field.
 
 ```yaml
