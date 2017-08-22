@@ -1,21 +1,15 @@
 package framework
 
 import (
-	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
-	"github.com/appscode/kutil"
+	kutilsl "github.com/appscode/kutil/searchlight/v1alpha1"
 	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e/matcher"
-	"github.com/golang/glog"
-	"github.com/mattbaird/jsonpatch"
 	. "github.com/onsi/gomega"
-	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	types "k8s.io/apimachinery/pkg/types"
 )
 
 func (f *Invocation) PodAlert() *tapi.PodAlert {
@@ -43,45 +37,8 @@ func (f *Framework) GetPodAlert(meta metav1.ObjectMeta) (*tapi.PodAlert, error) 
 	return f.extClient.PodAlerts(meta.Namespace).Get(meta.Name)
 }
 
-func (f *Framework) patchPodAlert(cur *tapi.PodAlert, transform func(*tapi.PodAlert) *tapi.PodAlert) (*tapi.PodAlert, error) {
-	curJson, err := json.Marshal(cur)
-	if err != nil {
-		return nil, err
-	}
-
-	modJson, err := json.Marshal(transform(cur))
-	if err != nil {
-		return nil, err
-	}
-
-	patch, err := jsonpatch.CreatePatch(curJson, modJson)
-	if err != nil {
-		return nil, err
-	}
-	if len(patch) == 0 {
-		return cur, nil
-	}
-	pb, err := json.MarshalIndent(patch, "", "  ")
-	if err != nil {
-		return nil, err
-	}
-	glog.V(5).Infof("Patching PodAlert %s@%s with %s.", cur.Name, cur.Namespace, string(pb))
-	return f.extClient.PodAlerts(cur.Namespace).Patch(cur.Name, types.JSONPatchType, pb)
-}
-
 func (f *Framework) TryPatchPodAlert(meta metav1.ObjectMeta, transform func(*tapi.PodAlert) *tapi.PodAlert) (*tapi.PodAlert, error) {
-	attempt := 0
-	for ; attempt < kutil.MaxAttempts; attempt = attempt + 1 {
-		cur, err := f.extClient.PodAlerts(meta.Namespace).Get(meta.Name)
-		if kerr.IsNotFound(err) {
-			return cur, err
-		} else if err == nil {
-			return f.patchPodAlert(cur, transform)
-		}
-		glog.Errorf("Attempt %d failed to patch PodAlert %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
-		time.Sleep(kutil.RetryInterval)
-	}
-	return nil, fmt.Errorf("Failed to patch PodAlert %s@%s after %d attempts.", meta.Name, meta.Namespace, attempt)
+	return kutilsl.TryPatchPodAlert(f.extClient, meta, transform)
 }
 
 func (f *Framework) DeletePodAlert(meta metav1.ObjectMeta) error {

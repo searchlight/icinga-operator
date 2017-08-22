@@ -1,5 +1,5 @@
 hash: 67500d50ea4f83801f1261b9a64b75b9febe0474263236cb935e055fa492f5d7
-updated: 2017-08-22T13:08:18.856138331+06:00
+updated: 2017-08-22T13:18:03.803401757+06:00
 imports:
 - name: github.com/appscode/api
   version: d08eb9170a272525352bf85fb3414ee0e3af2c13
@@ -40,6 +40,7 @@ imports:
   - apps/v1beta1
   - core/v1
   - extensions/v1beta1
+  - searchlight/v1alpha1
 - name: github.com/appscode/log
   version: 68e0e42e42c01371f3950571fc87c2298a51dd8f
   subpackages:
