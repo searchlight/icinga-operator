@@ -63,6 +63,8 @@ import:
   version: b53da94cf51de120a50cbae533152fb3935375e0
 - package: github.com/google/certificate-transparency
   version: 05502e09183232d2345db9a3a008076eff9a530c
+- package: github.com/appscode/kutil
+  version: master
 testImport:
 - package: github.com/stretchr/testify
   version: v1.1.4

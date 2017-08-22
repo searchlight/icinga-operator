@@ -1,18 +1,16 @@
 package framework
 
 import (
-	"fmt"
 	"time"
-
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/go/types"
-	"github.com/appscode/log"
 	. "github.com/onsi/gomega"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 	apps "k8s.io/client-go/pkg/apis/apps/v1beta1"
+	kutilapps "github.com/appscode/kutil/apps/v1beta1"
 )
 
 func (f *Invocation) StatefulSet() *apps.StatefulSet {
@@ -69,29 +67,12 @@ func (f *Framework) CreateStatefulSet(obj *apps.StatefulSet) (*apps.StatefulSet,
 	return f.kubeClient.AppsV1beta1().StatefulSets(obj.Namespace).Create(obj)
 }
 
-func (f *Framework) UpdateStatefulSet(meta metav1.ObjectMeta, transformer func(apps.StatefulSet) apps.StatefulSet) (*apps.StatefulSet, error) {
-	attempt := 0
-	for ; attempt < maxAttempts; attempt = attempt + 1 {
-		cur, err := f.kubeClient.AppsV1beta1().StatefulSets(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
-		if err != nil {
-			return nil, err
-		}
-
-		modified := transformer(*cur)
-		updated, err := f.kubeClient.AppsV1beta1().StatefulSets(cur.Namespace).Update(&modified)
-		if err == nil {
-			return updated, nil
-		}
-
-		log.Errorf("Attempt %d failed to update StatefulSets %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
-		time.Sleep(updateRetryInterval)
-	}
-
-	return nil, fmt.Errorf("Failed to update StatefulSets %s@%s after %d attempts.", meta.Name, meta.Namespace, attempt)
+func (f *Framework) TryPatchStatefulSet(meta metav1.ObjectMeta, transformer func(*apps.StatefulSet) *apps.StatefulSet) (*apps.StatefulSet, error) {
+	return kutilapps.TryPatchStatefulSet(f.kubeClient, meta, transformer)
 }
 
 func (f *Framework) EventuallyDeleteStatefulSet(meta metav1.ObjectMeta) GomegaAsyncAssertion {
-	ss, err := f.UpdateStatefulSet(meta, func(in apps.StatefulSet) apps.StatefulSet {
+	ss, err := f.TryPatchStatefulSet(meta, func(in *apps.StatefulSet) *apps.StatefulSet {
 		in.Spec.Replicas = types.Int32P(0)
 		return in
 	})

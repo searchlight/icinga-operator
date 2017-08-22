@@ -1,17 +1,16 @@
 package framework
 
 import (
-	"fmt"
 	"time"
-
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/go/types"
-	"github.com/appscode/log"
 	. "github.com/onsi/gomega"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
+	kutilext "github.com/appscode/kutil/extensions/v1beta1"
+
 )
 
 func (f *Invocation) ReplicaSet() *extensions.ReplicaSet {
@@ -43,29 +42,12 @@ func (f *Framework) CreateReplicaSet(obj *extensions.ReplicaSet) (*extensions.Re
 	return f.kubeClient.ExtensionsV1beta1().ReplicaSets(obj.Namespace).Create(obj)
 }
 
-func (f *Framework) UpdateReplicaSet(meta metav1.ObjectMeta, transformer func(extensions.ReplicaSet) extensions.ReplicaSet) (*extensions.ReplicaSet, error) {
-	attempt := 0
-	for ; attempt < maxAttempts; attempt = attempt + 1 {
-		cur, err := f.kubeClient.ExtensionsV1beta1().ReplicaSets(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
-		if err != nil {
-			return nil, err
-		}
-
-		modified := transformer(*cur)
-		updated, err := f.kubeClient.ExtensionsV1beta1().ReplicaSets(cur.Namespace).Update(&modified)
-		if err == nil {
-			return updated, nil
-		}
-
-		log.Errorf("Attempt %d failed to update ReplicaSets %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
-		time.Sleep(updateRetryInterval)
-	}
-
-	return nil, fmt.Errorf("Failed to update ReplicaSets %s@%s after %d attempts.", meta.Name, meta.Namespace, attempt)
+func (f *Framework) TryPatchReplicaSet(meta metav1.ObjectMeta, transformer func(*extensions.ReplicaSet) *extensions.ReplicaSet) (*extensions.ReplicaSet, error) {
+	return kutilext.TryPatchReplicaSet(f.kubeClient, meta, transformer)
 }
 
 func (f *Framework) EventuallyDeleteReplicaSet(meta metav1.ObjectMeta) GomegaAsyncAssertion {
-	rs, err := f.UpdateReplicaSet(meta, func(in extensions.ReplicaSet) extensions.ReplicaSet {
+	rs, err := f.TryPatchReplicaSet(meta, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
 		in.Spec.Replicas = types.Int32P(0)
 		return in
 	})
