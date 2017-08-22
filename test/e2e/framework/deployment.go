@@ -40,12 +40,12 @@ func (f *Framework) CreateDeploymentApp(obj *apps.Deployment) error {
 	return err
 }
 
-func (f *Framework) TryPatchDeployment(meta metav1.ObjectMeta, transformer func(*apps.Deployment) *apps.Deployment) (*apps.Deployment, error) {
+func (f *Framework) TryPatchDeploymentApp(meta metav1.ObjectMeta, transformer func(*apps.Deployment) *apps.Deployment) (*apps.Deployment, error) {
 	return kutilapps.TryPatchDeployment(f.kubeClient, meta, transformer)
 }
 
 func (f *Framework) EventuallyDeleteDeploymentApp(meta metav1.ObjectMeta) GomegaAsyncAssertion {
-	deployment, err := f.TryPatchDeployment(meta, func(in *apps.Deployment) *apps.Deployment {
+	deployment, err := f.TryPatchDeploymentApp(meta, func(in *apps.Deployment) *apps.Deployment {
 		in.Spec.Replicas = types.Int32P(0)
 		return in
 	})
