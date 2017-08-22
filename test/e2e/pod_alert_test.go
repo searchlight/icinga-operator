@@ -159,7 +159,7 @@ var _ = Describe("PodAlert", func() {
 			oldAlertSpec := alert.Spec
 
 			By("Change LabelSelector")
-			alert, err = f.UpdatePodAlert(alert.ObjectMeta, func(in tapi.PodAlert) tapi.PodAlert {
+			alert, err = f.TryPatchPodAlert(alert.ObjectMeta, func(in *tapi.PodAlert) *tapi.PodAlert {
 				in.Spec.Selector.MatchLabels = map[string]string{
 					"app": rand.WithUniqSuffix("searchlight-e2e"),
 				}

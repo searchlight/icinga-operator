@@ -4,13 +4,18 @@ import (
 	"fmt"
 	"time"
 
+	"encoding/json"
 	"github.com/appscode/go/crypto/rand"
-	"github.com/appscode/log"
+	"github.com/appscode/kutil"
 	tapi "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e/matcher"
+	"github.com/golang/glog"
+	"github.com/mattbaird/jsonpatch"
 	. "github.com/onsi/gomega"
+	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	types "k8s.io/apimachinery/pkg/types"
 )
 
 func (f *Invocation) ClusterAlert() *tapi.ClusterAlert {
@@ -38,25 +43,45 @@ func (f *Framework) GetClusterAlert(meta metav1.ObjectMeta) (*tapi.ClusterAlert,
 	return f.extClient.ClusterAlerts(meta.Namespace).Get(meta.Name)
 }
 
-func (f *Framework) UpdateClusterAlert(meta metav1.ObjectMeta, transformer func(tapi.ClusterAlert) tapi.ClusterAlert) (*tapi.ClusterAlert, error) {
-	attempt := 0
-	for ; attempt < maxAttempts; attempt = attempt + 1 {
-		cur, err := f.extClient.ClusterAlerts(meta.Namespace).Get(meta.Name)
-		if err != nil {
-			return nil, err
-		}
-
-		modified := transformer(*cur)
-		updated, err := f.extClient.ClusterAlerts(cur.Namespace).Update(&modified)
-		if err == nil {
-			return updated, nil
-		}
-
-		log.Errorf("Attempt %d failed to update ClusterAlert %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
-		time.Sleep(updateRetryInterval)
+func (f *Framework) patchClusterAlert(cur *tapi.ClusterAlert, transform func(*tapi.ClusterAlert) *tapi.ClusterAlert) (*tapi.ClusterAlert, error) {
+	curJson, err := json.Marshal(cur)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil, fmt.Errorf("Failed to update ClusterAlert %s@%s after %d attempts.", meta.Name, meta.Namespace, attempt)
+	modJson, err := json.Marshal(transform(cur))
+	if err != nil {
+		return nil, err
+	}
+
+	patch, err := jsonpatch.CreatePatch(curJson, modJson)
+	if err != nil {
+		return nil, err
+	}
+	if len(patch) == 0 {
+		return cur, nil
+	}
+	pb, err := json.MarshalIndent(patch, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	glog.V(5).Infof("Patching ClusterAlert %s@%s with %s.", cur.Name, cur.Namespace, string(pb))
+	return f.extClient.ClusterAlerts(cur.Namespace).Patch(cur.Name, types.JSONPatchType, pb)
+}
+
+func (f *Framework) TryPatchClusterAlert(meta metav1.ObjectMeta, transform func(*tapi.ClusterAlert) *tapi.ClusterAlert) (*tapi.ClusterAlert, error) {
+	attempt := 0
+	for ; attempt < kutil.MaxAttempts; attempt = attempt + 1 {
+		cur, err := f.extClient.ClusterAlerts(meta.Namespace).Get(meta.Name)
+		if kerr.IsNotFound(err) {
+			return cur, err
+		} else if err == nil {
+			return f.patchClusterAlert(cur, transform)
+		}
+		glog.Errorf("Attempt %d failed to patch ClusterAlert %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
+		time.Sleep(kutil.RetryInterval)
+	}
+	return nil, fmt.Errorf("Failed to patch ClusterAlert %s@%s after %d attempts.", meta.Name, meta.Namespace, attempt)
 }
 
 func (f *Framework) DeleteClusterAlert(meta metav1.ObjectMeta) error {

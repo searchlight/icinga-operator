@@ -1,8 +1,8 @@
-hash: ba7a43d99f7ae7abee5af0d04eedced27232e183ce6fc92b1ef4f5fd22c91221
-updated: 2017-08-01T07:54:42.551715647-07:00
+hash: 96cd61498005d9c3047aeef1ecabef40c8f3277e693e5c95d7feb78009de0ed0
+updated: 2017-08-22T11:09:11.559872402+06:00
 imports:
 - name: github.com/appscode/api
-  version: d98df977c923189d5e4856bf8d428f5528b6bdd1
+  version: d08eb9170a272525352bf85fb3414ee0e3af2c13
 - name: github.com/appscode/client
   version: 9844500890e8cf3df84b3c86ddc17c220db38af1
 - name: github.com/appscode/envconfig
@@ -10,7 +10,7 @@ imports:
 - name: github.com/appscode/errors
   version: 748883e321a9f99fe901bd2663c7af3fcae43ea4
 - name: github.com/appscode/go
-  version: 95092d156baddb2d9aab547739669496d58ab6bd
+  version: 45732d59b2277b9c7ffdc41d2d5c07a899a20a70
   subpackages:
   - crypto/rand
   - env
@@ -20,17 +20,26 @@ imports:
   - types
   - version
 - name: github.com/appscode/go-notify
-  version: 1ecbe3cbc7b28971a2db50a9981f0790b9f500e2
+  version: c1f627b4151ce1f8b5b80eeab2eb94c2561af00c
   subpackages:
   - hipchat
   - log
   - mailgun
   - plivo
+  - pushover
   - slack
   - smtp
   - twilio
   - unified
   - webhook
+- name: github.com/appscode/go-version
+  version: 97adb342c1792e9f59701c1d96bf3612d0fc7621
+- name: github.com/appscode/kutil
+  version: 190fce8b75c5c6aa1b3ccb22ddb136698e072cb6
+  subpackages:
+  - apps/v1beta1
+  - core/v1
+  - extensions/v1beta1
 - name: github.com/appscode/log
   version: 68e0e42e42c01371f3950571fc87c2298a51dd8f
   subpackages:
@@ -78,7 +87,7 @@ imports:
 - name: github.com/codeskyblue/go-sh
   version: 3d593d477915b4d2f2e74b2e041495345647a46b
 - name: github.com/cpuguy83/go-md2man
-  version: a65d4d2de4d5f7c74868dfa9b202a3c8be315aaa
+  version: 23709d0847197db6021a51fdb193e66e9222d4e7
   subpackages:
   - md2man
 - name: github.com/davecgh/go-spew
@@ -114,7 +123,7 @@ imports:
   - log
   - swagger
 - name: github.com/facebookgo/stack
-  version: 751773369052141c013c6e827a71e8f35c07879c
+  version: d9d227395bc3d7a635388c75b2e3b3a750e11888
 - name: github.com/flosch/pongo2
   version: 58f1f3387f7c57843ff829d92a759d08abe5a63f
 - name: github.com/ghodss/yaml
@@ -126,7 +135,7 @@ imports:
 - name: github.com/go-macaron/toolbox
   version: 6766b8f16d1b135b250f09ba4dc4e24ab65b1107
 - name: github.com/go-ole/go-ole
-  version: 085abb85892dc1949567b726dff00fa226c60c45
+  version: 7dfdcf409020452e29b4babcbb22f984d2aa308a
   subpackages:
   - oleutil
 - name: github.com/go-openapi/jsonpointer
@@ -161,7 +170,7 @@ imports:
   - go/x509
   - go/x509/pkix
 - name: github.com/google/go-querystring
-  version: 53e6ce116135b80d037921a7fdd5138cf32d7a8a
+  version: 547ef5ac979778feb2f760cdb5f4eae1a2207b86
   subpackages:
   - query
 - name: github.com/google/gofuzz
@@ -183,7 +192,7 @@ imports:
   - models
   - pkg/escape
 - name: github.com/jaytaylor/html2text
-  version: 7c7a33a7a158a5ce395c803d2b6a209b2bbc14c8
+  version: 52d9b785554a1918cb09909b89a1509a98b853fd
 - name: github.com/jmoiron/sqlx
   version: 398dd5876282499cdfd4cb8ea0f31a672abe9495
   repo: https://github.com/jmoiron/sqlx
@@ -199,7 +208,7 @@ imports:
   version: 648daed35d49dac24a4bff253b190a80da3ab6a5
   repo: https://github.com/kisielk/sqlstruct
 - name: github.com/Knetic/govaluate
-  version: beae3c74e5d7b39c0674bc525b5fe6fd0167e47d
+  version: 89a078c30383b31e1b72bec86907910914227d9f
 - name: github.com/mailgun/mailgun-go
   version: 369a1fa57ce6fb314e627087b9fff0db5c266c0f
 - name: github.com/mailru/easyjson
@@ -208,8 +217,8 @@ imports:
   - buffer
   - jlexer
   - jwriter
-- name: github.com/mattn/go-runewidth
-  version: d6bea18f789704b5f83375793155289da36a3c7f
+- name: github.com/mattbaird/jsonpatch
+  version: d220c21cb65bebf730343aee4c00ba60be2d3235
 - name: github.com/matttproud/golang_protobuf_extensions
   version: fc2b8d3a73c4867e51861bbdd5ae3c1f0869dd6a
   subpackages:
@@ -218,8 +227,6 @@ imports:
   version: ad45545899c7b13c020ea92b2072220eefad42b8
 - name: github.com/nlopes/slack
   version: 5cde21b8b96a43fc3435a1f514123d14fd7eabdc
-- name: github.com/olekukonko/tablewriter
-  version: cca8bbc0798408af109aaaa239cbd2634846b340
 - name: github.com/onsi/gomega
   version: d59fa0ac68bb5dd932ee8d24eed631cdd519efc3
   subpackages:
@@ -271,21 +278,19 @@ imports:
   - net
   - process
 - name: github.com/shirou/w32
-  version: bb4de0191aa41b5507caa14b0650cdbddcd9280b
+  version: 3c9377fc6748f222729a8270fe2775d149a249ad
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/Sirupsen/logrus
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
 - name: github.com/spf13/cobra
-  version: b26b538f693051ac6518e65672de3144ce3fbedc
+  version: 4a7b7e65864c064d48dce82efbbfed2bdc0bf2aa
   subpackages:
   - doc
 - name: github.com/spf13/pflag
   version: e57e3eeb33f795204c1ca35f56c44f83227c6e66
-- name: github.com/ssor/bom
-  version: 6386211fdfcf24c0bfbdaceafd02849ed9a8a509
 - name: github.com/StackExchange/wmi
-  version: ea383cf3ba6ec950874b8486cd72356d007c768f
+  version: e54cbda6595d7293a7a468ccf9525f6bc8887f99
 - name: github.com/tbruyelle/hipchat-go
   version: 749fb9e14beb9995f677c101a754393cecb64b0f
   subpackages:
@@ -295,7 +300,7 @@ imports:
   subpackages:
   - codec
 - name: github.com/Unknwon/com
-  version: 0db4a625e949e956314d7d1adea9bf82384cc10c
+  version: 7677a1d7c1137cd3dd5ba7a076d0c898a1ef4520
 - name: github.com/vaughan0/go-ini
   version: a98ad7ee00ec53921f08832bc06ecf7fd600e6a1
 - name: golang.org/x/crypto
@@ -397,7 +402,7 @@ imports:
   - third_party/forked/golang/netutil
   - third_party/forked/golang/reflect
 - name: k8s.io/apiserver
-  version: 2308857ad3b8b18abf74ff734853973eda9da94d
+  version: 149fc2228647cea28b0670c240ec582e985e8eda
   subpackages:
   - pkg/server/httplog
   - pkg/util/wsstream
@@ -488,7 +493,7 @@ imports:
   - util/homedir
   - util/integer
 - name: k8s.io/kubernetes
-  version: 095136c3078ccf887b9034b7ce598a0a1faff769
+  version: 67b88532642baccc341a2a086de10fe16cf59a60
   subpackages:
   - pkg/api
   - pkg/client/unversioned/remotecommand
@@ -498,7 +503,7 @@ imports:
   - pkg/util/term
 testImports:
 - name: github.com/mitchellh/go-homedir
-  version: b8bc1bf767474819792c23f32d8286a45736f1c6
+  version: d682a8f0cf139663a984ff12528da460ca963de9
 - name: github.com/onsi/ginkgo
   version: bb93381d543b0e5725244abe752214a110791d01
   subpackages:

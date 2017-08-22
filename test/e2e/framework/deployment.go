@@ -108,9 +108,12 @@ func (f *Framework) CreateDeploymentExtension(obj *extensions.Deployment) error 
 	return err
 }
 
-func (f *Framework) EventuallyDeleteDeploymentExtension(meta metav1.ObjectMeta) GomegaAsyncAssertion {
+func (f *Framework) TryPatchDeploymentExt(meta metav1.ObjectMeta, transformer func(*extensions.Deployment) *extensions.Deployment) (*extensions.Deployment, error) {
+	return kutilext.TryPatchDeployment(f.kubeClient, meta, transformer)
+}
 
-	deployment, err := kutilext.TryPatchDeployment(f.kubeClient, meta, func(in *apps.Deployment) *apps.Deployment {
+func (f *Framework) EventuallyDeleteDeploymentExtension(meta metav1.ObjectMeta) GomegaAsyncAssertion {
+	deployment, err := f.TryPatchDeploymentExt(meta, func(in *extensions.Deployment) *extensions.Deployment {
 		in.Spec.Replicas = types.Int32P(0)
 		return in
 	})
