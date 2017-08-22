@@ -4,9 +4,9 @@ import (
 	tapi "github.com/appscode/searchlight/api"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	types "k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/testing"
-	types "k8s.io/apimachinery/pkg/types"
 )
 
 type FakePodAlert struct {
