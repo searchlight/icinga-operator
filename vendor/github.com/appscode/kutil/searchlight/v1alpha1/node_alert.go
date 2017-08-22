@@ -10,7 +10,7 @@ import (
 	aci "github.com/appscode/searchlight/api"
 	tcs "github.com/appscode/searchlight/client/clientset"
 	"github.com/golang/glog"
-	"github.com/mattbaird/jsonpatch"
+	"github.com/appscode/jsonpatch"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"

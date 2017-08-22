@@ -1,5 +1,5 @@
-hash: 67500d50ea4f83801f1261b9a64b75b9febe0474263236cb935e055fa492f5d7
-updated: 2017-08-22T13:18:03.803401757+06:00
+hash: 96cd61498005d9c3047aeef1ecabef40c8f3277e693e5c95d7feb78009de0ed0
+updated: 2017-08-22T17:16:39.699625466+06:00
 imports:
 - name: github.com/appscode/api
   version: d08eb9170a272525352bf85fb3414ee0e3af2c13
@@ -34,8 +34,10 @@ imports:
   - webhook
 - name: github.com/appscode/go-version
   version: 97adb342c1792e9f59701c1d96bf3612d0fc7621
+- name: github.com/appscode/jsonpatch
+  version: 3cdd2454b5443228620ea11294085ec3489936a6
 - name: github.com/appscode/kutil
-  version: d2765d4795d08015da47a8463961931f65155dda
+  version: a90e1809fb1983560e9fc4df610e93e6cfe767f0
   subpackages:
   - apps/v1beta1
   - core/v1
@@ -218,8 +220,6 @@ imports:
   - buffer
   - jlexer
   - jwriter
-- name: github.com/mattbaird/jsonpatch
-  version: d220c21cb65bebf730343aee4c00ba60be2d3235
 - name: github.com/matttproud/golang_protobuf_extensions
   version: fc2b8d3a73c4867e51861bbdd5ae3c1f0869dd6a
   subpackages:
