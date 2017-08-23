@@ -1,68 +1,52 @@
 package: github.com/appscode/searchlight
 import:
-- package: golang.org/x/net
-  version: da118f7b8e5954f39d0d2130ab35d4bf0e3cb344
-- package: golang.org/x/text
-  version: 470f45bf29f4147d6fbd7dfd0a02a848e49f5bf4
-- package: github.com/golang/protobuf
-  version: 8ee79997227bf9b34611aee7946ae64735e6fd93
-- package: github.com/grpc-ecosystem/grpc-gateway
-  repo: https://github.com/appscode/grpc-gateway.git
-  vcs: git
-  version: v1.2.2-ac
-- package: google.golang.org/grpc
-  version: v1.3.0
-- package: github.com/appscode/api
-  version: master
-- package: github.com/appscode/client
+- package: github.com/Knetic/govaluate
+  version: v3.0.0
+- package: github.com/appscode/envconfig
   version: master
 - package: github.com/appscode/errors
-  version: v2
-- package: github.com/appscode/go
 - package: github.com/appscode/go-notify
-  version: master
+- package: github.com/appscode/go
 - package: github.com/appscode/log
-- package: github.com/Knetic/govaluate
+- package: github.com/appscode/pat
+- package: github.com/cloudflare/cfssl
+  version: b53da94cf51de120a50cbae533152fb3935375e0
+- package: github.com/google/certificate-transparency
+  version: 05502e09183232d2345db9a3a008076eff9a530c
+- package: github.com/codeskyblue/go-sh
   version: master
-- package: github.com/flosch/pongo2
-  version: master
+- package: github.com/ghodss/yaml
+  version: v1.0.0
+- package: github.com/go-macaron/auth
+- package: github.com/go-macaron/toolbox
 - package: github.com/influxdata/influxdb
-  version: v0.11.0
+  version: v1.3.3
+- package: github.com/jpillora/go-ogle-analytics
+- package: github.com/onsi/gomega
+  version: v1.2.0
 - package: github.com/prometheus/client_golang
   version: v0.8.0
-- package: github.com/prometheus/common
-  version: 13ba4ddd0caa9c28ca7b7bffe1dfa9ed8d5ef207
+- package: github.com/Sirupsen/logrus
+  version: v0.10.0
+- package: github.com/shirou/gopsutil
+  version: v2.17.07
 - package: github.com/spf13/cobra
-  version: master
 - package: github.com/spf13/pflag
-  version: master
+  version: v1.0.0
 - package: github.com/vaughan0/go-ini
+- package: gopkg.in/ini.v1
+  version: v1.28.2
+- package: gopkg.in/macaron.v1
+  version: v1.2.2
 - package: k8s.io/kubernetes
   version: ~1.6.0
 - package: k8s.io/apimachinery
   version: 75b8dd260ef0469d96d578705a87cffd0e09dab8
 - package: k8s.io/client-go
   version: v3.0.0-beta.0
-- package: github.com/go-macaron/toolbox
-- package: github.com/go-macaron/auth
-- package: github.com/shirou/gopsutil
-  version: v2.16.11
-- package: gopkg.in/macaron.v1
-  version: v1.2.1
-- package: github.com/Unknwon/com
-  version: master
-- package: github.com/Sirupsen/logrus
-  version: v0.10.0
-- package: github.com/jpillora/go-ogle-analytics
-  version: master
-- package: github.com/spf13/cobra
-  version: master
-- package: github.com/spf13/pflag
-  version: master
-- package: github.com/cloudflare/cfssl
-  version: b53da94cf51de120a50cbae533152fb3935375e0
-- package: github.com/google/certificate-transparency
-  version: 05502e09183232d2345db9a3a008076eff9a530c
 testImport:
+- package: github.com/mitchellh/go-homedir
+- package: github.com/onsi/ginkgo
+  version: v1.4.0
 - package: github.com/stretchr/testify
   version: v1.1.4

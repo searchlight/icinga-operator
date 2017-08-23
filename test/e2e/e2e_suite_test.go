@@ -13,12 +13,12 @@ import (
 	"github.com/appscode/searchlight/test/e2e"
 	"github.com/appscode/searchlight/test/e2e/framework"
 	. "github.com/appscode/searchlight/test/e2e/matcher"
-	"github.com/mitchellh/go-homedir"
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/reporters"
 	. "github.com/onsi/gomega"
 	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/util/homedir"
 )
 
 var provider string
@@ -47,11 +47,8 @@ func TestE2e(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	userHome, err := homedir.Dir()
-	Expect(err).NotTo(HaveOccurred())
-
 	// Kubernetes config
-	kubeconfigPath := filepath.Join(userHome, ".kube/config")
+	kubeconfigPath := filepath.Join(homedir.HomeDir(), ".kube/config")
 	By("Using kubeconfig from " + kubeconfigPath)
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
 	Expect(err).NotTo(HaveOccurred())

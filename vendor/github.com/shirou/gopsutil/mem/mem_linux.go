@@ -5,9 +5,9 @@ package mem
 import (
 	"strconv"
 	"strings"
-	"syscall"
 
 	"github.com/shirou/gopsutil/internal/common"
+	"golang.org/x/sys/unix"
 )
 
 func VirtualMemory() (*VirtualMemoryStat, error) {
@@ -52,6 +52,14 @@ func VirtualMemory() (*VirtualMemoryStat, error) {
 			ret.WritebackTmp = t * 1024
 		case "Dirty":
 			ret.Dirty = t * 1024
+		case "Shmem":
+			ret.Shared = t * 1024
+		case "Slab":
+			ret.Slab = t * 1024
+		case "PageTables":
+			ret.PageTables = t * 1024
+		case "SwapCached":
+			ret.SwapCached = t * 1024
 		}
 	}
 	if !memavail {
@@ -64,9 +72,9 @@ func VirtualMemory() (*VirtualMemoryStat, error) {
 }
 
 func SwapMemory() (*SwapMemoryStat, error) {
-	sysinfo := &syscall.Sysinfo_t{}
+	sysinfo := &unix.Sysinfo_t{}
 
-	if err := syscall.Sysinfo(sysinfo); err != nil {
+	if err := unix.Sysinfo(sysinfo); err != nil {
 		return nil, err
 	}
 	ret := &SwapMemoryStat{

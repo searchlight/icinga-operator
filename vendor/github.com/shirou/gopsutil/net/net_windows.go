@@ -6,13 +6,13 @@ import (
 	"errors"
 	"net"
 	"os"
-	"syscall"
 
 	"github.com/shirou/gopsutil/internal/common"
+	"golang.org/x/sys/windows"
 )
 
 var (
-	modiphlpapi             = syscall.NewLazyDLL("iphlpapi.dll")
+	modiphlpapi             = windows.NewLazyDLL("iphlpapi.dll")
 	procGetExtendedTCPTable = modiphlpapi.NewProc("GetExtendedTcpTable")
 	procGetExtendedUDPTable = modiphlpapi.NewProc("GetExtendedUdpTable")
 )
@@ -41,8 +41,8 @@ func IOCounters(pernic bool) ([]IOCountersStat, error) {
 			Name: ifi.Name,
 		}
 
-		row := syscall.MibIfRow{Index: uint32(ifi.Index)}
-		e := syscall.GetIfEntry(&row)
+		row := windows.MibIfRow{Index: uint32(ifi.Index)}
+		e := windows.GetIfEntry(&row)
 		if e != nil {
 			return nil, os.NewSyscallError("GetIfEntry", e)
 		}
@@ -74,6 +74,12 @@ func Connections(kind string) ([]ConnectionStat, error) {
 	var ret []ConnectionStat
 
 	return ret, common.ErrNotImplementedError
+}
+
+// Return a list of network connections opened returning at most `max`
+// connections for each running process.
+func ConnectionsMax(kind string, max int) ([]ConnectionStat, error) {
+	return []ConnectionStat{}, common.ErrNotImplementedError
 }
 
 func FilterCounters() ([]FilterStat, error) {

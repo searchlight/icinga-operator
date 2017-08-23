@@ -1,13 +1,13 @@
 package notifier
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 	"time"
 
 	aci "github.com/appscode/searchlight/api"
 	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/flosch/pongo2"
 )
 
 func RenderSubject(alert aci.Alert, req *Request) string {
@@ -22,41 +22,43 @@ func RenderSubject(alert aci.Alert, req *Request) string {
 	}
 }
 
-func RenderMail(alert aci.Alert, req *Request) (string, error) {
-	t := time.Unix(req.Time, 0)
+type TemplateData struct {
+	AlertNamespace     string
+	AlertType          string
+	AlertName          string
+	ObjectName         string
+	IcingaHostName     string
+	IcingaServiceName  string
+	IcingaCheckCommand string
+	IcingaType         string
+	IcingaState        string
+	IcingaOutput       string
+	IcingaTime         time.Time
+}
 
+func RenderMail(alert aci.Alert, req *Request) (string, error) {
 	host, err := icinga.ParseHost(req.HostName)
 	if err != nil {
 		return "", err
 	}
-
-	data := map[string]interface{}{
-		"KubernetesNamespace":  host.AlertNamespace,
-		"kubernetesAlertType":  host.Type,
-		"kubernetesAlertName":  alert.GetName(),
-		"kubernetesObjectName": host.ObjectName,
-		"IcingaHostName":       req.HostName,
-		"IcingaServiceName":    alert.GetName(),
-		"CheckCommand":         alert.Command(),
-		"IcingaType":           req.Type,
-		"IcingaState":          req.State,
-		"IcingaOutput":         req.Output,
-		"IcingaTime":           t,
+	data := TemplateData{
+		AlertName:          alert.GetName(),
+		AlertNamespace:     host.AlertNamespace,
+		AlertType:          host.Type,
+		ObjectName:         host.ObjectName,
+		IcingaHostName:     req.HostName,
+		IcingaServiceName:  alert.GetName(),
+		IcingaCheckCommand: alert.Command(),
+		IcingaType:         req.Type,
+		IcingaState:        strings.ToUpper(req.State),
+		IcingaOutput:       req.Output,
+		IcingaTime:         time.Unix(req.Time, 0),
 	}
 
-	pCtx := pongo2.Context(data)
-	return render(&pCtx, notificationMailTemplate)
-}
-
-func render(ctx *pongo2.Context, template string) (string, error) {
-	tpl, err := pongo2.FromString(template)
-	if err != nil {
+	var buf bytes.Buffer
+	if err = mailTemplate.Execute(&buf, data); err != nil {
 		return "", err
 	}
-
-	body, err := tpl.Execute(*ctx)
-	if err != nil {
-		return "", err
-	}
-	return body, nil
+	config := buf.String()
+	return config, nil
 }
