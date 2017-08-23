@@ -1,6 +1,8 @@
 package framework
 
 import (
+	"time"
+
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/go/types"
 	kutilapps "github.com/appscode/kutil/apps/v1beta1"
@@ -11,7 +13,6 @@ import (
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 	apps "k8s.io/client-go/pkg/apis/apps/v1beta1"
 	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
-	"time"
 )
 
 func (f *Invocation) DeploymentApp() *apps.Deployment {
