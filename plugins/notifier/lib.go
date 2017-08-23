@@ -38,9 +38,7 @@ type Secret struct {
 }
 
 func getLoader(client clientset.Interface, alert tapi.Alert) (envconfig.LoaderFunc, error) {
-	cfg, err := client.CoreV1().
-		Secrets(util.OperatorNamespace()).
-		Get(alert.GetNotifierSecretName(), metav1.GetOptions{})
+	cfg, err := client.CoreV1().Secrets(alert.GetNamespace()).Get(alert.GetNotifierSecretName(), metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
