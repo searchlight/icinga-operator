@@ -12,7 +12,7 @@ $ minikube ssh
 ### Install Hostfacts
 Now, download and install a pre-built binary using the following command:
 ```console
-curl -Lo hostfacts https://cdn.appscode.com/binaries/hostfacts/3.0.0/hostfacts-linux-amd64 \
+curl -Lo hostfacts https://cdn.appscode.com/binaries/hostfacts/3.0.1/hostfacts-linux-amd64 \
   && chmod +x hostfacts \
   && sudo mv hostfacts /usr/bin/
 ```

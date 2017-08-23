@@ -1,5 +1,5 @@
-hash: 3853803820db26d5c519d79aab94267a05d55fb9ec24750dd24efa2e881e1c0b
-updated: 2017-08-22T18:56:17.589753048-07:00
+hash: 558f910ea71b55a1c425a04f1e80358a89dcb3e060a16df2156de225a791c8cb
+updated: 2017-08-22T23:30:25.324756751-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -347,7 +347,7 @@ imports:
 - name: gopkg.in/yaml.v2
   version: 53feefa2559fb8dfa8d81baad31be332c97d6c77
 - name: k8s.io/apimachinery
-  version: 75b8dd260ef0469d96d578705a87cffd0e09dab8
+  version: 85ace5365f33b16fc735c866a12e3c765b9700f2
   subpackages:
   - pkg/api/errors
   - pkg/api/meta
@@ -400,7 +400,7 @@ imports:
   - pkg/server/httplog
   - pkg/util/wsstream
 - name: k8s.io/client-go
-  version: 3627aeb7d4f6ade38f995d2c923e459146493c7e
+  version: 21300e3e11c918b8e6a70fb7293b310683d6c046
   subpackages:
   - discovery
   - kubernetes

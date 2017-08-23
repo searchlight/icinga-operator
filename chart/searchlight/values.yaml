@@ -5,7 +5,7 @@
 operator:
   image: appscode/searchlight
   pullPolicy: IfNotPresent
-  tag: 3.0.0
+  tag: 3.0.1
 
 ido:
   image: appscode/postgres
@@ -15,7 +15,7 @@ ido:
 icinga:
   image: appscode/icinga
   pullPolicy: IfNotPresent
-  tag: 3.0.0-k8s
+  tag: 3.0.1-k8s
 
 ## Icinga configaration
 ## https://github.com/appscode/searchlight/blob/master/docs/icinga2/deployment.md#create-deployment

@@ -79,7 +79,7 @@ spec:
       serviceAccountName: searchlight-operator
       containers:
       - name: operator
-        image: appscode/searchlight:3.0.0
+        image: appscode/searchlight:3.0.1
         imagePullPolicy: IfNotPresent
         args:
         - run
@@ -99,7 +99,7 @@ spec:
         - name: data
           mountPath: /srv
       - name: icinga
-        image: appscode/icinga:3.0.0-k8s
+        image: appscode/icinga:3.0.1-k8s
         imagePullPolicy: IfNotPresent
         ports:
         - name: icinga
