@@ -1,0 +1,43 @@
+package notifier
+
+import (
+	"fmt"
+	"testing"
+	"time"
+
+	aci "github.com/appscode/searchlight/api"
+	"github.com/stretchr/testify/assert"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
+func TestRenderMail(t *testing.T) {
+	alert := aci.ClusterAlert{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "ca-cert-demo",
+			Namespace: metav1.NamespaceDefault,
+		},
+		Spec: aci.ClusterAlertSpec{
+			Check:              aci.CheckPodExists,
+			CheckInterval:      metav1.Duration{Duration: 1 * time.Minute},
+			AlertInterval:      metav1.Duration{Duration: 5 * time.Minute},
+			NotifierSecretName: "notifier-conf",
+			Vars: map[string]interface{}{
+				"name": "busybox",
+			},
+		},
+	}
+	req := Request{
+		HostName:  "demo@cluster",
+		AlertName: alert.Name,
+		Type:      "WHAT_IS_THE_CORRECT_VAL?",
+		State:     "WARNING",
+		Output:    "Check command output",
+		Time:      time.Now().Unix(),
+		Author:    "<searchight-user>",
+		Comment:   "This is a test",
+	}
+	config, err := RenderMail(&alert, &req)
+	fmt.Println(err)
+	assert.Nil(t, err)
+	fmt.Println(config)
+}

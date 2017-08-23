@@ -27,10 +27,10 @@ spec:
   alertInterval: 3m
   notifierSecretName: notifier-config
   receivers:
-  - notifier: mailgun
+  - notifier: Mailgun
     state: WARNING
     to: ["ops@example.com"]
-  - notifier: twilio
+  - notifier: Twilio
     state: CRITICAL
     to: ["+1-234-567-8901"]
 ```

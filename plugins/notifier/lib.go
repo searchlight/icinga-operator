@@ -2,7 +2,6 @@ package notifier
 
 import (
 	"flag"
-	"fmt"
 	"os"
 	"time"
 
@@ -92,19 +91,32 @@ func sendNotification(req *Request) {
 			var body string
 			body, err = RenderMail(alert, req)
 			if err != nil {
+				log.Errorf("Failed to render email. Reason: %s", err)
 				break
 			}
-			err = n.To(receiver.To[0], receiver.To[1:]...).WithSubject(RenderSubject(alert, req)).WithBody(body).SendHtml()
+			err = n.To(receiver.To[0], receiver.To[1:]...).
+				WithSubject(RenderSubject(alert, req)).
+				WithBody(body).
+				WithNoTracking().
+				SendHtml()
 		case notify.BySMS:
-			err = n.To(receiver.To[0], receiver.To[1:]...).WithBody(RenderSMS(alert, req)).Send()
+			err = n.To(receiver.To[0], receiver.To[1:]...).
+				WithBody(RenderSMS(alert, req)).
+				Send()
 		case notify.ByChat:
-			err = n.To(receiver.To[0], receiver.To[1:]...).WithBody(RenderSMS(alert, req)).Send()
+			err = n.To(receiver.To[0], receiver.To[1:]...).
+				WithBody(RenderSMS(alert, req)).
+				Send()
+		case notify.ByPush:
+			err = n.To(receiver.To[0:]...).
+				WithBody(RenderSMS(alert, req)).
+				Send()
 		}
 
 		if err != nil {
 			log.Errorln(err)
 		} else {
-			log.Debug(fmt.Sprintf("Notification sent using %s", receiver.Notifier))
+			log.Infof("Notification sent using %s", receiver.Notifier)
 		}
 	}
 }
@@ -131,8 +143,8 @@ func NewCmd() *cobra.Command {
 
 	c.Flags().StringVarP(&req.HostName, "host", "H", "", "Icinga host name")
 	c.Flags().StringVarP(&req.AlertName, "alert", "A", "", "Kubernetes alert object name")
-	c.Flags().StringVar(&req.Type, "type", "", "Notification type")
-	c.Flags().StringVar(&req.State, "state", "", "Service state")
+	c.Flags().StringVar(&req.Type, "type", "", "Notification type (PROBLEM | ACKNOWLEDGEMENT | RECOVERY)")
+	c.Flags().StringVar(&req.State, "state", "", "Service state (OK | WARNING | CRITICAL)")
 	c.Flags().StringVar(&req.Output, "output", "", "Service output")
 	c.Flags().StringVar(&eventTime, "time", "", "Event time")
 	c.Flags().StringVarP(&req.Author, "author", "a", "", "Event author name")

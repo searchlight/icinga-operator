@@ -1,11 +1,14 @@
 package notifier
 
-const notificationMailTemplate = `<html>
+import (
+	"text/template"
+)
+
+var (
+	mailTemplate = template.Must(template.New("mail").Parse(`
+<html>
 <head>
-    <title>*|passwordReset|*</title>
-
-
-
+    <title>*|Searchlight Alert|*</title>
 <style type="text/css">
 @font-face {
 font-family: 'Roboto'; font-style: normal; font-weight: 100; src: local('Roboto Thin'), local('Roboto-Thin'), url('https://fonts.gstatic.com/s/roboto/v15/Jzo62I39jc0gQRrbndN6nfesZW2xOQ-xsNqO47m55DA.ttf') format('truetype');
@@ -71,36 +74,36 @@ background: #f2f2f2; color: #263249; font-family: Roboto, sans-serif; font-size:
                     <p style="font-size: 14px; font-weight: normal; line-height: 25px; margin: 0 0 20px; padding: 0px;">Please see details below:</p>
 
                     <div class="cluster-info" style="margin-bottom: 20px; display: block;">
-                        <h4 style="font-size: 15px; font-weight: 400; text-transform: capitalize; border-top-left-radius: 3px; border-top-right-radius: 3px; overflow: hidden; background: #fcfcfc; margin: 0; padding: 4px; border-color: #f0f0f0#f0f0f0#dddddd; border-style: solid; border-width: 1px 1px 0px;">kubernetes Information</h4>
+                        <h4 style="font-size: 15px; font-weight: 400; text-transform: capitalize; border-top-left-radius: 3px; border-top-right-radius: 3px; overflow: hidden; background: #fcfcfc; margin: 0; padding: 4px; border-color: #f0f0f0#f0f0f0#dddddd; border-style: solid; border-width: 1px 1px 0px;">Kubernetes Information</h4>
                         <table style="border-collapse: collapse; width: 100%; border: 0px solid #f0f0f0;">
 
-                            {% if KubernetesNamespace %}
+                            {{ if .AlertNamespace }}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Namespace</td>
-                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{KubernetesNamespace}}</td>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{ .AlertNamespace  }}</td>
                             </tr>
-                            {% endif %}
+                            {{ end }}
 
-                            {% if kubernetesAlertType %}
+                            {{ if .AlertType }}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Alert Type</td>
-                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{kubernetesAlertType}}</td>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{ .AlertType  }}</td>
                             </tr>
-                            {% endif %}
+                            {{ end }}
 
-                            {% if kubernetesAlertName %}
+                            {{ if .AlertName }}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Alert Name</td>
-                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{kubernetesAlertName}}</td>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{ .AlertName  }}</td>
                             </tr>
-                            {% endif %}
+                            {{ end }}
 
-                            {% if kubernetesObjectName %}
+                            {{ if .ObjectName }}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Object Name</td>
-                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{kubernetesObjectName}}</td>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{ .ObjectName  }}</td>
                             </tr>
-                            {% endif %}
+                            {{ end }}
 
                         </table>
                     </div>
@@ -109,67 +112,67 @@ background: #f2f2f2; color: #263249; font-family: Roboto, sans-serif; font-size:
                         <h4 style="font-size: 15px; font-weight: 400; text-transform: capitalize; border-top-left-radius: 3px; border-top-right-radius: 3px; overflow: hidden; background: #fcfcfc; margin: 0; padding: 4px; border-color: #f0f0f0#f0f0f0#dddddd; border-style: solid; border-width: 1px 1px 0px;">Incident Event Information</h4>
                         <table style="border-collapse: collapse; width: 100%; border: 0px solid #f0f0f0;">
 
-                            {% if IcingaHostName %}
+                            {{ if .IcingaHostName }}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Host Name</td>
-                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{IcingaHostName}}</td>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{ .IcingaHostName }}</td>
                             </tr>
-                            {% endif %}
+                            {{ end }}
 
-                            {% if IcingaServiceName %}
+                            {{ if .IcingaServiceName }}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Service Name</td>
-                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{IcingaServiceName}}</td>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{ .IcingaServiceName }}</td>
                             </tr>
-                            {% endif %}
+                            {{ end }}
 
-                            {% if CheckCommand %}
+                            {{ if .IcingaCheckCommand }}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Check Command</td>
-                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{CheckCommand}}</td>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{ .IcingaCheckCommand }}</td>
                             </tr>
-                            {% endif %}
+                            {{ end }}
 
-                            {% if IcingaType %}
+                            {{ if .IcingaType }}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Type</td>
-                                <td style="font-weight: 600; font-size: 14px; text-align: left; vertical-align: top; color: #575757; background: #fafafa; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{IcingaType}}</td>
+                                <td style="font-weight: 600; font-size: 14px; text-align: left; vertical-align: top; color: #575757; background: #fafafa; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{ .IcingaType }}</td>
                             </tr>
-                            {% endif %}
+                            {{ end }}
 
-                            {% if IcingaState|lower == "ok" %}
+                            {{ if eq .IcingaState "OK" }}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">State</td>
-                                <td style="text-align: left; vertical-align: top; color: #006400; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{IcingaState}}</td>
+                                <td style="text-align: left; vertical-align: top; color: #006400; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{ .IcingaState }}</td>
                             </tr>
-                            {% elif IcingaState|lower == "critical" %}
+                            {{ else if eq .IcingaState "CRITICAL" }}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">State</td>
-                                <td style="text-align: left; vertical-align: top; color: #FF0000; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{IcingaState}}</td>
+                                <td style="text-align: left; vertical-align: top; color: #FF0000; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{ .IcingaState }}</td>
                             </tr>
-                            {% elif IcingaState|lower == "warning" %}
+                            {{ else if eq .IcingaState "WARNING" }}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">State</td>
-                                <td style="text-align: left; vertical-align: top; color: #FF7F50; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{IcingaState}}</td>
+                                <td style="text-align: left; vertical-align: top; color: #FF7F50; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{ .IcingaState }}</td>
                             </tr>
-                            {% elif IcingaState|length > 0 %}
+                            {{ else if .IcingaState }}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">State</td>
-                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{IcingaState}}</td>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{ .IcingaState }}</td>
                             </tr>
-                            {% endif %}
+                            {{ end }}
 
-                            {% if IcingaOutput %}
+                            {{ if .IcingaOutput }}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Service Output</td>
-                                <td><pre>{{IcingaOutput}}</pre></td>
+                                <td><pre>{{ .IcingaOutput }}</pre></td>
                             </tr>
-                            {% endif %}
+                            {{ end }}
 
                         </table>
                     </div>
 
-                    <h2 style="font-size: 14px; font-weight: 400; margin: 10px 0 0; padding: 4px 0;"> Reported at <span style="border-bottom-width: 1px; border-bottom-color: #3bb778; border-bottom-style: dotted; margin: 0 8px;">{{IcingaTime}}</span></h2>
+                    <h2 style="font-size: 14px; font-weight: 400; margin: 10px 0 0; padding: 4px 0;"> Reported at <span style="border-bottom-width: 1px; border-bottom-color: #3bb778; border-bottom-style: dotted; margin: 0 8px;">{{ .IcingaTime }}</span></h2>
                 </div>
             </div>
             <!-- end content-top -->
@@ -209,4 +212,5 @@ background: #f2f2f2; color: #263249; font-family: Roboto, sans-serif; font-size:
 <!-- end wrapper -->
 </body>
 </html>
-`
+`))
+)

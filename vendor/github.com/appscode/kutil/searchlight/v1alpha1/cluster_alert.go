@@ -6,15 +6,19 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/appscode/jsonpatch"
 	"github.com/appscode/kutil"
 	aci "github.com/appscode/searchlight/api"
 	tcs "github.com/appscode/searchlight/client/clientset"
 	"github.com/golang/glog"
-	"github.com/appscode/jsonpatch"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
+
+func EnsureClusterAlert(c tcs.ExtensionInterface, meta metav1.ObjectMeta, transform func(alert *aci.ClusterAlert) *aci.ClusterAlert) (*aci.ClusterAlert, error) {
+	return CreateOrPatchClusterAlert(c, meta, transform)
+}
 
 func CreateOrPatchClusterAlert(c tcs.ExtensionInterface, meta metav1.ObjectMeta, transform func(alert *aci.ClusterAlert) *aci.ClusterAlert) (*aci.ClusterAlert, error) {
 	cur, err := c.ClusterAlerts(meta.Namespace).Get(meta.Name)

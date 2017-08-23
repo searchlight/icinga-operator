@@ -48,11 +48,29 @@ func CheckPodStatus(req *Request) (icinga.State, interface{}) {
 		return icinga.UNKNOWN, err
 	}
 
-	if !(pod.Status.Phase == apiv1.PodSucceeded || pod.Status.Phase == apiv1.PodRunning) {
-		return icinga.CRITICAL, pod.Status.Phase
+	if ok, err := PodRunningAndReady(*pod); !ok {
+		return icinga.CRITICAL, err
 	}
-
 	return icinga.OK, pod.Status.Phase
+}
+
+// ref: https://github.com/coreos/prometheus-operator/blob/c79166fcff3dae7bb8bc1e6bddc81837c2d97c04/pkg/k8sutil/k8sutil.go#L64
+// PodRunningAndReady returns whether a pod is running and each container has
+// passed it's ready state.
+func PodRunningAndReady(pod apiv1.Pod) (bool, error) {
+	switch pod.Status.Phase {
+	case apiv1.PodFailed, apiv1.PodSucceeded:
+		return false, fmt.Errorf("pod completed")
+	case apiv1.PodRunning:
+		for _, cond := range pod.Status.Conditions {
+			if cond.Type != apiv1.PodReady {
+				continue
+			}
+			return cond.Status == apiv1.ConditionTrue, nil
+		}
+		return false, fmt.Errorf("pod ready condition not found")
+	}
+	return false, nil
 }
 
 func NewCmd() *cobra.Command {

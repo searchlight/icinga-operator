@@ -33,4 +33,3 @@ searchlight version [flags]
 ### SEE ALSO
 * [searchlight](searchlight.md)	 - Searchlight by AppsCode - Alerts for Kubernetes
 
-

@@ -110,10 +110,7 @@ func PlatformInformation() (string, string, string, error) {
 }
 
 func Virtualization() (string, string, error) {
-	system := ""
-	role := ""
-
-	return system, role, nil
+	return "", "", common.ErrNotImplementedError
 }
 
 func Users() ([]UserStat, error) {
@@ -123,6 +120,8 @@ func Users() ([]UserStat, error) {
 	if err != nil {
 		return ret, err
 	}
+	defer file.Close()
+
 	buf, err := ioutil.ReadAll(file)
 	if err != nil {
 		return ret, err
@@ -151,4 +150,13 @@ func Users() ([]UserStat, error) {
 	}
 
 	return ret, nil
+}
+
+func SensorsTemperatures() ([]TemperatureStat, error) {
+	return []TemperatureStat{}, common.ErrNotImplementedError
+}
+
+func KernelVersion() (string, error) {
+	_, _, version, err := PlatformInformation()
+	return version, err
 }

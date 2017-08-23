@@ -3,17 +3,17 @@
 package process
 
 import (
-	"bytes"
 	"C"
+	"bytes"
 	"encoding/binary"
 	"strings"
-	"syscall"
 	"unsafe"
 
 	cpu "github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/internal/common"
-	net "github.com/shirou/gopsutil/net"
 	mem "github.com/shirou/gopsutil/mem"
+	net "github.com/shirou/gopsutil/net"
+	"golang.org/x/sys/unix"
 )
 
 // MemoryInfoExStat is different between OSes
@@ -58,7 +58,7 @@ func (p *Process) Exe() (string, error) {
 }
 
 func (p *Process) CmdlineSlice() ([]string, error) {
-	mib := []int32{CTLKern, KernProcArgs, p.Pid, KernProcArgv }
+	mib := []int32{CTLKern, KernProcArgs, p.Pid, KernProcArgv}
 	buf, _, err := common.CallSyscall(mib)
 
 	if err != nil {
@@ -75,7 +75,7 @@ func (p *Process) CmdlineSlice() ([]string, error) {
 		strParts = append(strParts, C.GoString(argv))
 
 		argc++
-		argv = *(**C.char)(unsafe.Pointer(uintptr(argvp) + uintptr(argc) * size))
+		argv = *(**C.char)(unsafe.Pointer(uintptr(argvp) + uintptr(argc)*size))
 	}
 	return strParts, nil
 }
@@ -328,8 +328,8 @@ func CallKernProcSyscall(op int32, arg int32) ([]byte, uint64, error) {
 	mibptr := unsafe.Pointer(&mib[0])
 	miblen := uint64(len(mib))
 	length := uint64(0)
-	_, _, err := syscall.Syscall6(
-		syscall.SYS___SYSCTL,
+	_, _, err := unix.Syscall6(
+		unix.SYS___SYSCTL,
 		uintptr(mibptr),
 		uintptr(miblen),
 		0,
@@ -346,8 +346,8 @@ func CallKernProcSyscall(op int32, arg int32) ([]byte, uint64, error) {
 	miblen = uint64(len(mib))
 	// get proc info itself
 	buf := make([]byte, length)
-	_, _, err = syscall.Syscall6(
-		syscall.SYS___SYSCTL,
+	_, _, err = unix.Syscall6(
+		unix.SYS___SYSCTL,
 		uintptr(mibptr),
 		uintptr(miblen),
 		uintptr(unsafe.Pointer(&buf[0])),

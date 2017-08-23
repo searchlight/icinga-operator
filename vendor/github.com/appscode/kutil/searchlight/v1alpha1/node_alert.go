@@ -6,15 +6,19 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/appscode/jsonpatch"
 	"github.com/appscode/kutil"
 	aci "github.com/appscode/searchlight/api"
 	tcs "github.com/appscode/searchlight/client/clientset"
 	"github.com/golang/glog"
-	"github.com/appscode/jsonpatch"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
+
+func EnsureNodeAlert(c tcs.ExtensionInterface, meta metav1.ObjectMeta, transform func(alert *aci.NodeAlert) *aci.NodeAlert) (*aci.NodeAlert, error) {
+	return CreateOrPatchNodeAlert(c, meta, transform)
+}
 
 func CreateOrPatchNodeAlert(c tcs.ExtensionInterface, meta metav1.ObjectMeta, transform func(alert *aci.NodeAlert) *aci.NodeAlert) (*aci.NodeAlert, error) {
 	cur, err := c.NodeAlerts(meta.Namespace).Get(meta.Name)

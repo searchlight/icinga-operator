@@ -60,6 +60,27 @@ type NumCtxSwitchesStat struct {
 	Involuntary int64 `json:"involuntary"`
 }
 
+// Resource limit constants are from /usr/include/x86_64-linux-gnu/bits/resource.h
+// from libc6-dev package in Ubuntu 16.10
+const (
+	RLIMIT_CPU        int32 = 0
+	RLIMIT_FSIZE      int32 = 1
+	RLIMIT_DATA       int32 = 2
+	RLIMIT_STACK      int32 = 3
+	RLIMIT_CORE       int32 = 4
+	RLIMIT_RSS        int32 = 5
+	RLIMIT_NPROC      int32 = 6
+	RLIMIT_NOFILE     int32 = 7
+	RLIMIT_MEMLOCK    int32 = 8
+	RLIMIT_AS         int32 = 9
+	RLIMIT_LOCKS      int32 = 10
+	RLIMIT_SIGPENDING int32 = 11
+	RLIMIT_MSGQUEUE   int32 = 12
+	RLIMIT_NICE       int32 = 13
+	RLIMIT_RTPRIO     int32 = 14
+	RLIMIT_RTTIME     int32 = 15
+)
+
 func (p Process) String() string {
 	s, _ := json.Marshal(p)
 	return string(s)
@@ -165,3 +186,20 @@ func (p *Process) MemoryPercent() (float32, error) {
 
 	return (100 * float32(used) / float32(total)), nil
 }
+// CPU_Percent returns how many percent of the CPU time this process uses
+func (p *Process) CPUPercent() (float64, error) {
+        crt_time, err := p.CreateTime()
+        if err != nil {
+                return 0, err
+        }
+
+
+        cpu, err := p.Times()
+        if err != nil {
+                return 0, err
+        }
+
+
+        return (100 * (cpu.Total()) / float64(time.Now().Unix()-(crt_time/1000))), nil
+}
+

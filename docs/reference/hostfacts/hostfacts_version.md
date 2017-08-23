@@ -33,4 +33,3 @@ hostfacts version [flags]
 ### SEE ALSO
 * [hostfacts](hostfacts.md)	 - Hostfacts by AppsCode - Expose node metrics
 
-

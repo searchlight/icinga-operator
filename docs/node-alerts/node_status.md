@@ -48,7 +48,7 @@ spec:
   alertInterval: 2m
   notifierSecretName: notifier-config
   receivers:
-  - notifier: mailgun
+  - notifier: Mailgun
     state: CRITICAL
     to: ["ops@example.com"]
 ```
@@ -90,7 +90,7 @@ spec:
   alertInterval: 2m
   notifierSecretName: notifier-config
   receivers:
-  - notifier: mailgun
+  - notifier: Mailgun
     state: CRITICAL
     to: ["ops@example.com"]
 ```
@@ -128,7 +128,7 @@ spec:
   alertInterval: 2m
   notifierSecretName: notifier-config
   receivers:
-  - notifier: mailgun
+  - notifier: Mailgun
     state: CRITICAL
     to: ["ops@example.com"]
 ```

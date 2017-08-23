@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 	"unsafe"
 
@@ -62,13 +63,20 @@ func Info() (*InfoStat, error) {
 
 	values, err := common.DoSysctrl("kern.hostuuid")
 	if err == nil && len(values) == 1 && values[0] != "" {
-		ret.HostID = values[0]
+		ret.HostID = strings.ToLower(values[0])
 	}
 
 	return ret, nil
 }
 
+// cachedBootTime must be accessed via atomic.Load/StoreUint64
+var cachedBootTime uint64
+
 func BootTime() (uint64, error) {
+	t := atomic.LoadUint64(&cachedBootTime)
+	if t != 0 {
+		return t, nil
+	}
 	values, err := common.DoSysctrl("kern.boottime")
 	if err != nil {
 		return 0, err
@@ -80,8 +88,10 @@ func BootTime() (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
+	t = uint64(boottime)
+	atomic.StoreUint64(&cachedBootTime, t)
 
-	return boottime, nil
+	return t, nil
 }
 
 func uptime(boot uint64) uint64 {
@@ -108,6 +118,7 @@ func Users() ([]UserStat, error) {
 	if err != nil {
 		return ret, err
 	}
+	defer file.Close()
 
 	buf, err := ioutil.ReadAll(file)
 	if err != nil {
@@ -163,10 +174,7 @@ func PlatformInformation() (string, string, string, error) {
 }
 
 func Virtualization() (string, string, error) {
-	system := ""
-	role := ""
-
-	return system, role, nil
+	return "", "", common.ErrNotImplementedError
 }
 
 // before 9.0
@@ -176,6 +184,8 @@ func getUsersFromUtmp(utmpfile string) ([]UserStat, error) {
 	if err != nil {
 		return ret, err
 	}
+	defer file.Close()
+
 	buf, err := ioutil.ReadAll(file)
 	if err != nil {
 		return ret, err
@@ -204,4 +214,13 @@ func getUsersFromUtmp(utmpfile string) ([]UserStat, error) {
 	}
 
 	return ret, nil
+}
+
+func SensorsTemperatures() ([]TemperatureStat, error) {
+	return []TemperatureStat{}, common.ErrNotImplementedError
+}
+
+func KernelVersion() (string, error) {
+	_, _, version, err := PlatformInformation()
+	return version, err
 }
