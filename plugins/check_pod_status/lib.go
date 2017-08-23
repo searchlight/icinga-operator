@@ -54,6 +54,7 @@ func CheckPodStatus(req *Request) (icinga.State, interface{}) {
 	return icinga.OK, pod.Status.Phase
 }
 
+// ref: https://github.com/coreos/prometheus-operator/blob/c79166fcff3dae7bb8bc1e6bddc81837c2d97c04/pkg/k8sutil/k8sutil.go#L64
 // PodRunningAndReady returns whether a pod is running and each container has
 // passed it's ready state.
 func PodRunningAndReady(pod apiv1.Pod) (bool, error) {
