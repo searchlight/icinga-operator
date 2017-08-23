@@ -20,9 +20,9 @@ hyperalert notifier [flags]
   -h, --help             help for notifier
   -H, --host string      Icinga host name
       --output string    Service output
-      --state string     Service state
+      --state string     Service state (OK | WARNING | CRITICAL)
       --time string      Event time
-      --type string      Notification type
+      --type string      Notification type (PROBLEM | ACKNOWLEDGEMENT | RECOVERY)
 ```
 
 ### Options inherited from parent commands
