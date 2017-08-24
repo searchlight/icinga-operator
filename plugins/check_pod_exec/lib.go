@@ -11,10 +11,10 @@ import (
 	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	remotecommandserver "k8s.io/apimachinery/pkg/util/remotecommand"
 	clientset "k8s.io/client-go/kubernetes"
-	"k8s.io/kubernetes/pkg/client/unversioned/remotecommand"
-	remotecommandserver "k8s.io/kubernetes/pkg/kubelet/server/remotecommand"
-	utilexec "k8s.io/kubernetes/pkg/util/exec"
+	"k8s.io/client-go/tools/remotecommand"
+	utilexec "k8s.io/client-go/util/exec"
 )
 
 type Writer struct {
