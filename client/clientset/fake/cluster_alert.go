@@ -15,6 +15,7 @@ type FakeClusterAlert struct {
 }
 
 var resourceClusterAlert = tapi.V1alpha1SchemeGroupVersion.WithResource(tapi.ResourceTypeClusterAlert)
+var kindClusterAlert = tapi.V1alpha1SchemeGroupVersion.WithKind(tapi.ResourceKindClusterAlert)
 
 // Get returns the ClusterAlert by name.
 func (mock *FakeClusterAlert) Get(name string) (*tapi.ClusterAlert, error) {
@@ -30,7 +31,7 @@ func (mock *FakeClusterAlert) Get(name string) (*tapi.ClusterAlert, error) {
 // List returns the a of ClusterAlerts.
 func (mock *FakeClusterAlert) List(opts metav1.ListOptions) (*tapi.ClusterAlertList, error) {
 	obj, err := mock.Fake.
-		Invokes(testing.NewListAction(resourceClusterAlert, mock.ns, opts), &tapi.ClusterAlert{})
+		Invokes(testing.NewListAction(resourceClusterAlert, kindClusterAlert, mock.ns, opts), &tapi.ClusterAlert{})
 
 	if obj == nil {
 		return nil, err

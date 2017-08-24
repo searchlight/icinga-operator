@@ -15,6 +15,7 @@ type FakeNodeAlert struct {
 }
 
 var resourceNodeAlert = tapi.V1alpha1SchemeGroupVersion.WithResource(tapi.ResourceTypeNodeAlert)
+var kindNodeAlert = tapi.V1alpha1SchemeGroupVersion.WithKind(tapi.ResourceKindNodeAlert)
 
 // Get returns the NodeAlert by name.
 func (mock *FakeNodeAlert) Get(name string) (*tapi.NodeAlert, error) {
@@ -30,7 +31,7 @@ func (mock *FakeNodeAlert) Get(name string) (*tapi.NodeAlert, error) {
 // List returns the a of NodeAlerts.
 func (mock *FakeNodeAlert) List(opts metav1.ListOptions) (*tapi.NodeAlertList, error) {
 	obj, err := mock.Fake.
-		Invokes(testing.NewListAction(resourceNodeAlert, mock.ns, opts), &tapi.NodeAlert{})
+		Invokes(testing.NewListAction(resourceNodeAlert, kindNodeAlert, mock.ns, opts), &tapi.NodeAlert{})
 
 	if obj == nil {
 		return nil, err

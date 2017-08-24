@@ -15,6 +15,7 @@ type FakePodAlert struct {
 }
 
 var resourcePodAlert = tapi.V1alpha1SchemeGroupVersion.WithResource(tapi.ResourceTypePodAlert)
+var kindPodAlert = tapi.V1alpha1SchemeGroupVersion.WithKind(tapi.ResourceKindPodAlert)
 
 // Get returns the PodAlert by name.
 func (mock *FakePodAlert) Get(name string) (*tapi.PodAlert, error) {
@@ -30,7 +31,7 @@ func (mock *FakePodAlert) Get(name string) (*tapi.PodAlert, error) {
 // List returns the a of PodAlerts.
 func (mock *FakePodAlert) List(opts metav1.ListOptions) (*tapi.PodAlertList, error) {
 	obj, err := mock.Fake.
-		Invokes(testing.NewListAction(resourcePodAlert, mock.ns, opts), &tapi.PodAlert{})
+		Invokes(testing.NewListAction(resourcePodAlert, kindPodAlert, mock.ns, opts), &tapi.PodAlert{})
 
 	if obj == nil {
 		return nil, err
