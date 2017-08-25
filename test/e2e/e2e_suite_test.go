@@ -16,6 +16,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/reporters"
 	. "github.com/onsi/gomega"
+	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
@@ -54,6 +55,7 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	// Clients
 	kubeClient := clientset.NewForConfigOrDie(config)
+	apiExtKubeClient := apiextensionsclient.NewForConfigOrDie(config)
 	extClient := tcs.NewForConfigOrDie(config)
 	// Framework
 	root = framework.New(kubeClient, extClient, nil, provider, storageClass)
@@ -102,7 +104,7 @@ var _ = BeforeSuite(func() {
 	fmt.Println()
 
 	// Controller
-	op = operator.New(kubeClient, extClient, icingaClient, operator.Options{})
+	op = operator.New(kubeClient, apiExtKubeClient, extClient, icingaClient, operator.Options{})
 	err = op.Setup()
 	Expect(err).NotTo(HaveOccurred())
 	op.Run()
