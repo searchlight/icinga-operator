@@ -12,10 +12,11 @@ import (
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	extensionsobj "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
-	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 	"k8s.io/client-go/tools/record"
 )
 
@@ -32,9 +33,10 @@ type Options struct {
 }
 
 type Operator struct {
-	KubeClient   clientset.Interface
-	ExtClient    tcs.ExtensionInterface
-	IcingaClient *icinga.Client // TODO: init
+	KubeClient       clientset.Interface
+	ApiExtKubeClient apiextensionsclient.Interface
+	ExtClient        tcs.ExtensionInterface
+	IcingaClient     *icinga.Client // TODO: init
 
 	Opt         Options
 	clusterHost *icinga.ClusterHost
@@ -44,61 +46,62 @@ type Operator struct {
 	SyncPeriod  time.Duration
 }
 
-func New(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, icingaClient *icinga.Client, opt Options) *Operator {
+func New(kubeClient clientset.Interface, apiExtKubeClient apiextensionsclient.Interface, extClient tcs.ExtensionInterface, icingaClient *icinga.Client, opt Options) *Operator {
 	return &Operator{
-		KubeClient:   kubeClient,
-		ExtClient:    extClient,
-		IcingaClient: icingaClient,
-		Opt:          opt,
-		clusterHost:  icinga.NewClusterHost(kubeClient, extClient, icingaClient),
-		nodeHost:     icinga.NewNodeHost(kubeClient, extClient, icingaClient),
-		podHost:      icinga.NewPodHost(kubeClient, extClient, icingaClient),
-		recorder:     eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
-		SyncPeriod:   5 * time.Minute,
+		KubeClient:       kubeClient,
+		ApiExtKubeClient: apiExtKubeClient,
+		ExtClient:        extClient,
+		IcingaClient:     icingaClient,
+		Opt:              opt,
+		clusterHost:      icinga.NewClusterHost(kubeClient, extClient, icingaClient),
+		nodeHost:         icinga.NewNodeHost(kubeClient, extClient, icingaClient),
+		podHost:          icinga.NewPodHost(kubeClient, extClient, icingaClient),
+		recorder:         eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
+		SyncPeriod:       5 * time.Minute,
 	}
 }
 
 func (op *Operator) Setup() error {
-	log.Infoln("Ensuring ThirdPartyResource")
+	log.Infoln("Ensuring CustomResourceDefinition")
 
-	if err := op.ensureThirdPartyResource(tapi.ResourceNamePodAlert + "." + tapi.V1alpha1SchemeGroupVersion.Group); err != nil {
+	if err := op.ensureCustomResourceDefinition(tapi.ResourceKindClusterAlert, tapi.ResourceTypeClusterAlert); err != nil {
 		return err
 	}
-	if err := op.ensureThirdPartyResource(tapi.ResourceNameNodeAlert + "." + tapi.V1alpha1SchemeGroupVersion.Group); err != nil {
+	if err := op.ensureCustomResourceDefinition(tapi.ResourceKindNodeAlert, tapi.ResourceTypeNodeAlert); err != nil {
 		return err
 	}
-	if err := op.ensureThirdPartyResource(tapi.ResourceNameClusterAlert + "." + tapi.V1alpha1SchemeGroupVersion.Group); err != nil {
+	if err := op.ensureCustomResourceDefinition(tapi.ResourceKindPodAlert, tapi.ResourceTypePodAlert); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (op *Operator) ensureThirdPartyResource(resourceName string) error {
-	_, err := op.KubeClient.ExtensionsV1beta1().ThirdPartyResources().Get(resourceName, metav1.GetOptions{})
+func (op *Operator) ensureCustomResourceDefinition(resourceKind, resourceType string) error {
+	name := resourceType + "." + tapi.V1alpha1SchemeGroupVersion.Group
+	_, err := op.ApiExtKubeClient.ApiextensionsV1beta1().CustomResourceDefinitions().Get(name, metav1.GetOptions{})
 	if !kerr.IsNotFound(err) {
 		return err
 	}
 
-	thirdPartyResource := &extensions.ThirdPartyResource{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "extensions/v1beta1",
-			Kind:       "ThirdPartyResource",
-		},
+	crd := &extensionsobj.CustomResourceDefinition{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: resourceName,
+			Name: name,
 			Labels: map[string]string{
 				"app": "searchlight",
 			},
 		},
-		Description: "Searchlight by AppsCode - Alerts for Kubernetes",
-		Versions: []extensions.APIVersion{
-			{
-				Name: tapi.V1alpha1SchemeGroupVersion.Version,
+		Spec: extensionsobj.CustomResourceDefinitionSpec{
+			Group:   tapi.V1alpha1SchemeGroupVersion.Group,
+			Version: tapi.V1alpha1SchemeGroupVersion.Version,
+			Scope:   extensionsobj.NamespaceScoped,
+			Names: extensionsobj.CustomResourceDefinitionNames{
+				Plural: resourceType,
+				Kind:   resourceKind,
 			},
 		},
 	}
 
-	_, err = op.KubeClient.ExtensionsV1beta1().ThirdPartyResources().Create(thirdPartyResource)
+	_, err = op.ApiExtKubeClient.ApiextensionsV1beta1().CustomResourceDefinitions().Create(crd)
 	return err
 }
 

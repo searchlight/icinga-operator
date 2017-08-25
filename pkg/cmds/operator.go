@@ -10,9 +10,11 @@ import (
 	_ "github.com/appscode/searchlight/client/clientset/fake"
 	"github.com/appscode/searchlight/pkg/analytics"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/pkg/migrator"
 	"github.com/appscode/searchlight/pkg/operator"
 	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
+	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -61,6 +63,7 @@ func run(opt operator.Options) {
 	}
 
 	kubeClient := clientset.NewForConfigOrDie(config)
+	apiExtKubeClient := apiextensionsclient.NewForConfigOrDie(config)
 	extClient := tcs.NewForConfigOrDie(config)
 
 	secret, err := kubeClient.CoreV1().Secrets(util.OperatorNamespace()).Get(opt.ConfigSecretName, metav1.GetOptions{})
@@ -92,8 +95,12 @@ func run(opt operator.Options) {
 		time.Sleep(2 * time.Second)
 	}
 
-	op := operator.New(kubeClient, extClient, icingaClient, opt)
+	op := operator.New(kubeClient, apiExtKubeClient, extClient, icingaClient, opt)
 	if err := op.Setup(); err != nil {
+		log.Fatalln(err)
+	}
+
+	if err = migrator.NewMigrator(kubeClient, apiExtKubeClient, extClient).RunMigration(); err != nil {
 		log.Fatalln(err)
 	}
 
