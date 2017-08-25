@@ -58,7 +58,7 @@ var _ = BeforeSuite(func() {
 	apiExtKubeClient := apiextensionsclient.NewForConfigOrDie(config)
 	extClient := tcs.NewForConfigOrDie(config)
 	// Framework
-	root = framework.New(kubeClient, extClient, nil, provider, storageClass)
+	root = framework.New(kubeClient, apiExtKubeClient, extClient, nil, provider, storageClass)
 
 	e2e.PrintSeparately("Using namespace " + root.Namespace())
 

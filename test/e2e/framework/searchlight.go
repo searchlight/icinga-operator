@@ -57,9 +57,9 @@ func (f *Invocation) ServiceSearchlight() *apiv1.Service {
 			Type: apiv1.ServiceTypeLoadBalancer,
 			Ports: []apiv1.ServicePort{
 				{
-					Name:       "api",
+					Name:       "icinga",
 					Port:       5665,
-					TargetPort: intstr.Parse("api"),
+					TargetPort: intstr.Parse("icinga"),
 				},
 				{
 					Name:       "ui",
@@ -87,7 +87,7 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 					Ports: []apiv1.ContainerPort{
 						{
 							ContainerPort: 5665,
-							Name:          "api",
+							Name:          "icinga",
 						},
 						{
 							ContainerPort: 60006,
