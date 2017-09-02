@@ -8,7 +8,6 @@ import (
 	_ "github.com/appscode/searchlight/api/install"
 	tcs "github.com/appscode/searchlight/client/clientset"
 	_ "github.com/appscode/searchlight/client/clientset/fake"
-	"github.com/appscode/searchlight/pkg/analytics"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/migrator"
 	"github.com/appscode/searchlight/pkg/operator"
@@ -20,26 +19,16 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-func NewCmdOperator(version string) *cobra.Command {
+func NewCmdOperator() *cobra.Command {
 	opt := operator.Options{
 		ConfigRoot:       "/srv",
 		ConfigSecretName: "searchlight-operator",
 		APIAddress:       ":8080",
 		WebAddress:       ":56790",
-		EnableAnalytics:  true,
 	}
 	cmd := &cobra.Command{
 		Use:   "run",
 		Short: "Run operator",
-		PreRun: func(cmd *cobra.Command, args []string) {
-			if opt.EnableAnalytics {
-				analytics.Enable()
-			}
-			analytics.SendEvent("operator", "started", version)
-		},
-		PostRun: func(cmd *cobra.Command, args []string) {
-			analytics.SendEvent("operator", "stopped", version)
-		},
 		Run: func(cmd *cobra.Command, args []string) {
 			run(opt)
 		},
@@ -51,7 +40,6 @@ func NewCmdOperator(version string) *cobra.Command {
 	cmd.Flags().StringVar(&opt.ConfigSecretName, "config-secret-name", opt.ConfigSecretName, "Name of Kubernetes secret used to pass icinga credentials.")
 	cmd.Flags().StringVar(&opt.APIAddress, "api.address", opt.APIAddress, "The address of the Searchlight API Server")
 	cmd.Flags().StringVar(&opt.WebAddress, "web.address", opt.WebAddress, "Address to listen on for web interface and telemetry.")
-	cmd.Flags().BoolVar(&opt.EnableAnalytics, "analytics", opt.EnableAnalytics, "Send analytical event to Google Analytics")
 
 	return cmd
 }

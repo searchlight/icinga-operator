@@ -28,8 +28,6 @@ type Options struct {
 	ConfigSecretName string
 	APIAddress       string
 	WebAddress       string
-
-	EnableAnalytics bool
 }
 
 type Operator struct {
