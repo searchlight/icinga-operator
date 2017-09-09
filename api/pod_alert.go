@@ -3,8 +3,6 @@ package api
 import (
 	"fmt"
 	"time"
-
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
@@ -12,59 +10,6 @@ const (
 	ResourceNamePodAlert = "pod-alert"
 	ResourceTypePodAlert = "podalerts"
 )
-
-// PodAlert types for appscode.
-type PodAlert struct {
-	metav1.TypeMeta `json:",inline"`
-	// Standard object's metadata.
-	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#metadata
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-
-	// Spec is the desired state of the PodAlert.
-	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#spec-and-status
-	Spec PodAlertSpec `json:"spec,omitempty"`
-
-	// Status is the current state of the PodAlert.
-	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#spec-and-status
-	// Status AlertStatus `json:"status,omitempty"`
-}
-
-// PodAlertList is a collection of PodAlert.
-type PodAlertList struct {
-	metav1.TypeMeta `json:",inline"`
-	// Standard object's metadata.
-	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#metadata
-	metav1.ListMeta `json:"metadata,omitempty"`
-
-	// Items is the list of PodAlert.
-	Items []PodAlert `json:"items"`
-}
-
-// PodAlertSpec describes the PodAlert the user wishes to create.
-type PodAlertSpec struct {
-	Selector metav1.LabelSelector `json:"selector,omitempty"`
-
-	PodName string `json:"podName,omitempty"`
-
-	// Icinga CheckCommand name
-	Check CheckPod `json:"check,omitempty"`
-
-	// How frequently Icinga Service will be checked
-	CheckInterval metav1.Duration `json:"checkInterval,omitempty"`
-
-	// How frequently notifications will be send
-	AlertInterval metav1.Duration `json:"alertInterval,omitempty"`
-
-	// Secret containing notifier credentials
-	NotifierSecretName string `json:"notifierSecretName,omitempty"`
-
-	// NotifierParams contains information to send notifications for Incident
-	// State, UserUid, Method
-	Receivers []Receiver `json:"receivers,omitempty"`
-
-	// Vars contains Icinga Service variables to be used in CheckCommand
-	Vars map[string]interface{} `json:"vars,omitempty"`
-}
 
 var _ Alert = &PodAlert{}
 
