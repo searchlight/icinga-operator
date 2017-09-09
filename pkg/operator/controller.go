@@ -7,8 +7,9 @@ import (
 
 	"github.com/appscode/log"
 	"github.com/appscode/pat"
-	tapi "github.com/appscode/searchlight/api"
-	tcs "github.com/appscode/searchlight/client/clientset"
+	tapi "github.com/appscode/searchlight/apis/monitoring"
+	tapi_v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	tcs "github.com/appscode/searchlight/client/internalclientset/typed/monitoring/internalversion"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -34,7 +35,7 @@ type Options struct {
 type Operator struct {
 	KubeClient       clientset.Interface
 	ApiExtKubeClient apiextensionsclient.Interface
-	ExtClient        tcs.ExtensionInterface
+	ExtClient        tcs.MonitoringInterface
 	IcingaClient     *icinga.Client // TODO: init
 
 	Opt         Options
@@ -44,7 +45,7 @@ type Operator struct {
 	recorder    record.EventRecorder
 }
 
-func New(kubeClient clientset.Interface, apiExtKubeClient apiextensionsclient.Interface, extClient tcs.ExtensionInterface, icingaClient *icinga.Client, opt Options) *Operator {
+func New(kubeClient clientset.Interface, apiExtKubeClient apiextensionsclient.Interface, extClient tcs.MonitoringInterface, icingaClient *icinga.Client, opt Options) *Operator {
 	return &Operator{
 		KubeClient:       kubeClient,
 		ApiExtKubeClient: apiExtKubeClient,
@@ -74,7 +75,7 @@ func (op *Operator) Setup() error {
 }
 
 func (op *Operator) ensureCustomResourceDefinition(resourceKind, resourceType string) error {
-	name := resourceType + "." + tapi.V1alpha1SchemeGroupVersion.Group
+	name := resourceType + "." + tapi_v1alpha1.SchemeGroupVersion.Group
 	_, err := op.ApiExtKubeClient.ApiextensionsV1beta1().CustomResourceDefinitions().Get(name, metav1.GetOptions{})
 	if !kerr.IsNotFound(err) {
 		return err
@@ -88,8 +89,8 @@ func (op *Operator) ensureCustomResourceDefinition(resourceKind, resourceType st
 			},
 		},
 		Spec: extensionsobj.CustomResourceDefinitionSpec{
-			Group:   tapi.V1alpha1SchemeGroupVersion.Group,
-			Version: tapi.V1alpha1SchemeGroupVersion.Version,
+			Group:   tapi_v1alpha1.SchemeGroupVersion.Group,
+			Version: tapi_v1alpha1.SchemeGroupVersion.Version,
 			Scope:   extensionsobj.NamespaceScoped,
 			Names: extensionsobj.CustomResourceDefinitionNames{
 				Plural: resourceType,

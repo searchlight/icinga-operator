@@ -2,7 +2,7 @@ package framework
 
 import (
 	"github.com/appscode/go/crypto/rand"
-	tcs "github.com/appscode/searchlight/client/clientset"
+	tcs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	clientset "k8s.io/client-go/kubernetes"
@@ -11,7 +11,7 @@ import (
 type Framework struct {
 	kubeClient       clientset.Interface
 	apiExtKubeClient apiextensionsclient.Interface
-	extClient        tcs.ExtensionInterface
+	extClient        tcs.MonitoringV1alpha1Interface
 	icingaClient     *icinga.Client
 	namespace        string
 	name             string
@@ -19,7 +19,7 @@ type Framework struct {
 	storageClass     string
 }
 
-func New(kubeClient clientset.Interface, apiExtKubeClient apiextensionsclient.Interface, extClient tcs.ExtensionInterface, icingaClient *icinga.Client, provider, storageClass string) *Framework {
+func New(kubeClient clientset.Interface, apiExtKubeClient apiextensionsclient.Interface, extClient tcs.MonitoringV1alpha1Interface, icingaClient *icinga.Client, provider, storageClass string) *Framework {
 	return &Framework{
 		kubeClient:       kubeClient,
 		apiExtKubeClient: apiExtKubeClient,

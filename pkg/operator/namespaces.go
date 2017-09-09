@@ -31,17 +31,17 @@ func (op *Operator) WatchNamespaces() {
 				if ns, ok := obj.(*apiv1.Namespace); ok {
 					if alerts, err := op.ExtClient.ClusterAlerts(ns.Name).List(metav1.ListOptions{}); err == nil {
 						for _, alert := range alerts.Items {
-							op.ExtClient.ClusterAlerts(alert.Namespace).Delete(alert.Name)
+							op.ExtClient.ClusterAlerts(alert.Namespace).Delete(alert.Name, &metav1.DeleteOptions{})
 						}
 					}
 					if alerts, err := op.ExtClient.NodeAlerts(ns.Name).List(metav1.ListOptions{}); err == nil {
 						for _, alert := range alerts.Items {
-							op.ExtClient.NodeAlerts(alert.Namespace).Delete(alert.Name)
+							op.ExtClient.NodeAlerts(alert.Namespace).Delete(alert.Name, &metav1.DeleteOptions{})
 						}
 					}
 					if alerts, err := op.ExtClient.PodAlerts(ns.Name).List(metav1.ListOptions{}); err == nil {
 						for _, alert := range alerts.Items {
-							op.ExtClient.PodAlerts(alert.Namespace).Delete(alert.Name)
+							op.ExtClient.PodAlerts(alert.Namespace).Delete(alert.Name, &metav1.DeleteOptions{})
 						}
 					}
 				}

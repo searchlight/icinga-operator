@@ -5,9 +5,7 @@ import (
 	"time"
 
 	"github.com/appscode/log"
-	_ "github.com/appscode/searchlight/api/install"
-	tcs "github.com/appscode/searchlight/client/clientset"
-	_ "github.com/appscode/searchlight/client/clientset/fake"
+	tcs "github.com/appscode/searchlight/client/internalclientset/typed/monitoring/internalversion"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/migrator"
 	"github.com/appscode/searchlight/pkg/operator"

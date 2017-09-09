@@ -14,15 +14,17 @@ hyperalert notifier [flags]
 ### Options
 
 ```
-  -A, --alert string     Kubernetes alert object name
-  -a, --author string    Event author name
-  -c, --comment string   Event comment
-  -h, --help             help for notifier
-  -H, --host string      Icinga host name
-      --output string    Service output
-      --state string     Service state (OK | WARNING | CRITICAL)
-      --time string      Event time
-      --type string      Notification type (PROBLEM | ACKNOWLEDGEMENT | RECOVERY)
+  -A, --alert string        Kubernetes alert object name
+  -a, --author string       Event author name
+  -c, --comment string      Event comment
+  -h, --help                help for notifier
+  -H, --host string         Icinga host name
+      --kubeconfig string   Path to kubeconfig file with authorization information (the master location is set by the master flag).
+      --master string       The address of the Kubernetes API server (overrides any value in kubeconfig)
+      --output string       Service output
+      --state string        Service state (OK | WARNING | CRITICAL)
+      --time string         Event time
+      --type string         Notification type (PROBLEM | ACKNOWLEDGEMENT | RECOVERY)
 ```
 
 ### Options inherited from parent commands

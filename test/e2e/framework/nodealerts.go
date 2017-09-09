@@ -6,7 +6,7 @@ import (
 
 	"github.com/appscode/go/crypto/rand"
 	log "github.com/appscode/log"
-	tapi "github.com/appscode/searchlight/api"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/gomega"
@@ -36,13 +36,13 @@ func (f *Framework) CreateNodeAlert(obj *tapi.NodeAlert) error {
 }
 
 func (f *Framework) GetNodeAlert(meta metav1.ObjectMeta) (*tapi.NodeAlert, error) {
-	return f.extClient.NodeAlerts(meta.Namespace).Get(meta.Name)
+	return f.extClient.NodeAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
 }
 
 func (f *Framework) UpdateNodeAlert(meta metav1.ObjectMeta, transformer func(tapi.NodeAlert) tapi.NodeAlert) (*tapi.NodeAlert, error) {
 	attempt := 0
 	for ; attempt < maxAttempts; attempt = attempt + 1 {
-		cur, err := f.extClient.NodeAlerts(meta.Namespace).Get(meta.Name)
+		cur, err := f.extClient.NodeAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
 		if err != nil {
 			return nil, err
 		}
@@ -61,7 +61,7 @@ func (f *Framework) UpdateNodeAlert(meta metav1.ObjectMeta, transformer func(tap
 }
 
 func (f *Framework) DeleteNodeAlert(meta metav1.ObjectMeta) error {
-	return f.extClient.NodeAlerts(meta.Namespace).Delete(meta.Name)
+	return f.extClient.NodeAlerts(meta.Namespace).Delete(meta.Name, &metav1.DeleteOptions{})
 }
 
 func (f *Framework) getNodeAlertObjects(meta metav1.ObjectMeta, nodeAlertSpec tapi.NodeAlertSpec) ([]icinga.IcingaHost, error) {

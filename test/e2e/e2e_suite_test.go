@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	tcs "github.com/appscode/searchlight/client/clientset"
+	tcs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/operator"
 	"github.com/appscode/searchlight/test/e2e"

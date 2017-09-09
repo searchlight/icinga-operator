@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	aci "github.com/appscode/searchlight/api"
+	aci "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )

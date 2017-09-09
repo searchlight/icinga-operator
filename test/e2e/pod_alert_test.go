@@ -5,7 +5,7 @@ import (
 
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/go/types"
-	tapi "github.com/appscode/searchlight/api"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/test/e2e/framework"
 	. "github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/ginkgo"

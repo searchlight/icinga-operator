@@ -6,8 +6,9 @@ import (
 	"time"
 
 	"github.com/appscode/log"
-	tapi "github.com/appscode/searchlight/api"
-	tcs "github.com/appscode/searchlight/client/clientset"
+	tapi "github.com/appscode/searchlight/apis/monitoring"
+	tapi_v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	tcs "github.com/appscode/searchlight/client/internalclientset/typed/monitoring/internalversion"
 	"github.com/hashicorp/go-version"
 	extensionsobj "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
@@ -27,12 +28,12 @@ type migrationState struct {
 type migrator struct {
 	kubeClient       clientset.Interface
 	apiExtKubeClient apiextensionsclient.Interface
-	extClient        tcs.ExtensionInterface
+	extClient        tcs.MonitoringInterface
 
 	migrationState *migrationState
 }
 
-func NewMigrator(kubeClient clientset.Interface, apiExtKubeClient apiextensionsclient.Interface, extClient tcs.ExtensionInterface) *migrator {
+func NewMigrator(kubeClient clientset.Interface, apiExtKubeClient apiextensionsclient.Interface, extClient tcs.MonitoringInterface) *migrator {
 	return &migrator{
 		migrationState:   &migrationState{},
 		kubeClient:       kubeClient,
@@ -56,7 +57,7 @@ func (m *migrator) isMigrationNeeded() (bool, error) {
 
 	if mv == 7 {
 		_, err := m.kubeClient.ExtensionsV1beta1().ThirdPartyResources().Get(
-			tapi.ResourceNameClusterAlert+"."+tapi.V1alpha1SchemeGroupVersion.Group,
+			tapi.ResourceNameClusterAlert+"."+tapi_v1alpha1.SchemeGroupVersion.Group,
 			metav1.GetOptions{},
 		)
 		if err != nil {
@@ -68,7 +69,7 @@ func (m *migrator) isMigrationNeeded() (bool, error) {
 		}
 
 		_, err = m.kubeClient.ExtensionsV1beta1().ThirdPartyResources().Get(
-			tapi.ResourceNameNodeAlert+"."+tapi.V1alpha1SchemeGroupVersion.Group,
+			tapi.ResourceNameNodeAlert+"."+tapi_v1alpha1.SchemeGroupVersion.Group,
 			metav1.GetOptions{},
 		)
 		if err != nil {
@@ -80,7 +81,7 @@ func (m *migrator) isMigrationNeeded() (bool, error) {
 		}
 
 		_, err = m.kubeClient.ExtensionsV1beta1().ThirdPartyResources().Get(
-			tapi.ResourceNamePodAlert+"."+tapi.V1alpha1SchemeGroupVersion.Group,
+			tapi.ResourceNamePodAlert+"."+tapi_v1alpha1.SchemeGroupVersion.Group,
 			metav1.GetOptions{},
 		)
 		if err != nil {
@@ -139,7 +140,7 @@ func (m *migrator) deleteTPRs() error {
 	tprClient := m.kubeClient.ExtensionsV1beta1().ThirdPartyResources()
 
 	deleteTPR := func(resourceName string) error {
-		name := resourceName + "." + tapi.V1alpha1SchemeGroupVersion.Group
+		name := resourceName + "." + tapi_v1alpha1.SchemeGroupVersion.Group
 		if err := tprClient.Delete(name, &metav1.DeleteOptions{}); err != nil {
 			return fmt.Errorf("failed to remove %s TPR", name)
 		}
@@ -174,14 +175,14 @@ func (m *migrator) createCRDs() error {
 func (m *migrator) createCRD(resourceKind, resourceType string) error {
 	crd := &extensionsobj.CustomResourceDefinition{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: resourceType + "." + tapi.V1alpha1SchemeGroupVersion.Group,
+			Name: resourceType + "." + tapi_v1alpha1.SchemeGroupVersion.Group,
 			Labels: map[string]string{
 				"app": "searchlight",
 			},
 		},
 		Spec: extensionsobj.CustomResourceDefinitionSpec{
-			Group:   tapi.V1alpha1SchemeGroupVersion.Group,
-			Version: tapi.V1alpha1SchemeGroupVersion.Version,
+			Group:   tapi_v1alpha1.SchemeGroupVersion.Group,
+			Version: tapi_v1alpha1.SchemeGroupVersion.Version,
 			Scope:   extensionsobj.NamespaceScoped,
 			Names: extensionsobj.CustomResourceDefinitionNames{
 				Plural: resourceType,
@@ -273,7 +274,7 @@ func (m *migrator) deleteCRDs() error {
 	crdClient := m.apiExtKubeClient.ApiextensionsV1beta1().CustomResourceDefinitions()
 
 	deleteCRD := func(resourceType string) error {
-		name := resourceType + "." + tapi.V1alpha1SchemeGroupVersion.Group
+		name := resourceType + "." + tapi_v1alpha1.SchemeGroupVersion.Group
 		err := crdClient.Delete(name, &metav1.DeleteOptions{})
 		if err != nil {
 			return fmt.Errorf(`Failed to delete CRD "%s""`, name)
@@ -307,7 +308,7 @@ func (m *migrator) createTPRs() error {
 }
 
 func (m *migrator) createTPR(resourceName string) error {
-	name := resourceName + "." + tapi.V1alpha1SchemeGroupVersion.Group
+	name := resourceName + "." + tapi_v1alpha1.SchemeGroupVersion.Group
 	_, err := m.kubeClient.ExtensionsV1beta1().ThirdPartyResources().Get(name, metav1.GetOptions{})
 	if !kerr.IsNotFound(err) {
 		return err
@@ -327,7 +328,7 @@ func (m *migrator) createTPR(resourceName string) error {
 		Description: "Searchlight by AppsCode - Alerts for Kubernetes",
 		Versions: []extensions.APIVersion{
 			{
-				Name: tapi.V1alpha1SchemeGroupVersion.Version,
+				Name: tapi_v1alpha1.SchemeGroupVersion.Version,
 			},
 		},
 	}

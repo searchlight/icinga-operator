@@ -6,7 +6,7 @@ import (
 
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/log"
-	tapi "github.com/appscode/searchlight/api"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/gomega"
@@ -35,13 +35,13 @@ func (f *Framework) CreatePodAlert(obj *tapi.PodAlert) error {
 }
 
 func (f *Framework) GetPodAlert(meta metav1.ObjectMeta) (*tapi.PodAlert, error) {
-	return f.extClient.PodAlerts(meta.Namespace).Get(meta.Name)
+	return f.extClient.PodAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
 }
 
 func (f *Framework) UpdatePodAlert(meta metav1.ObjectMeta, transformer func(tapi.PodAlert) tapi.PodAlert) (*tapi.PodAlert, error) {
 	attempt := 0
 	for ; attempt < maxAttempts; attempt = attempt + 1 {
-		cur, err := f.extClient.PodAlerts(meta.Namespace).Get(meta.Name)
+		cur, err := f.extClient.PodAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
 		if err != nil {
 			return nil, err
 		}
@@ -60,7 +60,7 @@ func (f *Framework) UpdatePodAlert(meta metav1.ObjectMeta, transformer func(tapi
 }
 
 func (f *Framework) DeletePodAlert(meta metav1.ObjectMeta) error {
-	return f.extClient.PodAlerts(meta.Namespace).Delete(meta.Name)
+	return f.extClient.PodAlerts(meta.Namespace).Delete(meta.Name, &metav1.DeleteOptions{})
 }
 
 func (f *Framework) getPodAlertObjects(meta metav1.ObjectMeta, podAlertSpec tapi.PodAlertSpec) ([]icinga.IcingaHost, error) {

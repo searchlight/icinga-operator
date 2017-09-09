@@ -5,13 +5,17 @@ import (
 	"fmt"
 
 	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 type Request struct {
+	masterURL      string
+	kubeconfigPath string
+
 	Selector      string
 	ComponentName string
 }
@@ -27,20 +31,21 @@ type serviceOutput struct {
 }
 
 func CheckComponentStatus(req *Request) (icinga.State, interface{}) {
-	kubeClient, err := util.NewClient()
+	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
+	kubeClient := kubernetes.NewForConfigOrDie(config)
 
 	var components []apiv1.ComponentStatus
 	if req.ComponentName != "" {
-		comp, err := kubeClient.Client.CoreV1().ComponentStatuses().Get(req.ComponentName, metav1.GetOptions{})
+		comp, err := kubeClient.CoreV1().ComponentStatuses().Get(req.ComponentName, metav1.GetOptions{})
 		if err != nil {
 			return icinga.UNKNOWN, err
 		}
 		components = []apiv1.ComponentStatus{*comp}
 	} else {
-		comps, err := kubeClient.Client.CoreV1().ComponentStatuses().List(metav1.ListOptions{
+		comps, err := kubeClient.CoreV1().ComponentStatuses().List(metav1.ListOptions{
 			LabelSelector: req.Selector,
 		})
 		if err != nil {
@@ -90,6 +95,10 @@ func NewCmd() *cobra.Command {
 			icinga.Output(CheckComponentStatus(&req))
 		},
 	}
+
+	cmd.Flags().StringVar(&req.masterURL, "master", req.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
+	cmd.Flags().StringVar(&req.kubeconfigPath, "kubeconfig", req.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
+
 	cmd.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
 	cmd.Flags().StringVarP(&req.ComponentName, "componentName", "n", "", "Name of component which should be ready")
 	return cmd

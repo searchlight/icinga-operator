@@ -8,11 +8,11 @@ import (
 
 	"github.com/appscode/go/flags"
 	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	remotecommandserver "k8s.io/apimachinery/pkg/util/remotecommand"
-	clientset "k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/remotecommand"
 	utilexec "k8s.io/client-go/util/exec"
 )
@@ -36,15 +36,11 @@ func newStringReader(ss []string) io.Reader {
 }
 
 func CheckKubeExec(req *Request) (icinga.State, interface{}) {
-	kubeConfig, err := util.GetKubeConfig()
+	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
-
-	kubeClient, err := clientset.NewForConfig(kubeConfig)
-	if err != nil {
-		return icinga.UNKNOWN, err
-	}
+	kubeClient := kubernetes.NewForConfigOrDie(config)
 
 	pod, err := kubeClient.CoreV1().Pods(req.Namespace).Get(req.Pod, metav1.GetOptions{})
 	if err != nil {
@@ -76,7 +72,7 @@ func CheckKubeExec(req *Request) (icinga.State, interface{}) {
 		Param("stderr", "false").
 		Param("tty", "false")
 
-	exec, err := remotecommand.NewExecutor(kubeConfig, "POST", execRequest.URL())
+	exec, err := remotecommand.NewExecutor(config, "POST", execRequest.URL())
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
@@ -113,6 +109,9 @@ func CheckKubeExec(req *Request) (icinga.State, interface{}) {
 }
 
 type Request struct {
+	masterURL      string
+	kubeconfigPath string
+
 	Pod       string
 	Container string
 	Namespace string
@@ -146,6 +145,8 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
+	c.Flags().StringVar(&req.masterURL, "master", req.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
+	c.Flags().StringVar(&req.kubeconfigPath, "kubeconfig", req.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
 	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	c.Flags().StringVarP(&req.Container, "container", "C", "", "Container name in specified pod")
 	c.Flags().StringVarP(&req.Command, "cmd", "c", "/bin/sh", "Exec command. [Default: /bin/sh]")

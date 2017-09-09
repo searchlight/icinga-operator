@@ -8,12 +8,13 @@ import (
 
 	"github.com/appscode/go/flags"
 	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/pkg/api"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 type eventInfo struct {
@@ -31,10 +32,11 @@ type serviceOutput struct {
 }
 
 func CheckKubeEvent(req *Request) (icinga.State, interface{}) {
-	kubeClient, err := util.NewClient()
+	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
+	kubeClient := kubernetes.NewForConfigOrDie(config)
 
 	checkTime := time.Now().Add(-(req.CheckInterval + req.ClockSkew))
 	eventInfoList := make([]*eventInfo, 0)
@@ -54,9 +56,9 @@ func CheckKubeEvent(req *Request) (icinga.State, interface{}) {
 	}
 	fs := fields.AndSelectors(
 		fields.OneTermEqualSelector(api.EventTypeField, apiv1.EventTypeWarning),
-		kubeClient.Client.CoreV1().Events(req.Namespace).GetFieldSelector(objName, objNamespace, objKind, objUID),
+		kubeClient.CoreV1().Events(req.Namespace).GetFieldSelector(objName, objNamespace, objKind, objUID),
 	)
-	eventList, err := kubeClient.Client.CoreV1().Events(req.Namespace).List(metav1.ListOptions{
+	eventList, err := kubeClient.CoreV1().Events(req.Namespace).List(metav1.ListOptions{
 		FieldSelector: fs.String(),
 	})
 	if err != nil {
@@ -94,6 +96,9 @@ func CheckKubeEvent(req *Request) (icinga.State, interface{}) {
 }
 
 type Request struct {
+	masterURL      string
+	kubeconfigPath string
+
 	Namespace     string
 	CheckInterval time.Duration
 	ClockSkew     time.Duration
@@ -130,6 +135,9 @@ func NewCmd() *cobra.Command {
 			icinga.Output(CheckKubeEvent(&req))
 		},
 	}
+
+	cmd.Flags().StringVar(&req.masterURL, "master", req.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
+	cmd.Flags().StringVar(&req.kubeconfigPath, "kubeconfig", req.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
 
 	cmd.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	cmd.Flags().DurationVarP(&req.CheckInterval, "checkInterval", "c", time.Second*0, "Icinga check_interval in duration. [Format: 30s, 5m]")

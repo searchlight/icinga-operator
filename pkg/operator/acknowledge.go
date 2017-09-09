@@ -8,7 +8,7 @@ import (
 
 	"github.com/appscode/go/runtime"
 	"github.com/appscode/pat"
-	tapi "github.com/appscode/searchlight/api"
+	tapi "github.com/appscode/searchlight/apis/monitoring"
 	"github.com/appscode/searchlight/pkg/icinga"
 )
 

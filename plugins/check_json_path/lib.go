@@ -13,13 +13,17 @@ import (
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/net/httpclient"
 	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 type Request struct {
+	masterURL      string
+	kubeconfigPath string
+
 	URL             string
 	SecretName      string
 	Namespace       string
@@ -47,11 +51,12 @@ func getData(req *Request) (string, error) {
 	var hc *httpclient.Client
 
 	if req.InClusterConfig {
-		kubeClient, err := util.NewClient()
+		config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 		if err != nil {
 			return "", err
 		}
-		cc := kubeClient.Client.CoreV1().RESTClient().(*rest.RESTClient)
+		kubeClient := kubernetes.NewForConfigOrDie(config)
+		cc := kubeClient.CoreV1().RESTClient().(*rest.RESTClient)
 		hc = httpclient.New(cc.Client, nil, nil)
 	} else {
 		hc = httpclient.Default().WithBaseURL(req.URL)
@@ -60,11 +65,12 @@ func getData(req *Request) (string, error) {
 		}
 
 		if req.SecretName != "" {
-			kubeClient, err := util.NewClient()
+			config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 			if err != nil {
 				return "", err
 			}
-			secret, err := kubeClient.Client.CoreV1().Secrets(req.Namespace).Get(req.SecretName, metav1.GetOptions{})
+			kubeClient := kubernetes.NewForConfigOrDie(config)
+			secret, err := kubeClient.CoreV1().Secrets(req.Namespace).Get(req.SecretName, metav1.GetOptions{})
 			if err != nil {
 				return "", err
 			}
@@ -189,6 +195,8 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
+	c.Flags().StringVar(&req.masterURL, "master", req.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
+	c.Flags().StringVar(&req.kubeconfigPath, "kubeconfig", req.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
 	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	c.Flags().StringVarP(&req.URL, "url", "u", "", "URL to get data")
 	c.Flags().StringVarP(&req.SecretName, "secretName", "s", "", `Kubernetes secret name`)

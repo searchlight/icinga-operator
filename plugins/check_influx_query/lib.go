@@ -11,12 +11,14 @@ import (
 	"github.com/Knetic/govaluate"
 	"github.com/appscode/go/flags"
 	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/pkg/influxdb"
 	"github.com/influxdata/influxdb/client"
 	"github.com/spf13/cobra"
 )
 
 type Request struct {
+	masterURL      string
+	kubeconfigPath string
+
 	Host          string
 	A, B, C, D, E string
 	R             string
@@ -31,7 +33,7 @@ func trunc(val float64) interface{} {
 	return float64(intData) / 1000.0
 }
 
-func getInfluxDBClient(authData *influxdb.AuthInfo) (*client.Client, error) {
+func getInfluxDBClient(authData *AuthInfo) (*client.Client, error) {
 	config := &client.Config{
 		URL: url.URL{
 			Scheme: "http",
@@ -138,7 +140,7 @@ func checkResult(checkQuery string, valueMap map[string]interface{}) (bool, erro
 }
 
 func CheckInfluxQuery(req *Request) (icinga.State, interface{}) {
-	authData, err := influxdb.GetInfluxDBSecretData(req.SecretName, req.Namespace)
+	authData, err := GetInfluxDBSecretData(req, req.SecretName, req.Namespace)
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
@@ -216,6 +218,9 @@ func NewCmd() *cobra.Command {
 			icinga.Output(CheckInfluxQuery(&req))
 		},
 	}
+
+	c.Flags().StringVar(&req.masterURL, "master", req.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
+	c.Flags().StringVar(&req.kubeconfigPath, "kubeconfig", req.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
 
 	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	c.Flags().StringVar(&req.Host, "influxHost", "", "URL of InfluxDB host to query")

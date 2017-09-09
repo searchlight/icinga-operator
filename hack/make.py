@@ -91,17 +91,17 @@ def version():
 
 
 def fmt():
-    libbuild.ungroup_go_imports('api', 'client', 'cmd', 'data', 'pkg', 'plugins', 'test')
-    die(call('goimports -w api client cmd data pkg plugins test'))
-    call('gofmt -s -w api client cmd data pkg plugins test')
+    libbuild.ungroup_go_imports('apis', 'client', 'cmd', 'data', 'pkg', 'plugins', 'test')
+    die(call('goimports -w apis client cmd data pkg plugins test'))
+    call('gofmt -s -w apis client cmd data pkg plugins test')
 
 
 def vet():
-    call('go vet ./api/... ./client/... ./cmd/... ./data/... ./pkg/... ./plugins/... ./test/...')
+    call('go vet ./apis/... ./client/... ./cmd/... ./data/... ./pkg/... ./plugins/... ./test/...')
 
 
 def lint():
-    call('golint ./api/...')
+    call('golint ./apis/...')
     call('golint ./client/...')
     call('golint ./cmd/...')
     call('golint ./data/...')
