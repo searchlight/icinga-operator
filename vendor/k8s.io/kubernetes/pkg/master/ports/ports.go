@@ -17,7 +17,7 @@ limitations under the License.
 package ports
 
 const (
-	// ProxyStatusPort is the default port for the proxy metrics server.
+	// ProxyPort is the default port for the proxy healthz server.
 	// May be overridden by a flag at startup.
 	ProxyStatusPort = 10249
 	// KubeletPort is the default port for the kubelet server on each host machine.
@@ -38,7 +38,4 @@ const (
 	// until heapster can transition to using the SSL endpoint.
 	// TODO(roberthbailey): Remove this once we have a better solution for heapster.
 	KubeletReadOnlyPort = 10255
-	// ProxyHealthzPort is the default port for the proxy healthz server.
-	// May be overridden by a flag at startup.
-	ProxyHealthzPort = 10256
 )
