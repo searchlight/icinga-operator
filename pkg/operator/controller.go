@@ -7,9 +7,9 @@ import (
 
 	"github.com/appscode/log"
 	"github.com/appscode/pat"
-	tapi "github.com/appscode/searchlight/apis/monitoring"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	tapi_v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	tcs "github.com/appscode/searchlight/client/internalclientset/typed/monitoring/internalversion"
+	tcs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -35,7 +35,7 @@ type Options struct {
 type Operator struct {
 	KubeClient       clientset.Interface
 	ApiExtKubeClient apiextensionsclient.Interface
-	ExtClient        tcs.MonitoringInterface
+	ExtClient        tcs.MonitoringV1alpha1Interface
 	IcingaClient     *icinga.Client // TODO: init
 
 	Opt         Options
@@ -45,7 +45,7 @@ type Operator struct {
 	recorder    record.EventRecorder
 }
 
-func New(kubeClient clientset.Interface, apiExtKubeClient apiextensionsclient.Interface, extClient tcs.MonitoringInterface, icingaClient *icinga.Client, opt Options) *Operator {
+func New(kubeClient clientset.Interface, apiExtKubeClient apiextensionsclient.Interface, extClient tcs.MonitoringV1alpha1Interface, icingaClient *icinga.Client, opt Options) *Operator {
 	return &Operator{
 		KubeClient:       kubeClient,
 		ApiExtKubeClient: apiExtKubeClient,

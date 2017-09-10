@@ -6,7 +6,7 @@ import (
 
 	acrt "github.com/appscode/go/runtime"
 	"github.com/appscode/log"
-	tapi "github.com/appscode/searchlight/apis/monitoring"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	tapi "github.com/appscode/searchlight/apis/monitoring"
-	tcs "github.com/appscode/searchlight/client/internalclientset/typed/monitoring/internalversion"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	tcs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -37,7 +37,7 @@ func (kh IcingaHost) Name() (string, error) {
 	return "", fmt.Errorf("Unknown host type %s", kh.Type)
 }
 
-func (kh IcingaHost) GetAlert(extClient tcs.MonitoringInterface, alertName string) (tapi.Alert, error) {
+func (kh IcingaHost) GetAlert(extClient tcs.MonitoringV1alpha1Interface, alertName string) (tapi.Alert, error) {
 	switch kh.Type {
 	case TypePod:
 		return extClient.PodAlerts(kh.AlertNamespace).Get(alertName, metav1.GetOptions{})
