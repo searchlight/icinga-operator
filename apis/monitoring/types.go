@@ -51,6 +51,8 @@ type ClusterAlertSpec struct {
 	Vars map[string]interface{} `json:"vars,omitempty"`
 }
 
+type CheckCluster string
+
 // +genclient=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
@@ -102,6 +104,8 @@ type NodeAlertSpec struct {
 	Vars map[string]interface{} `json:"vars,omitempty"`
 }
 
+type CheckNode string
+
 // +genclient=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
@@ -152,6 +156,8 @@ type PodAlertSpec struct {
 	// Vars contains Icinga Service variables to be used in CheckCommand
 	Vars map[string]interface{} `json:"vars,omitempty"`
 }
+
+type CheckPod string
 
 type Receiver struct {
 	// For which state notification will be sent
