@@ -3,6 +3,9 @@ package v1alpha1
 import (
 	"fmt"
 	"time"
+
+	"k8s.io/apimachinery/pkg/runtime"
+	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
 const (
@@ -64,4 +67,15 @@ func (a NodeAlert) GetNotifierSecretName() string {
 
 func (a NodeAlert) GetReceivers() []Receiver {
 	return a.Spec.Receivers
+}
+
+func (a NodeAlert) ObjectReference() runtime.Object {
+	return &apiv1.ObjectReference{
+		APIVersion:      SchemeGroupVersion.String(),
+		Kind:            ResourceKindNodeAlert,
+		Namespace:       a.Namespace,
+		Name:            a.Name,
+		UID:             a.UID,
+		ResourceVersion: a.ResourceVersion,
+	}
 }

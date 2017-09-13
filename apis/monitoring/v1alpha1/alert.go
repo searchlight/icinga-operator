@@ -1,6 +1,10 @@
 package v1alpha1
 
-import "time"
+import (
+	"time"
+
+	"k8s.io/apimachinery/pkg/runtime"
+)
 
 type Alert interface {
 	GetName() string
@@ -11,4 +15,5 @@ type Alert interface {
 	IsValid() (bool, error)
 	GetNotifierSecretName() string
 	GetReceivers() []Receiver
+	ObjectReference() runtime.Object
 }

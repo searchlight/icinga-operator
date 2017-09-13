@@ -146,7 +146,7 @@ func (op *Operator) EnsurePod(pod *apiv1.Pod, old, new *tapi.PodAlert) (err erro
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
-				new,
+				new.ObjectReference(),
 				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulSync,
 				`Applied PodAlert: "%v"`,
@@ -155,7 +155,7 @@ func (op *Operator) EnsurePod(pod *apiv1.Pod, old, new *tapi.PodAlert) (err erro
 			return
 		} else {
 			op.recorder.Eventf(
-				new,
+				new.ObjectReference(),
 				apiv1.EventTypeWarning,
 				eventer.EventReasonFailedToSync,
 				`Fail to be apply PodAlert: "%v". Reason: %v`,
@@ -179,7 +179,7 @@ func (op *Operator) EnsurePodDeleted(pod *apiv1.Pod, alert *tapi.PodAlert) (err 
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
-				alert,
+				alert.ObjectReference(),
 				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulDelete,
 				`Deleted PodAlert: "%v"`,
@@ -188,7 +188,7 @@ func (op *Operator) EnsurePodDeleted(pod *apiv1.Pod, alert *tapi.PodAlert) (err 
 			return
 		} else {
 			op.recorder.Eventf(
-				alert,
+				alert.ObjectReference(),
 				apiv1.EventTypeWarning,
 				eventer.EventReasonFailedToDelete,
 				`Fail to be delete PodAlert: "%v". Reason: %v`,

@@ -37,7 +37,7 @@ func (op *Operator) WatchClusterAlerts() {
 				if alert, ok := obj.(*tapi.ClusterAlert); ok {
 					if ok, err := alert.IsValid(); !ok {
 						op.recorder.Eventf(
-							alert,
+							alert.ObjectReference(),
 							apiv1.EventTypeWarning,
 							eventer.EventReasonFailedToCreate,
 							`Fail to be create ClusterAlert: "%v". Reason: %v`,
@@ -48,7 +48,7 @@ func (op *Operator) WatchClusterAlerts() {
 					}
 					if err := util.CheckNotifiers(op.KubeClient, alert); err != nil {
 						op.recorder.Eventf(
-							alert,
+							alert.ObjectReference(),
 							apiv1.EventTypeWarning,
 							eventer.EventReasonBadNotifier,
 							`Bad notifier config for ClusterAlert: "%v". Reason: %v`,
@@ -73,7 +73,7 @@ func (op *Operator) WatchClusterAlerts() {
 				if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
 					if ok, err := newAlert.IsValid(); !ok {
 						op.recorder.Eventf(
-							newAlert,
+							newAlert.ObjectReference(),
 							apiv1.EventTypeWarning,
 							eventer.EventReasonFailedToDelete,
 							`Fail to be update ClusterAlert: "%v". Reason: %v`,
@@ -84,7 +84,7 @@ func (op *Operator) WatchClusterAlerts() {
 					}
 					if err := util.CheckNotifiers(op.KubeClient, newAlert); err != nil {
 						op.recorder.Eventf(
-							newAlert,
+							newAlert.ObjectReference(),
 							apiv1.EventTypeWarning,
 							eventer.EventReasonBadNotifier,
 							`Bad notifier config for ClusterAlert: "%v". Reason: %v`,
@@ -99,7 +99,7 @@ func (op *Operator) WatchClusterAlerts() {
 				if alert, ok := obj.(*tapi.ClusterAlert); ok {
 					if ok, err := alert.IsValid(); !ok {
 						op.recorder.Eventf(
-							alert,
+							alert.ObjectReference(),
 							apiv1.EventTypeWarning,
 							eventer.EventReasonFailedToDelete,
 							`Fail to be delete ClusterAlert: "%v". Reason: %v`,
@@ -110,7 +110,7 @@ func (op *Operator) WatchClusterAlerts() {
 					}
 					if err := util.CheckNotifiers(op.KubeClient, alert); err != nil {
 						op.recorder.Eventf(
-							alert,
+							alert.ObjectReference(),
 							apiv1.EventTypeWarning,
 							eventer.EventReasonBadNotifier,
 							`Bad notifier config for ClusterAlert: "%v". Reason: %v`,
@@ -130,7 +130,7 @@ func (op *Operator) EnsureClusterAlert(old, new *tapi.ClusterAlert) (err error) 
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
-				new,
+				new.ObjectReference(),
 				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulSync,
 				`Applied ClusterAlert: "%v"`,
@@ -139,7 +139,7 @@ func (op *Operator) EnsureClusterAlert(old, new *tapi.ClusterAlert) (err error) 
 			return
 		} else {
 			op.recorder.Eventf(
-				new,
+				new.ObjectReference(),
 				apiv1.EventTypeWarning,
 				eventer.EventReasonFailedToSync,
 				`Fail to be apply ClusterAlert: "%v". Reason: %v`,
@@ -163,7 +163,7 @@ func (op *Operator) EnsureClusterAlertDeleted(alert *tapi.ClusterAlert) (err err
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
-				alert,
+				alert.ObjectReference(),
 				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulDelete,
 				`Deleted ClusterAlert: "%v"`,
@@ -172,7 +172,7 @@ func (op *Operator) EnsureClusterAlertDeleted(alert *tapi.ClusterAlert) (err err
 			return
 		} else {
 			op.recorder.Eventf(
-				alert,
+				alert.ObjectReference(),
 				apiv1.EventTypeWarning,
 				eventer.EventReasonFailedToDelete,
 				`Fail to be delete ClusterAlert: "%v". Reason: %v`,

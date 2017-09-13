@@ -38,7 +38,7 @@ func (op *Operator) WatchPodAlerts() {
 				if alert, ok := obj.(*tapi.PodAlert); ok {
 					if ok, err := alert.IsValid(); !ok {
 						op.recorder.Eventf(
-							alert,
+							alert.ObjectReference(),
 							apiv1.EventTypeWarning,
 							eventer.EventReasonFailedToCreate,
 							`Fail to be create PodAlert: "%v". Reason: %v`,
@@ -49,7 +49,7 @@ func (op *Operator) WatchPodAlerts() {
 					}
 					if err := util.CheckNotifiers(op.KubeClient, alert); err != nil {
 						op.recorder.Eventf(
-							alert,
+							alert.ObjectReference(),
 							apiv1.EventTypeWarning,
 							eventer.EventReasonBadNotifier,
 							`Bad notifier config for PodAlert: "%v". Reason: %v`,
@@ -74,7 +74,7 @@ func (op *Operator) WatchPodAlerts() {
 				if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
 					if ok, err := newAlert.IsValid(); !ok {
 						op.recorder.Eventf(
-							newAlert,
+							newAlert.ObjectReference(),
 							apiv1.EventTypeWarning,
 							eventer.EventReasonFailedToDelete,
 							`Fail to be update PodAlert: "%v". Reason: %v`,
@@ -85,7 +85,7 @@ func (op *Operator) WatchPodAlerts() {
 					}
 					if err := util.CheckNotifiers(op.KubeClient, newAlert); err != nil {
 						op.recorder.Eventf(
-							newAlert,
+							newAlert.ObjectReference(),
 							apiv1.EventTypeWarning,
 							eventer.EventReasonBadNotifier,
 							`Bad notifier config for PodAlert: "%v". Reason: %v`,
@@ -100,7 +100,7 @@ func (op *Operator) WatchPodAlerts() {
 				if alert, ok := obj.(*tapi.PodAlert); ok {
 					if ok, err := alert.IsValid(); !ok {
 						op.recorder.Eventf(
-							alert,
+							alert.ObjectReference(),
 							apiv1.EventTypeWarning,
 							eventer.EventReasonFailedToDelete,
 							`Fail to be delete PodAlert: "%v". Reason: %v`,
@@ -111,7 +111,7 @@ func (op *Operator) WatchPodAlerts() {
 					}
 					if err := util.CheckNotifiers(op.KubeClient, alert); err != nil {
 						op.recorder.Eventf(
-							alert,
+							alert.ObjectReference(),
 							apiv1.EventTypeWarning,
 							eventer.EventReasonBadNotifier,
 							`Bad notifier config for PodAlert: "%v". Reason: %v`,
