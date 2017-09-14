@@ -5,39 +5,29 @@ import (
 	"time"
 
 	"github.com/appscode/log"
-	_ "github.com/appscode/searchlight/api/install"
-	tcs "github.com/appscode/searchlight/client/clientset"
-	_ "github.com/appscode/searchlight/client/clientset/fake"
-	"github.com/appscode/searchlight/pkg/analytics"
+	tcs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/pkg/migrator"
 	"github.com/appscode/searchlight/pkg/operator"
 	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
+	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-func NewCmdOperator(version string) *cobra.Command {
+func NewCmdOperator() *cobra.Command {
 	opt := operator.Options{
 		ConfigRoot:       "/srv",
 		ConfigSecretName: "searchlight-operator",
 		APIAddress:       ":8080",
 		WebAddress:       ":56790",
-		EnableAnalytics:  true,
+		ResyncPeriod:     5 * time.Minute,
 	}
 	cmd := &cobra.Command{
 		Use:   "run",
 		Short: "Run operator",
-		PreRun: func(cmd *cobra.Command, args []string) {
-			if opt.EnableAnalytics {
-				analytics.Enable()
-			}
-			analytics.SendEvent("operator", "started", version)
-		},
-		PostRun: func(cmd *cobra.Command, args []string) {
-			analytics.SendEvent("operator", "stopped", version)
-		},
 		Run: func(cmd *cobra.Command, args []string) {
 			run(opt)
 		},
@@ -49,7 +39,7 @@ func NewCmdOperator(version string) *cobra.Command {
 	cmd.Flags().StringVar(&opt.ConfigSecretName, "config-secret-name", opt.ConfigSecretName, "Name of Kubernetes secret used to pass icinga credentials.")
 	cmd.Flags().StringVar(&opt.APIAddress, "api.address", opt.APIAddress, "The address of the Searchlight API Server")
 	cmd.Flags().StringVar(&opt.WebAddress, "web.address", opt.WebAddress, "Address to listen on for web interface and telemetry.")
-	cmd.Flags().BoolVar(&opt.EnableAnalytics, "analytics", opt.EnableAnalytics, "Send analytical event to Google Analytics")
+	cmd.Flags().DurationVar(&opt.ResyncPeriod, "resync-period", opt.ResyncPeriod, "If non-zero, will re-list this often. Otherwise, re-list will be delayed aslong as possible (until the upstream source closes the watch or times out.")
 
 	return cmd
 }
@@ -61,6 +51,7 @@ func run(opt operator.Options) {
 	}
 
 	kubeClient := clientset.NewForConfigOrDie(config)
+	apiExtKubeClient := apiextensionsclient.NewForConfigOrDie(config)
 	extClient := tcs.NewForConfigOrDie(config)
 
 	secret, err := kubeClient.CoreV1().Secrets(util.OperatorNamespace()).Get(opt.ConfigSecretName, metav1.GetOptions{})
@@ -92,8 +83,12 @@ func run(opt operator.Options) {
 		time.Sleep(2 * time.Second)
 	}
 
-	op := operator.New(kubeClient, extClient, icingaClient, opt)
+	op := operator.New(kubeClient, apiExtKubeClient, extClient, icingaClient, opt)
 	if err := op.Setup(); err != nil {
+		log.Fatalln(err)
+	}
+
+	if err = migrator.NewMigrator(kubeClient, apiExtKubeClient, extClient).RunMigration(); err != nil {
 		log.Fatalln(err)
 	}
 

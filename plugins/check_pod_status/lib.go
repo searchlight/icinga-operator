@@ -6,13 +6,17 @@ import (
 
 	"github.com/appscode/go/flags"
 	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 type Request struct {
+	masterURL      string
+	kubeconfigPath string
+
 	Host string
 }
 
@@ -28,10 +32,11 @@ type serviceOutput struct {
 }
 
 func CheckPodStatus(req *Request) (icinga.State, interface{}) {
-	kubeClient, err := util.NewClient()
+	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
+	kubeClient := kubernetes.NewForConfigOrDie(config)
 
 	host, err := icinga.ParseHost(req.Host)
 	if err != nil {
@@ -43,7 +48,7 @@ func CheckPodStatus(req *Request) (icinga.State, interface{}) {
 		os.Exit(3)
 	}
 
-	pod, err := kubeClient.Client.CoreV1().Pods(host.AlertNamespace).Get(host.ObjectName, metav1.GetOptions{})
+	pod, err := kubeClient.CoreV1().Pods(host.AlertNamespace).Get(host.ObjectName, metav1.GetOptions{})
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
@@ -85,6 +90,10 @@ func NewCmd() *cobra.Command {
 			icinga.Output(CheckPodStatus(&req))
 		},
 	}
+
+	c.Flags().StringVar(&req.masterURL, "master", req.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
+	c.Flags().StringVar(&req.kubeconfigPath, "kubeconfig", req.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
+
 	c.Flags().StringVarP(&req.Host, "host", "H", "", "Icinga host name")
 	return c
 }

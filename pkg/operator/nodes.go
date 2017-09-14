@@ -6,7 +6,7 @@ import (
 
 	acrt "github.com/appscode/go/runtime"
 	"github.com/appscode/log"
-	tapi "github.com/appscode/searchlight/api"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -31,7 +31,7 @@ func (op *Operator) WatchNodes() {
 	}
 	_, ctrl := cache.NewInformer(lw,
 		&apiv1.Node{},
-		op.SyncPeriod,
+		op.Opt.ResyncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				if resource, ok := obj.(*apiv1.Node); ok {
@@ -136,7 +136,7 @@ func (op *Operator) EnsureNode(node *apiv1.Node, old, new *tapi.NodeAlert) (err 
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
-				new,
+				new.ObjectReference(),
 				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulSync,
 				`Applied NodeAlert: "%v"`,
@@ -145,7 +145,7 @@ func (op *Operator) EnsureNode(node *apiv1.Node, old, new *tapi.NodeAlert) (err 
 			return
 		} else {
 			op.recorder.Eventf(
-				new,
+				new.ObjectReference(),
 				apiv1.EventTypeWarning,
 				eventer.EventReasonFailedToSync,
 				`Fail to be apply NodeAlert: "%v". Reason: %v`,
@@ -169,7 +169,7 @@ func (op *Operator) EnsureNodeDeleted(node *apiv1.Node, alert *tapi.NodeAlert) (
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
-				alert,
+				alert.ObjectReference(),
 				apiv1.EventTypeNormal,
 				eventer.EventReasonSuccessfulDelete,
 				`Deleted NodeAlert: "%v"`,
@@ -178,7 +178,7 @@ func (op *Operator) EnsureNodeDeleted(node *apiv1.Node, alert *tapi.NodeAlert) (
 			return
 		} else {
 			op.recorder.Eventf(
-				alert,
+				alert.ObjectReference(),
 				apiv1.EventTypeWarning,
 				eventer.EventReasonFailedToDelete,
 				`Fail to be delete NodeAlert: "%v". Reason: %v`,

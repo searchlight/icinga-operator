@@ -5,8 +5,8 @@ import (
 	"text/template"
 
 	"github.com/appscode/errors"
-	tapi "github.com/appscode/searchlight/api"
-	tcs "github.com/appscode/searchlight/client/clientset"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	tcs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
 	clientset "k8s.io/client-go/kubernetes"
 	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
@@ -15,11 +15,11 @@ type NodeHost struct {
 	commonHost
 
 	KubeClient clientset.Interface
-	ExtClient  tcs.ExtensionInterface
+	ExtClient  tcs.MonitoringV1alpha1Interface
 	//*types.Context
 }
 
-func NewNodeHost(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, IcingaClient *Client) *NodeHost {
+func NewNodeHost(kubeClient clientset.Interface, extClient tcs.MonitoringV1alpha1Interface, IcingaClient *Client) *NodeHost {
 	return &NodeHost{
 		KubeClient: kubeClient,
 		ExtClient:  extClient,

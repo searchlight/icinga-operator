@@ -16,7 +16,7 @@ $ ./hack/make.py build; env APPSCODE_ENV=prod ./hack/make.py push; ./hack/make.p
 ```
 - Build and push both forms of icinga image:
 ```console
-./hack/docker/icinga/alpine/build.sh; ./hack/docker/icinga/alpine/build.sh release
-./hack/docker/icinga/alpine/setup.sh; ./hack/docker/icinga/alpine/setup.sh release
+./hack/docker/icinga/alpine/build.sh; env APPSCODE_ENV=prod ./hack/docker/icinga/alpine/build.sh release
+./hack/docker/icinga/alpine/setup.sh; env APPSCODE_ENV=prod ./hack/docker/icinga/alpine/setup.sh release
 ```
 - Now, update the release notes in Github. See previous release notes to get an idea what to include there.

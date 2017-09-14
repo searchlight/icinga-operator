@@ -6,12 +6,16 @@ import (
 
 	"github.com/appscode/go/flags"
 	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 type Request struct {
+	masterURL      string
+	kubeconfigPath string
+
 	Namespace string
 	Selector  string
 	PodName   string
@@ -30,20 +34,21 @@ type serviceOutput struct {
 }
 
 func CheckPodExists(req *Request, isCountSet bool) (icinga.State, interface{}) {
-	kubeClient, err := util.NewClient()
+	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
+	kubeClient := kubernetes.NewForConfigOrDie(config)
 
 	total_pod := 0
 	if req.PodName != "" {
-		_, err := kubeClient.Client.CoreV1().Pods(req.Namespace).Get(req.PodName, metav1.GetOptions{})
+		_, err := kubeClient.CoreV1().Pods(req.Namespace).Get(req.PodName, metav1.GetOptions{})
 		if err != nil {
 			return icinga.UNKNOWN, err
 		}
 		total_pod = 1
 	} else {
-		podList, err := kubeClient.Client.CoreV1().Pods(req.Namespace).List(metav1.ListOptions{
+		podList, err := kubeClient.CoreV1().Pods(req.Namespace).List(metav1.ListOptions{
 			LabelSelector: req.Selector,
 		})
 		if err != nil {
@@ -92,6 +97,8 @@ func NewCmd() *cobra.Command {
 			icinga.Output(CheckPodExists(&req, isCountSet))
 		},
 	}
+	cmd.Flags().StringVar(&req.masterURL, "master", req.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
+	cmd.Flags().StringVar(&req.kubeconfigPath, "kubeconfig", req.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
 	cmd.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	cmd.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
 	cmd.Flags().StringVarP(&req.PodName, "podName", "p", "", "Name of pod whose existence is checked")

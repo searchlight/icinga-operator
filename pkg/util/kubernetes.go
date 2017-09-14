@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/appscode/go-notify/unified"
-	tapi "github.com/appscode/searchlight/api"
-	tcs "github.com/appscode/searchlight/client/clientset"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	tcs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -49,8 +49,8 @@ func CheckNotifiers(kubeClient clientset.Interface, alert tapi.Alert) error {
 	return nil
 }
 
-func FindPodAlert(stashClient tcs.ExtensionInterface, obj metav1.ObjectMeta) ([]*tapi.PodAlert, error) {
-	alerts, err := stashClient.PodAlerts(obj.Namespace).List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
+func FindPodAlert(searchlightClient tcs.MonitoringV1alpha1Interface, obj metav1.ObjectMeta) ([]*tapi.PodAlert, error) {
+	alerts, err := searchlightClient.PodAlerts(obj.Namespace).List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
 	if kerr.IsNotFound(err) {
 		return nil, nil
 	} else if err != nil {
@@ -74,8 +74,8 @@ func FindPodAlert(stashClient tcs.ExtensionInterface, obj metav1.ObjectMeta) ([]
 	return result, nil
 }
 
-func FindNodeAlert(stashClient tcs.ExtensionInterface, obj metav1.ObjectMeta) ([]*tapi.NodeAlert, error) {
-	alerts, err := stashClient.NodeAlerts(obj.Namespace).List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
+func FindNodeAlert(searchlightClient tcs.MonitoringV1alpha1Interface, obj metav1.ObjectMeta) ([]*tapi.NodeAlert, error) {
+	alerts, err := searchlightClient.NodeAlerts(obj.Namespace).List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
 	if kerr.IsNotFound(err) {
 		return nil, nil
 	} else if err != nil {

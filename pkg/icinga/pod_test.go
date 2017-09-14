@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	tapi "github.com/appscode/searchlight/api"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/data"
 	"github.com/stretchr/testify/assert"
 )

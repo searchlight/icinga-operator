@@ -2,14 +2,14 @@ package framework
 
 import (
 	"time"
-
 	"github.com/appscode/go/crypto/rand"
-	kutilsl "github.com/appscode/kutil/searchlight/v1alpha1"
-	tapi "github.com/appscode/searchlight/api"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/gomega"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/appscode/log"
+	"fmt"
 )
 
 func (f *Invocation) ClusterAlert() *tapi.ClusterAlert {
@@ -34,15 +34,33 @@ func (f *Framework) CreateClusterAlert(obj *tapi.ClusterAlert) error {
 }
 
 func (f *Framework) GetClusterAlert(meta metav1.ObjectMeta) (*tapi.ClusterAlert, error) {
-	return f.extClient.ClusterAlerts(meta.Namespace).Get(meta.Name)
+	return f.extClient.ClusterAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
 }
 
-func (f *Framework) TryPatchClusterAlert(meta metav1.ObjectMeta, transform func(*tapi.ClusterAlert) *tapi.ClusterAlert) (*tapi.ClusterAlert, error) {
-	return kutilsl.TryPatchClusterAlert(f.extClient, meta, transform)
+
+func (f *Framework) UpdateClusterAlert(meta metav1.ObjectMeta, transformer func(tapi.ClusterAlert) tapi.ClusterAlert) (*tapi.ClusterAlert, error) {
+	attempt := 0
+	for ; attempt < maxAttempts; attempt = attempt + 1 {
+		cur, err := f.extClient.ClusterAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
+		if err != nil {
+			return nil, err
+		}
+
+		modified := transformer(*cur)
+		updated, err := f.extClient.ClusterAlerts(cur.Namespace).Update(&modified)
+		if err == nil {
+			return updated, nil
+		}
+
+		log.Errorf("Attempt %d failed to update ClusterAlert %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
+		time.Sleep(updateRetryInterval)
+	}
+
+	return nil, fmt.Errorf("Failed to update ClusterAlert %s@%s after %d attempts.", meta.Name, meta.Namespace, attempt)
 }
 
 func (f *Framework) DeleteClusterAlert(meta metav1.ObjectMeta) error {
-	return f.extClient.ClusterAlerts(meta.Namespace).Delete(meta.Name)
+	return f.extClient.ClusterAlerts(meta.Namespace).Delete(meta.Name, &metav1.DeleteOptions{})
 }
 
 func (f *Framework) getClusterAlertObjects(meta metav1.ObjectMeta, clusterAlertSpec tapi.ClusterAlertSpec) ([]icinga.IcingaHost, error) {

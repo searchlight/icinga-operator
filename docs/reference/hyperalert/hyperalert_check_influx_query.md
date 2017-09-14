@@ -24,6 +24,8 @@ hyperalert check_influx_query [flags]
   -h, --help                help for check_influx_query
   -H, --host string         Icinga host name
       --influxHost string   URL of InfluxDB host to query
+      --kubeconfig string   Path to kubeconfig file with authorization information (the master location is set by the master flag).
+      --master string       The address of the Kubernetes API server (overrides any value in kubeconfig)
   -s, --secretName string   Kubernetes secret name
   -w, --warning string      Warning query which returns [true/false]
 ```

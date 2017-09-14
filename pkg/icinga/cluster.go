@@ -2,8 +2,8 @@ package icinga
 
 import (
 	"github.com/appscode/errors"
-	tapi "github.com/appscode/searchlight/api"
-	tcs "github.com/appscode/searchlight/client/clientset"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	tcs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
 	clientset "k8s.io/client-go/kubernetes"
 )
 
@@ -11,10 +11,10 @@ type ClusterHost struct {
 	commonHost
 
 	KubeClient clientset.Interface
-	ExtClient  tcs.ExtensionInterface
+	ExtClient  tcs.MonitoringV1alpha1Interface
 }
 
-func NewClusterHost(kubeClient clientset.Interface, extClient tcs.ExtensionInterface, IcingaClient *Client) *ClusterHost {
+func NewClusterHost(kubeClient clientset.Interface, extClient tcs.MonitoringV1alpha1Interface, IcingaClient *Client) *ClusterHost {
 	return &ClusterHost{
 		KubeClient: kubeClient,
 		ExtClient:  extClient,

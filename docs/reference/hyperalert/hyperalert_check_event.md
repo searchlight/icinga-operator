@@ -22,6 +22,8 @@ hyperalert check_event [flags]
       --involvedObjectName string        Involved object name used to select events
       --involvedObjectNamespace string   Involved object namespace used to select events
       --involvedObjectUID string         Involved object uid used to select events
+      --kubeconfig string                Path to kubeconfig file with authorization information (the master location is set by the master flag).
+      --master string                    The address of the Kubernetes API server (overrides any value in kubeconfig)
 ```
 
 ### Options inherited from parent commands

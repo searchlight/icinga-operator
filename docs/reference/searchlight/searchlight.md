@@ -12,6 +12,7 @@ Searchlight by AppsCode - Alerts for Kubernetes
 ```
       --allow_verification_with_non_compliant_keys   Allow a SignatureVerifier to use keys which are technically non-compliant with RFC6962.
       --alsologtostderr                              log to standard error as well as files
+      --analytics                                    Send analytical events to Google Analytics (default true)
   -h, --help                                         help for searchlight
       --log_backtrace_at traceLocation               when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                               If non-empty, write log files in this directory

@@ -38,14 +38,14 @@ import:
   version: v1.28.2
 - package: gopkg.in/macaron.v1
   version: v1.2.2
-- package: k8s.io/kubernetes
-  version: ~1.6.0
+- package: github.com/juju/ratelimit
+  version: 5b9ff866471762aa2ab2dced63c9fb6f53921342
 - package: k8s.io/apimachinery
-  version: 85ace5365f33b16fc735c866a12e3c765b9700f2
+  version: 1fd2e63a9a370677308a42f24fd40c86438afddf
 - package: k8s.io/client-go
-  version: v3.0.0
-- package: github.com/appscode/kutil
-  version: master
+  version: v4.0.0
+- package: k8s.io/apiextensions-apiserver
+  version: 5fa44608f6b9b2180a2fd1ecb52e651fd0397794
 testImport:
 - package: github.com/mitchellh/go-homedir
 - package: github.com/onsi/ginkgo

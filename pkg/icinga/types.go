@@ -5,8 +5,9 @@ import (
 	"os"
 	"strings"
 
-	tapi "github.com/appscode/searchlight/api"
-	tcs "github.com/appscode/searchlight/client/clientset"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	tcs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
@@ -36,14 +37,14 @@ func (kh IcingaHost) Name() (string, error) {
 	return "", fmt.Errorf("Unknown host type %s", kh.Type)
 }
 
-func (kh IcingaHost) GetAlert(extClient tcs.ExtensionInterface, alertName string) (tapi.Alert, error) {
+func (kh IcingaHost) GetAlert(extClient tcs.MonitoringV1alpha1Interface, alertName string) (tapi.Alert, error) {
 	switch kh.Type {
 	case TypePod:
-		return extClient.PodAlerts(kh.AlertNamespace).Get(alertName)
+		return extClient.PodAlerts(kh.AlertNamespace).Get(alertName, metav1.GetOptions{})
 	case TypeNode:
-		return extClient.NodeAlerts(kh.AlertNamespace).Get(alertName)
+		return extClient.NodeAlerts(kh.AlertNamespace).Get(alertName, metav1.GetOptions{})
 	case TypeCluster:
-		return extClient.ClusterAlerts(kh.AlertNamespace).Get(alertName)
+		return extClient.ClusterAlerts(kh.AlertNamespace).Get(alertName, metav1.GetOptions{})
 	}
 	return nil, fmt.Errorf("Unknown host type %s", kh.Type)
 }

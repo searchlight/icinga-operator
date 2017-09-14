@@ -14,10 +14,12 @@ hyperalert check_node_exists [flags]
 ### Options
 
 ```
-  -c, --count int         Number of expected Kubernetes Node
-  -h, --help              help for check_node_exists
-  -n, --nodeName string   Name of node whose existence is checked
-  -l, --selector string   Selector (label query) to filter on, supports '=', '==', and '!='.
+  -c, --count int           Number of expected Kubernetes Node
+  -h, --help                help for check_node_exists
+      --kubeconfig string   Path to kubeconfig file with authorization information (the master location is set by the master flag).
+      --master string       The address of the Kubernetes API server (overrides any value in kubeconfig)
+  -n, --nodeName string     Name of node whose existence is checked
+  -l, --selector string     Selector (label query) to filter on, supports '=', '==', and '!='.
 ```
 
 ### Options inherited from parent commands

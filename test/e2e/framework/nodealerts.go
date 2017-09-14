@@ -1,11 +1,12 @@
 package framework
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
-	kutilsl "github.com/appscode/kutil/searchlight/v1alpha1"
-	tapi "github.com/appscode/searchlight/api"
+	log "github.com/appscode/log"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/gomega"
@@ -35,15 +36,32 @@ func (f *Framework) CreateNodeAlert(obj *tapi.NodeAlert) error {
 }
 
 func (f *Framework) GetNodeAlert(meta metav1.ObjectMeta) (*tapi.NodeAlert, error) {
-	return f.extClient.NodeAlerts(meta.Namespace).Get(meta.Name)
+	return f.extClient.NodeAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
 }
 
-func (f *Framework) TryPatchNodeAlert(meta metav1.ObjectMeta, transform func(*tapi.NodeAlert) *tapi.NodeAlert) (*tapi.NodeAlert, error) {
-	return kutilsl.TryPatchNodeAlert(f.extClient, meta, transform)
+func (f *Framework) UpdateNodeAlert(meta metav1.ObjectMeta, transformer func(tapi.NodeAlert) tapi.NodeAlert) (*tapi.NodeAlert, error) {
+	attempt := 0
+	for ; attempt < maxAttempts; attempt = attempt + 1 {
+		cur, err := f.extClient.NodeAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
+		if err != nil {
+			return nil, err
+		}
+
+		modified := transformer(*cur)
+		updated, err := f.extClient.NodeAlerts(cur.Namespace).Update(&modified)
+		if err == nil {
+			return updated, nil
+		}
+
+		log.Errorf("Attempt %d failed to update NodeAlert %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
+		time.Sleep(updateRetryInterval)
+	}
+
+	return nil, fmt.Errorf("Failed to update NodeAlert %s@%s after %d attempts.", meta.Name, meta.Namespace, attempt)
 }
 
 func (f *Framework) DeleteNodeAlert(meta metav1.ObjectMeta) error {
-	return f.extClient.NodeAlerts(meta.Namespace).Delete(meta.Name)
+	return f.extClient.NodeAlerts(meta.Namespace).Delete(meta.Name, &metav1.DeleteOptions{})
 }
 
 func (f *Framework) getNodeAlertObjects(meta metav1.ObjectMeta, nodeAlertSpec tapi.NodeAlertSpec) ([]icinga.IcingaHost, error) {

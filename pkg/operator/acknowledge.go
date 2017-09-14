@@ -8,7 +8,7 @@ import (
 
 	"github.com/appscode/go/runtime"
 	"github.com/appscode/pat"
-	tapi "github.com/appscode/searchlight/api"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 )
 
@@ -70,9 +70,9 @@ func Acknowledge(client *icinga.Client, w http.ResponseWriter, r *http.Request) 
 	switch alertType {
 	case tapi.ResourceTypePodAlert:
 		host.Type = icinga.TypePod
-	case tapi.ResourceNameNodeAlert:
+	case tapi.ResourceTypeNodeAlert:
 		host.Type = icinga.TypeNode
-	case tapi.ResourceNameClusterAlert:
+	case tapi.ResourceTypeClusterAlert:
 		host.Type = icinga.TypeCluster
 	}
 

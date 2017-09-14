@@ -14,8 +14,10 @@ hyperalert check_pod_status [flags]
 ### Options
 
 ```
-  -h, --help          help for check_pod_status
-  -H, --host string   Icinga host name
+  -h, --help                help for check_pod_status
+  -H, --host string         Icinga host name
+      --kubeconfig string   Path to kubeconfig file with authorization information (the master location is set by the master flag).
+      --master string       The address of the Kubernetes API server (overrides any value in kubeconfig)
 ```
 
 ### Options inherited from parent commands

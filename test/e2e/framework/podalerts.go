@@ -1,11 +1,12 @@
 package framework
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
-	kutilsl "github.com/appscode/kutil/searchlight/v1alpha1"
-	tapi "github.com/appscode/searchlight/api"
+	"github.com/appscode/log"
+	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/gomega"
@@ -34,15 +35,32 @@ func (f *Framework) CreatePodAlert(obj *tapi.PodAlert) error {
 }
 
 func (f *Framework) GetPodAlert(meta metav1.ObjectMeta) (*tapi.PodAlert, error) {
-	return f.extClient.PodAlerts(meta.Namespace).Get(meta.Name)
+	return f.extClient.PodAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
 }
 
-func (f *Framework) TryPatchPodAlert(meta metav1.ObjectMeta, transform func(*tapi.PodAlert) *tapi.PodAlert) (*tapi.PodAlert, error) {
-	return kutilsl.TryPatchPodAlert(f.extClient, meta, transform)
+func (f *Framework) UpdatePodAlert(meta metav1.ObjectMeta, transformer func(tapi.PodAlert) tapi.PodAlert) (*tapi.PodAlert, error) {
+	attempt := 0
+	for ; attempt < maxAttempts; attempt = attempt + 1 {
+		cur, err := f.extClient.PodAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
+		if err != nil {
+			return nil, err
+		}
+
+		modified := transformer(*cur)
+		updated, err := f.extClient.PodAlerts(cur.Namespace).Update(&modified)
+		if err == nil {
+			return updated, nil
+		}
+
+		log.Errorf("Attempt %d failed to update PodAlert %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
+		time.Sleep(updateRetryInterval)
+	}
+
+	return nil, fmt.Errorf("Failed to update PodAlert %s@%s after %d attempts.", meta.Name, meta.Namespace, attempt)
 }
 
 func (f *Framework) DeletePodAlert(meta metav1.ObjectMeta) error {
-	return f.extClient.PodAlerts(meta.Namespace).Delete(meta.Name)
+	return f.extClient.PodAlerts(meta.Namespace).Delete(meta.Name, &metav1.DeleteOptions{})
 }
 
 func (f *Framework) getPodAlertObjects(meta metav1.ObjectMeta, podAlertSpec tapi.PodAlertSpec) ([]icinga.IcingaHost, error) {
