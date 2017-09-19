@@ -42,10 +42,10 @@ The following tables lists the configurable parameters of the Searchlight chart 
 | Parameter                 | Description                                                    | Default                |
 |---------------------------|----------------------------------------------------------------|------------------------|
 | `operator.image`          | operator container image                                       | `appscode/searchlight` |
-| `operator.tag`            | operator image tag                                             | `3.0.1`                |
+| `operator.tag`            | operator image tag                                             | `4.0.0-rc.0`                |
 | `operator.pullPolicy`     | operator container image pull policy                           | `IfNotPresent`         |
 | `icinga.image`            | icinga container image                                         | `appscode/icinga`      |
-| `icinga.tag`              | icinga container image tag                                     | `3.0.1-k8s`            |
+| `icinga.tag`              | icinga container image tag                                     | `4.0.0-rc.0-k8s`            |
 | `icinga.pullPolicy`       | icinga container image pull policy                             | `IfNotPresent`         |
 | `ido.image`               | ido container image                                            | `appscode/postgress`   |
 | `ido.tag`                 | ido container image tag                                        | `9.5-alpine`           |

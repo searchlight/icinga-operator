@@ -17,7 +17,7 @@ This is going to be the supported release for Kubernetes 1.5 & 1.6 .
 This relased will be based on client-go 4.0.0. This is going to include a number of breaking changes (example, use CustomResoureDefinition instead of TPRs) and be supported for Kubernetes 1.7+. Please see the issues in release milestone [here](https://github.com/appscode/searchlight/milestone/3).
 
 ### External Dependencies
-Searchlight 3.0.1 depends on the following version of Icinga2 and friends:
+Searchlight 4.0.0-rc.0 depends on the following version of Icinga2 and friends:
 
 | Name                   | Version    |
 |------------------------|------------|
