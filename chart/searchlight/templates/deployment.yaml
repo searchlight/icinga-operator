@@ -15,6 +15,7 @@ spec:
         app: "{{ template "name" . }}"
         release: "{{ .Release.Name }}"
     spec:
+      serviceAccountName: {{ if .Values.rbac.create }}{{ template "fullname" . }}{{ else }}"{{ .Values.rbac.serviceAccountName }}"{{ end }}
       containers:
       - name: operator
         image: {{ .Values.operator.image }}:{{ .Values.operator.tag }}
