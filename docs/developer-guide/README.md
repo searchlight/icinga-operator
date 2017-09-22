@@ -90,3 +90,9 @@ docker push aerokite/icinga:default-k8s
 ```console
 $ ./hack/gendocs/make.sh
 ```
+
+### Run e2e Test
+Pass `storageclass` name as flag.
+```console
+$ ginkgo -v -r test/e2e -- --storageclass=standard
+```

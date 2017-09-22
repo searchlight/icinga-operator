@@ -47,13 +47,15 @@ func (f *Framework) TryPatchReplicaSet(meta metav1.ObjectMeta, transformer func(
 }
 
 func (f *Framework) EventuallyDeleteReplicaSet(meta metav1.ObjectMeta) GomegaAsyncAssertion {
+	_, err := f.kubeClient.ExtensionsV1beta1().ReplicaSets(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
+	if kerr.IsNotFound(err) {
+		return Eventually(func() bool { return true })
+	}
+
 	rs, err := f.TryPatchReplicaSet(meta, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
 		in.Spec.Replicas = types.Int32P(0)
 		return in
 	})
-	if kerr.IsNotFound(err) {
-		return Eventually(func() bool { return true })
-	}
 	Expect(err).NotTo(HaveOccurred())
 
 	return Eventually(

@@ -77,10 +77,10 @@ var _ = BeforeSuite(func() {
 	slService := root.Invoke().ServiceSearchlight()
 	err = root.CreateService(slService)
 	Expect(err).NotTo(HaveOccurred())
-	root.EventuallyServiceLoadBalancer(slService.ObjectMeta, "api").Should(BeTrue())
+	root.EventuallyServiceLoadBalancer(slService.ObjectMeta, "icinga").Should(BeTrue())
 
 	// Get Icinga Ingress Hostname
-	endpoint, err := root.GetServiceEndpoint(slService.ObjectMeta, "api")
+	endpoint, err := root.GetServiceEndpoint(slService.ObjectMeta, "icinga")
 	Expect(err).NotTo(HaveOccurred())
 
 	// Icinga Config

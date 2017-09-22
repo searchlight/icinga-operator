@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
-	kutilsl "github.com/appscode/kutil/searchlight/v1alpha1"
+	kutil "github.com/appscode/kutil/searchlight/v1alpha1"
 	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e/matcher"
@@ -38,7 +38,7 @@ func (f *Framework) GetClusterAlert(meta metav1.ObjectMeta) (*tapi.ClusterAlert,
 }
 
 func (f *Framework) TryPatchClusterAlert(meta metav1.ObjectMeta, transform func(*tapi.ClusterAlert) *tapi.ClusterAlert) (*tapi.ClusterAlert, error) {
-	return kutilsl.TryPatchClusterAlert(f.extClient, meta, transform)
+	return kutil.TryPatchClusterAlert(f.extClient, meta, transform)
 }
 
 func (f *Framework) DeleteClusterAlert(meta metav1.ObjectMeta) error {

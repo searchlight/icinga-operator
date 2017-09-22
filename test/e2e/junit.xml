@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <testsuite tests="1" failures="0" time="37.661360955">
+  <testsuite tests="1" failures="0" time="42.39983205">
       <testcase name="NodeAlert Test check_node_status should manage icinga service for Ok State" classname="e2e Suite" time="0">
           <skipped></skipped>
       </testcase>
@@ -12,22 +12,7 @@
       <testcase name="NodeAlert Test node_volume State Critical should manage icinga service for Critical State" classname="e2e Suite" time="0">
           <skipped></skipped>
       </testcase>
-      <testcase name="ClusterAlert Test check_component_status should manage icinga service for Ok State" classname="e2e Suite" time="0">
-          <skipped></skipped>
-      </testcase>
-      <testcase name="ClusterAlert Test check_node_exists State OK should manage icinga service for Ok State" classname="e2e Suite" time="0">
-          <skipped></skipped>
-      </testcase>
-      <testcase name="ClusterAlert Test check_node_exists State Critical should manage icinga service for Critical State" classname="e2e Suite" time="0">
-          <skipped></skipped>
-      </testcase>
-      <testcase name="ClusterAlert Test check_pod_exists State OK should manage icinga service for Ok State" classname="e2e Suite" time="0">
-          <skipped></skipped>
-      </testcase>
-      <testcase name="ClusterAlert Test check_pod_exists State Critical should manage icinga service for Critical State" classname="e2e Suite" time="0">
-          <skipped></skipped>
-      </testcase>
-      <testcase name="PodAlert Test check_pod_status should manage icinga service for Alert.Spec.Selector" classname="e2e Suite" time="15.202833215"></testcase>
+      <testcase name="PodAlert Test check_pod_status should manage icinga service for Alert.Spec.Selector" classname="e2e Suite" time="20.264435336"></testcase>
       <testcase name="PodAlert Test check_pod_status should manage icinga service for new Pod" classname="e2e Suite" time="0">
           <skipped></skipped>
       </testcase>
@@ -56,6 +41,21 @@
           <skipped></skipped>
       </testcase>
       <testcase name="PodAlert Test check_pod_exec exit 2 should handle icinga service for Critical State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="ClusterAlert Test check_component_status should manage icinga service for Ok State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="ClusterAlert Test check_node_exists State OK should manage icinga service for Ok State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="ClusterAlert Test check_node_exists State Critical should manage icinga service for Critical State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="ClusterAlert Test check_pod_exists State OK should manage icinga service for Ok State" classname="e2e Suite" time="0">
+          <skipped></skipped>
+      </testcase>
+      <testcase name="ClusterAlert Test check_pod_exists State Critical should manage icinga service for Critical State" classname="e2e Suite" time="0">
           <skipped></skipped>
       </testcase>
   </testsuite>

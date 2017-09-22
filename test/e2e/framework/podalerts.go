@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
+	kutil "github.com/appscode/kutil/searchlight/v1alpha1"
 	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
@@ -57,6 +58,10 @@ func (f *Framework) UpdatePodAlert(meta metav1.ObjectMeta, transformer func(tapi
 	}
 
 	return nil, fmt.Errorf("Failed to update PodAlert %s@%s after %d attempts.", meta.Name, meta.Namespace, attempt)
+}
+
+func (f *Framework) TryPatchPodAlert(meta metav1.ObjectMeta, transform func(alert *tapi.PodAlert) *tapi.PodAlert) (*tapi.PodAlert, error) {
+	return kutil.TryPatchPodAlert(f.extClient, meta, transform)
 }
 
 func (f *Framework) DeletePodAlert(meta metav1.ObjectMeta) error {
