@@ -21,7 +21,7 @@ please feel free to send a Pull Request.
 
 ## Design Docs
 
-If you want to know how Searchlight translates Alert TPRs into Icinga parlance, read the [design doc](docs/design/README.md).
+If you want to know how Searchlight translates Alert CRDs into Icinga parlance, read the [design doc](docs/design/README.md).
 
 ## Getting Help
 
