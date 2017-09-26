@@ -13,7 +13,12 @@ Searchlight by AppsCode is a Kubernetes operator for [Icinga](https://www.icinga
  - [Supplements](https://prometheus.io/docs/practices/alerting/#metamonitoring) the whitebox monitoring tools like [Prometheus](https://prometheus.io).
 
 ## Supported Versions
-Kubernetes 1.5+
+Please pick a version of Searchlight that matches your Kubernetes installation.
+
+| Searchlight Version                                                                      | Docs                                                                       | Kubernetes Version |
+|------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|--------------------|
+| [4.0.0](https://github.com/appscode/searchlight/releases/tag/4.0.0) (uses CRD) | [User Guide](https://github.com/appscode/searchlight/tree/4.0.0/docs) | 1.7.x+             |
+| [3.0.1](https://github.com/appscode/searchlight/releases/tag/3.0.1) (uses TPR)           | [User Guide](https://github.com/appscode/searchlight/tree/3.0.1/docs)      | 1.5.x - 1.7.x      |
 
 ## Installation
 To install Searchlight, please follow the guide [here](/docs/install.md).
