@@ -11,7 +11,7 @@ Please always check the release notes for upgrade instructions.
 might happen among different releases of the operator.
 
 ### External Dependencies
-Searchlight 4.0.0-rc.0 depends on the following version of Icinga2 and friends:
+Searchlight 4.0.0 depends on the following version of Icinga2 and friends:
 
 | Name                   | Version    |
 |------------------------|------------|

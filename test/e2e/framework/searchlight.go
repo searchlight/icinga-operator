@@ -82,7 +82,7 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 			Containers: []apiv1.Container{
 				{
 					Name:            "icinga",
-					Image:           "appscode/icinga:4.0.0-rc.0-k8s",
+					Image:           "appscode/icinga:4.0.0-k8s",
 					ImagePullPolicy: apiv1.PullIfNotPresent,
 					Ports: []apiv1.ContainerPort{
 						{
