@@ -13,7 +13,7 @@ This chart bootstraps a [Searchlight controller](https://github.com/appscode/sea
 
 ## Prerequisites
 
-- Kubernetes 1.5+
+- Kubernetes 1.7+
 
 ## Installing the Chart
 To install the chart with the release name `my-release`:
