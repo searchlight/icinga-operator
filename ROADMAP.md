@@ -10,12 +10,6 @@ Please always check the release notes for upgrade instructions.
  - TPR version: monitoring.appscode.com/v1alpha1 is considered in alpha. This means breaking changes to the YAML format
 might happen among different releases of the operator.
 
-### Release 3.x.x
-This is going to be the supported release for Kubernetes 1.5 & 1.6 .
-
-### Release 4.x.x
-This relased will be based on client-go 4.0.0. This is going to include a number of breaking changes (example, use CustomResoureDefinition instead of TPRs) and be supported for Kubernetes 1.7+. Please see the issues in release milestone [here](https://github.com/appscode/searchlight/milestone/3).
-
 ### External Dependencies
 Searchlight 4.0.0-rc.0 depends on the following version of Icinga2 and friends:
 
