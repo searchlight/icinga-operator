@@ -39,19 +39,20 @@ The command removes all the Kubernetes components associated with the chart and 
 The following tables lists the configurable parameters of the Searchlight chart and their default values.
 
 
-| Parameter                 | Description                                                    | Default                |
-|---------------------------|----------------------------------------------------------------|------------------------|
-| `operator.image`          | operator container image                                       | `appscode/searchlight` |
-| `operator.tag`            | operator image tag                                             | `4.0.0-rc.0`                |
-| `operator.pullPolicy`     | operator container image pull policy                           | `IfNotPresent`         |
-| `icinga.image`            | icinga container image                                         | `appscode/icinga`      |
-| `icinga.tag`              | icinga container image tag                                     | `4.0.0-rc.0-k8s`            |
-| `icinga.pullPolicy`       | icinga container image pull policy                             | `IfNotPresent`         |
-| `ido.image`               | ido container image                                            | `appscode/postgress`   |
-| `ido.tag`                 | ido container image tag                                        | `9.5-alpine`           |
-| `ido.pullPolicy`          | ido container image pull policy                                | `IfNotPresent`         |
-| `rbac.create`             | install required rbac service account, roles and rolebindings  | `false`                |
-| `rbac.serviceAccountName` | ServiceAccount Searchlight will use (ignored if rbac.create=true)  | `default`              |
+| Parameter                 | Description                                                       | Default                |
+|---------------------------|-------------------------------------------------------------------|------------------------|
+| `operator.image`          | operator container image                                          | `appscode/searchlight` |
+| `operator.tag`            | operator image tag                                                | `4.0.0-rc.0`           |
+| `operator.pullPolicy`     | operator container image pull policy                              | `IfNotPresent`         |
+| `icinga.image`            | icinga container image                                            | `appscode/icinga`      |
+| `icinga.tag`              | icinga container image tag                                        | `4.0.0-rc.0-k8s`       |
+| `icinga.pullPolicy`       | icinga container image pull policy                                | `IfNotPresent`         |
+| `ido.image`               | ido container image                                               | `appscode/postgress`   |
+| `ido.tag`                 | ido container image tag                                           | `9.5-alpine`           |
+| `ido.pullPolicy`          | ido container image pull policy                                   | `IfNotPresent`         |
+| `criticalAddon`           | If true, installs Searchlight operator as critical addon          | `false`                |
+| `rbac.create`             | install required rbac service account, roles and rolebindings     | `false`                |
+| `rbac.serviceAccountName` | ServiceAccount Searchlight will use (ignored if rbac.create=true) | `default`              |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:
 

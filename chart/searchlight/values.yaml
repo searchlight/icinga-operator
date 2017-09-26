@@ -49,6 +49,10 @@ notifier:
     authToken: ''
     from: ''
 
+## Installs Searchlight operator as critical addon
+## https://kubernetes.io/docs/tasks/administer-cluster/guaranteed-scheduling-critical-addon-pods/
+criticalAddon: false
+
 ## Install Default RBAC roles and bindings
 rbac:
   ## If true, create & use RBAC resources

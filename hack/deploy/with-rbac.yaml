@@ -82,6 +82,8 @@ spec:
     metadata:
       labels:
         app: searchlight
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
       serviceAccountName: searchlight-operator
       containers:
@@ -144,6 +146,9 @@ spec:
       volumes:
       - name: data
         emptyDir: {}
+      tolerations:
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
 ---
 kind: Service
 apiVersion: v1
