@@ -1,10 +1,6 @@
 package util
 
 import (
-	"io/ioutil"
-	"os"
-	"strings"
-
 	"github.com/appscode/go-notify/unified"
 	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	tcs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
@@ -12,20 +8,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	clientset "k8s.io/client-go/kubernetes"
-	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
-
-func OperatorNamespace() string {
-	if ns := os.Getenv("OPERATOR_NAMESPACE"); ns != "" {
-		return ns
-	}
-	if data, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace"); err == nil {
-		if ns := strings.TrimSpace(string(data)); len(ns) > 0 {
-			return ns
-		}
-	}
-	return apiv1.NamespaceDefault
-}
 
 func CheckNotifiers(kubeClient clientset.Interface, alert tapi.Alert) error {
 	if alert.GetNotifierSecretName() == "" && len(alert.GetReceivers()) == 0 {

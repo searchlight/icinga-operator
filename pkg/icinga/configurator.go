@@ -11,7 +11,7 @@ import (
 
 	"github.com/appscode/envconfig"
 	"github.com/appscode/go/crypto/rand"
-	"github.com/appscode/log"
+	"github.com/appscode/go/log"
 	"github.com/cloudflare/cfssl/cli"
 	"github.com/cloudflare/cfssl/cli/genkey"
 	"github.com/cloudflare/cfssl/cli/sign"

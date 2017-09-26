@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
+	"github.com/appscode/go/log"
 	kutil "github.com/appscode/kutil/searchlight/v1alpha1"
-	"github.com/appscode/log"
 	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e/matcher"

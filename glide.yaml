@@ -4,10 +4,9 @@ import:
   version: v3.0.0
 - package: github.com/appscode/envconfig
   version: master
-- package: github.com/appscode/errors
 - package: github.com/appscode/go-notify
 - package: github.com/appscode/go
-- package: github.com/appscode/log
+- package: github.com/appscode/kutil
 - package: github.com/appscode/pat
 - package: github.com/cloudflare/cfssl
   version: b53da94cf51de120a50cbae533152fb3935375e0
@@ -15,21 +14,22 @@ import:
   version: 05502e09183232d2345db9a3a008076eff9a530c
 - package: github.com/codeskyblue/go-sh
   version: master
-- package: github.com/ghodss/yaml
-  version: v1.0.0
 - package: github.com/go-macaron/auth
 - package: github.com/go-macaron/toolbox
+- package: github.com/golang/glog
+- package: github.com/hashicorp/go-version
+  repo: https://github.com/appscode/go-version.git
+  vcs: git
+  version: master
 - package: github.com/influxdata/influxdb
-  version: v1.3.3
+  version: v1.3.5
 - package: github.com/jpillora/go-ogle-analytics
 - package: github.com/onsi/gomega
   version: v1.2.0
 - package: github.com/prometheus/client_golang
   version: v0.8.0
-- package: github.com/Sirupsen/logrus
-  version: v0.10.0
 - package: github.com/shirou/gopsutil
-  version: v2.17.07
+  version: v2.17.08
 - package: github.com/spf13/cobra
 - package: github.com/spf13/pflag
   version: v1.0.0
@@ -38,22 +38,15 @@ import:
   version: v1.28.2
 - package: gopkg.in/macaron.v1
   version: v1.2.2
-- package: github.com/juju/ratelimit
-  version: 5b9ff866471762aa2ab2dced63c9fb6f53921342
+- package: k8s.io/apiextensions-apiserver
+  version: 5fa44608f6b9b2180a2fd1ecb52e651fd0397794
 - package: k8s.io/apimachinery
   version: 1fd2e63a9a370677308a42f24fd40c86438afddf
 - package: k8s.io/client-go
   version: v4.0.0
-- package: github.com/appscode/kutil
-  version: release-4.0
-- package: k8s.io/apiextensions-apiserver
-  version: 5fa44608f6b9b2180a2fd1ecb52e651fd0397794
-- package: github.com/hashicorp/go-version
-  repo: https://github.com/appscode/go-version.git
-  vcs: git
-  version: master
+- package: k8s.io/kubernetes
+  version: ~1.7.0
 testImport:
-- package: github.com/mitchellh/go-homedir
 - package: github.com/onsi/ginkgo
   version: v1.4.0
 - package: github.com/stretchr/testify

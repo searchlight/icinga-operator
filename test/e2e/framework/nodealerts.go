@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
-	log "github.com/appscode/log"
+	log "github.com/appscode/go/log"
 	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e/matcher"

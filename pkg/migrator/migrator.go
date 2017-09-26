@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/appscode/log"
+	"github.com/appscode/go/log"
 	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	tapi_v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	tcs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"

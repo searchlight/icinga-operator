@@ -4,12 +4,12 @@ import (
 	_ "net/http/pprof"
 	"time"
 
-	"github.com/appscode/log"
+	"github.com/appscode/go/log"
+	"github.com/appscode/kutil"
 	tcs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/migrator"
 	"github.com/appscode/searchlight/pkg/operator"
-	"github.com/appscode/searchlight/pkg/util"
 	"github.com/spf13/cobra"
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -54,7 +54,7 @@ func run(opt operator.Options) {
 	apiExtKubeClient := apiextensionsclient.NewForConfigOrDie(config)
 	extClient := tcs.NewForConfigOrDie(config)
 
-	secret, err := kubeClient.CoreV1().Secrets(util.OperatorNamespace()).Get(opt.ConfigSecretName, metav1.GetOptions{})
+	secret, err := kubeClient.CoreV1().Secrets(kutil.Namespace()).Get(opt.ConfigSecretName, metav1.GetOptions{})
 	if err != nil {
 		log.Fatalf("Failed to load secret: %s", err)
 	}

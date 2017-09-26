@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/appscode/log"
+	"github.com/appscode/go/log"
 	"github.com/appscode/pat"
 	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	tapi_v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"

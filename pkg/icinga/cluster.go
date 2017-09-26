@@ -1,7 +1,7 @@
 package icinga
 
 import (
-	"github.com/appscode/errors"
+	"github.com/appscode/go/errors"
 	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	tcs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
 	clientset "k8s.io/client-go/kubernetes"

@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
+	logs "github.com/appscode/go/log/golog"
 	v "github.com/appscode/go/version"
-	logs "github.com/appscode/log/golog"
 	"github.com/appscode/searchlight/plugins/notifier"
 )
 

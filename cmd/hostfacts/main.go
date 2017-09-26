@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	logs "github.com/appscode/log/golog"
+	logs "github.com/appscode/go/log/golog"
 	"github.com/appscode/searchlight/pkg/cmds"
 )
 

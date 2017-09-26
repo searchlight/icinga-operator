@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/appscode/errors"
+	"github.com/appscode/go/errors"
 	tapi "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 )
 
