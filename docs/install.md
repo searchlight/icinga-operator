@@ -86,3 +86,39 @@ searchlight-operator-1987091405-ghj5b   3/3       Running   0          1m
 $ kubectl delete pods -n kube-system searchlight-operator-1987091405-ghj5b
 pod "searchlight-operator-1987091405-ghj5b" deleted
 ```
+
+
+## Using kubectl
+```console
+# List all Searchlight objects
+$ kubectl get clusteralerts,nodealerts,podalerts --all-namespaces
+$ kubectl get ca,noa,poa --all-namespaces
+
+# List Searchlight objects for a namespace
+$ kubectl get ca,noa,poa -n <namespace>
+
+# Get Searchlight object YAML
+$ kubectl get poa -n <namespace> <name> -o yaml
+
+# Describe Searchlight object. Very useful to debug problems.
+$ kubectl describe poa -n <namespace> <name>
+```
+
+
+## Detect Searchlight version
+To detect Searchlight version, exec into the operator pod and run `searchlight version` command.
+
+```console
+$ POD_NAMESPACE=kube-system
+$ POD_NAME=$(kubectl get pods -n $POD_NAMESPACE -l app=searchlight -o jsonpath={.items[0].metadata.name})
+$ kubectl exec -it $POD_NAME -c operator -n $POD_NAMESPACE searchlight version
+
+Version = 4.0.0
+VersionStrategy = tag
+Os = alpine
+Arch = amd64
+CommitHash = 9442863beb09a50a2c3818ab586fa5b1541fddf1
+GitBranch = release-4.0
+GitTag = 4.0.0
+CommitTimestamp = 2017-09-26T03:00:58
+```
