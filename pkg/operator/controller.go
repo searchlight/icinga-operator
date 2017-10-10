@@ -62,19 +62,19 @@ func New(kubeClient clientset.Interface, apiExtKubeClient apiextensionsclient.In
 func (op *Operator) Setup() error {
 	log.Infoln("Ensuring CustomResourceDefinition")
 
-	if err := op.ensureCustomResourceDefinition(aci.ResourceKindClusterAlert, aci.ResourceTypeClusterAlert); err != nil {
+	if err := op.ensureCustomResourceDefinition(aci.ResourceKindClusterAlert, aci.ResourceTypeClusterAlert, "ca"); err != nil {
 		return err
 	}
-	if err := op.ensureCustomResourceDefinition(aci.ResourceKindNodeAlert, aci.ResourceTypeNodeAlert); err != nil {
+	if err := op.ensureCustomResourceDefinition(aci.ResourceKindNodeAlert, aci.ResourceTypeNodeAlert, "noa"); err != nil {
 		return err
 	}
-	if err := op.ensureCustomResourceDefinition(aci.ResourceKindPodAlert, aci.ResourceTypePodAlert); err != nil {
+	if err := op.ensureCustomResourceDefinition(aci.ResourceKindPodAlert, aci.ResourceTypePodAlert, "poa"); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (op *Operator) ensureCustomResourceDefinition(resourceKind, resourceType string) error {
+func (op *Operator) ensureCustomResourceDefinition(resourceKind, resourceType, shortName string) error {
 	name := resourceType + "." + api.SchemeGroupVersion.Group
 	_, err := op.ApiExtKubeClient.ApiextensionsV1beta1().CustomResourceDefinitions().Get(name, metav1.GetOptions{})
 	if !kerr.IsNotFound(err) {
@@ -93,8 +93,9 @@ func (op *Operator) ensureCustomResourceDefinition(resourceKind, resourceType st
 			Version: api.SchemeGroupVersion.Version,
 			Scope:   extensionsobj.NamespaceScoped,
 			Names: extensionsobj.CustomResourceDefinitionNames{
-				Plural: resourceType,
-				Kind:   resourceKind,
+				Plural:     resourceType,
+				Kind:       resourceKind,
+				ShortNames: []string{shortName},
 			},
 		},
 	}

@@ -9,6 +9,7 @@ spec:
   names:
     kind: PodAlert
     plural: podalerts
+    shortNames: ["poa"]
   scope: Namespaced
   version: v1alpha1
 ---
@@ -23,6 +24,7 @@ spec:
   names:
     kind: NodeAlert
     plural: nodealerts
+    shortNames: ["noa"]
   scope: Namespaced
   version: v1alpha1
 ---
@@ -37,5 +39,6 @@ spec:
   names:
     kind: ClusterAlert
     plural: clusteralerts
+    shortNames: ["ca"]
   scope: Namespaced
   version: v1alpha1
