@@ -6,30 +6,24 @@ import (
 
 	"github.com/appscode/go/errors"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	cs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
 	core "k8s.io/api/core/v1"
-	"k8s.io/client-go/kubernetes"
 )
 
 type NodeHost struct {
 	commonHost
 
-	KubeClient kubernetes.Interface
-	ExtClient  cs.MonitoringV1alpha1Interface
 	//*types.Context
 }
 
-func NewNodeHost(kubeClient kubernetes.Interface, extClient cs.MonitoringV1alpha1Interface, IcingaClient *Client) *NodeHost {
+func NewNodeHost(IcingaClient *Client) *NodeHost {
 	return &NodeHost{
-		KubeClient: kubeClient,
-		ExtClient:  extClient,
 		commonHost: commonHost{
 			IcingaClient: IcingaClient,
 		},
 	}
 }
 
-func (h *NodeHost) getHost(alert api.NodeAlert, node core.Node) IcingaHost {
+func (h *NodeHost) getHost(namespace string, node core.Node) IcingaHost {
 	nodeIP := "127.0.0.1"
 	for _, ip := range node.Status.Addresses {
 		if ip.Type == internalIP {
@@ -40,7 +34,7 @@ func (h *NodeHost) getHost(alert api.NodeAlert, node core.Node) IcingaHost {
 	return IcingaHost{
 		ObjectName:     node.Name,
 		Type:           TypeNode,
-		AlertNamespace: alert.Namespace,
+		AlertNamespace: namespace,
 		IP:             nodeIP,
 	}
 }
@@ -77,7 +71,7 @@ func (h *NodeHost) expandVars(alertSpec api.NodeAlertSpec, kh IcingaHost, attrs 
 // set Alert in Icinga LocalHost
 func (h *NodeHost) Create(alert api.NodeAlert, node core.Node) error {
 	alertSpec := alert.Spec
-	kh := h.getHost(alert, node)
+	kh := h.getHost(alert.Namespace, node)
 
 	if has, err := h.CheckIcingaService(alert.Name, kh); err != nil || has {
 		return err
@@ -104,7 +98,7 @@ func (h *NodeHost) Create(alert api.NodeAlert, node core.Node) error {
 
 func (h *NodeHost) Update(alert api.NodeAlert, node core.Node) error {
 	alertSpec := alert.Spec
-	kh := h.getHost(alert, node)
+	kh := h.getHost(alert.Namespace, node)
 
 	attrs := make(map[string]interface{})
 	if alertSpec.CheckInterval.Seconds() > 0 {
@@ -120,10 +114,10 @@ func (h *NodeHost) Update(alert api.NodeAlert, node core.Node) error {
 	return h.UpdateIcingaNotification(alert, kh)
 }
 
-func (h *NodeHost) Delete(alert api.NodeAlert, node core.Node) error {
-	kh := h.getHost(alert, node)
+func (h *NodeHost) Delete(namespace, name string, node core.Node) error {
+	kh := h.getHost(namespace, node)
 
-	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
+	if err := h.DeleteIcingaService(name, kh); err != nil {
 		return errors.FromErr(err).Err()
 	}
 	return h.DeleteIcingaHost(kh)

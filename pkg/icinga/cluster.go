@@ -3,38 +3,31 @@ package icinga
 import (
 	"github.com/appscode/go/errors"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	cs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
-	"k8s.io/client-go/kubernetes"
 )
 
 type ClusterHost struct {
 	commonHost
-
-	KubeClient kubernetes.Interface
-	ExtClient  cs.MonitoringV1alpha1Interface
 }
 
-func NewClusterHost(kubeClient kubernetes.Interface, extClient cs.MonitoringV1alpha1Interface, IcingaClient *Client) *ClusterHost {
+func NewClusterHost(IcingaClient *Client) *ClusterHost {
 	return &ClusterHost{
-		KubeClient: kubeClient,
-		ExtClient:  extClient,
 		commonHost: commonHost{
 			IcingaClient: IcingaClient,
 		},
 	}
 }
 
-func (h *ClusterHost) getHost(alert api.ClusterAlert) IcingaHost {
+func (h *ClusterHost) getHost(namespace string) IcingaHost {
 	return IcingaHost{
 		Type:           TypeCluster,
-		AlertNamespace: alert.Namespace,
+		AlertNamespace: namespace,
 		IP:             "127.0.0.1",
 	}
 }
 
 func (h *ClusterHost) Create(alert api.ClusterAlert) error {
 	alertSpec := alert.Spec
-	kh := h.getHost(alert)
+	kh := h.getHost(alert.Namespace)
 
 	if has, err := h.CheckIcingaService(alert.Name, kh); err != nil || has {
 		return err
@@ -63,7 +56,7 @@ func (h *ClusterHost) Create(alert api.ClusterAlert) error {
 
 func (h *ClusterHost) Update(alert api.ClusterAlert) error {
 	alertSpec := alert.Spec
-	kh := h.getHost(alert)
+	kh := h.getHost(alert.Namespace)
 
 	attrs := make(map[string]interface{})
 	if alertSpec.CheckInterval.Seconds() > 0 {
@@ -82,9 +75,9 @@ func (h *ClusterHost) Update(alert api.ClusterAlert) error {
 	return h.UpdateIcingaNotification(alert, kh)
 }
 
-func (h *ClusterHost) Delete(alert api.ClusterAlert) error {
-	kh := h.getHost(alert)
-	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
+func (h *ClusterHost) Delete(namespace, name string) error {
+	kh := h.getHost(namespace)
+	if err := h.DeleteIcingaService(name, kh); err != nil {
 		return errors.FromErr(err).Err()
 	}
 	return h.DeleteIcingaHost(kh)

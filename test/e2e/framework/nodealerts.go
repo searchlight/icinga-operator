@@ -74,7 +74,7 @@ func (f *Framework) EventuallyNodeAlertIcingaService(meta metav1.ObjectMeta, nod
 	objectList, err := f.getNodeAlertObjects(meta, nodeAlertSpec)
 	Expect(err).NotTo(HaveOccurred())
 
-	in := icinga.NewNodeHost(nil, nil, f.icingaClient).
+	in := icinga.NewNodeHost(f.icingaClient).
 		IcingaServiceSearchQuery(meta.Name, objectList...)
 
 	return Eventually(

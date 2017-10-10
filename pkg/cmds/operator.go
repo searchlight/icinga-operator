@@ -1,14 +1,17 @@
 package cmds
 
 import (
+	"net/http"
 	_ "net/http/pprof"
 	"time"
 
 	"github.com/appscode/go/log"
 	"github.com/appscode/kutil/meta"
+	"github.com/appscode/pat"
 	cs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/operator"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 	crd_cs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -50,7 +53,7 @@ func run(opt operator.Options) {
 	}
 
 	kubeClient := kubernetes.NewForConfigOrDie(config)
-	apiExtKubeClient := crd_cs.NewForConfigOrDie(config)
+	CRDClient := crd_cs.NewForConfigOrDie(config)
 	extClient := cs.NewForConfigOrDie(config)
 
 	secret, err := kubeClient.CoreV1().Secrets(meta.Namespace()).Get(opt.ConfigSecretName, metav1.GetOptions{})
@@ -82,11 +85,22 @@ func run(opt operator.Options) {
 		time.Sleep(2 * time.Second)
 	}
 
-	op := operator.New(kubeClient, apiExtKubeClient, extClient, icingaClient, opt)
+	op := operator.New(kubeClient, CRDClient, extClient, icingaClient, opt)
 	if err := op.Setup(); err != nil {
 		log.Fatalln(err)
 	}
 
 	log.Infoln("Starting Searchlight operator...")
-	op.RunAndHold()
+	// Now let's start the controller
+	stop := make(chan struct{})
+	defer close(stop)
+	go op.Run(1, stop)
+
+	go op.RunAPIServer()
+
+	m := pat.New()
+	m.Get("/metrics", promhttp.Handler())
+	http.Handle("/", m)
+	log.Infoln("Listening on", op.Opt.WebAddress)
+	log.Fatal(http.ListenAndServe(op.Opt.WebAddress, nil))
 }

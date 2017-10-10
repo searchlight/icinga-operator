@@ -6,33 +6,26 @@ import (
 
 	"github.com/appscode/go/errors"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	cs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
 	core "k8s.io/api/core/v1"
-	"k8s.io/client-go/kubernetes"
 )
 
 type PodHost struct {
 	commonHost
-
-	KubeClient kubernetes.Interface
-	ExtClient  cs.MonitoringV1alpha1Interface
 }
 
-func NewPodHost(kubeClient kubernetes.Interface, extClient cs.MonitoringV1alpha1Interface, IcingaClient *Client) *PodHost {
+func NewPodHost(IcingaClient *Client) *PodHost {
 	return &PodHost{
-		KubeClient: kubeClient,
-		ExtClient:  extClient,
 		commonHost: commonHost{
 			IcingaClient: IcingaClient,
 		},
 	}
 }
 
-func (h *PodHost) getHost(alert api.PodAlert, pod core.Pod) IcingaHost {
+func (h *PodHost) getHost(namespace string, pod core.Pod) IcingaHost {
 	return IcingaHost{
 		ObjectName:     pod.Name,
 		Type:           TypePod,
-		AlertNamespace: alert.Namespace,
+		AlertNamespace: namespace,
 		IP:             pod.Status.PodIP,
 	}
 }
@@ -69,7 +62,7 @@ func (h *PodHost) expandVars(alertSpec api.PodAlertSpec, kh IcingaHost, attrs ma
 
 func (h *PodHost) Create(alert api.PodAlert, pod core.Pod) error {
 	alertSpec := alert.Spec
-	kh := h.getHost(alert, pod)
+	kh := h.getHost(alert.Namespace, pod)
 
 	if has, err := h.CheckIcingaService(alert.Name, kh); err != nil || has {
 		return err
@@ -96,7 +89,7 @@ func (h *PodHost) Create(alert api.PodAlert, pod core.Pod) error {
 
 func (h *PodHost) Update(alert api.PodAlert, pod core.Pod) error {
 	alertSpec := alert.Spec
-	kh := h.getHost(alert, pod)
+	kh := h.getHost(alert.Namespace, pod)
 
 	attrs := make(map[string]interface{})
 	if alertSpec.CheckInterval.Seconds() > 0 {
@@ -112,10 +105,10 @@ func (h *PodHost) Update(alert api.PodAlert, pod core.Pod) error {
 	return h.UpdateIcingaNotification(alert, kh)
 }
 
-func (h *PodHost) Delete(alert api.PodAlert, pod core.Pod) error {
-	kh := h.getHost(alert, pod)
+func (h *PodHost) Delete(namespace, name string, pod core.Pod) error {
+	kh := h.getHost(namespace, pod)
 
-	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
+	if err := h.DeleteIcingaService(name, kh); err != nil {
 		return errors.FromErr(err).Err()
 	}
 	return h.DeleteIcingaHost(kh)
