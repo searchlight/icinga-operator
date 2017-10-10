@@ -95,12 +95,15 @@ $ kubectl get clusteralerts,nodealerts,podalerts --all-namespaces
 $ kubectl get ca,noa,poa --all-namespaces
 
 # List Searchlight objects for a namespace
+$ kubectl get clusteralerts,nodealerts,podalerts -n <namespace>
 $ kubectl get ca,noa,poa -n <namespace>
 
 # Get Searchlight object YAML
+$ kubectl get podalert -n <namespace> <name> -o yaml
 $ kubectl get poa -n <namespace> <name> -o yaml
 
 # Describe Searchlight object. Very useful to debug problems.
+$ kubectl describe podalert -n <namespace> <name>
 $ kubectl describe poa -n <namespace> <name>
 ```
 
