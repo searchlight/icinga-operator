@@ -128,8 +128,6 @@ type Command struct {
 	// TraverseChildren parses flags on all parents before executing child command.
 	TraverseChildren bool
 
-	// name is the command name, usually the executable's name.
-	name string
 	// commands is the list of commands supported by this program.
 	commands []*Command
 	// parent is a parent command for this command.
@@ -693,6 +691,9 @@ func (c *Command) execute(a []string) (err error) {
 		c.PreRun(c, argWoFlags)
 	}
 
+	if err := c.validateRequiredFlags(); err != nil {
+		return err
+	}
 	if c.RunE != nil {
 		if err := c.RunE(c, argWoFlags); err != nil {
 			return err
@@ -808,6 +809,25 @@ func (c *Command) ValidateArgs(args []string) error {
 		return nil
 	}
 	return c.Args(c, args)
+}
+
+func (c *Command) validateRequiredFlags() error {
+	flags := c.Flags()
+	missingFlagNames := []string{}
+	flags.VisitAll(func(pflag *flag.Flag) {
+		requiredAnnotation, found := pflag.Annotations[BashCompOneRequiredFlag]
+		if !found {
+			return
+		}
+		if (requiredAnnotation[0] == "true") && !pflag.Changed {
+			missingFlagNames = append(missingFlagNames, pflag.Name)
+		}
+	})
+
+	if len(missingFlagNames) > 0 {
+		return fmt.Errorf(`Required flag(s) "%s" have/has not been set`, strings.Join(missingFlagNames, `", "`))
+	}
+	return nil
 }
 
 // InitDefaultHelpFlag adds default help flag to c.
@@ -1025,15 +1045,12 @@ func (c *Command) DebugFlags() {
 
 // Name returns the command's name: the first word in the use line.
 func (c *Command) Name() string {
-	if c.name == "" {
-		name := c.Use
-		i := strings.Index(name, " ")
-		if i >= 0 {
-			name = name[:i]
-		}
-		c.name = name
+	name := c.Use
+	i := strings.Index(name, " ")
+	if i >= 0 {
+		name = name[:i]
 	}
-	return c.name
+	return name
 }
 
 // HasAlias determines if a given string is an alias of the command.
@@ -1343,6 +1360,9 @@ func (c *Command) ParseFlags(args []string) error {
 		return nil
 	}
 
+	if c.flagErrorBuf == nil {
+		c.flagErrorBuf = new(bytes.Buffer)
+	}
 	beforeErrorBufLen := c.flagErrorBuf.Len()
 	c.mergePersistentFlags()
 	err := c.Flags().Parse(args)

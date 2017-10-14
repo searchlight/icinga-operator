@@ -6,14 +6,14 @@ import (
 	"time"
 
 	"github.com/appscode/go/log"
+	"github.com/appscode/kutil"
 	"github.com/appscode/pat"
-	aci "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	extensionsobj "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+	apiextensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -33,10 +33,10 @@ type Options struct {
 }
 
 type Operator struct {
-	KubeClient       clientset.Interface
-	ApiExtKubeClient apiextensionsclient.Interface
-	ExtClient        cs.MonitoringV1alpha1Interface
-	IcingaClient     *icinga.Client // TODO: init
+	KubeClient   clientset.Interface
+	CRDClient    apiextensionsclient.Interface
+	ExtClient    cs.MonitoringV1alpha1Interface
+	IcingaClient *icinga.Client // TODO: init
 
 	Opt         Options
 	clusterHost *icinga.ClusterHost
@@ -45,63 +45,40 @@ type Operator struct {
 	recorder    record.EventRecorder
 }
 
-func New(kubeClient clientset.Interface, apiExtKubeClient apiextensionsclient.Interface, extClient cs.MonitoringV1alpha1Interface, icingaClient *icinga.Client, opt Options) *Operator {
+func New(kubeClient clientset.Interface, crdClient apiextensionsclient.Interface, extClient cs.MonitoringV1alpha1Interface, icingaClient *icinga.Client, opt Options) *Operator {
 	return &Operator{
-		KubeClient:       kubeClient,
-		ApiExtKubeClient: apiExtKubeClient,
-		ExtClient:        extClient,
-		IcingaClient:     icingaClient,
-		Opt:              opt,
-		clusterHost:      icinga.NewClusterHost(kubeClient, extClient, icingaClient),
-		nodeHost:         icinga.NewNodeHost(kubeClient, extClient, icingaClient),
-		podHost:          icinga.NewPodHost(kubeClient, extClient, icingaClient),
-		recorder:         eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
+		KubeClient:   kubeClient,
+		CRDClient:    crdClient,
+		ExtClient:    extClient,
+		IcingaClient: icingaClient,
+		Opt:          opt,
+		clusterHost:  icinga.NewClusterHost(kubeClient, extClient, icingaClient),
+		nodeHost:     icinga.NewNodeHost(kubeClient, extClient, icingaClient),
+		podHost:      icinga.NewPodHost(kubeClient, extClient, icingaClient),
+		recorder:     eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
 	}
 }
 
 func (op *Operator) Setup() error {
-	log.Infoln("Ensuring CustomResourceDefinition")
-
-	if err := op.ensureCustomResourceDefinition(aci.ResourceKindClusterAlert, aci.ResourceTypeClusterAlert, "ca"); err != nil {
-		return err
-	}
-	if err := op.ensureCustomResourceDefinition(aci.ResourceKindNodeAlert, aci.ResourceTypeNodeAlert, "noa"); err != nil {
-		return err
-	}
-	if err := op.ensureCustomResourceDefinition(aci.ResourceKindPodAlert, aci.ResourceTypePodAlert, "poa"); err != nil {
-		return err
-	}
-	return nil
+	return op.ensureCustomResourceDefinitions()
 }
 
-func (op *Operator) ensureCustomResourceDefinition(resourceKind, resourceType, shortName string) error {
-	name := resourceType + "." + api.SchemeGroupVersion.Group
-	_, err := op.ApiExtKubeClient.ApiextensionsV1beta1().CustomResourceDefinitions().Get(name, metav1.GetOptions{})
-	if !kerr.IsNotFound(err) {
-		return err
+func (op *Operator) ensureCustomResourceDefinitions() error {
+	crds := []*apiextensions.CustomResourceDefinition{
+		api.ClusterAlert{}.CustomResourceDefinition(),
+		api.NodeAlert{}.CustomResourceDefinition(),
+		api.PodAlert{}.CustomResourceDefinition(),
 	}
-
-	crd := &extensionsobj.CustomResourceDefinition{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: name,
-			Labels: map[string]string{
-				"app": "searchlight",
-			},
-		},
-		Spec: extensionsobj.CustomResourceDefinitionSpec{
-			Group:   api.SchemeGroupVersion.Group,
-			Version: api.SchemeGroupVersion.Version,
-			Scope:   extensionsobj.NamespaceScoped,
-			Names: extensionsobj.CustomResourceDefinitionNames{
-				Plural:     resourceType,
-				Kind:       resourceKind,
-				ShortNames: []string{shortName},
-			},
-		},
+	for _, crd := range crds {
+		_, err := op.CRDClient.ApiextensionsV1beta1().CustomResourceDefinitions().Get(crd.Name, metav1.GetOptions{})
+		if kerr.IsNotFound(err) {
+			_, err = op.CRDClient.ApiextensionsV1beta1().CustomResourceDefinitions().Create(crd)
+			if err != nil {
+				return err
+			}
+		}
 	}
-
-	_, err = op.ApiExtKubeClient.ApiextensionsV1beta1().CustomResourceDefinitions().Create(crd)
-	return err
+	return kutil.WaitForCRDReady(op.KubeClient.CoreV1().RESTClient(), crds)
 }
 
 func (op *Operator) RunAPIServer() {
