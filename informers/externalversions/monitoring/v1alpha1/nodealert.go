@@ -41,26 +41,31 @@ type nodeAlertInformer struct {
 	factory internalinterfaces.SharedInformerFactory
 }
 
-func newNodeAlertInformer(client client.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	sharedIndexInformer := cache.NewSharedIndexInformer(
+// NewNodeAlertInformer constructs a new informer for NodeAlert type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewNodeAlertInformer(client client.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
-				return client.MonitoringV1alpha1().NodeAlerts(v1.NamespaceAll).List(options)
+				return client.MonitoringV1alpha1().NodeAlerts(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
-				return client.MonitoringV1alpha1().NodeAlerts(v1.NamespaceAll).Watch(options)
+				return client.MonitoringV1alpha1().NodeAlerts(namespace).Watch(options)
 			},
 		},
 		&monitoring_v1alpha1.NodeAlert{},
 		resyncPeriod,
-		cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc},
+		indexers,
 	)
+}
 
-	return sharedIndexInformer
+func defaultNodeAlertInformer(client client.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewNodeAlertInformer(client, v1.NamespaceAll, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc})
 }
 
 func (f *nodeAlertInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&monitoring_v1alpha1.NodeAlert{}, newNodeAlertInformer)
+	return f.factory.InformerFor(&monitoring_v1alpha1.NodeAlert{}, defaultNodeAlertInformer)
 }
 
 func (f *nodeAlertInformer) Lister() v1alpha1.NodeAlertLister {

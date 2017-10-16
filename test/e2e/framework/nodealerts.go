@@ -25,7 +25,7 @@ func (f *Invocation) NodeAlert() *api.NodeAlert {
 		},
 		Spec: api.NodeAlertSpec{
 			CheckInterval: metav1.Duration{time.Second * 5},
-			Vars:          make(map[string]interface{}),
+			Vars:          make(map[string]string),
 		},
 	}
 }

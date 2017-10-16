@@ -23,7 +23,7 @@ func (f *Invocation) ClusterAlert() *api.ClusterAlert {
 		},
 		Spec: api.ClusterAlertSpec{
 			CheckInterval: metav1.Duration{time.Second * 5},
-			Vars:          make(map[string]interface{}),
+			Vars:          make(map[string]string),
 		},
 	}
 }

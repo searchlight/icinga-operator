@@ -7,11 +7,11 @@ import (
 	"github.com/appscode/go/types"
 	kutilapps "github.com/appscode/kutil/apps/v1beta1"
 	. "github.com/onsi/gomega"
+	apps "k8s.io/api/apps/v1beta1"
+	apiv1 "k8s.io/api/core/v1"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	apiv1 "k8s.io/client-go/pkg/api/v1"
-	apps "k8s.io/client-go/pkg/apis/apps/v1beta1"
 )
 
 func (f *Invocation) StatefulSet() *apps.StatefulSet {

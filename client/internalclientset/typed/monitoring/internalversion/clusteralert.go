@@ -58,6 +58,41 @@ func newClusterAlerts(c *MonitoringClient, namespace string) *clusterAlerts {
 	}
 }
 
+// Get takes name of the clusterAlert, and returns the corresponding clusterAlert object, and an error if there is any.
+func (c *clusterAlerts) Get(name string, options v1.GetOptions) (result *monitoring.ClusterAlert, err error) {
+	result = &monitoring.ClusterAlert{}
+	err = c.client.Get().
+		Namespace(c.ns).
+		Resource("clusteralerts").
+		Name(name).
+		VersionedParams(&options, scheme.ParameterCodec).
+		Do().
+		Into(result)
+	return
+}
+
+// List takes label and field selectors, and returns the list of ClusterAlerts that match those selectors.
+func (c *clusterAlerts) List(opts v1.ListOptions) (result *monitoring.ClusterAlertList, err error) {
+	result = &monitoring.ClusterAlertList{}
+	err = c.client.Get().
+		Namespace(c.ns).
+		Resource("clusteralerts").
+		VersionedParams(&opts, scheme.ParameterCodec).
+		Do().
+		Into(result)
+	return
+}
+
+// Watch returns a watch.Interface that watches the requested clusterAlerts.
+func (c *clusterAlerts) Watch(opts v1.ListOptions) (watch.Interface, error) {
+	opts.Watch = true
+	return c.client.Get().
+		Namespace(c.ns).
+		Resource("clusteralerts").
+		VersionedParams(&opts, scheme.ParameterCodec).
+		Watch()
+}
+
 // Create takes the representation of a clusterAlert and creates it.  Returns the server's representation of the clusterAlert, and an error, if there is any.
 func (c *clusterAlerts) Create(clusterAlert *monitoring.ClusterAlert) (result *monitoring.ClusterAlert, err error) {
 	result = &monitoring.ClusterAlert{}
@@ -103,41 +138,6 @@ func (c *clusterAlerts) DeleteCollection(options *v1.DeleteOptions, listOptions 
 		Body(options).
 		Do().
 		Error()
-}
-
-// Get takes name of the clusterAlert, and returns the corresponding clusterAlert object, and an error if there is any.
-func (c *clusterAlerts) Get(name string, options v1.GetOptions) (result *monitoring.ClusterAlert, err error) {
-	result = &monitoring.ClusterAlert{}
-	err = c.client.Get().
-		Namespace(c.ns).
-		Resource("clusteralerts").
-		Name(name).
-		VersionedParams(&options, scheme.ParameterCodec).
-		Do().
-		Into(result)
-	return
-}
-
-// List takes label and field selectors, and returns the list of ClusterAlerts that match those selectors.
-func (c *clusterAlerts) List(opts v1.ListOptions) (result *monitoring.ClusterAlertList, err error) {
-	result = &monitoring.ClusterAlertList{}
-	err = c.client.Get().
-		Namespace(c.ns).
-		Resource("clusteralerts").
-		VersionedParams(&opts, scheme.ParameterCodec).
-		Do().
-		Into(result)
-	return
-}
-
-// Watch returns a watch.Interface that watches the requested clusterAlerts.
-func (c *clusterAlerts) Watch(opts v1.ListOptions) (watch.Interface, error) {
-	opts.Watch = true
-	return c.client.Get().
-		Namespace(c.ns).
-		Resource("clusteralerts").
-		VersionedParams(&opts, scheme.ParameterCodec).
-		Watch()
 }
 
 // Patch applies the patch and returns the patched clusterAlert.

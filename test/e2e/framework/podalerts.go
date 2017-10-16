@@ -25,7 +25,7 @@ func (f *Invocation) PodAlert() *api.PodAlert {
 		},
 		Spec: api.PodAlertSpec{
 			CheckInterval: metav1.Duration{time.Second * 5},
-			Vars:          make(map[string]interface{}),
+			Vars:          make(map[string]string),
 		},
 	}
 }

@@ -36,40 +36,7 @@ var podalertsResource = schema.GroupVersionResource{Group: "monitoring.appscode.
 
 var podalertsKind = schema.GroupVersionKind{Group: "monitoring.appscode.com", Version: "", Kind: "PodAlert"}
 
-func (c *FakePodAlerts) Create(podAlert *monitoring.PodAlert) (result *monitoring.PodAlert, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewCreateAction(podalertsResource, c.ns, podAlert), &monitoring.PodAlert{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*monitoring.PodAlert), err
-}
-
-func (c *FakePodAlerts) Update(podAlert *monitoring.PodAlert) (result *monitoring.PodAlert, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewUpdateAction(podalertsResource, c.ns, podAlert), &monitoring.PodAlert{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*monitoring.PodAlert), err
-}
-
-func (c *FakePodAlerts) Delete(name string, options *v1.DeleteOptions) error {
-	_, err := c.Fake.
-		Invokes(testing.NewDeleteAction(podalertsResource, c.ns, name), &monitoring.PodAlert{})
-
-	return err
-}
-
-func (c *FakePodAlerts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(podalertsResource, c.ns, listOptions)
-
-	_, err := c.Fake.Invokes(action, &monitoring.PodAlertList{})
-	return err
-}
-
+// Get takes name of the podAlert, and returns the corresponding podAlert object, and an error if there is any.
 func (c *FakePodAlerts) Get(name string, options v1.GetOptions) (result *monitoring.PodAlert, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewGetAction(podalertsResource, c.ns, name), &monitoring.PodAlert{})
@@ -80,6 +47,7 @@ func (c *FakePodAlerts) Get(name string, options v1.GetOptions) (result *monitor
 	return obj.(*monitoring.PodAlert), err
 }
 
+// List takes label and field selectors, and returns the list of PodAlerts that match those selectors.
 func (c *FakePodAlerts) List(opts v1.ListOptions) (result *monitoring.PodAlertList, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewListAction(podalertsResource, podalertsKind, c.ns, opts), &monitoring.PodAlertList{})
@@ -106,6 +74,44 @@ func (c *FakePodAlerts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
 		InvokesWatch(testing.NewWatchAction(podalertsResource, c.ns, opts))
 
+}
+
+// Create takes the representation of a podAlert and creates it.  Returns the server's representation of the podAlert, and an error, if there is any.
+func (c *FakePodAlerts) Create(podAlert *monitoring.PodAlert) (result *monitoring.PodAlert, err error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewCreateAction(podalertsResource, c.ns, podAlert), &monitoring.PodAlert{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*monitoring.PodAlert), err
+}
+
+// Update takes the representation of a podAlert and updates it. Returns the server's representation of the podAlert, and an error, if there is any.
+func (c *FakePodAlerts) Update(podAlert *monitoring.PodAlert) (result *monitoring.PodAlert, err error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewUpdateAction(podalertsResource, c.ns, podAlert), &monitoring.PodAlert{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*monitoring.PodAlert), err
+}
+
+// Delete takes name of the podAlert and deletes it. Returns an error if one occurs.
+func (c *FakePodAlerts) Delete(name string, options *v1.DeleteOptions) error {
+	_, err := c.Fake.
+		Invokes(testing.NewDeleteAction(podalertsResource, c.ns, name), &monitoring.PodAlert{})
+
+	return err
+}
+
+// DeleteCollection deletes a collection of objects.
+func (c *FakePodAlerts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(podalertsResource, c.ns, listOptions)
+
+	_, err := c.Fake.Invokes(action, &monitoring.PodAlertList{})
+	return err
 }
 
 // Patch applies the patch and returns the patched podAlert.

@@ -10,7 +10,6 @@ import (
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	remotecommandserver "k8s.io/apimachinery/pkg/util/remotecommand"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/remotecommand"
@@ -72,7 +71,7 @@ func CheckKubeExec(req *Request) (icinga.State, interface{}) {
 		Param("stderr", "false").
 		Param("tty", "false")
 
-	exec, err := remotecommand.NewExecutor(config, "POST", execRequest.URL())
+	exec, err := remotecommand.NewSPDYExecutor(config, "POST", execRequest.URL())
 	if err != nil {
 		return icinga.UNKNOWN, err
 	}
@@ -82,11 +81,10 @@ func CheckKubeExec(req *Request) (icinga.State, interface{}) {
 	stdErr := new(Writer)
 
 	err = exec.Stream(remotecommand.StreamOptions{
-		SupportedProtocols: remotecommandserver.SupportedStreamingProtocols,
-		Stdin:              stdIn,
-		Stdout:             stdOut,
-		Stderr:             stdErr,
-		Tty:                false,
+		Stdin:  stdIn,
+		Stdout: stdOut,
+		Stderr: stdErr,
+		Tty:    false,
 	})
 
 	var exitCode int

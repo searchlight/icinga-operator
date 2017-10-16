@@ -2,7 +2,7 @@ package matcher
 
 import (
 	"github.com/onsi/gomega/types"
-	apiv1 "k8s.io/client-go/pkg/api/v1"
+	apiv1 "k8s.io/api/core/v1"
 )
 
 func HaveRunningPods(expected int32) types.GomegaMatcher {

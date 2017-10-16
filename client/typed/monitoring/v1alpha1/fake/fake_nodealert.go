@@ -36,40 +36,7 @@ var nodealertsResource = schema.GroupVersionResource{Group: "monitoring.appscode
 
 var nodealertsKind = schema.GroupVersionKind{Group: "monitoring.appscode.com", Version: "v1alpha1", Kind: "NodeAlert"}
 
-func (c *FakeNodeAlerts) Create(nodeAlert *v1alpha1.NodeAlert) (result *v1alpha1.NodeAlert, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewCreateAction(nodealertsResource, c.ns, nodeAlert), &v1alpha1.NodeAlert{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.NodeAlert), err
-}
-
-func (c *FakeNodeAlerts) Update(nodeAlert *v1alpha1.NodeAlert) (result *v1alpha1.NodeAlert, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewUpdateAction(nodealertsResource, c.ns, nodeAlert), &v1alpha1.NodeAlert{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*v1alpha1.NodeAlert), err
-}
-
-func (c *FakeNodeAlerts) Delete(name string, options *v1.DeleteOptions) error {
-	_, err := c.Fake.
-		Invokes(testing.NewDeleteAction(nodealertsResource, c.ns, name), &v1alpha1.NodeAlert{})
-
-	return err
-}
-
-func (c *FakeNodeAlerts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(nodealertsResource, c.ns, listOptions)
-
-	_, err := c.Fake.Invokes(action, &v1alpha1.NodeAlertList{})
-	return err
-}
-
+// Get takes name of the nodeAlert, and returns the corresponding nodeAlert object, and an error if there is any.
 func (c *FakeNodeAlerts) Get(name string, options v1.GetOptions) (result *v1alpha1.NodeAlert, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewGetAction(nodealertsResource, c.ns, name), &v1alpha1.NodeAlert{})
@@ -80,6 +47,7 @@ func (c *FakeNodeAlerts) Get(name string, options v1.GetOptions) (result *v1alph
 	return obj.(*v1alpha1.NodeAlert), err
 }
 
+// List takes label and field selectors, and returns the list of NodeAlerts that match those selectors.
 func (c *FakeNodeAlerts) List(opts v1.ListOptions) (result *v1alpha1.NodeAlertList, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewListAction(nodealertsResource, nodealertsKind, c.ns, opts), &v1alpha1.NodeAlertList{})
@@ -106,6 +74,44 @@ func (c *FakeNodeAlerts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
 		InvokesWatch(testing.NewWatchAction(nodealertsResource, c.ns, opts))
 
+}
+
+// Create takes the representation of a nodeAlert and creates it.  Returns the server's representation of the nodeAlert, and an error, if there is any.
+func (c *FakeNodeAlerts) Create(nodeAlert *v1alpha1.NodeAlert) (result *v1alpha1.NodeAlert, err error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewCreateAction(nodealertsResource, c.ns, nodeAlert), &v1alpha1.NodeAlert{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1alpha1.NodeAlert), err
+}
+
+// Update takes the representation of a nodeAlert and updates it. Returns the server's representation of the nodeAlert, and an error, if there is any.
+func (c *FakeNodeAlerts) Update(nodeAlert *v1alpha1.NodeAlert) (result *v1alpha1.NodeAlert, err error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewUpdateAction(nodealertsResource, c.ns, nodeAlert), &v1alpha1.NodeAlert{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1alpha1.NodeAlert), err
+}
+
+// Delete takes name of the nodeAlert and deletes it. Returns an error if one occurs.
+func (c *FakeNodeAlerts) Delete(name string, options *v1.DeleteOptions) error {
+	_, err := c.Fake.
+		Invokes(testing.NewDeleteAction(nodealertsResource, c.ns, name), &v1alpha1.NodeAlert{})
+
+	return err
+}
+
+// DeleteCollection deletes a collection of objects.
+func (c *FakeNodeAlerts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(nodealertsResource, c.ns, listOptions)
+
+	_, err := c.Fake.Invokes(action, &v1alpha1.NodeAlertList{})
+	return err
 }
 
 // Patch applies the patch and returns the patched nodeAlert.

@@ -36,40 +36,7 @@ var clusteralertsResource = schema.GroupVersionResource{Group: "monitoring.appsc
 
 var clusteralertsKind = schema.GroupVersionKind{Group: "monitoring.appscode.com", Version: "", Kind: "ClusterAlert"}
 
-func (c *FakeClusterAlerts) Create(clusterAlert *monitoring.ClusterAlert) (result *monitoring.ClusterAlert, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewCreateAction(clusteralertsResource, c.ns, clusterAlert), &monitoring.ClusterAlert{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*monitoring.ClusterAlert), err
-}
-
-func (c *FakeClusterAlerts) Update(clusterAlert *monitoring.ClusterAlert) (result *monitoring.ClusterAlert, err error) {
-	obj, err := c.Fake.
-		Invokes(testing.NewUpdateAction(clusteralertsResource, c.ns, clusterAlert), &monitoring.ClusterAlert{})
-
-	if obj == nil {
-		return nil, err
-	}
-	return obj.(*monitoring.ClusterAlert), err
-}
-
-func (c *FakeClusterAlerts) Delete(name string, options *v1.DeleteOptions) error {
-	_, err := c.Fake.
-		Invokes(testing.NewDeleteAction(clusteralertsResource, c.ns, name), &monitoring.ClusterAlert{})
-
-	return err
-}
-
-func (c *FakeClusterAlerts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(clusteralertsResource, c.ns, listOptions)
-
-	_, err := c.Fake.Invokes(action, &monitoring.ClusterAlertList{})
-	return err
-}
-
+// Get takes name of the clusterAlert, and returns the corresponding clusterAlert object, and an error if there is any.
 func (c *FakeClusterAlerts) Get(name string, options v1.GetOptions) (result *monitoring.ClusterAlert, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewGetAction(clusteralertsResource, c.ns, name), &monitoring.ClusterAlert{})
@@ -80,6 +47,7 @@ func (c *FakeClusterAlerts) Get(name string, options v1.GetOptions) (result *mon
 	return obj.(*monitoring.ClusterAlert), err
 }
 
+// List takes label and field selectors, and returns the list of ClusterAlerts that match those selectors.
 func (c *FakeClusterAlerts) List(opts v1.ListOptions) (result *monitoring.ClusterAlertList, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewListAction(clusteralertsResource, clusteralertsKind, c.ns, opts), &monitoring.ClusterAlertList{})
@@ -106,6 +74,44 @@ func (c *FakeClusterAlerts) Watch(opts v1.ListOptions) (watch.Interface, error) 
 	return c.Fake.
 		InvokesWatch(testing.NewWatchAction(clusteralertsResource, c.ns, opts))
 
+}
+
+// Create takes the representation of a clusterAlert and creates it.  Returns the server's representation of the clusterAlert, and an error, if there is any.
+func (c *FakeClusterAlerts) Create(clusterAlert *monitoring.ClusterAlert) (result *monitoring.ClusterAlert, err error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewCreateAction(clusteralertsResource, c.ns, clusterAlert), &monitoring.ClusterAlert{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*monitoring.ClusterAlert), err
+}
+
+// Update takes the representation of a clusterAlert and updates it. Returns the server's representation of the clusterAlert, and an error, if there is any.
+func (c *FakeClusterAlerts) Update(clusterAlert *monitoring.ClusterAlert) (result *monitoring.ClusterAlert, err error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewUpdateAction(clusteralertsResource, c.ns, clusterAlert), &monitoring.ClusterAlert{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*monitoring.ClusterAlert), err
+}
+
+// Delete takes name of the clusterAlert and deletes it. Returns an error if one occurs.
+func (c *FakeClusterAlerts) Delete(name string, options *v1.DeleteOptions) error {
+	_, err := c.Fake.
+		Invokes(testing.NewDeleteAction(clusteralertsResource, c.ns, name), &monitoring.ClusterAlert{})
+
+	return err
+}
+
+// DeleteCollection deletes a collection of objects.
+func (c *FakeClusterAlerts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(clusteralertsResource, c.ns, listOptions)
+
+	_, err := c.Fake.Invokes(action, &monitoring.ClusterAlertList{})
+	return err
 }
 
 // Patch applies the patch and returns the patched clusterAlert.

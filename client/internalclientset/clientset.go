@@ -33,15 +33,12 @@ type Interface interface {
 // version included in a Clientset.
 type Clientset struct {
 	*discovery.DiscoveryClient
-	*monitoringinternalversion.MonitoringClient
+	monitoring *monitoringinternalversion.MonitoringClient
 }
 
 // Monitoring retrieves the MonitoringClient
 func (c *Clientset) Monitoring() monitoringinternalversion.MonitoringInterface {
-	if c == nil {
-		return nil
-	}
-	return c.MonitoringClient
+	return c.monitoring
 }
 
 // Discovery retrieves the DiscoveryClient
@@ -60,7 +57,7 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 	}
 	var cs Clientset
 	var err error
-	cs.MonitoringClient, err = monitoringinternalversion.NewForConfig(&configShallowCopy)
+	cs.monitoring, err = monitoringinternalversion.NewForConfig(&configShallowCopy)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +74,7 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 // panics if there is an error in the config.
 func NewForConfigOrDie(c *rest.Config) *Clientset {
 	var cs Clientset
-	cs.MonitoringClient = monitoringinternalversion.NewForConfigOrDie(c)
+	cs.monitoring = monitoringinternalversion.NewForConfigOrDie(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClientForConfigOrDie(c)
 	return &cs
@@ -86,7 +83,7 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 // New creates a new Clientset for the given RESTClient.
 func New(c rest.Interface) *Clientset {
 	var cs Clientset
-	cs.MonitoringClient = monitoringinternalversion.New(c)
+	cs.monitoring = monitoringinternalversion.New(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClient(c)
 	return &cs

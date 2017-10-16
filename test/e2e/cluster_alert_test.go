@@ -6,8 +6,8 @@ import (
 	. "github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	extensions "k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/labels"
-	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
 var _ = Describe("ClusterAlert", func() {

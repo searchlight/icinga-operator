@@ -35,24 +35,18 @@ type Interface interface {
 // version included in a Clientset.
 type Clientset struct {
 	*discovery.DiscoveryClient
-	*monitoringv1alpha1.MonitoringV1alpha1Client
+	monitoringV1alpha1 *monitoringv1alpha1.MonitoringV1alpha1Client
 }
 
 // MonitoringV1alpha1 retrieves the MonitoringV1alpha1Client
 func (c *Clientset) MonitoringV1alpha1() monitoringv1alpha1.MonitoringV1alpha1Interface {
-	if c == nil {
-		return nil
-	}
-	return c.MonitoringV1alpha1Client
+	return c.monitoringV1alpha1
 }
 
 // Deprecated: Monitoring retrieves the default version of MonitoringClient.
 // Please explicitly pick a version.
 func (c *Clientset) Monitoring() monitoringv1alpha1.MonitoringV1alpha1Interface {
-	if c == nil {
-		return nil
-	}
-	return c.MonitoringV1alpha1Client
+	return c.monitoringV1alpha1
 }
 
 // Discovery retrieves the DiscoveryClient
@@ -71,7 +65,7 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 	}
 	var cs Clientset
 	var err error
-	cs.MonitoringV1alpha1Client, err = monitoringv1alpha1.NewForConfig(&configShallowCopy)
+	cs.monitoringV1alpha1, err = monitoringv1alpha1.NewForConfig(&configShallowCopy)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +82,7 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 // panics if there is an error in the config.
 func NewForConfigOrDie(c *rest.Config) *Clientset {
 	var cs Clientset
-	cs.MonitoringV1alpha1Client = monitoringv1alpha1.NewForConfigOrDie(c)
+	cs.monitoringV1alpha1 = monitoringv1alpha1.NewForConfigOrDie(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClientForConfigOrDie(c)
 	return &cs
@@ -97,7 +91,7 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 // New creates a new Clientset for the given RESTClient.
 func New(c rest.Interface) *Clientset {
 	var cs Clientset
-	cs.MonitoringV1alpha1Client = monitoringv1alpha1.New(c)
+	cs.monitoringV1alpha1 = monitoringv1alpha1.New(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClient(c)
 	return &cs

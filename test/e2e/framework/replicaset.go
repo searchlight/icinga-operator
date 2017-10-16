@@ -7,10 +7,10 @@ import (
 	"github.com/appscode/go/types"
 	kutilext "github.com/appscode/kutil/extensions/v1beta1"
 	. "github.com/onsi/gomega"
+	apiv1 "k8s.io/api/core/v1"
+	extensions "k8s.io/api/extensions/v1beta1"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	apiv1 "k8s.io/client-go/pkg/api/v1"
-	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
 func (f *Invocation) ReplicaSet() *extensions.ReplicaSet {

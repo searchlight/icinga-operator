@@ -9,11 +9,10 @@ import (
 	"github.com/appscode/go/flags"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/spf13/cobra"
+	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/pkg/api"
-	apiv1 "k8s.io/client-go/pkg/api/v1"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
@@ -55,7 +54,7 @@ func CheckKubeEvent(req *Request) (icinga.State, interface{}) {
 		objUID = &req.InvolvedObjectUID
 	}
 	fs := fields.AndSelectors(
-		fields.OneTermEqualSelector(api.EventTypeField, apiv1.EventTypeWarning),
+		fields.OneTermEqualSelector("type", apiv1.EventTypeWarning),
 		kubeClient.CoreV1().Events(req.Namespace).GetFieldSelector(objName, objNamespace, objKind, objUID),
 	)
 	eventList, err := kubeClient.CoreV1().Events(req.Namespace).List(metav1.ListOptions{

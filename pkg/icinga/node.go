@@ -7,8 +7,8 @@ import (
 	"github.com/appscode/go/errors"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
+	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
-	apiv1 "k8s.io/client-go/pkg/api/v1"
 )
 
 type NodeHost struct {
@@ -54,7 +54,7 @@ func (h *NodeHost) expandVars(alertSpec api.NodeAlertSpec, kh IcingaHost, attrs 
 					NodeName string
 					NodeIP   string
 				}
-				tmpl, err := template.New("").Parse(val.(string))
+				tmpl, err := template.New("").Parse(val)
 				if err != nil {
 					return err
 				}

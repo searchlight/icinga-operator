@@ -2,11 +2,11 @@ package framework
 
 import (
 	"github.com/appscode/go/types"
+	apps "k8s.io/api/apps/v1beta1"
+	apiv1 "k8s.io/api/core/v1"
+	extensions "k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	apiv1 "k8s.io/client-go/pkg/api/v1"
-	apps "k8s.io/client-go/pkg/apis/apps/v1beta1"
-	extensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
 func (f *Invocation) DeploymentAppSearchlight() *apps.Deployment {
