@@ -10,7 +10,7 @@ import (
 	"github.com/appscode/go/net/httpclient"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/spf13/cobra"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -39,7 +39,7 @@ const (
 	vsphereVolumePluginName        = "kubernetes.io~vsphere-volume"
 )
 
-func getVolumePluginName(volumeSource *apiv1.VolumeSource) string {
+func getVolumePluginName(volumeSource *core.VolumeSource) string {
 	if volumeSource.AWSElasticBlockStore != nil {
 		return awsElasticBlockStorePluginName
 	} else if volumeSource.AzureDisk != nil {
@@ -84,7 +84,7 @@ func getVolumePluginName(volumeSource *apiv1.VolumeSource) string {
 	return ""
 }
 
-func getPersistentVolumePluginName(volumeSource *apiv1.PersistentVolumeSource) string {
+func getPersistentVolumePluginName(volumeSource *core.PersistentVolumeSource) string {
 	if volumeSource.AWSElasticBlockStore != nil {
 		return awsElasticBlockStorePluginName
 	} else if volumeSource.AzureDisk != nil {
@@ -248,7 +248,7 @@ func checkNodeVolume(req *Request) (icinga.State, interface{}) {
 
 	hostIP := ""
 	for _, address := range node.Status.Addresses {
-		if address.Type == apiv1.NodeInternalIP {
+		if address.Type == core.NodeInternalIP {
 			hostIP = address.Address
 		}
 	}

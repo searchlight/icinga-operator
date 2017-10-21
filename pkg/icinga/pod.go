@@ -7,7 +7,7 @@ import (
 	"github.com/appscode/go/errors"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -28,7 +28,7 @@ func NewPodHost(kubeClient kubernetes.Interface, extClient cs.MonitoringV1alpha1
 	}
 }
 
-func (h *PodHost) getHost(alert api.PodAlert, pod apiv1.Pod) IcingaHost {
+func (h *PodHost) getHost(alert api.PodAlert, pod core.Pod) IcingaHost {
 	return IcingaHost{
 		ObjectName:     pod.Name,
 		Type:           TypePod,
@@ -67,7 +67,7 @@ func (h *PodHost) expandVars(alertSpec api.PodAlertSpec, kh IcingaHost, attrs ma
 	return nil
 }
 
-func (h *PodHost) Create(alert api.PodAlert, pod apiv1.Pod) error {
+func (h *PodHost) Create(alert api.PodAlert, pod core.Pod) error {
 	alertSpec := alert.Spec
 	kh := h.getHost(alert, pod)
 
@@ -94,7 +94,7 @@ func (h *PodHost) Create(alert api.PodAlert, pod apiv1.Pod) error {
 	return h.CreateIcingaNotification(alert, kh)
 }
 
-func (h *PodHost) Update(alert api.PodAlert, pod apiv1.Pod) error {
+func (h *PodHost) Update(alert api.PodAlert, pod core.Pod) error {
 	alertSpec := alert.Spec
 	kh := h.getHost(alert, pod)
 
@@ -112,7 +112,7 @@ func (h *PodHost) Update(alert api.PodAlert, pod apiv1.Pod) error {
 	return h.UpdateIcingaNotification(alert, kh)
 }
 
-func (h *PodHost) Delete(alert api.PodAlert, pod apiv1.Pod) error {
+func (h *PodHost) Delete(alert api.PodAlert, pod core.Pod) error {
 	kh := h.getHost(alert, pod)
 
 	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {

@@ -8,7 +8,7 @@ import (
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/util"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	rt "k8s.io/apimachinery/pkg/runtime"
@@ -24,10 +24,10 @@ func (op *Operator) WatchPodAlerts() {
 
 	lw := &cache.ListWatch{
 		ListFunc: func(opts metav1.ListOptions) (rt.Object, error) {
-			return op.ExtClient.PodAlerts(apiv1.NamespaceAll).List(metav1.ListOptions{})
+			return op.ExtClient.PodAlerts(core.NamespaceAll).List(metav1.ListOptions{})
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-			return op.ExtClient.PodAlerts(apiv1.NamespaceAll).Watch(metav1.ListOptions{})
+			return op.ExtClient.PodAlerts(core.NamespaceAll).Watch(metav1.ListOptions{})
 		},
 	}
 	_, ctrl := cache.NewInformer(lw,
@@ -39,7 +39,7 @@ func (op *Operator) WatchPodAlerts() {
 					if ok, err := alert.IsValid(); !ok {
 						op.recorder.Eventf(
 							alert.ObjectReference(),
-							apiv1.EventTypeWarning,
+							core.EventTypeWarning,
 							eventer.EventReasonFailedToCreate,
 							`Fail to be create PodAlert: "%v". Reason: %v`,
 							alert.Name,
@@ -50,7 +50,7 @@ func (op *Operator) WatchPodAlerts() {
 					if err := util.CheckNotifiers(op.KubeClient, alert); err != nil {
 						op.recorder.Eventf(
 							alert.ObjectReference(),
-							apiv1.EventTypeWarning,
+							core.EventTypeWarning,
 							eventer.EventReasonBadNotifier,
 							`Bad notifier config for PodAlert: "%v". Reason: %v`,
 							alert.Name,
@@ -75,7 +75,7 @@ func (op *Operator) WatchPodAlerts() {
 					if ok, err := newAlert.IsValid(); !ok {
 						op.recorder.Eventf(
 							newAlert.ObjectReference(),
-							apiv1.EventTypeWarning,
+							core.EventTypeWarning,
 							eventer.EventReasonFailedToDelete,
 							`Fail to be update PodAlert: "%v". Reason: %v`,
 							newAlert.Name,
@@ -86,7 +86,7 @@ func (op *Operator) WatchPodAlerts() {
 					if err := util.CheckNotifiers(op.KubeClient, newAlert); err != nil {
 						op.recorder.Eventf(
 							newAlert.ObjectReference(),
-							apiv1.EventTypeWarning,
+							core.EventTypeWarning,
 							eventer.EventReasonBadNotifier,
 							`Bad notifier config for PodAlert: "%v". Reason: %v`,
 							newAlert.Name,
@@ -101,7 +101,7 @@ func (op *Operator) WatchPodAlerts() {
 					if ok, err := alert.IsValid(); !ok {
 						op.recorder.Eventf(
 							alert.ObjectReference(),
-							apiv1.EventTypeWarning,
+							core.EventTypeWarning,
 							eventer.EventReasonFailedToDelete,
 							`Fail to be delete PodAlert: "%v". Reason: %v`,
 							alert.Name,
@@ -112,7 +112,7 @@ func (op *Operator) WatchPodAlerts() {
 					if err := util.CheckNotifiers(op.KubeClient, alert); err != nil {
 						op.recorder.Eventf(
 							alert.ObjectReference(),
-							apiv1.EventTypeWarning,
+							core.EventTypeWarning,
 							eventer.EventReasonBadNotifier,
 							`Bad notifier config for PodAlert: "%v". Reason: %v`,
 							alert.Name,
@@ -128,7 +128,7 @@ func (op *Operator) WatchPodAlerts() {
 }
 
 func (op *Operator) EnsurePodAlert(old, new *api.PodAlert) {
-	oldObjs := make(map[string]*apiv1.Pod)
+	oldObjs := make(map[string]*core.Pod)
 
 	if old != nil {
 		oldSel, err := metav1.LabelSelectorAsSelector(&old.Spec.Selector)

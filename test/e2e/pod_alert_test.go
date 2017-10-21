@@ -11,7 +11,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	apps "k8s.io/api/apps/v1beta1"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -22,7 +22,7 @@ var _ = Describe("PodAlert", func() {
 		f               *framework.Invocation
 		rs              *extensions.ReplicaSet
 		ss              *apps.StatefulSet
-		pod             *apiv1.Pod
+		pod             *core.Pod
 		alert           *api.PodAlert
 		skippingMessage string
 	)

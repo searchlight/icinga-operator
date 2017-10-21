@@ -8,7 +8,7 @@ import (
 	kutilapps "github.com/appscode/kutil/apps/v1beta1"
 	. "github.com/onsi/gomega"
 	apps "k8s.io/api/apps/v1beta1"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -35,8 +35,8 @@ func (f *Invocation) StatefulSet() *apps.StatefulSet {
 		},
 	}
 
-	ss.Spec.Template.Spec.Volumes = []apiv1.Volume{}
-	ss.Spec.VolumeClaimTemplates = []apiv1.PersistentVolumeClaim{
+	ss.Spec.Template.Spec.Volumes = []core.Volume{}
+	ss.Spec.VolumeClaimTemplates = []core.PersistentVolumeClaim{
 		{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: TestSourceDataVolumeName,
@@ -44,14 +44,14 @@ func (f *Invocation) StatefulSet() *apps.StatefulSet {
 					"volume.beta.kubernetes.io/storage-class": f.storageClass,
 				},
 			},
-			Spec: apiv1.PersistentVolumeClaimSpec{
+			Spec: core.PersistentVolumeClaimSpec{
 				StorageClassName: types.StringP(f.storageClass),
-				AccessModes: []apiv1.PersistentVolumeAccessMode{
-					apiv1.ReadWriteOnce,
+				AccessModes: []core.PersistentVolumeAccessMode{
+					core.ReadWriteOnce,
 				},
-				Resources: apiv1.ResourceRequirements{
-					Requests: apiv1.ResourceList{
-						apiv1.ResourceStorage: resource.MustParse("5Gi"),
+				Resources: core.ResourceRequirements{
+					Requests: core.ResourceList{
+						core.ResourceStorage: resource.MustParse("5Gi"),
 					},
 				},
 			},
@@ -101,7 +101,7 @@ func (f *Framework) EventuallyDeleteStatefulSet(meta metav1.ObjectMeta) GomegaAs
 
 func (f *Framework) EventuallyStatefulSet(meta metav1.ObjectMeta) GomegaAsyncAssertion {
 	return Eventually(
-		func() *apiv1.PodList {
+		func() *core.PodList {
 			obj, err := f.kubeClient.AppsV1beta1().StatefulSets(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
 			Expect(err).NotTo(HaveOccurred())
 			podList, err := f.GetPodList(obj)

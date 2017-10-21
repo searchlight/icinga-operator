@@ -7,7 +7,7 @@ import (
 	"github.com/appscode/go/types"
 	kutilext "github.com/appscode/kutil/extensions/v1beta1"
 	. "github.com/onsi/gomega"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -77,7 +77,7 @@ func (f *Framework) EventuallyDeleteReplicaSet(meta metav1.ObjectMeta) GomegaAsy
 
 func (f *Framework) EventuallyReplicaSet(meta metav1.ObjectMeta) GomegaAsyncAssertion {
 	return Eventually(
-		func() *apiv1.PodList {
+		func() *core.PodList {
 			obj, err := f.kubeClient.ExtensionsV1beta1().ReplicaSets(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
 			Expect(err).NotTo(HaveOccurred())
 			podList, err := f.GetPodList(obj)

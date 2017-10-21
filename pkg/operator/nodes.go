@@ -8,7 +8,7 @@ import (
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/util"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	rt "k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/runtime"
@@ -30,11 +30,11 @@ func (op *Operator) WatchNodes() {
 		},
 	}
 	_, ctrl := cache.NewInformer(lw,
-		&apiv1.Node{},
+		&core.Node{},
 		op.Opt.ResyncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
-				if resource, ok := obj.(*apiv1.Node); ok {
+				if resource, ok := obj.(*core.Node); ok {
 					log.Infof("Node %s@%s added", resource.Name, resource.Namespace)
 
 					alerts, err := util.FindNodeAlert(op.ExtClient, resource.ObjectMeta)
@@ -56,12 +56,12 @@ func (op *Operator) WatchNodes() {
 				}
 			},
 			UpdateFunc: func(old, new interface{}) {
-				oldNode, ok := old.(*apiv1.Node)
+				oldNode, ok := old.(*core.Node)
 				if !ok {
 					log.Errorln(errors.New("Invalid Node object"))
 					return
 				}
-				newNode, ok := new.(*apiv1.Node)
+				newNode, ok := new.(*core.Node)
 				if !ok {
 					log.Errorln(errors.New("Invalid Node object"))
 					return
@@ -106,7 +106,7 @@ func (op *Operator) WatchNodes() {
 				}
 			},
 			DeleteFunc: func(obj interface{}) {
-				if resource, ok := obj.(*apiv1.Node); ok {
+				if resource, ok := obj.(*core.Node); ok {
 					log.Infof("Node %s@%s deleted", resource.Name, resource.Namespace)
 
 					alerts, err := util.FindNodeAlert(op.ExtClient, resource.ObjectMeta)
@@ -132,12 +132,12 @@ func (op *Operator) WatchNodes() {
 	ctrl.Run(wait.NeverStop)
 }
 
-func (op *Operator) EnsureNode(node *apiv1.Node, old, new *api.NodeAlert) (err error) {
+func (op *Operator) EnsureNode(node *core.Node, old, new *api.NodeAlert) (err error) {
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
 				new.ObjectReference(),
-				apiv1.EventTypeNormal,
+				core.EventTypeNormal,
 				eventer.EventReasonSuccessfulSync,
 				`Applied NodeAlert: "%v"`,
 				new.Name,
@@ -146,7 +146,7 @@ func (op *Operator) EnsureNode(node *apiv1.Node, old, new *api.NodeAlert) (err e
 		} else {
 			op.recorder.Eventf(
 				new.ObjectReference(),
-				apiv1.EventTypeWarning,
+				core.EventTypeWarning,
 				eventer.EventReasonFailedToSync,
 				`Fail to be apply NodeAlert: "%v". Reason: %v`,
 				new.Name,
@@ -165,12 +165,12 @@ func (op *Operator) EnsureNode(node *apiv1.Node, old, new *api.NodeAlert) (err e
 	return
 }
 
-func (op *Operator) EnsureNodeDeleted(node *apiv1.Node, alert *api.NodeAlert) (err error) {
+func (op *Operator) EnsureNodeDeleted(node *core.Node, alert *api.NodeAlert) (err error) {
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
 				alert.ObjectReference(),
-				apiv1.EventTypeNormal,
+				core.EventTypeNormal,
 				eventer.EventReasonSuccessfulDelete,
 				`Deleted NodeAlert: "%v"`,
 				alert.Name,
@@ -179,7 +179,7 @@ func (op *Operator) EnsureNodeDeleted(node *apiv1.Node, alert *api.NodeAlert) (e
 		} else {
 			op.recorder.Eventf(
 				alert.ObjectReference(),
-				apiv1.EventTypeWarning,
+				core.EventTypeWarning,
 				eventer.EventReasonFailedToDelete,
 				`Fail to be delete NodeAlert: "%v". Reason: %v`,
 				alert.Name,

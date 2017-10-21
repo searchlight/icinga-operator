@@ -9,7 +9,7 @@ import (
 	"github.com/appscode/searchlight/test/e2e"
 	shell "github.com/codeskyblue/go-sh"
 	. "github.com/onsi/gomega"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -17,7 +17,7 @@ const (
 	TEST_HEADLESS_SERVICE = "headless"
 )
 
-func (f *Framework) CreateService(obj *apiv1.Service) error {
+func (f *Framework) CreateService(obj *core.Service) error {
 	_, err := f.kubeClient.CoreV1().Services(obj.Namespace).Create(obj)
 	return err
 }

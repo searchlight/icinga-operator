@@ -7,7 +7,7 @@ import (
 	"github.com/appscode/go/flags"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/spf13/cobra"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -62,16 +62,16 @@ func CheckPodStatus(req *Request) (icinga.State, interface{}) {
 // ref: https://github.com/coreos/prometheus-operator/blob/c79166fcff3dae7bb8bc1e6bddc81837c2d97c04/pkg/k8sutil/k8sutil.go#L64
 // PodRunningAndReady returns whether a pod is running and each container has
 // passed it's ready state.
-func PodRunningAndReady(pod apiv1.Pod) (bool, error) {
+func PodRunningAndReady(pod core.Pod) (bool, error) {
 	switch pod.Status.Phase {
-	case apiv1.PodFailed, apiv1.PodSucceeded:
+	case core.PodFailed, core.PodSucceeded:
 		return false, fmt.Errorf("pod completed")
-	case apiv1.PodRunning:
+	case core.PodRunning:
 		for _, cond := range pod.Status.Conditions {
-			if cond.Type != apiv1.PodReady {
+			if cond.Type != core.PodReady {
 				continue
 			}
-			return cond.Status == apiv1.ConditionTrue, nil
+			return cond.Status == core.ConditionTrue, nil
 		}
 		return false, fmt.Errorf("pod ready condition not found")
 	}

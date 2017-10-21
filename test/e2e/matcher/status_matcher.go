@@ -2,7 +2,7 @@ package matcher
 
 import (
 	"github.com/onsi/gomega/types"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 )
 
 func HaveRunningPods(expected int32) types.GomegaMatcher {
@@ -16,12 +16,12 @@ type statusMatcher struct {
 }
 
 func (matcher *statusMatcher) Match(actual interface{}) (success bool, err error) {
-	podList := actual.(*apiv1.PodList)
+	podList := actual.(*core.PodList)
 	if int(matcher.expected) != len(podList.Items) {
 		return false, nil
 	}
 	for _, pod := range podList.Items {
-		if pod.Status.Phase != apiv1.PodRunning {
+		if pod.Status.Phase != core.PodRunning {
 			return false, nil
 		}
 	}
@@ -47,7 +47,7 @@ type countMatcher struct {
 }
 
 func (matcher *countMatcher) Match(actual interface{}) (success bool, err error) {
-	podList := actual.(*apiv1.PodList)
+	podList := actual.(*core.PodList)
 	if int(matcher.expected) != len(podList.Items) {
 		return false, nil
 	}

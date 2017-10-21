@@ -2,7 +2,7 @@ package operator
 
 import (
 	acrt "github.com/appscode/go/runtime"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -24,11 +24,11 @@ func (op *Operator) WatchNamespaces() {
 		},
 	}
 	_, ctrl := cache.NewInformer(lw,
-		&apiv1.Namespace{},
+		&core.Namespace{},
 		op.Opt.ResyncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			DeleteFunc: func(obj interface{}) {
-				if ns, ok := obj.(*apiv1.Namespace); ok {
+				if ns, ok := obj.(*core.Namespace); ok {
 					if alerts, err := op.ExtClient.ClusterAlerts(ns.Name).List(metav1.ListOptions{}); err == nil {
 						for _, alert := range alerts.Items {
 							op.ExtClient.ClusterAlerts(alert.Namespace).Delete(alert.Name, &metav1.DeleteOptions{})

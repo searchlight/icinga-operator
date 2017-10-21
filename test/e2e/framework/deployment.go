@@ -9,7 +9,7 @@ import (
 	kutilext "github.com/appscode/kutil/extensions/v1beta1"
 	. "github.com/onsi/gomega"
 	apps "k8s.io/api/apps/v1beta1"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -74,7 +74,7 @@ func (f *Framework) EventuallyDeleteDeploymentApp(meta metav1.ObjectMeta) Gomega
 }
 
 func (f *Framework) EventuallyDeploymentApp(meta metav1.ObjectMeta) GomegaAsyncAssertion {
-	return Eventually(func() *apiv1.PodList {
+	return Eventually(func() *core.PodList {
 		obj, err := f.kubeClient.AppsV1beta1().Deployments(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
 		Expect(err).NotTo(HaveOccurred())
 		podList, err := f.GetPodList(obj)
@@ -143,7 +143,7 @@ func (f *Framework) EventuallyDeleteDeploymentExtension(meta metav1.ObjectMeta) 
 
 func (f *Framework) EventuallyDeploymentExtension(meta metav1.ObjectMeta) GomegaAsyncAssertion {
 	return Eventually(
-		func() *apiv1.PodList {
+		func() *core.PodList {
 			obj, err := f.kubeClient.ExtensionsV1beta1().Deployments(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
 			Expect(err).NotTo(HaveOccurred())
 			podList, err := f.GetPodList(obj)

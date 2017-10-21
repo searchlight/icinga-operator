@@ -3,7 +3,7 @@ package framework
 import (
 	"github.com/appscode/go/types"
 	apps "k8s.io/api/apps/v1beta1"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -41,8 +41,8 @@ func (f *Invocation) DeploymentExtensionSearchlight() *extensions.Deployment {
 	}
 }
 
-func (f *Invocation) ServiceSearchlight() *apiv1.Service {
-	return &apiv1.Service{
+func (f *Invocation) ServiceSearchlight() *core.Service {
+	return &core.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      f.name,
 			Namespace: f.namespace,
@@ -50,12 +50,12 @@ func (f *Invocation) ServiceSearchlight() *apiv1.Service {
 				"app": "searchlight",
 			},
 		},
-		Spec: apiv1.ServiceSpec{
+		Spec: core.ServiceSpec{
 			Selector: map[string]string{
 				"app": "searchlight",
 			},
-			Type: apiv1.ServiceTypeLoadBalancer,
-			Ports: []apiv1.ServicePort{
+			Type: core.ServiceTypeLoadBalancer,
+			Ports: []core.ServicePort{
 				{
 					Name:       "icinga",
 					Port:       5665,
@@ -71,20 +71,20 @@ func (f *Invocation) ServiceSearchlight() *apiv1.Service {
 	}
 }
 
-func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
-	return apiv1.PodTemplateSpec{
+func (f *Invocation) getSearchlightPodTemplate() core.PodTemplateSpec {
+	return core.PodTemplateSpec{
 		ObjectMeta: metav1.ObjectMeta{
 			Labels: map[string]string{
 				"app": "searchlight",
 			},
 		},
-		Spec: apiv1.PodSpec{
-			Containers: []apiv1.Container{
+		Spec: core.PodSpec{
+			Containers: []core.Container{
 				{
 					Name:            "icinga",
 					Image:           "appscode/icinga:4.0.0-k8s",
-					ImagePullPolicy: apiv1.PullIfNotPresent,
-					Ports: []apiv1.ContainerPort{
+					ImagePullPolicy: core.PullIfNotPresent,
+					Ports: []core.ContainerPort{
 						{
 							ContainerPort: 5665,
 							Name:          "icinga",
@@ -94,13 +94,13 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 							Name:          "ui",
 						},
 					},
-					LivenessProbe: &apiv1.Probe{
-						Handler: apiv1.Handler{
-							HTTPGet: &apiv1.HTTPGetAction{
-								Scheme: apiv1.URISchemeHTTPS,
+					LivenessProbe: &core.Probe{
+						Handler: core.Handler{
+							HTTPGet: &core.HTTPGetAction{
+								Scheme: core.URISchemeHTTPS,
 								Port:   intstr.FromInt(5665),
 								Path:   "/v1/status",
-								HTTPHeaders: []apiv1.HTTPHeader{
+								HTTPHeaders: []core.HTTPHeader{
 									{
 										Name:  "Authorization",
 										Value: "Basic c3RhdHVzdXNlcjpzdGF0dXNwYXNz",
@@ -111,7 +111,7 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 						InitialDelaySeconds: 300,
 						PeriodSeconds:       120,
 					},
-					VolumeMounts: []apiv1.VolumeMount{
+					VolumeMounts: []core.VolumeMount{
 						{
 							Name:      "data",
 							MountPath: "/srv",
@@ -121,20 +121,20 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 				{
 					Name:            "ido",
 					Image:           "appscode/postgres:9.5-alpine",
-					ImagePullPolicy: apiv1.PullIfNotPresent,
-					Env: []apiv1.EnvVar{
+					ImagePullPolicy: core.PullIfNotPresent,
+					Env: []core.EnvVar{
 						{
 							Name:  "PGDATA",
 							Value: "/var/lib/postgresql/data/pgdata",
 						},
 					},
-					Ports: []apiv1.ContainerPort{
+					Ports: []core.ContainerPort{
 						{
 							ContainerPort: 5432,
 							Name:          "ido",
 						},
 					},
-					VolumeMounts: []apiv1.VolumeMount{
+					VolumeMounts: []core.VolumeMount{
 						{
 							Name:      "data",
 							MountPath: "/var/lib/postgresql/data",
@@ -149,7 +149,7 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 						"-c",
 						"cp -rf /var/searchlight /srv/searchlight && sleep 1d",
 					},
-					VolumeMounts: []apiv1.VolumeMount{
+					VolumeMounts: []core.VolumeMount{
 						{
 							Name:      "data",
 							MountPath: "/srv",
@@ -161,17 +161,17 @@ func (f *Invocation) getSearchlightPodTemplate() apiv1.PodTemplateSpec {
 					},
 				},
 			},
-			Volumes: []apiv1.Volume{
+			Volumes: []core.Volume{
 				{
 					Name: "data",
-					VolumeSource: apiv1.VolumeSource{
-						EmptyDir: &apiv1.EmptyDirVolumeSource{},
+					VolumeSource: core.VolumeSource{
+						EmptyDir: &core.EmptyDirVolumeSource{},
 					},
 				},
 				{
 					Name: "icingaconfig",
-					VolumeSource: apiv1.VolumeSource{
-						GitRepo: &apiv1.GitRepoVolumeSource{
+					VolumeSource: core.VolumeSource{
+						GitRepo: &core.GitRepoVolumeSource{
 							Repository: "https://github.com/appscode/icinga-testconfig.git",
 							Directory:  ".",
 						},

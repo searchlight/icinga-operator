@@ -8,7 +8,7 @@ import (
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/util"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	rt "k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/runtime"
@@ -23,18 +23,18 @@ func (op *Operator) WatchPods() {
 
 	lw := &cache.ListWatch{
 		ListFunc: func(opts metav1.ListOptions) (rt.Object, error) {
-			return op.KubeClient.CoreV1().Pods(apiv1.NamespaceAll).List(metav1.ListOptions{})
+			return op.KubeClient.CoreV1().Pods(core.NamespaceAll).List(metav1.ListOptions{})
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-			return op.KubeClient.CoreV1().Pods(apiv1.NamespaceAll).Watch(metav1.ListOptions{})
+			return op.KubeClient.CoreV1().Pods(core.NamespaceAll).Watch(metav1.ListOptions{})
 		},
 	}
 	_, ctrl := cache.NewInformer(lw,
-		&apiv1.Pod{},
+		&core.Pod{},
 		op.Opt.ResyncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
-				if pod, ok := obj.(*apiv1.Pod); ok {
+				if pod, ok := obj.(*core.Pod); ok {
 					log.Infof("Pod %s@%s added", pod.Name, pod.Namespace)
 					if pod.Status.PodIP == "" {
 						log.Warningf("Skipping pod %s@%s, since it has no IP", pod.Name, pod.Namespace)
@@ -60,12 +60,12 @@ func (op *Operator) WatchPods() {
 				}
 			},
 			UpdateFunc: func(old, new interface{}) {
-				oldPod, ok := old.(*apiv1.Pod)
+				oldPod, ok := old.(*core.Pod)
 				if !ok {
 					log.Errorln(errors.New("Invalid Pod object"))
 					return
 				}
-				newPod, ok := new.(*apiv1.Pod)
+				newPod, ok := new.(*core.Pod)
 				if !ok {
 					log.Errorln(errors.New("Invalid Pod object"))
 					return
@@ -116,7 +116,7 @@ func (op *Operator) WatchPods() {
 				}
 			},
 			DeleteFunc: func(obj interface{}) {
-				if pod, ok := obj.(*apiv1.Pod); ok {
+				if pod, ok := obj.(*core.Pod); ok {
 					log.Infof("Pod %s@%s deleted", pod.Name, pod.Namespace)
 
 					alerts, err := util.FindPodAlert(op.ExtClient, pod.ObjectMeta)
@@ -142,12 +142,12 @@ func (op *Operator) WatchPods() {
 	ctrl.Run(wait.NeverStop)
 }
 
-func (op *Operator) EnsurePod(pod *apiv1.Pod, old, new *api.PodAlert) (err error) {
+func (op *Operator) EnsurePod(pod *core.Pod, old, new *api.PodAlert) (err error) {
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
 				new.ObjectReference(),
-				apiv1.EventTypeNormal,
+				core.EventTypeNormal,
 				eventer.EventReasonSuccessfulSync,
 				`Applied PodAlert: "%v"`,
 				new.Name,
@@ -156,7 +156,7 @@ func (op *Operator) EnsurePod(pod *apiv1.Pod, old, new *api.PodAlert) (err error
 		} else {
 			op.recorder.Eventf(
 				new.ObjectReference(),
-				apiv1.EventTypeWarning,
+				core.EventTypeWarning,
 				eventer.EventReasonFailedToSync,
 				`Fail to be apply PodAlert: "%v". Reason: %v`,
 				new.Name,
@@ -175,12 +175,12 @@ func (op *Operator) EnsurePod(pod *apiv1.Pod, old, new *api.PodAlert) (err error
 	return
 }
 
-func (op *Operator) EnsurePodDeleted(pod *apiv1.Pod, alert *api.PodAlert) (err error) {
+func (op *Operator) EnsurePodDeleted(pod *core.Pod, alert *api.PodAlert) (err error) {
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
 				alert.ObjectReference(),
-				apiv1.EventTypeNormal,
+				core.EventTypeNormal,
 				eventer.EventReasonSuccessfulDelete,
 				`Deleted PodAlert: "%v"`,
 				alert.Name,
@@ -189,7 +189,7 @@ func (op *Operator) EnsurePodDeleted(pod *apiv1.Pod, alert *api.PodAlert) (err e
 		} else {
 			op.recorder.Eventf(
 				alert.ObjectReference(),
-				apiv1.EventTypeWarning,
+				core.EventTypeWarning,
 				eventer.EventReasonFailedToDelete,
 				`Fail to be delete PodAlert: "%v". Reason: %v`,
 				alert.Name,

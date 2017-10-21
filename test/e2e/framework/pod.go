@@ -7,7 +7,7 @@ import (
 	"github.com/appscode/go/crypto/rand"
 	. "github.com/onsi/gomega"
 	apps "k8s.io/api/apps/v1beta1"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -18,8 +18,8 @@ const (
 	TestSourceDataMountPath  = "/source/data"
 )
 
-func (f *Invocation) Pod() *apiv1.Pod {
-	return &apiv1.Pod{
+func (f *Invocation) Pod() *core.Pod {
+	return &core.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      rand.WithUniqSuffix("pod"),
 			Namespace: f.namespace,
@@ -31,7 +31,7 @@ func (f *Invocation) Pod() *apiv1.Pod {
 	}
 }
 
-func (f *Framework) CreatePod(obj *apiv1.Pod) (*apiv1.Pod, error) {
+func (f *Framework) CreatePod(obj *core.Pod) (*core.Pod, error) {
 	return f.kubeClient.CoreV1().Pods(obj.Namespace).Create(obj)
 }
 
@@ -41,7 +41,7 @@ func (f *Framework) DeletePod(meta metav1.ObjectMeta) error {
 
 func (f *Framework) EventuallyPodRunning(meta metav1.ObjectMeta) GomegaAsyncAssertion {
 	return Eventually(
-		func() *apiv1.PodList {
+		func() *core.PodList {
 			obj, err := f.kubeClient.CoreV1().Pods(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
 			Expect(err).NotTo(HaveOccurred())
 			podList, err := f.GetPodList(obj)
@@ -53,8 +53,8 @@ func (f *Framework) EventuallyPodRunning(meta metav1.ObjectMeta) GomegaAsyncAsse
 	)
 }
 
-func (f *Invocation) PodTemplate() apiv1.PodTemplateSpec {
-	return apiv1.PodTemplateSpec{
+func (f *Invocation) PodTemplate() core.PodTemplateSpec {
+	return core.PodTemplateSpec{
 		ObjectMeta: metav1.ObjectMeta{
 			Labels: map[string]string{
 				"app": f.app,
@@ -64,18 +64,18 @@ func (f *Invocation) PodTemplate() apiv1.PodTemplateSpec {
 	}
 }
 
-func getPodSpec() apiv1.PodSpec {
-	return apiv1.PodSpec{
-		Containers: []apiv1.Container{
+func getPodSpec() core.PodSpec {
+	return core.PodSpec{
+		Containers: []core.Container{
 			{
 				Name:            "busybox",
 				Image:           "busybox",
-				ImagePullPolicy: apiv1.PullIfNotPresent,
+				ImagePullPolicy: core.PullIfNotPresent,
 				Command: []string{
 					"sleep",
 					"1d",
 				},
-				VolumeMounts: []apiv1.VolumeMount{
+				VolumeMounts: []core.VolumeMount{
 					{
 						Name:      TestSourceDataVolumeName,
 						MountPath: TestSourceDataMountPath,
@@ -83,20 +83,20 @@ func getPodSpec() apiv1.PodSpec {
 				},
 			},
 		},
-		Volumes: []apiv1.Volume{
+		Volumes: []core.Volume{
 			{
 				Name: TestSourceDataVolumeName,
-				VolumeSource: apiv1.VolumeSource{
-					EmptyDir: &apiv1.EmptyDirVolumeSource{},
+				VolumeSource: core.VolumeSource{
+					EmptyDir: &core.EmptyDirVolumeSource{},
 				},
 			},
 		},
 	}
 }
 
-func (f *Framework) GetPodList(actual interface{}) (*apiv1.PodList, error) {
+func (f *Framework) GetPodList(actual interface{}) (*core.PodList, error) {
 	switch obj := actual.(type) {
-	case *apiv1.Pod:
+	case *core.Pod:
 		return f.listPods(obj.Namespace, obj.Labels)
 	case *extensions.ReplicaSet:
 		return f.listPods(obj.Namespace, obj.Spec.Selector.MatchLabels)
@@ -111,7 +111,7 @@ func (f *Framework) GetPodList(actual interface{}) (*apiv1.PodList, error) {
 	}
 }
 
-func (f *Framework) listPods(namespace string, label map[string]string) (*apiv1.PodList, error) {
+func (f *Framework) listPods(namespace string, label map[string]string) (*core.PodList, error) {
 	return f.kubeClient.CoreV1().Pods(namespace).List(metav1.ListOptions{
 		LabelSelector: labels.SelectorFromSet(label).String(),
 	})

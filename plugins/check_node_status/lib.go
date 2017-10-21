@@ -7,7 +7,7 @@ import (
 	"github.com/appscode/go/flags"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/spf13/cobra"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -37,7 +37,7 @@ func CheckNodeStatus(req *Request) (icinga.State, interface{}) {
 	}
 
 	for _, condition := range node.Status.Conditions {
-		if condition.Type == apiv1.NodeReady && condition.Status == apiv1.ConditionFalse {
+		if condition.Type == core.NodeReady && condition.Status == core.ConditionFalse {
 			return icinga.CRITICAL, "Node is not Ready"
 		}
 	}

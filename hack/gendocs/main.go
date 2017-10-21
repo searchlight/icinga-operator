@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-
 	"github.com/appscode/go/runtime"
 	"github.com/appscode/searchlight/pkg/cmds"
 	"github.com/appscode/searchlight/plugins/hyperalert"

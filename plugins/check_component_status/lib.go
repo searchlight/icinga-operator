@@ -6,7 +6,7 @@ import (
 
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/spf13/cobra"
-	apiv1 "k8s.io/api/core/v1"
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -37,13 +37,13 @@ func CheckComponentStatus(req *Request) (icinga.State, interface{}) {
 	}
 	kubeClient := kubernetes.NewForConfigOrDie(config)
 
-	var components []apiv1.ComponentStatus
+	var components []core.ComponentStatus
 	if req.ComponentName != "" {
 		comp, err := kubeClient.CoreV1().ComponentStatuses().Get(req.ComponentName, metav1.GetOptions{})
 		if err != nil {
 			return icinga.UNKNOWN, err
 		}
-		components = []apiv1.ComponentStatus{*comp}
+		components = []core.ComponentStatus{*comp}
 	} else {
 		comps, err := kubeClient.CoreV1().ComponentStatuses().List(metav1.ListOptions{
 			LabelSelector: req.Selector,
@@ -57,7 +57,7 @@ func CheckComponentStatus(req *Request) (icinga.State, interface{}) {
 	objectInfoList := make([]*objectInfo, 0)
 	for _, component := range components {
 		for _, condition := range component.Conditions {
-			if condition.Type == apiv1.ComponentHealthy && condition.Status == apiv1.ConditionFalse {
+			if condition.Type == core.ComponentHealthy && condition.Status == core.ConditionFalse {
 				objectInfoList = append(objectInfoList,
 					&objectInfo{
 						Name:   component.Name,
