@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "fullname" . }}
+  name: {{ template "searchlight.fullname" . }}
   labels:
-    app: "{{ template "name" . }}"
+    app: "{{ template "searchlight.name" . }}"
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -22,5 +22,5 @@ spec:
     port: 56790
     targetPort: web
   selector:
-    app: "{{ template "name" . }}"
+    app: "{{ template "searchlight.name" . }}"
     release: "{{ .Release.Name }}"

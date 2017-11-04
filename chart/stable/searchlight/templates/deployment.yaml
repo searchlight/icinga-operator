@@ -1,10 +1,10 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "fullname" . }}
+  name: {{ template "searchlight.fullname" . }}
   labels:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    app: "{{ template "name" . }}"
+    app: "{{ template "searchlight.name" . }}"
     heritage: "{{ .Release.Service }}"
     release: "{{ .Release.Name }}"
 spec:
@@ -12,23 +12,27 @@ spec:
   template:
     metadata:
       labels:
-        app: "{{ template "name" . }}"
+        app: "{{ template "searchlight.name" . }}"
         release: "{{ .Release.Name }}"
 {{- if and .Values.criticalAddon (eq .Release.Namespace "kube-system") }}
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
 {{- end }}
     spec:
-      serviceAccountName: {{ if .Values.rbac.create }}{{ template "fullname" . }}{{ else }}"{{ .Values.rbac.serviceAccountName }}"{{ end }}
+      serviceAccountName: {{ if .Values.rbac.create }}{{ template "searchlight.fullname" . }}{{ else }}"{{ .Values.rbac.serviceAccountName }}"{{ end }}
       containers:
       - name: operator
         image: {{ .Values.operator.image }}:{{ .Values.operator.tag }}
-        imagePullPolicy: '{{ .Values.operator.pullPolicy }}'
+        imagePullPolicy: {{ default "" .Values.imagePullPolicy | quote }}
+        {{- if .Values.imagePullSecrets }}
+        imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+        {{- end }}
         args:
         - run
-        - --v=3
+        - --v={{ .Values.logLevel }}
         - --config-dir=/srv
-        - --config-secret-name={{ template "fullname" . }}
+        - --config-secret-name={{ template "searchlight.fullname" . }}
         - --api.address=:8080
         - --web.address=:56790
         ports:
@@ -43,7 +47,11 @@ spec:
           mountPath: /srv
       - name: icinga
         image: {{ .Values.icinga.image }}:{{ .Values.icinga.tag }}
-        imagePullPolicy: '{{ .Values.ido.pullPolicy }}'
+        imagePullPolicy: {{ default "" .Values.imagePullPolicy | quote }}
+        {{- if .Values.imagePullSecrets }}
+        imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+        {{- end }}
         ports:
         - name: icinga
           containerPort: 5665
@@ -66,7 +74,11 @@ spec:
           mountPath: /srv
       - name: ido
         image: {{ .Values.ido.image }}:{{ .Values.ido.tag }}
-        imagePullPolicy: '{{ .Values.ido.pullPolicy }}'
+        imagePullPolicy: {{ default "" .Values.imagePullPolicy | quote }}
+        {{- if .Values.imagePullSecrets }}
+        imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+        {{- end }}
         env:
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
@@ -84,4 +96,8 @@ spec:
       tolerations:
       - key: "CriticalAddonsOnly"
         operator: "Exists"
+{{- end -}}
+{{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
 {{- end -}}

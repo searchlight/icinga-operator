@@ -4,7 +4,7 @@
 ## TL;DR;
 
 ```bash
-$ helm install chart/searchlight
+$ helm install stable/searchlight
 ```
 
 ## Introduction
@@ -18,7 +18,7 @@ This chart bootstraps a [Searchlight controller](https://github.com/appscode/sea
 ## Installing the Chart
 To install the chart with the release name `my-release`:
 ```bash
-$ helm install --name my-release chart/searchlight
+$ helm install --name my-release stable/searchlight
 ```
 The command deploys Searchlight controller on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
 
@@ -43,28 +43,29 @@ The following tables lists the configurable parameters of the Searchlight chart 
 |---------------------------|-------------------------------------------------------------------|------------------------|
 | `operator.image`          | operator container image                                          | `appscode/searchlight` |
 | `operator.tag`            | operator image tag                                                | `4.0.0`                |
-| `operator.pullPolicy`     | operator container image pull policy                              | `IfNotPresent`         |
 | `icinga.image`            | icinga container image                                            | `appscode/icinga`      |
 | `icinga.tag`              | icinga container image tag                                        | `4.0.0-k8s`            |
-| `icinga.pullPolicy`       | icinga container image pull policy                                | `IfNotPresent`         |
 | `ido.image`               | ido container image                                               | `appscode/postgress`   |
 | `ido.tag`                 | ido container image tag                                           | `9.5-alpine`           |
-| `ido.pullPolicy`          | ido container image pull policy                                   | `IfNotPresent`         |
+| `imagePullSecrets`        | Specify image pull secrets                                        | `nil` (does not add image pull secrets to deployed pods) |
+| `imagePullPolicy`         | Image pull policy                                                 | `IfNotPresent`         |
 | `criticalAddon`           | If true, installs Searchlight operator as critical addon          | `false`                |
+| `logLevel`                | Log level for operator                                            | `3`                    |
+| `nodeSelector`            | Node labels for pod assignment                                    | `{}`                   |
 | `rbac.create`             | install required rbac service account, roles and rolebindings     | `false`                |
 | `rbac.serviceAccountName` | ServiceAccount Searchlight will use (ignored if rbac.create=true) | `default`              |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:
 
 ```console
-$ helm install --name my-release --set image.tag=v0.2.1 chart/searchlight
+$ helm install --name my-release --set image.tag=v0.2.1 stable/searchlight
 ```
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while
 installing the chart. For example:
 
 ```console
-$ helm install --name my-release --values values.yaml chart/searchlight
+$ helm install --name my-release --values values.yaml stable/searchlight
 ```
 
 ## RBAC
@@ -85,5 +86,5 @@ If the output contains "beta", you may install the chart with RBAC enabled (see 
 To enable the creation of RBAC resources (On clusters with RBAC). Do the following:
 
 ```console
-$ helm install --name my-release chart/searchlight --set rbac.create=true
+$ helm install --name my-release stable/searchlight --set rbac.create=true
 ```
