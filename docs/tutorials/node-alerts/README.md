@@ -53,9 +53,9 @@ Any NodeAlert can specify nodes in 2 ways:
 
 ### Check Command
 Check commands are used by Icinga to periodically test some condition. If the test return positive appropriate notifications are sent. The following check commands are supported for nodes:
-- [influx_query](/docs/node-alerts/influx_query.md) - To check InfluxDB query result.
-- [node_status](/docs/node-alerts/node_status.md) - To check Kubernetes Node status.
-- [node_volume](/docs/node-alerts/node_volume.md) - To check Node Disk stat.
+- [influx_query](/docs/tutorials/node-alerts/influx_query.md) - To check InfluxDB query result.
+- [node_status](/docs/tutorials/node-alerts/node_status.md) - To check Kubernetes Node status.
+- [node_volume](/docs/tutorials/node-alerts/node_volume.md) - To check Node Disk stat.
 
 Each check command has a name specified in `spec.check` field. Optionally each check command can take one or more parameters. These are specified in `spec.vars` field. To learn about the available parameters for each check command, please visit their documentation. `spec.checkInterval` specifies how frequently Icinga will perform this check. Some examples are: 30s, 5m, 6h, etc.
 
@@ -75,11 +75,11 @@ You can skip this section if you are unfamiliar with how Icinga works. Searchlig
 
 ## Next Steps
  - Visit the links below to learn about the available check commands for nodes:
-    - [influx_query](/docs/node-alerts/influx_query.md) - To check InfluxDB query result.
-    - [node_status](/docs/node-alerts/node_status.md) - To check Kubernetes Node status.
-    - [node_volume](/docs/node-alerts/node_volume.md) - To check Node Disk stat.
- - To periodically run various checks on a Kubernetes cluster, use [ClusterAlerts](/docs/cluster-alerts/README.md).
- - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/pod-alerts/README.md).
+    - [influx_query](/docs/tutorials/node-alerts/influx_query.md) - To check InfluxDB query result.
+    - [node_status](/docs/tutorials/node-alerts/node_status.md) - To check Kubernetes Node status.
+    - [node_volume](/docs/tutorials/node-alerts/node_volume.md) - To check Node Disk stat.
+ - To periodically run various checks on a Kubernetes cluster, use [ClusterAlerts](/docs/tutorials/cluster-alerts/README.md).
+ - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/tutorials/pod-alerts/README.md).
  - See the list of supported notifiers [here](/docs/tutorials/notifiers.md).
  - Wondering what features are coming next? Please visit [here](/ROADMAP.md).
  - Want to hack on Searchlight? Check our [contribution guidelines](/CONTRIBUTING.md).

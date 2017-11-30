@@ -484,9 +484,9 @@ spec:
 
 
 ## Next Steps
- - To periodically run various checks on your Kubernetes cluster, use [ClusterAlerts](/docs/cluster-alerts/README.md).
- - To periodically run various checks on nodes in a Kubernetes cluster, use [NodeAlerts](/docs/node-alerts/README.md).
- - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/pod-alerts/README.md).
+ - To periodically run various checks on your Kubernetes cluster, use [ClusterAlerts](/docs/tutorials/cluster-alerts/README.md).
+ - To periodically run various checks on nodes in a Kubernetes cluster, use [NodeAlerts](/docs/tutorials/node-alerts/README.md).
+ - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/tutorials/pod-alerts/README.md).
  - See the list of supported notifiers [here](/docs/tutorials/notifiers.md).
  - Wondering what features are coming next? Please visit [here](/ROADMAP.md).
  - Want to hack on Searchlight? Check our [contribution guidelines](/CONTRIBUTING.md).
