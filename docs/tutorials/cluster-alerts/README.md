@@ -5,7 +5,7 @@ menu:
     identifier: cluster-alert-overview
     name: Overview
     parent: cluster-alert
-    weight: 10
+    weight: 5
 product_name: searchlight
 menu_name: product_searchlight_4.0.1
 section_menu_id: tutorials

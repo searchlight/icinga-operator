@@ -1,3 +1,20 @@
+---
+title: Overview | Developer Guide
+description: Developer Guide Overview
+menu:
+  product_searchlight_4.0.1:
+    identifier: developer-guide-readme
+    name: Overview
+    parent: developer-guide
+    weight: 15
+product_name: searchlight
+menu_name: product_searchlight_4.0.1
+section_menu_id: developer-guide
+url: /products/searchlight/4.0.1/developer-guide/
+aliases:
+  - /products/searchlight/4.0.1/developer-guide/README/
+---
+
 ## Development Guide
 This document is intended to be the canonical source of truth for things like supported toolchain versions for building Searchlight.
 If you find a requirement that this doc does not capture, please submit an issue on github.
