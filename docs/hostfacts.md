@@ -8,11 +8,11 @@ menu:
     parent: getting-started
     weight: 40
 product_name: searchlight
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_4.0.1
 section_menu_id: getting-started
-url: /products/searchlight/4.0.1/getting-started/hostfacts/
+url: /products/searchlight/4.0.0/getting-started/hostfacts/
 aliases:
-  - /products/searchlight/4.0.1/hostfacts/
+  - /products/searchlight/4.0.0/hostfacts/
 ---
 
 

@@ -5,6 +5,6 @@ menu:
     identifier: cluster-alert
     name: Cluster Alert
     parent: tutorials
-    weight: 5
-menu_name: product_searchlight_4.0.0 
+    weight: 15
+menu_name: product_searchlight_4.0.1 
 ---

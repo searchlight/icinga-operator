@@ -5,6 +5,6 @@ menu:
     identifier: node-alert
     name: Node Alert
     parent: tutorials
-    weight: 10
-menu_name: product_searchlight_4.0.0 
+    weight: 25
+menu_name: product_searchlight_4.0.1 
 ---

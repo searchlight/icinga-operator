@@ -1,3 +1,17 @@
+---
+title: Notifiers
+description: Notifiers
+menu:
+  product_searchlight_4.0.0:
+    identifier: tutorials-notifiers
+    name: Notifiers
+    parent: tutorials
+    weight: 50
+product_name: searchlight
+menu_name: product_searchlight_4.0.1
+section_menu_id: getting-started
+---
+
 > New to Searchlight? Please start [here](/docs/tutorials/README.md).
 
 # Supported Notifiers

@@ -7,11 +7,11 @@ menu:
     parent: cluster-alert
     weight: 5
 product_name: searchlight
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_4.0.1
 section_menu_id: tutorials
-url: /products/searchlight/4.0.1/tutorials/cluster-alerts/
+url: /products/searchlight/4.0.0/tutorials/cluster-alerts/
 aliases:
-  - /products/searchlight/4.0.1/tutorials/cluster-alerts/README/
+  - /products/searchlight/4.0.0/tutorials/cluster-alerts/README/
 ---
 
 > New to Searchlight? Please start [here](/docs/tutorials/README.md).

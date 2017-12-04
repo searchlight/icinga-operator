@@ -7,7 +7,7 @@ menu:
     parent: cluster-alert
     weight: 25
 product_name: searchlight
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_4.0.1
 section_menu_id: tutorials
 ---
 

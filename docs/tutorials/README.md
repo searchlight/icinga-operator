@@ -1,3 +1,20 @@
+---
+title: Overview
+description: Overview of Tutorials
+menu:
+  product_searchlight_4.0.0:
+    identifier: tutorials-overview
+    name: Overview
+    parent: tutorials
+    weight: 5
+product_name: searchlight
+menu_name: product_searchlight_4.0.1
+section_menu_id: getting-started
+url: /products/searchlight/4.0.0/tutorials/
+aliases:
+  - /products/searchlight/4.0.0/tutorials/README/
+---
+
 # Tutorials
 
 This section contains tutorials on how to use Searchlight. Please visit the links below to learn more:
