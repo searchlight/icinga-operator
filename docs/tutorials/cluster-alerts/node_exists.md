@@ -1,3 +1,16 @@
+---
+title: Node Exists
+menu:
+  product_searchlight_4.0.1:
+    identifier: tutorials-node-exists
+    name: Node Exists
+    parent: cluster-alert
+    weight: 10
+product_name: searchlight
+menu_name: product_searchlight_4.0.1
+section_menu_id: tutorials
+---
+
 > New to Searchlight? Please start [here](/docs/tutorials/README.md).
 
 # Check node_exists

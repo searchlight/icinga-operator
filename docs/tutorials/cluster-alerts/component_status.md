@@ -1,3 +1,16 @@
+---
+title: Component Status
+menu:
+  product_searchlight_4.0.1:
+    identifier: tutorials-Component-status
+    name: Component Status
+    parent: cluster-alert
+    weight: 25
+product_name: searchlight
+menu_name: product_searchlight_4.0.1
+section_menu_id: tutorials
+---
+
 > New to Searchlight? Please start [here](/docs/tutorials/README.md).
 
 # Check component_status

@@ -1,3 +1,16 @@
+---
+title: Env
+menu:
+  product_searchlight_4.0.1:
+    identifier: tutorials-env
+    name: Env
+    parent: cluster-alert
+    weight: 35
+product_name: searchlight
+menu_name: product_searchlight_4.0.1
+section_menu_id: tutorials
+---
+
 > New to Searchlight? Please start [here](/docs/tutorials/README.md).
 
 # Check env
