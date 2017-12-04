@@ -1,3 +1,16 @@
+---
+title: Pod Influx Query
+menu:
+  product_searchlight_4.0.1:
+    identifier: pod-influx-query
+    name: Influx Query
+    parent: pod-alert
+    weight: 20
+product_name: searchlight
+menu_name: product_searchlight_4.0.1
+section_menu_id: tutorials
+---
+
 > New to Searchlight? Please start [here](/docs/tutorials/README.md).
 
 # Check influx_query

@@ -1,3 +1,19 @@
+---
+title: Pod Alert Overview
+menu:
+  product_searchlight_4.0.1:
+    identifier: pod-alert-overview
+    name: Overview
+    parent: pod-alert
+    weight: 10
+product_name: searchlight
+menu_name: product_searchlight_4.0.1
+section_menu_id: tutorials
+url: /products/searchlight/4.0.1/tutorials/pod-alerts/
+aliases:
+  - /products/searchlight/4.0.1/tutorials/pod-alerts/README/
+---
+
 > New to Searchlight? Please start [here](/docs/tutorials/README.md).
 
 # PodAlerts
