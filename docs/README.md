@@ -2,13 +2,13 @@
 title: Overview | Searchlight
 description: Overview of Searchlight
 menu:
-  product_searchlight_4.0.1:
+  product_searchlight_4.0.0:
     identifier: overview-searchlight
-    name: overview
+    name: Overview
     parent: getting-started
     weight: 20
 product_name: searchlight
-menu_name: product_searchlight_4.0.1
+menu_name: product_searchlight_4.0.0
 section_menu_id: getting-started
 url: /products/searchlight/4.0.1/getting-started/overview/
 aliases:

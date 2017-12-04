@@ -1,10 +1,10 @@
 ---
-title: Tutorials | searchlight
+title: Tutorials | Searchlight
 menu:
-  product_searchlight_4.0.1:
+  product_searchlight_4.0.0:
     identifier: tutorials
     name: Tutorials
     weight: 20
     pre: dropdown
-menu_name: product_searchlight_4.0.1
+menu_name: product_searchlight_4.0.0
 ---

@@ -1,13 +1,13 @@
 ---
 title: Event
 menu:
-  product_searchlight_4.0.1:
+  product_searchlight_4.0.0:
     identifier: tutorials-event
     name: Event
     parent: cluster-alert
     weight: 30
 product_name: searchlight
-menu_name: product_searchlight_4.0.1
+menu_name: product_searchlight_4.0.0
 section_menu_id: tutorials
 ---
 
