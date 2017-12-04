@@ -5,5 +5,5 @@ menu:
     identifier: tutorials
     name: Tutorials
     weight: 20
-menu_name: product_searchlight_4.0.1
+menu_name: product_searchlight_4.0.0
 ---

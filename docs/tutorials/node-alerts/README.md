@@ -7,7 +7,7 @@ menu:
     parent: node-alert
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_4.0.1
+menu_name: product_searchlight_4.0.0
 section_menu_id: tutorials
 url: /products/searchlight/4.0.0/tutorials/node-alerts/
 aliases:
