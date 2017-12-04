@@ -1,3 +1,20 @@
+---
+title: Certificate
+description: Certificate of Searchlight
+menu:
+  product_searchlight_4.0.1:
+    identifier: certificate-searchlight
+    name: Certificate
+    parent: getting-started
+    weight: 25
+product_name: searchlight
+menu_name: product_searchlight_4.0.1
+section_menu_id: getting-started
+url: /products/searchlight/4.0.1/getting-started/certificate/
+aliases:
+  - /products/searchlight/4.0.1/certificate/
+---
+
 > New to Searchlight? Please start [here](/docs/tutorials/README.md).
 
 # Certificate

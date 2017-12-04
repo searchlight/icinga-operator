@@ -1,3 +1,21 @@
+---
+title: Hostfacts
+description: Hostfacts
+menu:
+  product_searchlight_4.0.1:
+    identifier: hostfacts-searchlight
+    name: Hostfacts
+    parent: getting-started
+    weight: 40
+product_name: searchlight
+menu_name: product_searchlight_4.0.1
+section_menu_id: getting-started
+url: /products/searchlight/4.0.1/getting-started/hostfacts/
+aliases:
+  - /products/searchlight/4.0.1/hostfacts/
+---
+
+
 > New to Searchlight? Please start [here](/docs/tutorials/README.md).
 
 # Hostfacts

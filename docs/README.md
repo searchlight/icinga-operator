@@ -1,3 +1,21 @@
+---
+title: Overview | Searchlight
+description: Overview of Searchlight
+menu:
+  product_searchlight_4.0.1:
+    identifier: overview-searchlight
+    name: overview
+    parent: getting-started
+    weight: 20
+product_name: searchlight
+menu_name: product_searchlight_4.0.1
+section_menu_id: getting-started
+url: /products/searchlight/4.0.1/getting-started/overview/
+aliases:
+  - /products/searchlight/4.0.1/
+  - /products/searchlight/4.0.1/README/
+---
+
 [![Go Report Card](https://goreportcard.com/badge/github.com/appscode/searchlight)](https://goreportcard.com/report/github.com/appscode/searchlight)
 
 # Searchlight

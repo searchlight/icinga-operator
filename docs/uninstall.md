@@ -1,3 +1,21 @@
+---
+title: Uninstall
+description: Searchlight Uninstall
+menu:
+  product_searchlight_4.0.1:
+    identifier: uninstall-searchlight
+    name: Uninstall
+    parent: getting-started
+    weight: 35
+product_name: searchlight
+menu_name: product_searchlight_4.0.1
+section_menu_id: getting-started
+url: /products/searchlight/4.0.1/getting-started/uninstall/
+aliases:
+  - /products/searchlight/4.0.1/uninstall/
+---
+
+
 > New to Searchlight? Please start [here](/docs/tutorials/README.md).
 
 # Uninstall Searchlight
