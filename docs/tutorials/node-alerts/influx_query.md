@@ -1,3 +1,16 @@
+---
+title: Influx Query
+menu:
+  product_searchlight_4.0.1:
+    identifier: node-influx-query
+    name: Influx Query
+    parent: node-alert
+    weight: 20
+product_name: searchlight
+menu_name: product_searchlight_4.0.1
+section_menu_id: tutorials
+---
+
 > New to Searchlight? Please start [here](/docs/tutorials/README.md).
 
 # Check influx_query

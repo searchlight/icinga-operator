@@ -1,3 +1,16 @@
+---
+title: Node Volume
+menu:
+  product_searchlight_4.0.1:
+    identifier: node-volume
+    name: Node Volume
+    parent: node-alert
+    weight: 30
+product_name: searchlight
+menu_name: product_searchlight_4.0.1
+section_menu_id: tutorials
+---
+
 > New to Searchlight? Please start [here](/docs/tutorials/README.md).
 
 # Check node_volume
