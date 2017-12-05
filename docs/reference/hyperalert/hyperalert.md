@@ -2,7 +2,7 @@
 title: Hyperalert
 menu:
   product_searchlight_4.0.0:
-    identifier: hyperalert
+    identifier: hyperalert-hyperalert
     name: Hyperalert
     parent: hyperalert
     weight: 10

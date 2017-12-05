@@ -1,3 +1,15 @@
+---
+title: Check Node Exists
+menu:
+  product_searchlight_4.0.0:
+    identifier: hyperalert-check-node-exists
+    name: Check Node Exists
+    parent: hyperalert
+    weight: 45
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+---
 ## hyperalert check_node_exists
 
 Count Kubernetes Nodes

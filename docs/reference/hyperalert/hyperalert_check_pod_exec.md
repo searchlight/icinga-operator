@@ -1,3 +1,15 @@
+---
+title: Check Pod Exec
+menu:
+  product_searchlight_4.0.0:
+    identifier: hyperalert-check-pod-exec
+    name: Check Pod Exec
+    parent: hyperalert
+    weight: 55
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+---
 ## hyperalert check_pod_exec
 
 Check exit code of exec command on Kubernetes container

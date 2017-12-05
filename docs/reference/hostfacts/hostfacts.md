@@ -2,7 +2,7 @@
 title: Hostfacts
 menu:
   product_searchlight_4.0.0:
-    identifier: reference-hostfacts
+    identifier: hostfacts-hostfacts
     name: Hostfacts
     parent: hostfacts
     weight: 10

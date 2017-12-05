@@ -1,3 +1,16 @@
+---
+title: Hyperalert Check CA Event
+menu:
+  product_searchlight_4.0.0:
+    identifier: hyperalert-check-ca-event
+    name: Hyperalert Check CA Event
+    parent: hyperalert
+    weight: 30
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+---
+
 ## hyperalert check_event
 
 Check kubernetes events for all namespaces

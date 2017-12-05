@@ -2,7 +2,7 @@
 title: Searchlight
 menu:
   product_searchlight_4.0.0:
-    identifier: searchlight
+    identifier: searchlight-searchlight
     name: Searchlight
     parent: searchlight
     weight: 10

@@ -1,3 +1,15 @@
+---
+title: Check Volume
+menu:
+  product_searchlight_4.0.0:
+    identifier: hyperalert-check-volume
+    name: Check Volume
+    parent: hyperalert
+    weight: 70
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+---
 ## hyperalert check_volume
 
 Check kubernetes volume

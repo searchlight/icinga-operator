@@ -1,3 +1,15 @@
+---
+title: Hyperalert Check Env
+menu:
+  product_searchlight_4.0.0:
+    identifier: hyperalert-check-env
+    name: Hyperalert Check Env
+    parent: hyperalert
+    weight: 25
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+---
 ## hyperalert check_env
 
 

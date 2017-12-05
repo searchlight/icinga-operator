@@ -1,3 +1,15 @@
+---
+title: Check Node Status
+menu:
+  product_searchlight_4.0.0:
+    identifier: hyperalert-check-node-status
+    name: Check Node Status
+    parent: hyperalert
+    weight: 50
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+---
 ## hyperalert check_node_status
 
 Check Kubernetes Node

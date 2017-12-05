@@ -1,3 +1,15 @@
+---
+title: Hyperalert Check Component
+menu:
+  product_searchlight_4.0.0:
+    identifier: hyperalert-check-component
+    name: Hyperalert Check Component
+    parent: hyperalert
+    weight: 20
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+---
 ## hyperalert check_component_status
 
 Check Kubernetes Component Status

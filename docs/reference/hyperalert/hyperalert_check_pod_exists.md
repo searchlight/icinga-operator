@@ -1,3 +1,15 @@
+---
+title: Check Pod Exists
+menu:
+  product_searchlight_4.0.0:
+    identifier: hyperalert-check-pod-exists
+    name: Check Pod Exists
+    parent: hyperalert
+    weight: 60
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+---
 ## hyperalert check_pod_exists
 
 Check Kubernetes Pod(s)
