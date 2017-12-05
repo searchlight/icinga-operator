@@ -1,11 +1,10 @@
 ---
-title: Check Volume
+title: Hyperalert Check Volume
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-check-volume
-    name: Check Volume
+    name: Hyperalert Check Volume
     parent: hyperalert
-    weight: 70
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0
@@ -15,7 +14,6 @@ menu_name: product_searchlight_4.0.0
 Check kubernetes volume
 
 ### Synopsis
-
 
 Check kubernetes volume
 
@@ -51,6 +49,7 @@ hyperalert check_volume [flags]
 ```
 
 ### SEE ALSO
-* [hyperalert](hyperalert.md)	 - AppsCode Icinga2 plugin
+
+* [hyperalert](/docs/reference/hyperalert/hyperalert.md)	 - AppsCode Icinga2 plugin
 
 

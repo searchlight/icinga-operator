@@ -5,18 +5,15 @@ menu:
     identifier: searchlight-run
     name: Searchlight Run
     parent: searchlight
-    weight: 25
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0
 ---
-
 ## searchlight run
 
 Run operator
 
 ### Synopsis
-
 
 Run operator
 
@@ -52,6 +49,7 @@ searchlight run [flags]
 ```
 
 ### SEE ALSO
-* [searchlight](searchlight.md)	 - Searchlight by AppsCode - Alerts for Kubernetes
+
+* [searchlight](/docs/reference/searchlight/searchlight.md)	 - Searchlight by AppsCode - Alerts for Kubernetes
 
 

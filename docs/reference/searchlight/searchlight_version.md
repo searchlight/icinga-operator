@@ -5,18 +5,15 @@ menu:
     identifier: searchlight-version
     name: Searchlight Version
     parent: searchlight
-    weight: 30
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0
 ---
-
 ## searchlight version
 
 Prints binary version number.
 
 ### Synopsis
-
 
 Prints binary version number.
 
@@ -45,5 +42,6 @@ searchlight version [flags]
 ```
 
 ### SEE ALSO
-* [searchlight](searchlight.md)	 - Searchlight by AppsCode - Alerts for Kubernetes
+
+* [searchlight](/docs/reference/searchlight/searchlight.md)	 - Searchlight by AppsCode - Alerts for Kubernetes
 

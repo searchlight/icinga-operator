@@ -1,11 +1,10 @@
 ---
-title: Check Component
+title: Hyperalert Check Component Status
 menu:
   product_searchlight_4.0.0:
-    identifier: hyperalert-check-component
-    name: Check Component
+    identifier: hyperalert-check-component-status
+    name: Hyperalert Check Component Status
     parent: hyperalert
-    weight: 20
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0
@@ -15,7 +14,6 @@ menu_name: product_searchlight_4.0.0
 Check Kubernetes Component Status
 
 ### Synopsis
-
 
 Check Kubernetes Component Status
 
@@ -47,6 +45,7 @@ hyperalert check_component_status [flags]
 ```
 
 ### SEE ALSO
-* [hyperalert](hyperalert.md)	 - AppsCode Icinga2 plugin
+
+* [hyperalert](/docs/reference/hyperalert/hyperalert.md)	 - AppsCode Icinga2 plugin
 
 

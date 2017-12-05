@@ -1,22 +1,19 @@
 ---
-title: Check JSON Path
+title: Hyperalert Check Json Path
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-check-json-path
-    name: Check JSON Path
+    name: Hyperalert Check Json Path
     parent: hyperalert
-    weight: 40
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0
 ---
-
 ## hyperalert check_json_path
 
 Check Json Object
 
 ### Synopsis
-
 
 Check Json Object
 
@@ -52,6 +49,7 @@ hyperalert check_json_path [flags]
 ```
 
 ### SEE ALSO
-* [hyperalert](hyperalert.md)	 - AppsCode Icinga2 plugin
+
+* [hyperalert](/docs/reference/hyperalert/hyperalert.md)	 - AppsCode Icinga2 plugin
 
 

@@ -1,11 +1,10 @@
 ---
-title: Check Pod Exec
+title: Hyperalert Check Pod Exec
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-check-pod-exec
-    name: Check Pod Exec
+    name: Hyperalert Check Pod Exec
     parent: hyperalert
-    weight: 55
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0
@@ -15,7 +14,6 @@ menu_name: product_searchlight_4.0.0
 Check exit code of exec command on Kubernetes container
 
 ### Synopsis
-
 
 Check exit code of exec command on Kubernetes container
 
@@ -49,6 +47,7 @@ hyperalert check_pod_exec [flags]
 ```
 
 ### SEE ALSO
-* [hyperalert](hyperalert.md)	 - AppsCode Icinga2 plugin
+
+* [hyperalert](/docs/reference/hyperalert/hyperalert.md)	 - AppsCode Icinga2 plugin
 
 

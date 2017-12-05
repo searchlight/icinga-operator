@@ -1,22 +1,19 @@
 ---
-title: Check Influx Query
+title: Hyperalert Check Influx Query
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-check-influx-query
-    name: Check Influx Query
+    name: Hyperalert Check Influx Query
     parent: hyperalert
-    weight: 35
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0
 ---
-
 ## hyperalert check_influx_query
 
 Check InfluxDB Query Data
 
 ### Synopsis
-
 
 Check InfluxDB Query Data
 
@@ -57,6 +54,7 @@ hyperalert check_influx_query [flags]
 ```
 
 ### SEE ALSO
-* [hyperalert](hyperalert.md)	 - AppsCode Icinga2 plugin
+
+* [hyperalert](/docs/reference/hyperalert/hyperalert.md)	 - AppsCode Icinga2 plugin
 
 

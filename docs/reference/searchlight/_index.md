@@ -1,10 +1,11 @@
 ---
-title: Searchlight
+title: Hyperalert
+description: Searchlight CLI Reference
 menu:
   product_searchlight_4.0.0:
     identifier: searchlight
     name: Searchlight
     parent: reference
-    weight: 30
-menu_name: product_searchlight_4.0.0
+    weight: 20
+left_menu: product_searchlight_4.0.0
 ---

@@ -5,7 +5,6 @@ menu:
     identifier: hostfacts-version
     name: Hostfacts Version
     parent: hostfacts
-    weight: 30
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0
@@ -15,7 +14,6 @@ menu_name: product_searchlight_4.0.0
 Prints binary version number.
 
 ### Synopsis
-
 
 Prints binary version number.
 
@@ -44,5 +42,6 @@ hostfacts version [flags]
 ```
 
 ### SEE ALSO
-* [hostfacts](hostfacts.md)	 - Hostfacts by AppsCode - Expose node metrics
+
+* [hostfacts](/docs/reference/hostfacts/hostfacts.md)	 - Hostfacts by AppsCode - Expose node metrics
 

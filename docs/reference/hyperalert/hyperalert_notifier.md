@@ -1,11 +1,10 @@
 ---
-title: Notifier
+title: Hyperalert Notifier
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-notifier
-    name: Notifier
+    name: Hyperalert Notifier
     parent: hyperalert
-    weight: 75
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0
@@ -15,7 +14,6 @@ menu_name: product_searchlight_4.0.0
 AppsCode Icinga2 Notifier
 
 ### Synopsis
-
 
 AppsCode Icinga2 Notifier
 
@@ -53,6 +51,7 @@ hyperalert notifier [flags]
 ```
 
 ### SEE ALSO
-* [hyperalert](hyperalert.md)	 - AppsCode Icinga2 plugin
+
+* [hyperalert](/docs/reference/hyperalert/hyperalert.md)	 - AppsCode Icinga2 plugin
 
 

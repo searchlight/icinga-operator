@@ -2,24 +2,23 @@
 title: Hostfacts
 menu:
   product_searchlight_4.0.0:
-    identifier: hostfacts-hostfacts
+    identifier: hostfacts
     name: Hostfacts
     parent: hostfacts
-    weight: 10
+    weight: 0
+
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0
-url: /products/searchlight/4.0.0/reference/hostfacts/
 aliases:
-  - /products/searchlight/4.0.0/reference/hostfacts/hostfacts/
----
+  - products/searchlight/4.0.0/reference/hostfacts/hostfacts/
 
+---
 ## hostfacts
 
 Hostfacts by AppsCode - Expose node metrics
 
 ### Synopsis
-
 
 Hostfacts by AppsCode - Expose node metrics
 
@@ -39,7 +38,8 @@ Hostfacts by AppsCode - Expose node metrics
 ```
 
 ### SEE ALSO
-* [hostfacts run](hostfacts_run.md)	 - Run server
-* [hostfacts version](hostfacts_version.md)	 - Prints binary version number.
+
+* [hostfacts run](/docs/reference/hostfacts/hostfacts_run.md)	 - Run server
+* [hostfacts version](/docs/reference/hostfacts/hostfacts_version.md)	 - Prints binary version number.
 
 

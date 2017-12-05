@@ -1,11 +1,10 @@
 ---
-title: Check Node Exists
+title: Hyperalert Check Node Exists
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-check-node-exists
-    name: Check Node Exists
+    name: Hyperalert Check Node Exists
     parent: hyperalert
-    weight: 45
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0
@@ -15,7 +14,6 @@ menu_name: product_searchlight_4.0.0
 Count Kubernetes Nodes
 
 ### Synopsis
-
 
 Count Kubernetes Nodes
 
@@ -48,6 +46,7 @@ hyperalert check_node_exists [flags]
 ```
 
 ### SEE ALSO
-* [hyperalert](hyperalert.md)	 - AppsCode Icinga2 plugin
+
+* [hyperalert](/docs/reference/hyperalert/hyperalert.md)	 - AppsCode Icinga2 plugin
 
 

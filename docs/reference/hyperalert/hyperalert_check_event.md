@@ -1,22 +1,19 @@
 ---
-title: Check CA Event
+title: Hyperalert Check Event
 menu:
   product_searchlight_4.0.0:
-    identifier: hyperalert-check-ca-event
-    name: Check CA Event
+    identifier: hyperalert-check-event
+    name: Hyperalert Check Event
     parent: hyperalert
-    weight: 30
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0
 ---
-
 ## hyperalert check_event
 
 Check kubernetes events for all namespaces
 
 ### Synopsis
-
 
 Check kubernetes events for all namespaces
 
@@ -53,6 +50,7 @@ hyperalert check_event [flags]
 ```
 
 ### SEE ALSO
-* [hyperalert](hyperalert.md)	 - AppsCode Icinga2 plugin
+
+* [hyperalert](/docs/reference/hyperalert/hyperalert.md)	 - AppsCode Icinga2 plugin
 
 

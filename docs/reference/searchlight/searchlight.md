@@ -2,24 +2,23 @@
 title: Searchlight
 menu:
   product_searchlight_4.0.0:
-    identifier: searchlight-searchlight
+    identifier: searchlight
     name: Searchlight
     parent: searchlight
-    weight: 10
+    weight: 0
+
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0
-url: /products/searchlight/4.0.0/reference/searchlight/
 aliases:
-  - /products/searchlight/4.0.0/reference/searchlight/searchlight/
----
+  - products/searchlight/4.0.0/reference/searchlight/searchlight/
 
+---
 ## searchlight
 
 Searchlight by AppsCode - Alerts for Kubernetes
 
 ### Synopsis
-
 
 Searchlight by AppsCode - Alerts for Kubernetes
 
@@ -39,8 +38,9 @@ Searchlight by AppsCode - Alerts for Kubernetes
 ```
 
 ### SEE ALSO
-* [searchlight configure](searchlight_configure.md)	 - Generate icinga configuration
-* [searchlight run](searchlight_run.md)	 - Run operator
-* [searchlight version](searchlight_version.md)	 - Prints binary version number.
+
+* [searchlight configure](/docs/reference/searchlight/searchlight_configure.md)	 - Generate icinga configuration
+* [searchlight run](/docs/reference/searchlight/searchlight_run.md)	 - Run operator
+* [searchlight version](/docs/reference/searchlight/searchlight_version.md)	 - Prints binary version number.
 
 

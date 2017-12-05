@@ -1,22 +1,19 @@
 ---
-title: Check CA Cert
+title: Hyperalert Check Ca Cert
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-check-ca-cert
-    name: Check CA Cert
+    name: Hyperalert Check Ca Cert
     parent: hyperalert
-    weight: 15
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0
 ---
-
 ## hyperalert check_ca_cert
 
 Check Certificate expire date
 
 ### Synopsis
-
 
 Check Certificate expire date
 
@@ -46,6 +43,7 @@ hyperalert check_ca_cert [flags]
 ```
 
 ### SEE ALSO
-* [hyperalert](hyperalert.md)	 - AppsCode Icinga2 plugin
+
+* [hyperalert](/docs/reference/hyperalert/hyperalert.md)	 - AppsCode Icinga2 plugin
 
 
