@@ -1,9 +1,9 @@
 ---
-title: Hyperalert Check CA Event
+title: Check CA Event
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-check-ca-event
-    name: Hyperalert Check CA Event
+    name: Check CA Event
     parent: hyperalert
     weight: 30
 product_name: searchlight

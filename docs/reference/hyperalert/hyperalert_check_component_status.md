@@ -1,9 +1,9 @@
 ---
-title: Hyperalert Check Component
+title: Check Component
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-check-component
-    name: Hyperalert Check Component
+    name: Check Component
     parent: hyperalert
     weight: 20
 product_name: searchlight

@@ -1,9 +1,9 @@
 ---
-title: Hyperalert Check CA Cert
+title: Check CA Cert
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-check-ca-cert
-    name: Hyperalert Check CA Cert
+    name: Check CA Cert
     parent: hyperalert
     weight: 15
 product_name: searchlight

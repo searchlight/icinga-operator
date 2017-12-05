@@ -1,9 +1,9 @@
 ---
-title: Hyperalert Notifier
+title: Notifier
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-notifier
-    name: Hyperalert Notifier
+    name: Notifier
     parent: hyperalert
     weight: 75
 product_name: searchlight
