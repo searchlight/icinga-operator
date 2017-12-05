@@ -1,3 +1,15 @@
+---
+title: Hostfacts Version
+menu:
+  product_searchlight_4.0.0:
+    identifier: hostfacts-version
+    name: Hostfacts Version
+    parent: hostfacts
+    weight: 30
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+---
 ## hostfacts version
 
 Prints binary version number.

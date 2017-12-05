@@ -1,3 +1,16 @@
+---
+title: Hyperalert Check CA Cert
+menu:
+  product_searchlight_4.0.0:
+    identifier: hyperalert-check-ca-alert
+    name: Hyperalert Check CA Alert
+    parent: hyperalert
+    weight: 15
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+---
+
 ## hyperalert check_ca_cert
 
 Check Certificate expire date

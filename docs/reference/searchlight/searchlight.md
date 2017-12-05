@@ -1,3 +1,19 @@
+---
+title: Searchlight
+menu:
+  product_searchlight_4.0.0:
+    identifier: searchlight
+    name: Searchlight
+    parent: searchlight
+    weight: 10
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+url: /products/searchlight/4.0.0/reference/searchlight/
+aliases:
+  - /products/searchlight/4.0.0/reference/searchlight/searchlight/
+---
+
 ## searchlight
 
 Searchlight by AppsCode - Alerts for Kubernetes

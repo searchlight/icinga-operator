@@ -1,3 +1,19 @@
+---
+title: Hyperalert
+menu:
+  product_searchlight_4.0.0:
+    identifier: hyperalert
+    name: Hyperalert
+    parent: hyperalert
+    weight: 10
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+url: /products/searchlight/4.0.0/reference/hyperalert/
+aliases:
+  - /products/searchlight/4.0.0/reference/hyperalert/hyperalert/
+---
+
 ## hyperalert
 
 AppsCode Icinga2 plugin

@@ -1,3 +1,16 @@
+---
+title: Hostfacts Run
+menu:
+  product_searchlight_4.0.0:
+    identifier: hostfacts-run
+    name: Hostfacts Run
+    parent: hostfacts
+    weight: 20
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+---
+
 ## hostfacts run
 
 Run server

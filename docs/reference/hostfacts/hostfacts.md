@@ -1,3 +1,19 @@
+---
+title: Hostfacts
+menu:
+  product_searchlight_4.0.0:
+    identifier: reference-hostfacts
+    name: Hostfacts
+    parent: hostfacts
+    weight: 10
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+url: /products/searchlight/4.0.0/reference/hostfacts/
+aliases:
+  - /products/searchlight/4.0.0/reference/hostfacts/hostfacts/
+---
+
 ## hostfacts
 
 Hostfacts by AppsCode - Expose node metrics

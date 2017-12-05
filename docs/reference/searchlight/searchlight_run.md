@@ -1,3 +1,16 @@
+---
+title: Searchlight Run
+menu:
+  product_searchlight_4.0.0:
+    identifier: searchlight-run
+    name: Searchlight Run
+    parent: searchlight
+    weight: 25
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+---
+
 ## searchlight run
 
 Run operator

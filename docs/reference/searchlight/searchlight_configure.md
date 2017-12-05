@@ -1,3 +1,16 @@
+---
+title: Searchlight Configure
+menu:
+  product_searchlight_4.0.0:
+    identifier: searchlight-configure
+    name: Searchlight Configure
+    parent: searchlight
+    weight: 20
+product_name: searchlight
+section_menu_id: reference
+menu_name: product_searchlight_4.0.0
+---
+
 ## searchlight configure
 
 Generate icinga configuration
