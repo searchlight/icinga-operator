@@ -1,10 +1,10 @@
 ---
-title: Hostfacts Version
+title: Version
 menu:
   product_searchlight_4.0.0:
     identifier: hostfacts-version
-    name: Hostfacts Version
-    parent: hostfacts
+    name: Version
+    parent: hostfacts-cli
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0

@@ -1,10 +1,10 @@
 ---
-title: Hyperalert Check Ca Cert
+title: Check Ca Cert
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-check-ca-cert
-    name: Hyperalert Check Ca Cert
-    parent: hyperalert
+    name: Check Ca Cert
+    parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0

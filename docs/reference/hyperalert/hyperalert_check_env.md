@@ -1,10 +1,10 @@
 ---
-title: Hyperalert Check Env
+title: Check Env
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-check-env
-    name: Hyperalert Check Env
-    parent: hyperalert
+    name: Check Env
+    parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0

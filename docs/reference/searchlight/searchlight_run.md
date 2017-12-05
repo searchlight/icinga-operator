@@ -1,10 +1,10 @@
 ---
-title: Searchlight Run
+title: Run
 menu:
   product_searchlight_4.0.0:
     identifier: searchlight-run
-    name: Searchlight Run
-    parent: searchlight
+    name: Run
+    parent: searchlight-cli
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0

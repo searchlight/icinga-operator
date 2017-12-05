@@ -4,7 +4,7 @@ menu:
   product_searchlight_4.0.0:
     identifier: searchlight
     name: Searchlight
-    parent: searchlight
+    parent: searchlight-cli
     weight: 0
 
 product_name: searchlight

@@ -1,10 +1,10 @@
 ---
-title: Hyperalert Check Pod Status
+title: Check Pod Status
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-check-pod-status
-    name: Hyperalert Check Pod Status
-    parent: hyperalert
+    name: Check Pod Status
+    parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0

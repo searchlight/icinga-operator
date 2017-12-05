@@ -1,10 +1,10 @@
 ---
-title: Searchlight Version
+title: Version
 menu:
   product_searchlight_4.0.0:
     identifier: searchlight-version
-    name: Searchlight Version
-    parent: searchlight
+    name: Version
+    parent: searchlight-cli
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0

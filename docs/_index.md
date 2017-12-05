@@ -6,5 +6,5 @@ menu:
     identifier: getting-started
     name: Getting Started
     weight: 10
-left_menu: product_searchlight_4.0.0
+menu_name: product_searchlight_4.0.0
 ---

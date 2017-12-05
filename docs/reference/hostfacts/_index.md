@@ -3,9 +3,9 @@ title: Hostfacts
 description: Searchlight Hostfacts Reference
 menu:
   product_searchlight_4.0.0:
-    identifier: hostfacts
+    identifier: hostfacts-cli
     name: Hostfacts
     parent: reference
     weight: 10
-left_menu: product_searchlight_4.0.0
+menu_name: product_searchlight_4.0.0
 ---

@@ -1,10 +1,10 @@
 ---
-title: Hostfacts Run
+title: Run
 menu:
   product_searchlight_4.0.0:
     identifier: hostfacts-run
-    name: Hostfacts Run
-    parent: hostfacts
+    name: Run
+    parent: hostfacts-cli
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0

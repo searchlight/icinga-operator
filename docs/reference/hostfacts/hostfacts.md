@@ -4,7 +4,7 @@ menu:
   product_searchlight_4.0.0:
     identifier: hostfacts
     name: Hostfacts
-    parent: hostfacts
+    parent: hostfacts-cli
     weight: 0
 
 product_name: searchlight

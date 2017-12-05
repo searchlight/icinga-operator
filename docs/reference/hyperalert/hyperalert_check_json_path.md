@@ -1,10 +1,10 @@
 ---
-title: Hyperalert Check Json Path
+title: Check Json Path
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-check-json-path
-    name: Hyperalert Check Json Path
-    parent: hyperalert
+    name: Check Json Path
+    parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0

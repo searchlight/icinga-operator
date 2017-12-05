@@ -3,9 +3,9 @@ title: Hyperalert
 description: Searchlight Hyperalert Reference
 menu:
   product_searchlight_4.0.0:
-    identifier: hyperalert
+    identifier: hyperalert-cli
     name: Hyperalert
     parent: reference
     weight: 20
-left_menu: product_searchlight_4.0.0
+menu_name: product_searchlight_4.0.0
 ---

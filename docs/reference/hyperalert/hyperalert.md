@@ -4,7 +4,7 @@ menu:
   product_searchlight_4.0.0:
     identifier: hyperalert
     name: Hyperalert
-    parent: hyperalert
+    parent: hyperalert-cli
     weight: 0
 
 product_name: searchlight

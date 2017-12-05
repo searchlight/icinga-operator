@@ -1,10 +1,10 @@
 ---
-title: Searchlight Configure
+title: Configure
 menu:
   product_searchlight_4.0.0:
     identifier: searchlight-configure
-    name: Searchlight Configure
-    parent: searchlight
+    name: Configure
+    parent: searchlight-cli
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0

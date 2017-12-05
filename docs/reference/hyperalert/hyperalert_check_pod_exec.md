@@ -1,10 +1,10 @@
 ---
-title: Hyperalert Check Pod Exec
+title: Check Pod Exec
 menu:
   product_searchlight_4.0.0:
     identifier: hyperalert-check-pod-exec
-    name: Hyperalert Check Pod Exec
-    parent: hyperalert
+    name: Check Pod Exec
+    parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0

@@ -34,11 +34,11 @@ title: Hostfacts
 description: Searchlight Hostfacts Reference
 menu:
   product_searchlight_{{ .Version }}:
-    identifier: hostfacts
+    identifier: hostfacts-cli
     name: Hostfacts
     parent: reference
     weight: 10
-left_menu: product_searchlight_{{ .Version }}
+menu_name: product_searchlight_{{ .Version }}
 ---
 `))
 
@@ -48,7 +48,7 @@ menu:
   product_searchlight_{{ .Version }}:
     identifier: {{ .ID }}
     name: {{ .Name }}
-    parent: hostfacts
+    parent: hostfacts-cli
 {{- if .RootCmd }}
     weight: 0
 {{ end }}
@@ -75,8 +75,13 @@ aliases:
 	}
 
 	filePrepender := func(filename string) string {
-		name := filepath.Base(filename)
-		base := strings.TrimSuffix(name, path.Ext(name))
+		filename = filepath.Base(filename)
+		base := strings.TrimSuffix(filename, path.Ext(filename))
+		name := strings.Title(strings.Replace(base, "_", " ", -1))
+		parts := strings.Split(name, " ")
+		if len(parts) > 1 {
+			name = strings.Join(parts[1:], " ")
+		}
 		data := struct {
 			ID      string
 			Name    string
@@ -84,7 +89,7 @@ aliases:
 			RootCmd bool
 		}{
 			strings.Replace(base, "_", "-", -1),
-			strings.Title(strings.Replace(base, "_", " ", -1)),
+			name,
 			version,
 			!strings.ContainsRune(base, '_'),
 		}
@@ -121,11 +126,11 @@ title: Hyperalert
 description: Searchlight Hyperalert Reference
 menu:
   product_searchlight_{{ .Version }}:
-    identifier: hyperalert
+    identifier: hyperalert-cli
     name: Hyperalert
     parent: reference
     weight: 20
-left_menu: product_searchlight_{{ .Version }}
+menu_name: product_searchlight_{{ .Version }}
 ---
 `))
 
@@ -135,7 +140,7 @@ menu:
   product_searchlight_{{ .Version }}:
     identifier: {{ .ID }}
     name: {{ .Name }}
-    parent: hyperalert
+    parent: hyperalert-cli
 {{- if .RootCmd }}
     weight: 0
 {{ end }}
@@ -162,8 +167,13 @@ aliases:
 	}
 
 	filePrepender := func(filename string) string {
-		name := filepath.Base(filename)
-		base := strings.TrimSuffix(name, path.Ext(name))
+		filename = filepath.Base(filename)
+		base := strings.TrimSuffix(filename, path.Ext(filename))
+		name := strings.Title(strings.Replace(base, "_", " ", -1))
+		parts := strings.Split(name, " ")
+		if len(parts) > 1 {
+			name = strings.Join(parts[1:], " ")
+		}
 		data := struct {
 			ID      string
 			Name    string
@@ -171,7 +181,7 @@ aliases:
 			RootCmd bool
 		}{
 			strings.Replace(base, "_", "-", -1),
-			strings.Title(strings.Replace(base, "_", " ", -1)),
+			name,
 			version,
 			!strings.ContainsRune(base, '_'),
 		}
@@ -208,11 +218,11 @@ title: Hyperalert
 description: Searchlight CLI Reference
 menu:
   product_searchlight_{{ .Version }}:
-    identifier: searchlight
+    identifier: searchlight-cli
     name: Searchlight
     parent: reference
     weight: 20
-left_menu: product_searchlight_{{ .Version }}
+menu_name: product_searchlight_{{ .Version }}
 ---
 `))
 
@@ -222,7 +232,7 @@ menu:
   product_searchlight_{{ .Version }}:
     identifier: {{ .ID }}
     name: {{ .Name }}
-    parent: searchlight
+    parent: searchlight-cli
 {{- if .RootCmd }}
     weight: 0
 {{ end }}
@@ -249,8 +259,13 @@ aliases:
 	}
 
 	filePrepender := func(filename string) string {
-		name := filepath.Base(filename)
-		base := strings.TrimSuffix(name, path.Ext(name))
+		filename = filepath.Base(filename)
+		base := strings.TrimSuffix(filename, path.Ext(filename))
+		name := strings.Title(strings.Replace(base, "_", " ", -1))
+		parts := strings.Split(name, " ")
+		if len(parts) > 1 {
+			name = strings.Join(parts[1:], " ")
+		}
 		data := struct {
 			ID      string
 			Name    string
@@ -258,7 +273,7 @@ aliases:
 			RootCmd bool
 		}{
 			strings.Replace(base, "_", "-", -1),
-			strings.Title(strings.Replace(base, "_", " ", -1)),
+			name,
 			version,
 			!strings.ContainsRune(base, '_'),
 		}
