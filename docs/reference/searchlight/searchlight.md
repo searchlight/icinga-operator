@@ -10,6 +10,7 @@ menu:
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_4.0.0
+url: /products/searchlight/4.0.0/reference/searchlight/
 aliases:
   - products/searchlight/4.0.0/reference/searchlight/searchlight/
 

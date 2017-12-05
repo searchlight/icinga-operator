@@ -56,6 +56,7 @@ product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_{{ .Version }}
 {{- if .RootCmd }}
+url: /products/searchlight/{{ .Version }}/reference/hostfacts/
 aliases:
   - products/searchlight/{{ .Version }}/reference/hostfacts/hostfacts/
 {{ end }}
@@ -148,6 +149,7 @@ product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_{{ .Version }}
 {{- if .RootCmd }}
+url: /products/searchlight/{{ .Version }}/reference/hyperalert/
 aliases:
   - products/searchlight/{{ .Version }}/reference/hyperalert/hyperalert/
 {{ end }}
@@ -240,6 +242,7 @@ product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_{{ .Version }}
 {{- if .RootCmd }}
+url: /products/searchlight/{{ .Version }}/reference/searchlight/
 aliases:
   - products/searchlight/{{ .Version }}/reference/searchlight/searchlight/
 {{ end }}
