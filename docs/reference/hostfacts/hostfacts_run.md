@@ -15,6 +15,7 @@ Run server
 
 ### Synopsis
 
+
 Run server
 
 ```
@@ -49,7 +50,6 @@ hostfacts run [flags]
 ```
 
 ### SEE ALSO
-
 * [hostfacts](/docs/reference/hostfacts/hostfacts.md)	 - Hostfacts by AppsCode - Expose node metrics
 
 

@@ -21,6 +21,7 @@ Searchlight by AppsCode - Alerts for Kubernetes
 
 ### Synopsis
 
+
 Searchlight by AppsCode - Alerts for Kubernetes
 
 ### Options
@@ -39,7 +40,6 @@ Searchlight by AppsCode - Alerts for Kubernetes
 ```
 
 ### SEE ALSO
-
 * [searchlight configure](/docs/reference/searchlight/searchlight_configure.md)	 - Generate icinga configuration
 * [searchlight run](/docs/reference/searchlight/searchlight_run.md)	 - Run operator
 * [searchlight version](/docs/reference/searchlight/searchlight_version.md)	 - Prints binary version number.

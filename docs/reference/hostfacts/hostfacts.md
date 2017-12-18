@@ -21,6 +21,7 @@ Hostfacts by AppsCode - Expose node metrics
 
 ### Synopsis
 
+
 Hostfacts by AppsCode - Expose node metrics
 
 ### Options
@@ -39,7 +40,6 @@ Hostfacts by AppsCode - Expose node metrics
 ```
 
 ### SEE ALSO
-
 * [hostfacts run](/docs/reference/hostfacts/hostfacts_run.md)	 - Run server
 * [hostfacts version](/docs/reference/hostfacts/hostfacts_version.md)	 - Prints binary version number.
 

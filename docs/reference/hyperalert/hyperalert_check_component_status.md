@@ -15,6 +15,7 @@ Check Kubernetes Component Status
 
 ### Synopsis
 
+
 Check Kubernetes Component Status
 
 ```
@@ -36,6 +37,7 @@ hyperalert check_component_status [flags]
 ```
       --allow_verification_with_non_compliant_keys   Allow a SignatureVerifier to use keys which are technically non-compliant with RFC6962.
       --alsologtostderr                              log to standard error as well as files
+      --analytics                                    Send analytical events to Google Analytics (default true)
       --log_backtrace_at traceLocation               when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                               If non-empty, write log files in this directory
       --logtostderr                                  log to standard error instead of files (default true)
@@ -45,7 +47,6 @@ hyperalert check_component_status [flags]
 ```
 
 ### SEE ALSO
-
 * [hyperalert](/docs/reference/hyperalert/hyperalert.md)	 - AppsCode Icinga2 plugin
 
 

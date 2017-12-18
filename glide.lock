@@ -1,15 +1,17 @@
 hash: fd86e06dfe0a988e5bd26f8ff11c3c0f7cf6e29c44b9309dfa44919bc78cd2d7
-updated: 2017-12-05T00:10:42.122329346-08:00
+updated: 2017-12-18T15:41:16.157050472-05:00
 imports:
 - name: github.com/appscode/envconfig
   version: 183bbe643a2875eaa69c85627ac6b25813983203
 - name: github.com/appscode/go
-  version: 85b510edd14fe8d6beb2ad365afd3c5b3afc8c49
+  version: cb650d0b1a3c04a86595cf2a31fa704dbf1bc42a
   subpackages:
+  - analytics
   - context
   - crypto/rand
   - errors
   - flags
+  - homedir
   - log
   - log/golog
   - net/httpclient
@@ -30,13 +32,14 @@ imports:
   - unified
   - webhook
 - name: github.com/appscode/kutil
-  version: e0c1936a0ec86173f8278752bef81964b4ffbea5
+  version: 582273a0791d4d99ab1345d9e4867bec460aaf5a
   subpackages:
   - apiextensions/v1beta1
   - apps/v1beta1
   - core/v1
   - extensions/v1beta1
   - meta
+  - tools/analytics
 - name: github.com/appscode/pat
   version: 48ff78925b7955367d8a048fc2b5cec8efadf8d3
 - name: github.com/beorn7/perks
@@ -191,7 +194,7 @@ imports:
   - models
   - pkg/escape
 - name: github.com/jaytaylor/html2text
-  version: 0ee88d3006305456b84cad14a24b2576f9411965
+  version: 7cd445abb89c7dbb8220e616a1805fc904cc541b
 - name: github.com/jmoiron/sqlx
   version: 398dd5876282499cdfd4cb8ea0f31a672abe9495
   repo: https://github.com/jmoiron/sqlx
@@ -208,10 +211,6 @@ imports:
   repo: https://github.com/kisielk/sqlstruct
 - name: github.com/Knetic/govaluate
   version: d216395917cc49052c7c7094cf57f09657ca08a8
-- name: github.com/kubernetes/apimachinery
-  version: 18a564baac720819100827c16fdebcadb05b2d0d
-  subpackages:
-  - pkg/conversion
 - name: github.com/mailgun/mailgun-go
   version: 369a1fa57ce6fb314e627087b9fff0db5c266c0f
 - name: github.com/mailru/easyjson
@@ -227,7 +226,7 @@ imports:
   subpackages:
   - pbutil
 - name: github.com/nlopes/slack
-  version: 5cde21b8b96a43fc3435a1f514123d14fd7eabdc
+  version: c0ac548498d6c211ad9cb09ecb58c576d8ba602e
 - name: github.com/olekukonko/tablewriter
   version: 65fec0d89a572b4367094e2058d3ebe667de3b60
 - name: github.com/onsi/gomega
@@ -291,7 +290,7 @@ imports:
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/spf13/cobra
-  version: de2d9c4eca8f3c1de17d48b096b6504e0296f003
+  version: 7b2c5ac9fc04fc5efafb60700713d4fa609b777b
   subpackages:
   - doc
 - name: github.com/spf13/pflag
@@ -370,7 +369,7 @@ imports:
 - name: gopkg.in/yaml.v2
   version: 53feefa2559fb8dfa8d81baad31be332c97d6c77
 - name: k8s.io/api
-  version: 4df58c811fe2e65feb879227b2b245e4dc26e7ad
+  version: 9b9dca205a15b6ce9ef10091f05d60a13fdcf418
   subpackages:
   - admissionregistration/v1alpha1
   - apps/v1beta1
@@ -397,7 +396,7 @@ imports:
   - storage/v1
   - storage/v1beta1
 - name: k8s.io/apiextensions-apiserver
-  version: 5bc0d8f05a92b3a09bcf1a9db442a29c0b7a514d
+  version: 996a70a27a0dcf53642ca52601b9107cb2ad810a
   subpackages:
   - pkg/apis/apiextensions
   - pkg/apis/apiextensions/v1beta1

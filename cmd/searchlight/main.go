@@ -16,7 +16,7 @@ func main() {
 	logs.InitLogs()
 	defer logs.FlushLogs()
 
-	if err := cmds.NewCmdSearchlight(Version).Execute(); err != nil {
+	if err := cmds.NewCmdSearchlight().Execute(); err != nil {
 		log.Fatal(err)
 	}
 	os.Exit(0)

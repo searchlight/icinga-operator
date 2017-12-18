@@ -15,6 +15,7 @@ Prints binary version number.
 
 ### Synopsis
 
+
 Prints binary version number.
 
 ```
@@ -42,6 +43,5 @@ hostfacts version [flags]
 ```
 
 ### SEE ALSO
-
 * [hostfacts](/docs/reference/hostfacts/hostfacts.md)	 - Hostfacts by AppsCode - Expose node metrics
 

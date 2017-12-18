@@ -6,12 +6,17 @@ import (
 	"strings"
 
 	v "github.com/appscode/go/version"
+	"github.com/appscode/kutil/tools/analytics"
 	"github.com/jpillora/go-ogle-analytics"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
-func NewCmdSearchlight(version string) *cobra.Command {
+const (
+	gaTrackingCode = "UA-62096468-20"
+)
+
+func NewCmdSearchlight() *cobra.Command {
 	var (
 		enableAnalytics = true
 	)
@@ -24,8 +29,9 @@ func NewCmdSearchlight(version string) *cobra.Command {
 			})
 			if enableAnalytics && gaTrackingCode != "" {
 				if client, err := ga.NewClient(gaTrackingCode); err == nil {
+					client.ClientID(analytics.ClientID())
 					parts := strings.Split(c.CommandPath(), " ")
-					client.Send(ga.NewEvent(parts[0], strings.Join(parts[1:], "/")).Label(version))
+					client.Send(ga.NewEvent(parts[0], strings.Join(parts[1:], "/")).Label(v.Version.Version))
 				}
 			}
 		},

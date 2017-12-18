@@ -15,6 +15,7 @@ Run operator
 
 ### Synopsis
 
+
 Run operator
 
 ```
@@ -49,7 +50,6 @@ searchlight run [flags]
 ```
 
 ### SEE ALSO
-
 * [searchlight](/docs/reference/searchlight/searchlight.md)	 - Searchlight by AppsCode - Alerts for Kubernetes
 
 

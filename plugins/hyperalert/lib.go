@@ -2,7 +2,10 @@ package hyperalert
 
 import (
 	"flag"
+	"strings"
 
+	v "github.com/appscode/go/version"
+	"github.com/appscode/kutil/tools/analytics"
 	"github.com/appscode/searchlight/plugins/check_ca_cert"
 	"github.com/appscode/searchlight/plugins/check_component_status"
 	"github.com/appscode/searchlight/plugins/check_env"
@@ -16,13 +19,30 @@ import (
 	"github.com/appscode/searchlight/plugins/check_pod_status"
 	"github.com/appscode/searchlight/plugins/check_volume"
 	"github.com/appscode/searchlight/plugins/notifier"
+	"github.com/jpillora/go-ogle-analytics"
 	"github.com/spf13/cobra"
 )
 
+const (
+	gaTrackingCode = "UA-62096468-20"
+)
+
 func NewCmd() *cobra.Command {
+	var (
+		enableAnalytics = true
+	)
 	cmd := &cobra.Command{
 		Use:   "hyperalert",
 		Short: "AppsCode Icinga2 plugin",
+		PersistentPreRun: func(c *cobra.Command, args []string) {
+			if enableAnalytics && gaTrackingCode != "" {
+				if client, err := ga.NewClient(gaTrackingCode); err == nil {
+					client.ClientID(analytics.ClientID())
+					parts := strings.Split(c.CommandPath(), " ")
+					client.Send(ga.NewEvent(parts[0], strings.Join(parts[1:], "/")).Label(v.Version.Version))
+				}
+			}
+		},
 		Run: func(c *cobra.Command, args []string) {
 			c.Help()
 		},
@@ -30,6 +50,7 @@ func NewCmd() *cobra.Command {
 	cmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
 	// ref: https://github.com/kubernetes/kubernetes/issues/17162#issuecomment-225596212
 	flag.CommandLine.Parse([]string{})
+	cmd.PersistentFlags().BoolVar(&enableAnalytics, "analytics", enableAnalytics, "Send analytical events to Google Analytics")
 
 	// CheckCluster
 	cmd.AddCommand(check_component_status.NewCmd())

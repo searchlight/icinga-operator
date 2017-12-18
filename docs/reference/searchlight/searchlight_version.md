@@ -15,6 +15,7 @@ Prints binary version number.
 
 ### Synopsis
 
+
 Prints binary version number.
 
 ```
@@ -42,6 +43,5 @@ searchlight version [flags]
 ```
 
 ### SEE ALSO
-
 * [searchlight](/docs/reference/searchlight/searchlight.md)	 - Searchlight by AppsCode - Alerts for Kubernetes
 

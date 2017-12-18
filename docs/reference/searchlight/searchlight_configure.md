@@ -15,6 +15,7 @@ Generate icinga configuration
 
 ### Synopsis
 
+
 Generate icinga configuration
 
 ```
@@ -43,7 +44,6 @@ searchlight configure [flags]
 ```
 
 ### SEE ALSO
-
 * [searchlight](/docs/reference/searchlight/searchlight.md)	 - Searchlight by AppsCode - Alerts for Kubernetes
 
 

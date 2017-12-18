@@ -12,7 +12,7 @@ func main() {
 	logs.InitLogs()
 	defer logs.FlushLogs()
 
-	if err := cmds.NewCmdHostfacts(Version).Execute(); err != nil {
+	if err := cmds.NewCmdHostfacts().Execute(); err != nil {
 		log.Fatal(err)
 	}
 	os.Exit(0)

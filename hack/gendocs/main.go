@@ -63,7 +63,7 @@ aliases:
 ---
 `))
 	)
-	rootCmd := cmds.NewCmdHostfacts("")
+	rootCmd := cmds.NewCmdHostfacts()
 	dir := runtime.GOPath() + "/src/github.com/appscode/searchlight/docs/reference/hostfacts"
 	fmt.Printf("Generating cli markdown tree in: %v\n", dir)
 	err := os.RemoveAll(dir)
@@ -249,7 +249,7 @@ aliases:
 ---
 `))
 	)
-	rootCmd := cmds.NewCmdSearchlight("")
+	rootCmd := cmds.NewCmdSearchlight()
 	dir := runtime.GOPath() + "/src/github.com/appscode/searchlight/docs/reference/searchlight"
 	fmt.Printf("Generating cli markdown tree in: %v\n", dir)
 	err := os.RemoveAll(dir)
