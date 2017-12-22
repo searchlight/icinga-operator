@@ -1,10 +1,10 @@
 hash: fd86e06dfe0a988e5bd26f8ff11c3c0f7cf6e29c44b9309dfa44919bc78cd2d7
-updated: 2017-12-18T15:41:16.157050472-05:00
+updated: 2017-12-22T03:36:27.871012797-05:00
 imports:
 - name: github.com/appscode/envconfig
   version: 183bbe643a2875eaa69c85627ac6b25813983203
 - name: github.com/appscode/go
-  version: cb650d0b1a3c04a86595cf2a31fa704dbf1bc42a
+  version: f08cee5a2aa53a1ab6d30e4ae11e381d1b265f81
   subpackages:
   - analytics
   - context
@@ -32,7 +32,7 @@ imports:
   - unified
   - webhook
 - name: github.com/appscode/kutil
-  version: 582273a0791d4d99ab1345d9e4867bec460aaf5a
+  version: 04124fd21c654188d7a11908d8c8af994a4cccef
   subpackages:
   - apiextensions/v1beta1
   - apps/v1beta1
@@ -40,6 +40,8 @@ imports:
   - extensions/v1beta1
   - meta
   - tools/analytics
+- name: github.com/appscode/mergo
+  version: e3000cb3d28c72b837601cac94debd91032d19fe
 - name: github.com/appscode/pat
   version: 48ff78925b7955367d8a048fc2b5cec8efadf8d3
 - name: github.com/beorn7/perks
@@ -226,9 +228,9 @@ imports:
   subpackages:
   - pbutil
 - name: github.com/nlopes/slack
-  version: c0ac548498d6c211ad9cb09ecb58c576d8ba602e
+  version: 04de7010c341beedd8404f417c93266584be4b2a
 - name: github.com/olekukonko/tablewriter
-  version: 65fec0d89a572b4367094e2058d3ebe667de3b60
+  version: cca8bbc0798408af109aaaa239cbd2634846b340
 - name: github.com/onsi/gomega
   version: c893efa28eb45626cdaa76c9f653b62488858837
   subpackages:
@@ -290,7 +292,7 @@ imports:
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/spf13/cobra
-  version: 7b2c5ac9fc04fc5efafb60700713d4fa609b777b
+  version: ccaecb155a2177302cb56cae929251a256d0f646
   subpackages:
   - doc
 - name: github.com/spf13/pflag
