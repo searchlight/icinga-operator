@@ -5,7 +5,6 @@ import (
 
 	"github.com/appscode/go/crypto/rand"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	sutil "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1/util"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/gomega"
@@ -35,10 +34,6 @@ func (f *Framework) CreateClusterAlert(obj *api.ClusterAlert) error {
 
 func (f *Framework) GetClusterAlert(meta metav1.ObjectMeta) (*api.ClusterAlert, error) {
 	return f.extClient.ClusterAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
-}
-
-func (f *Framework) TryPatchClusterAlert(meta metav1.ObjectMeta, transform func(*api.ClusterAlert) *api.ClusterAlert) (*api.ClusterAlert, error) {
-	return sutil.TryPatchClusterAlert(f.extClient, meta, transform)
 }
 
 func (f *Framework) DeleteClusterAlert(meta metav1.ObjectMeta) error {

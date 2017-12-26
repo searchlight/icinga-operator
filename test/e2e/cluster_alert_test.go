@@ -1,6 +1,8 @@
 package e2e_test
 
 import (
+	"strconv"
+
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/test/e2e/framework"
 	. "github.com/appscode/searchlight/test/e2e/matcher"
@@ -62,7 +64,7 @@ var _ = Describe("ClusterAlert", func() {
 
 			Context("State OK", func() {
 				BeforeEach(func() {
-					alert.Spec.Vars["count"] = totalNode
+					alert.Spec.Vars["count"] = strconv.Itoa(int(totalNode))
 					icingaServiceState = IcingaServiceState{Ok: 1}
 				})
 
@@ -71,7 +73,7 @@ var _ = Describe("ClusterAlert", func() {
 
 			Context("State Critical", func() {
 				BeforeEach(func() {
-					alert.Spec.Vars["count"] = totalNode + 1
+					alert.Spec.Vars["count"] = strconv.Itoa(int(totalNode + 1))
 					icingaServiceState = IcingaServiceState{Critical: 1}
 				})
 
@@ -83,7 +85,7 @@ var _ = Describe("ClusterAlert", func() {
 		Context("check_pod_exists", func() {
 
 			AfterEach(func() {
-				go f.EventuallyDeleteReplicaSet(rs.ObjectMeta)
+				f.DeleteReplicaSet(rs)
 			})
 
 			BeforeEach(func() {
@@ -119,7 +121,7 @@ var _ = Describe("ClusterAlert", func() {
 
 			Context("State OK", func() {
 				BeforeEach(func() {
-					alert.Spec.Vars["count"] = *rs.Spec.Replicas
+					alert.Spec.Vars["count"] = strconv.Itoa(int(*rs.Spec.Replicas))
 					icingaServiceState = IcingaServiceState{Ok: 1}
 				})
 
@@ -128,7 +130,7 @@ var _ = Describe("ClusterAlert", func() {
 
 			Context("State Critical", func() {
 				BeforeEach(func() {
-					alert.Spec.Vars["count"] = *rs.Spec.Replicas + 1
+					alert.Spec.Vars["count"] = strconv.Itoa(int(*rs.Spec.Replicas + 1))
 					icingaServiceState = IcingaServiceState{Critical: 1}
 				})
 

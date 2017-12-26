@@ -5,7 +5,9 @@ import (
 
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/go/types"
+	ext_util "github.com/appscode/kutil/extensions/v1beta1"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"github.com/appscode/searchlight/client/typed/monitoring/v1alpha1/util"
 	"github.com/appscode/searchlight/test/e2e/framework"
 	. "github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/ginkgo"
@@ -79,7 +81,7 @@ var _ = Describe("PodAlert", func() {
 				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
 
 			By("Increase replica")
-			rs, err := f.TryPatchReplicaSet(rs.ObjectMeta, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
+			rs, _, err := ext_util.PatchReplicaSet(f.KubeClient(), rs, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
 				in.Spec.Replicas = types.Int32P(3)
 				return in
 			})
@@ -118,7 +120,7 @@ var _ = Describe("PodAlert", func() {
 				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
 
 			By("Decreate replica")
-			rs, err := f.TryPatchReplicaSet(rs.ObjectMeta, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
+			rs, _, err := ext_util.PatchReplicaSet(f.KubeClient(), rs, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
 				in.Spec.Replicas = types.Int32P(1)
 				return in
 			})
@@ -159,7 +161,7 @@ var _ = Describe("PodAlert", func() {
 			oldAlertSpec := alert.Spec
 
 			By("Change LabelSelector")
-			alert, err = f.TryPatchPodAlert(alert.ObjectMeta, func(in *api.PodAlert) *api.PodAlert {
+			alert, _, err = util.PatchPodAlert(f.MonitoringClient(), alert, func(in *api.PodAlert) *api.PodAlert {
 				in.Spec.Selector.MatchLabels = map[string]string{
 					"app": rand.WithUniqSuffix("searchlight-e2e"),
 				}
@@ -231,7 +233,7 @@ var _ = Describe("PodAlert", func() {
 
 	Describe("Test", func() {
 		AfterEach(func() {
-			go f.EventuallyDeleteReplicaSet(rs.ObjectMeta).Should(BeTrue())
+			go f.DeleteReplicaSet(rs)
 			go f.DeletePod(pod.ObjectMeta)
 		})
 
@@ -267,7 +269,7 @@ var _ = Describe("PodAlert", func() {
 		// Check "volume"
 		Context("check_pod_volume", func() {
 			AfterEach(func() {
-				go f.EventuallyDeleteStatefulSet(ss.ObjectMeta).Should(BeTrue())
+				go f.DeleteStatefulSet(ss)
 			})
 			BeforeEach(func() {
 				if strings.ToLower(f.Provider) == "minikube" {
@@ -319,7 +321,7 @@ var _ = Describe("PodAlert", func() {
 			Context("State OK", func() {
 				BeforeEach(func() {
 					icingaServiceState = IcingaServiceState{Ok: *ss.Spec.Replicas}
-					alert.Spec.Vars["warning"] = 100.0
+					alert.Spec.Vars["warning"] = "100.0"
 				})
 
 				It("should manage icinga service for Ok State", forStatefulSet)
@@ -328,7 +330,7 @@ var _ = Describe("PodAlert", func() {
 			Context("State Warning", func() {
 				BeforeEach(func() {
 					icingaServiceState = IcingaServiceState{Warning: *ss.Spec.Replicas}
-					alert.Spec.Vars["warning"] = 1.0
+					alert.Spec.Vars["warning"] = "1.0"
 				})
 
 				It("should manage icinga service for Warning State", forStatefulSet)
@@ -337,7 +339,7 @@ var _ = Describe("PodAlert", func() {
 			Context("State Critical", func() {
 				BeforeEach(func() {
 					icingaServiceState = IcingaServiceState{Critical: *ss.Spec.Replicas}
-					alert.Spec.Vars["critical"] = 1.0
+					alert.Spec.Vars["critical"] = "1.0"
 				})
 
 				It("should manage icinga service for Critical State", forStatefulSet)

@@ -4,12 +4,11 @@ import (
 	"github.com/appscode/go/types"
 	apps "k8s.io/api/apps/v1beta1"
 	core "k8s.io/api/core/v1"
-	extensions "k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
-func (f *Invocation) DeploymentAppSearchlight() *apps.Deployment {
+func (f *Invocation) DeploymentSearchlight() *apps.Deployment {
 	return &apps.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      f.name,
@@ -19,22 +18,6 @@ func (f *Invocation) DeploymentAppSearchlight() *apps.Deployment {
 			},
 		},
 		Spec: apps.DeploymentSpec{
-			Replicas: types.Int32P(1),
-			Template: f.getSearchlightPodTemplate(),
-		},
-	}
-}
-
-func (f *Invocation) DeploymentExtensionSearchlight() *extensions.Deployment {
-	return &extensions.Deployment{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      f.name,
-			Namespace: f.namespace,
-			Labels: map[string]string{
-				"app": "searchlight",
-			},
-		},
-		Spec: extensions.DeploymentSpec{
 			Replicas: types.Int32P(1),
 			Template: f.getSearchlightPodTemplate(),
 		},

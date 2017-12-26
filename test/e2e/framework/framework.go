@@ -44,6 +44,14 @@ func (f *Framework) Invoke() *Invocation {
 	}
 }
 
+func (f *Framework) KubeClient() kubernetes.Interface {
+	return f.kubeClient
+}
+
+func (f *Framework) MonitoringClient() cs.MonitoringV1alpha1Interface {
+	return f.extClient
+}
+
 type Invocation struct {
 	*Framework
 	app string

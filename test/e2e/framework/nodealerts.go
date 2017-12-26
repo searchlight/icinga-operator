@@ -1,11 +1,9 @@
 package framework
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
-	"github.com/appscode/go/log"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e/matcher"
@@ -37,27 +35,6 @@ func (f *Framework) CreateNodeAlert(obj *api.NodeAlert) error {
 
 func (f *Framework) GetNodeAlert(meta metav1.ObjectMeta) (*api.NodeAlert, error) {
 	return f.extClient.NodeAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
-}
-
-func (f *Framework) UpdateNodeAlert(meta metav1.ObjectMeta, transformer func(api.NodeAlert) api.NodeAlert) (*api.NodeAlert, error) {
-	attempt := 0
-	for ; attempt < maxAttempts; attempt = attempt + 1 {
-		cur, err := f.extClient.NodeAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
-		if err != nil {
-			return nil, err
-		}
-
-		modified := transformer(*cur)
-		updated, err := f.extClient.NodeAlerts(cur.Namespace).Update(&modified)
-		if err == nil {
-			return updated, nil
-		}
-
-		log.Errorf("Attempt %d failed to update NodeAlert %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
-		time.Sleep(updateRetryInterval)
-	}
-
-	return nil, fmt.Errorf("Failed to update NodeAlert %s@%s after %d attempts.", meta.Name, meta.Namespace, attempt)
 }
 
 func (f *Framework) DeleteNodeAlert(meta metav1.ObjectMeta) error {

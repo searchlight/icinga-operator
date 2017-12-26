@@ -1,5 +1,5 @@
 hash: fd86e06dfe0a988e5bd26f8ff11c3c0f7cf6e29c44b9309dfa44919bc78cd2d7
-updated: 2017-12-22T03:36:27.871012797-05:00
+updated: 2017-12-26T17:06:33.895601529-05:00
 imports:
 - name: github.com/appscode/envconfig
   version: 183bbe643a2875eaa69c85627ac6b25813983203
@@ -32,7 +32,7 @@ imports:
   - unified
   - webhook
 - name: github.com/appscode/kutil
-  version: 04124fd21c654188d7a11908d8c8af994a4cccef
+  version: 27239d39c245b5237d1035f2873db9c2d895c34b
   subpackages:
   - apiextensions/v1beta1
   - apps/v1beta1
@@ -228,7 +228,7 @@ imports:
   subpackages:
   - pbutil
 - name: github.com/nlopes/slack
-  version: 04de7010c341beedd8404f417c93266584be4b2a
+  version: ccf0351050c69b08f9c48f3e876f4cd5564463e8
 - name: github.com/olekukonko/tablewriter
   version: cca8bbc0798408af109aaaa239cbd2634846b340
 - name: github.com/onsi/gomega

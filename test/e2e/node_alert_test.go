@@ -73,7 +73,7 @@ var _ = Describe("NodeAlert", func() {
 			Context("State OK", func() {
 				BeforeEach(func() {
 					icingaServiceState = IcingaServiceState{Ok: totalNode}
-					alert.Spec.Vars["warning"] = 100.0
+					alert.Spec.Vars["warning"] = "100.0"
 				})
 
 				It("should manage icinga service for Ok State", shouldManageIcingaService)
@@ -82,7 +82,7 @@ var _ = Describe("NodeAlert", func() {
 			Context("State Warning", func() {
 				BeforeEach(func() {
 					icingaServiceState = IcingaServiceState{Warning: totalNode}
-					alert.Spec.Vars["warning"] = 1.0
+					alert.Spec.Vars["warning"] = "1.0"
 				})
 
 				It("should manage icinga service for Warning State", shouldManageIcingaService)
@@ -91,7 +91,7 @@ var _ = Describe("NodeAlert", func() {
 			Context("State Critical", func() {
 				BeforeEach(func() {
 					icingaServiceState = IcingaServiceState{Critical: totalNode}
-					alert.Spec.Vars["critical"] = 1.0
+					alert.Spec.Vars["critical"] = "1.0"
 				})
 
 				It("should manage icinga service for Critical State", shouldManageIcingaService)

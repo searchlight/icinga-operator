@@ -1,13 +1,10 @@
 package framework
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
-	"github.com/appscode/go/log"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	sutil "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1/util"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/gomega"
@@ -37,31 +34,6 @@ func (f *Framework) CreatePodAlert(obj *api.PodAlert) error {
 
 func (f *Framework) GetPodAlert(meta metav1.ObjectMeta) (*api.PodAlert, error) {
 	return f.extClient.PodAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
-}
-
-func (f *Framework) UpdatePodAlert(meta metav1.ObjectMeta, transformer func(api.PodAlert) api.PodAlert) (*api.PodAlert, error) {
-	attempt := 0
-	for ; attempt < maxAttempts; attempt = attempt + 1 {
-		cur, err := f.extClient.PodAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
-		if err != nil {
-			return nil, err
-		}
-
-		modified := transformer(*cur)
-		updated, err := f.extClient.PodAlerts(cur.Namespace).Update(&modified)
-		if err == nil {
-			return updated, nil
-		}
-
-		log.Errorf("Attempt %d failed to update PodAlert %s@%s due to %s.", attempt, cur.Name, cur.Namespace, err)
-		time.Sleep(updateRetryInterval)
-	}
-
-	return nil, fmt.Errorf("Failed to update PodAlert %s@%s after %d attempts.", meta.Name, meta.Namespace, attempt)
-}
-
-func (f *Framework) TryPatchPodAlert(meta metav1.ObjectMeta, transform func(alert *api.PodAlert) *api.PodAlert) (*api.PodAlert, error) {
-	return sutil.TryPatchPodAlert(f.extClient, meta, transform)
 }
 
 func (f *Framework) DeletePodAlert(meta metav1.ObjectMeta) error {
