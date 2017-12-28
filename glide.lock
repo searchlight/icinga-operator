@@ -1,5 +1,5 @@
 hash: fd86e06dfe0a988e5bd26f8ff11c3c0f7cf6e29c44b9309dfa44919bc78cd2d7
-updated: 2017-12-26T17:06:33.895601529-05:00
+updated: 2017-12-28T17:13:11.097992772-05:00
 imports:
 - name: github.com/appscode/envconfig
   version: 183bbe643a2875eaa69c85627ac6b25813983203
@@ -19,7 +19,7 @@ imports:
   - types
   - version
 - name: github.com/appscode/go-notify
-  version: c1f627b4151ce1f8b5b80eeab2eb94c2561af00c
+  version: 5aa1e264b9e59775cd2ea6053cb46f46d66821d0
   subpackages:
   - hipchat
   - log
@@ -32,10 +32,9 @@ imports:
   - unified
   - webhook
 - name: github.com/appscode/kutil
-  version: 27239d39c245b5237d1035f2873db9c2d895c34b
+  version: c393406fbcc65765c04935bfe3a6770a51d61fbb
   subpackages:
   - apiextensions/v1beta1
-  - apps/v1beta1
   - core/v1
   - extensions/v1beta1
   - meta
@@ -79,7 +78,7 @@ imports:
 - name: github.com/codegangsta/inject
   version: 33e0aa1cb7c019ccc3fbe049a8262a6403d30504
 - name: github.com/codeskyblue/go-sh
-  version: 703901965097a6b3155c0f6f774efb877b483f64
+  version: cf804ac79dffabb6b16342e24362cc744afc144f
 - name: github.com/cpuguy83/go-md2man
   version: 71acacd42f85e5e82f70a55327789582a5200a90
   subpackages:
@@ -157,6 +156,13 @@ imports:
   - go/client
   - go/x509
   - go/x509/pkix
+- name: github.com/google/go-cmp
+  version: 97a1ff3c48253a51c601f6e4420181273b6ca0ea
+  subpackages:
+  - cmp
+  - cmp/internal/diff
+  - cmp/internal/function
+  - cmp/internal/value
 - name: github.com/google/go-querystring
   version: 53e6ce116135b80d037921a7fdd5138cf32d7a8a
   subpackages:
