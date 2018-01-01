@@ -43,5 +43,5 @@ hostfacts version [flags]
 ```
 
 ### SEE ALSO
-* [hostfacts](/docs/reference/hostfacts/hostfacts.md)	 - Hostfacts by AppsCode - Expose node metrics
+* [hostfacts](/docs/reference/hostfacts/concepts/hostfacts.md)	 - Hostfacts by AppsCode - Expose node metrics
 
