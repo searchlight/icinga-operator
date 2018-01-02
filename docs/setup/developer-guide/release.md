@@ -3,7 +3,7 @@ title: Release | Searchlight
 description: Searchlight Release
 menu:
   product_searchlight_5.0.0:
-    identifier: release    
+    identifier: release
     name: Release
     parent: developer-guide
     weight: 15

@@ -1,18 +1,18 @@
 ---
 title: Certificate
-description: Certificate of Searchlight
+description: Generate self-signed SSL certificates
 menu:
   product_searchlight_5.0.0:
     identifier: certificate-searchlight
-    name: Certificate
-    parent: concepts
-    weight: 15
+    name: Generate Certificate
+    parent: setup
+    weight: 20
 product_name: searchlight
 menu_name: product_searchlight_5.0.0
-section_menu_id: concepts
+section_menu_id: setup
 ---
 
-> New to Searchlight? Please start [here](/docs/guides/README.md).
+> New to Searchlight? Please start [here](/docs/concepts/README.md).
 
 # Certificate
 

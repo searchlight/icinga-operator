@@ -6,7 +6,7 @@ menu:
     identifier: contributing-searchlight
     name: Contributing
     parent: welcome
-    weight: 35
+    weight: 10
 product_name: searchlight
 menu_name: product_searchlight_5.0.0
 section_menu_id: welcome
@@ -18,7 +18,7 @@ aliases:
 # Contribution Guidelines
 Want to hack on Searchlight?
 
-AppsCode projects are [Apache 2.0 licensed](LICENSE) and accept contributions via
+AppsCode projects are [Apache 2.0 licensed](https://github.com/appscode/searchlight/blob/master/LICENSE) and accept contributions via
 GitHub pull requests.  This document outlines some of the conventions on
 development workflow, commit message formatting, contact points and other
 resources to make it easier to get your contribution accepted.
@@ -28,17 +28,13 @@ resources to make it easier to get your contribution accepted.
 By contributing to this project you agree to the Developer Certificate of
 Origin (DCO). This document was created by the Linux Kernel community and is a
 simple statement that you, as a contributor, have the legal right to make the
-contribution. See the [DCO](DCO) file for details.
+contribution. See the [DCO](https://github.com/appscode/searchlight/blob/master/DCO) file for details.
 
 ## Developer Guide
 
-We have a [Developer Guide](/docs/developer-guide/README.md) that outlines everything you need to know from setting up your
+We have a [Developer Guide](/docs/setup/developer-guide/README.md) that outlines everything you need to know from setting up your
 dev environment to how to build and test Searchlight. If you find something undocumented or incorrect along the way,
 please feel free to send a Pull Request.
-
-## Design Docs
-
-If you want to know how Searchlight translates Alert CRDs into Icinga parlance, read the [design doc](docs/design/README.md).
 
 ## Getting Help
 
@@ -46,7 +42,7 @@ If you have a question about Searchlight or having problem using it, you can con
 
 ## Bugs/Feature request
 
-If you have found a bug with Searchlight or want to request for new features, please [file an issue](https://github.com/appscode/searchlight/issues/new). 
+If you have found a bug with Searchlight or want to request for new features, please [file an issue](https://github.com/appscode/searchlight/issues/new).
 
 ## Submit PR
 

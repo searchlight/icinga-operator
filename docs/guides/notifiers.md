@@ -12,7 +12,7 @@ menu_name: product_searchlight_5.0.0
 section_menu_id: guides
 ---
 
-> New to Searchlight? Please start [here](/docs/guides/README.md).
+> New to Searchlight? Please start [here](/docs/concepts/README.md).
 
 # Supported Notifiers
 Searchlight can send notifications via Email, SMS or Chat for alerts using [appscode/go-notify](https://github.com/appscode/go-notify) library. To connect to these services, you need to create a Secret with the appropriate keys. Then pass the secret name to Searchlight by setting `spec.notifierSecretName` field in ClusterAlert/NodeAlert/PodAlert objects. __This Secret must exist in the same namespace where the Alert object exists.__ To easily synchronize this Secret across all current and future namespaces of a Kubernetes cluster, you can use [kubed](https://github.com/appscode/kubed/blob/master/docs/guides/config-syncer.md).
@@ -49,8 +49,9 @@ type: Opaque
 ```
 
 Now, to receiver notifications via Hipchat, configure receiver as below:
- - notifier: `Hipchat`
- - to: a list of chat room names
+
+- notifier: `Hipchat`
+- to: a list of chat room names
 
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
@@ -114,8 +115,9 @@ type: Opaque
 ```
 
 Now, to receiver notifications via Mailgun, configure receiver as below:
- - notifier: `Mailgun`
- - to: a list of email addresses
+
+- notifier: `Mailgun`
+- to: a list of email addresses
 
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
@@ -178,8 +180,9 @@ $ echo -n 'your-gmail-address' > SMTP_FROM
 ```
 
 Now, to receiver notifications via SMTP, configure receiver as below:
- - notifier: `SMTP`
- - to: a list of email addresses
+
+- notifier: `SMTP`
+- to: a list of email addresses
 
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
@@ -240,8 +243,9 @@ type: Opaque
 ```
 
 Now, to receiver notifications via SMTP, configure receiver as below:
- - notifier: `Twilio`
- - to: a list of receiver mobile numbers
+
+- notifier: `Twilio`
+- to: a list of receiver mobile numbers
 
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
@@ -293,8 +297,9 @@ type: Opaque
 ```
 
 Now, to receiver notifications via Hipchat, configure receiver as below:
- - notifier: `Slack`
- - to: a list of chat room names
+
+- notifier: `Slack`
+- to: a list of chat room names
 
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
@@ -354,8 +359,9 @@ type: Opaque
 ```
 
 Now, to receiver notifications via SMTP, configure receiver as below:
- - notifier: `Plivo`
- - to: a list of receiver mobile numbers
+
+- notifier: `Plivo`
+- to: a list of receiver mobile numbers
 
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
@@ -432,8 +438,9 @@ type: Opaque
 ```
 
 Now, to receiver notifications via Pushover.net, configure receiver as below:
- - notifier: `Pushover`
- - to: a list of devices where notifications will be sent. If list is empty, all devices will be notified.
+
+- notifier: `Pushover`
+- to: a list of devices where notifications will be sent. If list is empty, all devices will be notified.
 
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
@@ -501,9 +508,9 @@ spec:
 
 
 ## Next Steps
- - To periodically run various checks on your Kubernetes cluster, use [ClusterAlerts](/docs/guides/cluster-alerts/README.md).
- - To periodically run various checks on nodes in a Kubernetes cluster, use [NodeAlerts](/docs/guides/node-alerts/README.md).
- - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/guides/pod-alerts/README.md).
+ - To periodically run various checks on your Kubernetes cluster, use [ClusterAlerts](/docs/concepts/alert-types/cluster-alert.md).
+ - To periodically run various checks on nodes in a Kubernetes cluster, use [NodeAlerts](/docs/concepts/alert-types/node-alert.md).
+ - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/concepts/alert-types/pod-alert.md).
  - See the list of supported notifiers [here](/docs/guides/notifiers.md).
  - Wondering what features are coming next? Please visit [here](/docs/roadmap.md).
  - Want to hack on Searchlight? Check our [contribution guidelines](/docs/CONTRIBUTING.md).

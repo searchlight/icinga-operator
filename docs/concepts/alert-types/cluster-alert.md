@@ -3,15 +3,15 @@ title: Cluster Alert Overview
 menu:
   product_searchlight_5.0.0:
     identifier: cluster-alert-overview
-    name: Overview
-    parent: cluster-alert
+    name: Cluster Alert
+    parent: alert-types
     weight: 5
 product_name: searchlight
 menu_name: product_searchlight_5.0.0
-section_menu_id: guides
+section_menu_id: concepts
 ---
 
-> New to Searchlight? Please start [here](/docs/guides/README.md).
+> New to Searchlight? Please start [here](/docs/concepts/README.md).
 # ClusterAlerts
 
 ## What is ClusterAlert
@@ -85,8 +85,8 @@ You can skip this section if you are unfamiliar with how Icinga works. Searchlig
     - [json_path](/docs/guides/cluster-alerts/json_path.md) - To check any JSON HTTP response using [jq](https://stedolan.github.io/jq/).
     - [node_exists](/docs/guides/cluster-alerts/node_exists.md) - To check existence of Kubernetes nodes.
     - [pod_exists](/docs/guides/cluster-alerts/pod_exists.md) - To check existence of Kubernetes pods.
- - To periodically run various checks on nodes in a Kubernetes cluster, use [NodeAlerts](/docs/guides/node-alerts/README.md).
- - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/guides/pod-alerts/README.md).
+ - To periodically run various checks on nodes in a Kubernetes cluster, use [NodeAlerts](/docs/concepts/alert-types/node-alert.md).
+ - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/concepts/alert-types/pod-alert.md).
  - See the list of supported notifiers [here](/docs/guides/notifiers.md).
  - Wondering what features are coming next? Please visit [here](/docs/roadmap.md).
  - Want to hack on Searchlight? Check our [contribution guidelines](/docs/CONTRIBUTING.md).

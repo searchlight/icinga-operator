@@ -3,15 +3,15 @@ title: Node Alert Overview
 menu:
   product_searchlight_5.0.0:
     identifier: node-alert-overview
-    name: Overview
-    parent: node-alert
+    name: Node Alert
+    parent: alert-types
     weight: 10
 product_name: searchlight
 menu_name: product_searchlight_5.0.0
-section_menu_id: guides
+section_menu_id: concepts
 ---
 
-> New to Searchlight? Please start [here](/docs/guides/README.md).
+> New to Searchlight? Please start [here](/docs/concepts/README.md).
 
 # NodeAlerts
 
@@ -91,8 +91,8 @@ You can skip this section if you are unfamiliar with how Icinga works. Searchlig
     - [influx_query](/docs/guides/node-alerts/influx_query.md) - To check InfluxDB query result.
     - [node_status](/docs/guides/node-alerts/node_status.md) - To check Kubernetes Node status.
     - [node_volume](/docs/guides/node-alerts/node_volume.md) - To check Node Disk stat.
- - To periodically run various checks on a Kubernetes cluster, use [ClusterAlerts](/docs/guides/cluster-alerts/README.md).
- - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/guides/pod-alerts/README.md).
+ - To periodically run various checks on a Kubernetes cluster, use [ClusterAlerts](/docs/concepts/alert-types/cluster-alert.md).
+ - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/concepts/alert-types/pod-alert.md).
  - See the list of supported notifiers [here](/docs/guides/notifiers.md).
  - Wondering what features are coming next? Please visit [here](/docs/roadmap.md).
  - Want to hack on Searchlight? Check our [contribution guidelines](/docs/CONTRIBUTING.md).

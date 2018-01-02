@@ -11,7 +11,7 @@ menu_name: product_searchlight_5.0.0
 section_menu_id: guides
 ---
 
-> New to Searchlight? Please start [here](/docs/guides/README.md).
+> New to Searchlight? Please start [here](/docs/concepts/README.md).
 
 # Check node_volume
 
@@ -19,12 +19,14 @@ Check command `node_volume` is used to check percentage of available space in Ku
 
 ## Spec
 `node_volume` check command has the following variables:
+
 - `mountpoint` - Mountpoint of volume whose usage stats will be checked
 - `secretName` - Name of Kubernetes Secret used to pass [hostfacts auth info](/docs/concepts/hostfacts.md#create-hostfacts-secret)
 - `warning` - Warning level value (usage percentage defaults to 80.0)
 - `critical` - Critical level value (usage percentage defaults to 95.0)
 
 Execution of this command can result in following states:
+
 - OK
 - WARNING
 - CRITICAL
@@ -187,12 +189,12 @@ To cleanup the Kubernetes resources created by this tutorial, run:
 $ kubectl delete ns demo
 ```
 
-If you would like to uninstall Searchlight operator, please follow the steps [here](/docs/uninstall.md).
+If you would like to uninstall Searchlight operator, please follow the steps [here](/docs/setup/uninstall.md).
 
 
 ## Next Steps
- - To periodically run various checks on a Kubernetes cluster, use [ClusterAlerts](/docs/guides/cluster-alerts/README.md).
- - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/guides/pod-alerts/README.md).
+ - To periodically run various checks on a Kubernetes cluster, use [ClusterAlerts](/docs/concepts/alert-types/cluster-alert.md).
+ - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/concepts/alert-types/pod-alert.md).
  - See the list of supported notifiers [here](/docs/guides/notifiers.md).
  - Wondering what features are coming next? Please visit [here](/docs/roadmap.md).
  - Want to hack on Searchlight? Check our [contribution guidelines](/docs/CONTRIBUTING.md).

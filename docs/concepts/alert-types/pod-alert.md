@@ -3,15 +3,15 @@ title: Pod Alert Overview
 menu:
   product_searchlight_5.0.0:
     identifier: pod-alert-overview
-    name: Overview
-    parent: pod-alert
-    weight: 10
+    name: Pod Alert
+    parent: alert-types
+    weight: 15
 product_name: searchlight
 menu_name: product_searchlight_5.0.0
-section_menu_id: guides
+section_menu_id: concepts
 ---
 
-> New to Searchlight? Please start [here](/docs/guides/README.md).
+> New to Searchlight? Please start [here](/docs/concepts/README.md).
 
 # PodAlerts
 
@@ -95,8 +95,8 @@ You can skip this section if you are unfamiliar with how Icinga works. Searchlig
     - [pod_exec](/docs/guides/pod-alerts/pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
     - [pod_status](/docs/guides/pod-alerts/pod_status.md) - To check Kubernetes pod status.
     - [pod_volume](/docs/guides/pod-alerts/pod_volume.md) - To check Pod volume stat.
- - To periodically run various checks on a Kubernetes cluster, use [ClusterAlerts](/docs/guides/cluster-alerts/README.md).
- - To periodically run various checks on nodes in a Kubernetes cluster, use [NodeAlerts](/docs/guides/node-alerts/README.md).
+ - To periodically run various checks on a Kubernetes cluster, use [ClusterAlerts](/docs/concepts/alert-types/cluster-alert.md).
+ - To periodically run various checks on nodes in a Kubernetes cluster, use [NodeAlerts](/docs/concepts/alert-types/node-alert.md).
  - See the list of supported notifiers [here](/docs/guides/notifiers.md).
  - Wondering what features are coming next? Please visit [here](/docs/roadmap.md).
  - Want to hack on Searchlight? Check our [contribution guidelines](/docs/CONTRIBUTING.md).

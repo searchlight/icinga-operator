@@ -11,7 +11,7 @@ menu_name: product_searchlight_5.0.0
 section_menu_id: guides
 ---
 
-> New to Searchlight? Please start [here](/docs/guides/README.md).
+> New to Searchlight? Please start [here](/docs/concepts/README.md).
 
 # Check ca_cert
 
@@ -19,10 +19,12 @@ Check command `ca_cert` checks the expiration timestamp of Kubernetes api server
 
 ## Spec
 `ca_cert` check command has the following variables:
+
 - `warning` - Condition for warning, compare with tiem left before expiration. (Default: TTL < 360h)
 - `critical` - Condition for critical, compare with tiem left before expiration. (Default: TTL < 120h)
 
 Execution of this command can result in following states:
+
 - OK
 - WARNING
 - CRITICAL
@@ -101,8 +103,8 @@ If you would like to uninstall Searchlight operator, please follow the steps [he
 
 
 ## Next Steps
- - To periodically run various checks on nodes in a Kubernetes cluster, use [NodeAlerts](/docs/guides/node-alerts/README.md).
- - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/guides/pod-alerts/README.md).
+ - To periodically run various checks on nodes in a Kubernetes cluster, use [NodeAlerts](/docs/concepts/alert-types/node-alert.md).
+ - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/concepts/alert-types/pod-alert.md).
  - See the list of supported notifiers [here](/docs/guides/notifiers.md).
  - Wondering what features are coming next? Please visit [here](/docs/roadmap.md).
  - Want to hack on Searchlight? Check our [contribution guidelines](/docs/CONTRIBUTING.md).

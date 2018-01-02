@@ -1,21 +1,21 @@
 ---
-title: Hostfacts
-description: Hostfacts
+title: Install Hostfacts
+description: Install Hostfacts
 menu:
   product_searchlight_5.0.0:
     identifier: hostfacts-searchlight
-    name: Hostfacts
-    parent: concepts
-    weight: 20
+    name: Install Hostfacts
+    parent: setup
+    weight: 15
 product_name: searchlight
 menu_name: product_searchlight_5.0.0
-section_menu_id: concepts
+section_menu_id: setup
 ---
 
-> New to Searchlight? Please start [here](/docs/guides/README.md).
+> New to Searchlight? Please start [here](/docs/concepts/README.md).
 
 # Hostfacts
-[Hostfacts](/docs/reference/hostfacts/hostfacts_run.md) is a http server used to expose various [node metrics](/pkg/hostfacts/server.go#L32). This is a wrapper around the wonderful [shirou/gopsutil](https://github.com/shirou/gopsutil) library. This is used by [`check_node_volume`](/docs/guides/node-alerts/node_volume.md) and [`check_pod_volume`](/docs/guides/pod-alerts/pod_volume.md) commands to detect disk usage stats. To use these check commands, hostfacts must be installed directly on every node in the cluster. Hostfacts can't be deployed using DaemonSet. This guide will walk you through how to deploy hostfacts as a Systemd service.
+[Hostfacts](/docs/reference/hostfacts/hostfacts_run.md) is a http server used to expose various [node metrics](https://github.com/appscode/searchlight/blob/29d4d2150116a284d74368931e6fdfe58efc7e6e/pkg/hostfacts/server.go#L32). This is a wrapper around the wonderful [shirou/gopsutil](https://github.com/shirou/gopsutil) library. This is used by [`check_node_volume`](/docs/guides/node-alerts/node_volume.md) and [`check_pod_volume`](/docs/guides/pod-alerts/pod_volume.md) commands to detect disk usage stats. To use these check commands, hostfacts must be installed directly on every node in the cluster. Hostfacts can't be deployed using DaemonSet. This guide will walk you through how to deploy hostfacts as a Systemd service.
 
 ## Installation Guide
 First ssh into a Kubernetes node. If you are using [Minikube](https://github.com/kubernetes/minikube), run the following command:
@@ -97,7 +97,7 @@ WantedBy=multi-user.target
 #### Using SSL
 If your cluster is running inside a shared network (eg, DigitalOcean), you should enable SSL. If you want to set SSL certificate, do the following:
 
- - Generate a single pair of CA certificate and key. Then generate a separate SSL certificate pair for each node in your cluster. See the steps [here](/docs/concepts/certificate.md).
+ - Generate a single pair of CA certificate and key. Then generate a separate SSL certificate pair for each node in your cluster. See the steps [here](/docs/setup/certificate.md).
  - Now, copy the ca.crt and node specific server.crt and server.key to the appropriate node. We recommend using folder `/srv/hostfacts/pki/`.
  - Use flags to pass the path to node specific certificates to its hostfact binary.
 

@@ -1,11 +1,11 @@
 ---
-title: Concepts | Searchlight
-description: Overview of Concepts
+title: Searchlight Overview
+description: Searchlight Overview
 menu:
   product_searchlight_5.0.0:
     identifier: overview-concepts
     name: Overview
-    parent: concepts
+    parent: what-is-searchlight
     weight: 10
 product_name: searchlight
 menu_name: product_searchlight_5.0.0

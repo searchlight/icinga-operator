@@ -24,7 +24,7 @@ Some of the Searchlight development helper scripts rely on a fairly up-to-date G
 work just fine out-of-the-box.
 
 #### Setup GO
-Searchlight is written in Google's GO programming language. Currently, Searchlight is developed and tested on **go 1.8.3**. If you haven't set up a GO
+Searchlight is written in Google's GO programming language. Currently, Searchlight is developed and tested on **go 1.9.2**. If you haven't set up a GO
 development environment, please follow [these instructions](https://golang.org/doc/code.html) to install GO.
 
 #### Download Source
