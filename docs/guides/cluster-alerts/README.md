@@ -1,17 +1,17 @@
 ---
 title: Cluster Alert Overview
 menu:
-  product_searchlight_4.0.0:
+  product_searchlight_4.0.1:
     identifier: cluster-alert-overview
     name: Overview
     parent: cluster-alert
     weight: 5
 product_name: searchlight
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_4.0.1
 section_menu_id: guides
-url: /products/searchlight/4.0.0/guides/cluster-alerts/
+url: /products/searchlight/4.0.1/guides/cluster-alerts/
 aliases:
-  - /products/searchlight/4.0.0/guides/cluster-alerts/README/
+  - /products/searchlight/4.0.1/guides/cluster-alerts/README/
 ---
 
 > New to Searchlight? Please start [here](/docs/guides/README.md).

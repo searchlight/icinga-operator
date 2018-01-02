@@ -1,17 +1,17 @@
 ---
 title: Node Alert Overview
 menu:
-  product_searchlight_4.0.0:
+  product_searchlight_4.0.1:
     identifier: node-alert-overview
     name: Overview
     parent: node-alert
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_4.0.1
 section_menu_id: guides
-url: /products/searchlight/4.0.0/guides/node-alerts/
+url: /products/searchlight/4.0.1/guides/node-alerts/
 aliases:
-  - /products/searchlight/4.0.0/guides/node-alerts/README/
+  - /products/searchlight/4.0.1/guides/node-alerts/README/
 ---
 
 > New to Searchlight? Please start [here](/docs/guides/README.md).
