@@ -2,18 +2,18 @@
 title: Readme | Searchlight
 description: Readme of Searchlight
 menu:
-  product_searchlight_4.0.0:
+  product_searchlight_5.0.0:
     identifier: readme-searchlight
     name: Readme
     parent: welcome
     weight: -1
 product_name: searchlight
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_5.0.0
 section_menu_id: welcome
-url: /products/searchlight/4.0.0/welcome/
+url: /products/searchlight/5.0.0/welcome/
 aliases:
-  - /products/searchlight/4.0.0/
-  - /products/searchlight/4.0.0/README/
+  - /products/searchlight/5.0.0/
+  - /products/searchlight/5.0.0/README/
 ---
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/appscode/searchlight)](https://goreportcard.com/report/github.com/appscode/searchlight)
@@ -35,7 +35,7 @@ Please pick a version of Searchlight that matches your Kubernetes installation.
 
 | Searchlight Version                                                                      | Docs                                                                       | Kubernetes Version |
 |------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|--------------------|
-| [4.0.0](https://github.com/appscode/searchlight/releases/tag/4.0.0) (uses CRD) | [User Guide](https://github.com/appscode/searchlight/tree/4.0.0/docs) | 1.7.x+             |
+| [5.0.0](https://github.com/appscode/searchlight/releases/tag/5.0.0) (uses CRD) | [User Guide](https://github.com/appscode/searchlight/tree/5.0.0/docs) | 1.7.x+             |
 | [3.0.1](https://github.com/appscode/searchlight/releases/tag/3.0.1) (uses TPR)           | [User Guide](https://github.com/appscode/searchlight/tree/3.0.1/docs)      | 1.5.x - 1.7.x      |
 
 ## Installation

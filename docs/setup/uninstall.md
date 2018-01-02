@@ -2,17 +2,17 @@
 title: Uninstall
 description: Searchlight Uninstall
 menu:
-  product_searchlight_4.0.0:
+  product_searchlight_5.0.0:
     identifier: uninstall-searchlight
     name: Uninstall
     parent: welcome
     weight: 35
 product_name: searchlight
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_5.0.0
 section_menu_id: welcome
-url: /products/searchlight/4.0.0/welcome/uninstall/
+url: /products/searchlight/5.0.0/welcome/uninstall/
 aliases:
-  - /products/searchlight/4.0.0/uninstall/
+  - /products/searchlight/5.0.0/uninstall/
 ---
 
 
