@@ -5,12 +5,12 @@ menu:
   product_searchlight_4.0.1:
     identifier: uninstall-searchlight
     name: Uninstall
-    parent: getting-started
+    parent: welcome
     weight: 35
 product_name: searchlight
 menu_name: product_searchlight_4.0.1
-section_menu_id: getting-started
-url: /products/searchlight/4.0.1/getting-started/uninstall/
+section_menu_id: welcome
+url: /products/searchlight/4.0.1/welcome/uninstall/
 aliases:
   - /products/searchlight/4.0.1/uninstall/
 ---

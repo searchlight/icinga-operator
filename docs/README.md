@@ -1,16 +1,16 @@
 ---
-title: Overview | Searchlight
-description: Overview of Searchlight
+title: Readme | Searchlight
+description: Readme of Searchlight
 menu:
   product_searchlight_4.0.1:
-    identifier: overview-searchlight
-    name: Overview
-    parent: getting-started
-    weight: 20
+    identifier: readme-searchlight
+    name: Readme
+    parent: welcome
+    weight: -1
 product_name: searchlight
 menu_name: product_searchlight_4.0.1
-section_menu_id: getting-started
-url: /products/searchlight/4.0.1/getting-started/
+section_menu_id: welcome
+url: /products/searchlight/4.0.1/welcome/
 aliases:
   - /products/searchlight/4.0.1/
   - /products/searchlight/4.0.1/README/

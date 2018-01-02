@@ -5,12 +5,12 @@ menu:
   product_searchlight_4.0.1:
     identifier: install-searchlight
     name: Install
-    parent: getting-started
+    parent: welcome
     weight: 30
 product_name: searchlight
 menu_name: product_searchlight_4.0.1
-section_menu_id: getting-started
-url: /products/searchlight/4.0.1/getting-started/install/
+section_menu_id: welcome
+url: /products/searchlight/4.0.1/welcome/install/
 aliases:
   - /products/searchlight/4.0.1/install/
 ---

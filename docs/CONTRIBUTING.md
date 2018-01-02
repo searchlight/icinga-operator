@@ -5,12 +5,12 @@ menu:
   product_searchlight_4.0.1:
     identifier: contributing-searchlight
     name: Contributing
-    parent: getting-started
+    parent: welcome
     weight: 35
 product_name: searchlight
 menu_name: product_searchlight_4.0.1
-section_menu_id: getting-started
-url: /products/searchlight/4.0.1/getting-started/contributing/
+section_menu_id: welcome
+url: /products/searchlight/4.0.1/welcome/contributing/
 aliases:
   - /products/searchlight/4.0.1/CONTRIBUTING/
 ---
