@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	version = "4.0.0"
+	version = "5.0.0"
 )
 
 // ref: https://github.com/spf13/cobra/blob/master/doc/md_docs.md
