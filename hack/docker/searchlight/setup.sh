@@ -29,7 +29,7 @@ clean() {
 build_binary() {
     pushd $REPO_ROOT
     ./hack/builddeps.sh
-    ./hack/make.py build searchlight
+    ./hack/make.py build
     detect_tag $REPO_ROOT/dist/.tag
     popd
 }
