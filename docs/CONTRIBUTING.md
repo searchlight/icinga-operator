@@ -1,3 +1,20 @@
+---
+title: Contributing | Searchlight
+description: Contributing
+menu:
+  product_searchlight_4.0.1:
+    identifier: contributing-searchlight
+    name: Contributing
+    parent: getting-started
+    weight: 35
+product_name: searchlight
+menu_name: product_searchlight_4.0.1
+section_menu_id: getting-started
+url: /products/searchlight/4.0.1/getting-started/contributing/
+aliases:
+  - /products/searchlight/4.0.1/CONTRIBUTING/
+---
+
 # Contribution Guidelines
 Want to hack on Searchlight?
 

@@ -2,13 +2,13 @@
 title: Env
 menu:
   product_searchlight_4.0.0:
-    identifier: tutorials-env
+    identifier: guides-env
     name: Env
     parent: cluster-alert
     weight: 35
 product_name: searchlight
 menu_name: product_searchlight_4.0.0
-section_menu_id: tutorials
+section_menu_id: guides
 ---
 
 > New to Searchlight? Please start [here](/docs/guides/README.md).

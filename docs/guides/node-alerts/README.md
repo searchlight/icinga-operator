@@ -8,7 +8,7 @@ menu:
     weight: 10
 product_name: searchlight
 menu_name: product_searchlight_4.0.0
-section_menu_id: tutorials
+section_menu_id: guides
 url: /products/searchlight/4.0.0/guides/node-alerts/
 aliases:
   - /products/searchlight/4.0.0/guides/node-alerts/README/

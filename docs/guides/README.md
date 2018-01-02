@@ -1,23 +1,23 @@
 ---
-title: Overview
-description: Overview of Tutorials
+title: Readme
+description: Readme of guides
 menu:
   product_searchlight_4.0.0:
-    identifier: tutorials-overview
-    name: Overview
-    parent: tutorials
-    weight: 5
+    identifier: guides-readme
+    name: Readme
+    parent: guides
+    weight: -1
 product_name: searchlight
 menu_name: product_searchlight_4.0.0
-section_menu_id: tutorials
+section_menu_id: guides
 url: /products/searchlight/4.0.0/guides/
 aliases:
   - /products/searchlight/4.0.0/guides/README/
 ---
 
-# Tutorials
+# Guides
 
-This section contains tutorials on how to use Searchlight. Please visit the links below to learn more:
+This section contains guides on how to use Searchlight. Please visit the links below to learn more:
 
  - [ClusterAlerts](/docs/guides/cluster-alerts/README.md) - This article introduces the concept of `ClusterAlert` to periodically run various checks on a Kubernetes cluster. Also, visit the links below to learn about the available check commands for a cluster:
     - [ca_cert](/docs/guides/cluster-alerts/ca_cert.md) - To check expiration of CA certificate used by Kubernetes api server.

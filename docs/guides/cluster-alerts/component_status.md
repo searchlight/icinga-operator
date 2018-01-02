@@ -2,13 +2,13 @@
 title: Component Status
 menu:
   product_searchlight_4.0.0:
-    identifier: tutorials-Component-status
+    identifier: guides-Component-status
     name: Component Status
     parent: cluster-alert
     weight: 25
 product_name: searchlight
 menu_name: product_searchlight_4.0.0
-section_menu_id: tutorials
+section_menu_id: guides
 ---
 
 > New to Searchlight? Please start [here](/docs/guides/README.md).

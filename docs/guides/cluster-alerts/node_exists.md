@@ -2,13 +2,13 @@
 title: Node Exists
 menu:
   product_searchlight_4.0.0:
-    identifier: tutorials-node-exists
+    identifier: guides-node-exists
     name: Node Exists
     parent: cluster-alert
     weight: 10
 product_name: searchlight
 menu_name: product_searchlight_4.0.0
-section_menu_id: tutorials
+section_menu_id: guides
 ---
 
 > New to Searchlight? Please start [here](/docs/guides/README.md).

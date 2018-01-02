@@ -8,10 +8,7 @@ menu:
     weight: 10
 product_name: searchlight
 menu_name: product_searchlight_4.0.0
-section_menu_id: tutorials
-url: /products/searchlight/4.0.0/guides/pod-alerts/
-aliases:
-  - /products/searchlight/4.0.0/guides/pod-alerts/README/
+section_menu_id: guides
 ---
 
 > New to Searchlight? Please start [here](/docs/guides/README.md).

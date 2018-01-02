@@ -2,13 +2,13 @@
 title: JSON Path
 menu:
   product_searchlight_4.0.0:
-    identifier: tutorials-json-path
+    identifier: guides-json-path
     name: JSON Path
     parent: cluster-alert
     weight: 40
 product_name: searchlight
 menu_name: product_searchlight_4.0.0
-section_menu_id: tutorials
+section_menu_id: guides
 ---
 
 > New to Searchlight? Please start [here](/docs/guides/README.md).

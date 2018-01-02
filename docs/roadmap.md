@@ -1,3 +1,18 @@
+---
+title: Roadmap | Searchlight
+description: Roadmap of searchlight
+menu:
+  product_searchlight_4.0.0:
+    identifier: roadmap-searchlight
+    name: Roadmap
+    parent: getting-started
+    weight: 30
+product_name: searchlight
+menu_name: product_searchlight_4.0.0
+section_menu_id: getting-started
+url: /products/searchlight/4.0.0/getting-started/roadmap/
+---
+
 # Project Status
 
 ## Versioning Policy
