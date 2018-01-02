@@ -1,20 +1,19 @@
 ---
 title: Version
 menu:
-  product_searchlight_4.0.0:
+  product_searchlight_5.0.0:
     identifier: hostfacts-version
     name: Version
     parent: hostfacts-cli
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_5.0.0
 ---
 ## hostfacts version
 
 Prints binary version number.
 
 ### Synopsis
-
 
 Prints binary version number.
 
@@ -43,5 +42,6 @@ hostfacts version [flags]
 ```
 
 ### SEE ALSO
-* [hostfacts](/docs/reference/hostfacts/concepts/hostfacts.md)	 - Hostfacts by AppsCode - Expose node metrics
+
+* [hostfacts](/docs/reference/hostfacts/hostfacts.md)	 - Hostfacts by AppsCode - Expose node metrics
 

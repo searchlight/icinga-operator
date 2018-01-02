@@ -1,13 +1,13 @@
 ---
 title: CA Cert
 menu:
-  product_searchlight_4.0.0:
+  product_searchlight_5.0.0:
     identifier: guides-ca-cert
     name: CA Cert
     parent: cluster-alert
     weight: 20
 product_name: searchlight
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_5.0.0
 section_menu_id: guides
 ---
 

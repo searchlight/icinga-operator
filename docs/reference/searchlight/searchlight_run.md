@@ -1,20 +1,19 @@
 ---
 title: Run
 menu:
-  product_searchlight_4.0.0:
+  product_searchlight_5.0.0:
     identifier: searchlight-run
     name: Run
     parent: searchlight-cli
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_5.0.0
 ---
 ## searchlight run
 
 Run operator
 
 ### Synopsis
-
 
 Run operator
 
@@ -50,6 +49,7 @@ searchlight run [flags]
 ```
 
 ### SEE ALSO
+
 * [searchlight](/docs/reference/searchlight/searchlight.md)	 - Searchlight by AppsCode - Alerts for Kubernetes
 
 

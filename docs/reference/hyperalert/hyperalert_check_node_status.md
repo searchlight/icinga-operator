@@ -1,20 +1,19 @@
 ---
 title: Check Node Status
 menu:
-  product_searchlight_4.0.0:
+  product_searchlight_5.0.0:
     identifier: hyperalert-check-node-status
     name: Check Node Status
     parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_5.0.0
 ---
 ## hyperalert check_node_status
 
 Check Kubernetes Node
 
 ### Synopsis
-
 
 Check Kubernetes Node
 
@@ -46,6 +45,7 @@ hyperalert check_node_status [flags]
 ```
 
 ### SEE ALSO
+
 * [hyperalert](/docs/reference/hyperalert/hyperalert.md)	 - AppsCode Icinga2 plugin
 
 

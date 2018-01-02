@@ -2,18 +2,18 @@
 title: Readme | Searchlight
 description: Readme of Searchlight
 menu:
-  product_searchlight_4.0.0:
+  product_searchlight_5.0.0:
     identifier: readme-searchlight
     name: Readme
     parent: welcome
     weight: -1
 product_name: searchlight
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_5.0.0
 section_menu_id: welcome
-url: /products/searchlight/4.0.0/welcome/
+url: /products/searchlight/5.0.0/welcome/
 aliases:
-  - /products/searchlight/4.0.0/
-  - /products/searchlight/4.0.0/README/
+  - /products/searchlight/5.0.0/
+  - /products/searchlight/5.0.0/README/
 ---
 # Searchlight
 

@@ -2,13 +2,13 @@
 title: Install
 description: Searchlight Install
 menu:
-  product_searchlight_4.0.0:
+  product_searchlight_5.0.0:
     identifier: install-searchlight
     name: Install
     parent: setup
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_5.0.0
 section_menu_id: setup
 ---
 
@@ -23,11 +23,11 @@ Searchlight can be installed using YAML files includes in the [/hack/deploy](htt
 
 ```console
 # Install without RBAC roles
-$ kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/4.0.0/hack/deploy/without-rbac.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/5.0.0/hack/deploy/without-rbac.yaml
 
 
 # Install with RBAC roles
-$ kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/4.0.0/hack/deploy/with-rbac.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/5.0.0/hack/deploy/with-rbac.yaml
 ```
 
 
@@ -129,12 +129,12 @@ $ POD_NAMESPACE=kube-system
 $ POD_NAME=$(kubectl get pods -n $POD_NAMESPACE -l app=searchlight -o jsonpath={.items[0].metadata.name})
 $ kubectl exec -it $POD_NAME -c operator -n $POD_NAMESPACE searchlight version
 
-Version = 4.0.0
+Version = 5.0.0
 VersionStrategy = tag
 Os = alpine
 Arch = amd64
 CommitHash = 9442863beb09a50a2c3818ab586fa5b1541fddf1
 GitBranch = release-4.0
-GitTag = 4.0.0
+GitTag = 5.0.0
 CommitTimestamp = 2017-09-26T03:00:58
 ```

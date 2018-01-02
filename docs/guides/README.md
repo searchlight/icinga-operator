@@ -2,17 +2,17 @@
 title: Table of Contents | Guides
 description: Table of Contents | Guides
 menu:
-  product_searchlight_4.0.0:
+  product_searchlight_5.0.0:
     identifier: guides-readme
     name: Readme
     parent: guides
     weight: -1
 product_name: searchlight
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_5.0.0
 section_menu_id: guides
-url: /products/searchlight/4.0.0/guides/
+url: /products/searchlight/5.0.0/guides/
 aliases:
-  - /products/searchlight/4.0.0/guides/README/
+  - /products/searchlight/5.0.0/guides/README/
 ---
 # Guides
 

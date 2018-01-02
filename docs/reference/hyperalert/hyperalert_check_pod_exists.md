@@ -1,20 +1,19 @@
 ---
 title: Check Pod Exists
 menu:
-  product_searchlight_4.0.0:
+  product_searchlight_5.0.0:
     identifier: hyperalert-check-pod-exists
     name: Check Pod Exists
     parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_5.0.0
 ---
 ## hyperalert check_pod_exists
 
 Check Kubernetes Pod(s)
 
 ### Synopsis
-
 
 Check Kubernetes Pod(s)
 
@@ -49,6 +48,7 @@ hyperalert check_pod_exists [flags]
 ```
 
 ### SEE ALSO
+
 * [hyperalert](/docs/reference/hyperalert/hyperalert.md)	 - AppsCode Icinga2 plugin
 
 

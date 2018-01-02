@@ -1,20 +1,19 @@
 ---
 title: Check Env
 menu:
-  product_searchlight_4.0.0:
+  product_searchlight_5.0.0:
     identifier: hyperalert-check-env
     name: Check Env
     parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_4.0.0
+menu_name: product_searchlight_5.0.0
 ---
 ## hyperalert check_env
 
 
 
 ### Synopsis
-
 
 
 
@@ -43,6 +42,7 @@ hyperalert check_env [flags]
 ```
 
 ### SEE ALSO
+
 * [hyperalert](/docs/reference/hyperalert/hyperalert.md)	 - AppsCode Icinga2 plugin
 
 

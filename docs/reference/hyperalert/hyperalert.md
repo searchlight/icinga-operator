@@ -1,7 +1,7 @@
 ---
 title: Hyperalert
 menu:
-  product_searchlight_4.0.0:
+  product_searchlight_5.0.0:
     identifier: hyperalert
     name: Hyperalert
     parent: hyperalert-cli
@@ -9,10 +9,10 @@ menu:
 
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_4.0.0
-url: /products/searchlight/4.0.0/reference/hyperalert/
+menu_name: product_searchlight_5.0.0
+url: /products/searchlight/5.0.0/reference/hyperalert/
 aliases:
-  - products/searchlight/4.0.0/reference/hyperalert/hyperalert/
+  - products/searchlight/5.0.0/reference/hyperalert/hyperalert/
 
 ---
 ## hyperalert
@@ -20,7 +20,6 @@ aliases:
 AppsCode Icinga2 plugin
 
 ### Synopsis
-
 
 AppsCode Icinga2 plugin
 
@@ -44,6 +43,7 @@ hyperalert [flags]
 ```
 
 ### SEE ALSO
+
 * [hyperalert check_ca_cert](/docs/reference/hyperalert/hyperalert_check_ca_cert.md)	 - Check Certificate expire date
 * [hyperalert check_component_status](/docs/reference/hyperalert/hyperalert_check_component_status.md)	 - Check Kubernetes Component Status
 * [hyperalert check_env](/docs/reference/hyperalert/hyperalert_check_env.md)	 - 
