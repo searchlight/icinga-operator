@@ -2,15 +2,15 @@
 title: Roadmap | Searchlight
 description: Roadmap of searchlight
 menu:
-  product_searchlight_4.0.1:
+  product_searchlight_4.0.0:
     identifier: roadmap-searchlight
     name: Roadmap
     parent: welcome
     weight: 30
 product_name: searchlight
-menu_name: product_searchlight_4.0.1
+menu_name: product_searchlight_4.0.0
 section_menu_id: welcome
-url: /products/searchlight/4.0.1/welcome/roadmap/
+url: /products/searchlight/4.0.0/welcome/roadmap/
 ---
 
 # Project Status
@@ -26,7 +26,7 @@ Please always check the release notes for upgrade instructions.
 might happen among different releases of the operator.
 
 ### External Dependencies
-Searchlight 4.0.1 depends on the following version of Icinga2 and friends:
+Searchlight 4.0.0 depends on the following version of Icinga2 and friends:
 
 | Name                   | Version    |
 |------------------------|------------|
