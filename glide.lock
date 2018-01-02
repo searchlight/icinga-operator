@@ -1,5 +1,5 @@
 hash: fd86e06dfe0a988e5bd26f8ff11c3c0f7cf6e29c44b9309dfa44919bc78cd2d7
-updated: 2017-12-28T17:13:11.097992772-05:00
+updated: 2018-01-02T00:04:02.918810332-08:00
 imports:
 - name: github.com/appscode/envconfig
   version: 183bbe643a2875eaa69c85627ac6b25813983203
@@ -32,7 +32,7 @@ imports:
   - unified
   - webhook
 - name: github.com/appscode/kutil
-  version: c393406fbcc65765c04935bfe3a6770a51d61fbb
+  version: 3cb214ff259e38b1d287d3005b08242af3ab3afc
   subpackages:
   - apiextensions/v1beta1
   - core/v1
@@ -80,7 +80,7 @@ imports:
 - name: github.com/codeskyblue/go-sh
   version: cf804ac79dffabb6b16342e24362cc744afc144f
 - name: github.com/cpuguy83/go-md2man
-  version: 71acacd42f85e5e82f70a55327789582a5200a90
+  version: 8d868be6e9bf9d5350910bab97a050e49887600f
   subpackages:
   - md2man
 - name: github.com/davecgh/go-spew
@@ -234,9 +234,9 @@ imports:
   subpackages:
   - pbutil
 - name: github.com/nlopes/slack
-  version: ccf0351050c69b08f9c48f3e876f4cd5564463e8
+  version: 107290b5bbaf3e634833346bb4ff389b1c782bc7
 - name: github.com/olekukonko/tablewriter
-  version: cca8bbc0798408af109aaaa239cbd2634846b340
+  version: 65fec0d89a572b4367094e2058d3ebe667de3b60
 - name: github.com/onsi/gomega
   version: c893efa28eb45626cdaa76c9f653b62488858837
   subpackages:
@@ -298,7 +298,7 @@ imports:
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/spf13/cobra
-  version: ccaecb155a2177302cb56cae929251a256d0f646
+  version: b95ab734e27d33e0d8fbabf71ca990568d4e2020
   subpackages:
   - doc
 - name: github.com/spf13/pflag
