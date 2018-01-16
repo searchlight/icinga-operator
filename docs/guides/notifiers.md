@@ -406,7 +406,7 @@ $ echo -n 'your-pushover-url' > PUSHOVER_URL
 $ echo -n 'your-pushover-url-title' > PUSHOVER_URL_TITLE
 $ echo -n 'your-pushover-priority' > PUSHOVER_PRIORITY
 $ echo -n 'your-pushover-sound' > PUSHOVER_SOUND
-$ kubectl create secret generic notifier-config -n kube-system \
+$ kubectl create secret generic notifier-config -n demo \
     --from-file=./PUSHOVER_TOKEN \
     --from-file=./PUSHOVER_USER_KEY \
     --from-file=./PUSHOVER_TITLE \
@@ -463,6 +463,104 @@ spec:
 ```
 
 
+## Telegram
+To receive notifications in your Telegram app, please follow the steps below:
+
+- Sign up for [Telegram](https://telegram.org/).
+- Now, use [@botfather](https://t.me/botfather) to create your own Telegram Bot and get the authorization token.
+- Create a Kubernetes Secret with the following keys:
+
+| Name               | Description                                                                    |
+|--------------------|--------------------------------------------------------------------------------|
+| TELEGRAM_TOKEN     | `Required` Telegram Bot authorization token.                                   |
+
+
+```console
+$ echo -n 'your-telegram-token' > TELEGRAM_TOKEN
+$ kubectl create secret generic notifier-config -n demo \
+    --from-file=./TELEGRAM_TOKEN
+secret "notifier-config" created
+```
+```yaml
+apiVersion: v1
+data:
+  TELEGRAM_TOKEN: NDkxoooooooooooooooooxJ
+kind: Secret
+metadata:
+  creationTimestamp: 2018-01-16T13:41:04Z
+  name: notifier-config
+  namespace: demo
+  resourceVersion: "768"
+  selfLink: /api/v1/namespaces/demo/secrets/notifier-config
+  uid: e6066076-fac2-11e7-b3e7-0800276ee39b
+type: Opaque
+```
+
+- Add the Bot as an Admin for your channel where notifications will be sent.
+
+![telegram-bot](/docs/images/notifiers/telegram-bot.png)
+
+Now, to receiver notifications in your **public** Telegram channels, configure receiver as below:
+
+- notifier: `Telegram`
+- to: a list of channels where notifications will be sent.
+
+```yaml
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: ClusterAlert
+metadata:
+  name: check-ca-cert
+  namespace: demo
+spec:
+  check: ca_cert
+  vars:
+    warning: 240h
+    critical: 72h
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: Telegram
+    state: CRITICAL
+    to: ["@my-channel"]
+```
+
+To receive notifications if your **private** channel, follow the steps below:
+
+- Create a new public channel or change your private channel to public temporarily and assign a link.
+- Now, run the following command to determine the `id` for your channel.
+
+```console
+TOKEN=<token>
+curl -X POST https://api.telegram.org/bot${TOKEN}/sendMessage -d "chat_id=@channelusername&text=hello"
+
+{"ok":true,"result":{"message_id":10,"chat":{"id":-1001210429328,"title":"mytest","username":"mytest123489","type":"channel"},"date":1516103121,"text":"hello"}}
+```
+
+- Make your channel private.
+
+Now, to receiver notifications in your private Telegram channels, configure channle id as receiver like below:
+
+```yaml
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: ClusterAlert
+metadata:
+  name: check-ca-cert
+  namespace: demo
+spec:
+  check: ca_cert
+  vars:
+    warning: 240h
+    critical: 72h
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: Telegram
+    state: CRITICAL
+    to: ["-1001210429328"]
+```
+
 ## Using multiple notifiers
 Searchlight supports using different notifiers in different states. First add the credentials for the different notifiers in the same Secret `notifier-config` and deploy that to Kubernetes. Then in the Alert object, specify the appropriate notifier for each feature.
 
@@ -477,9 +575,9 @@ kind: Secret
 metadata:
   creationTimestamp: 2017-07-25T01:58:58Z
   name: notifier-config
-  namespace: kube-system
+  namespace: demo
   resourceVersion: "2534"
-  selfLink: /api/v1/namespaces/kube-system/secrets/notifier-config
+  selfLink: /api/v1/namespaces/demo/secrets/notifier-config
   uid: d2571817-70dc-11e7-9b0b-080027503732
 type: Opaque
 
