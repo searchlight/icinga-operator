@@ -1,7 +1,7 @@
 ---
 title: Hostfacts
 menu:
-  product_searchlight_5.0.0:
+  product_searchlight_5.1.0:
     identifier: hostfacts
     name: Hostfacts
     parent: hostfacts-cli
@@ -9,10 +9,10 @@ menu:
 
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_5.0.0
-url: /products/searchlight/5.0.0/reference/hostfacts/
+menu_name: product_searchlight_5.1.0
+url: /products/searchlight/5.1.0/reference/hostfacts/
 aliases:
-  - products/searchlight/5.0.0/reference/hostfacts/hostfacts/
+  - products/searchlight/5.1.0/reference/hostfacts/hostfacts/
 
 ---
 ## hostfacts
@@ -32,8 +32,8 @@ Hostfacts by AppsCode - Expose node metrics
   -h, --help                                         help for hostfacts
       --log_backtrace_at traceLocation               when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                               If non-empty, write log files in this directory
-      --logtostderr                                  log to standard error instead of files (default true)
-      --stderrthreshold severity                     logs at or above this threshold go to stderr (default 2)
+      --logtostderr                                  log to standard error instead of files
+      --stderrthreshold severity                     logs at or above this threshold go to stderr
   -v, --v Level                                      log level for V logs
       --vmodule moduleSpec                           comma-separated list of pattern=N settings for file-filtered logging
 ```

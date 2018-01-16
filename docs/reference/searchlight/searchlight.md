@@ -1,7 +1,7 @@
 ---
 title: Searchlight
 menu:
-  product_searchlight_5.0.0:
+  product_searchlight_5.1.0:
     identifier: searchlight
     name: Searchlight
     parent: searchlight-cli
@@ -9,10 +9,10 @@ menu:
 
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_5.0.0
-url: /products/searchlight/5.0.0/reference/searchlight/
+menu_name: product_searchlight_5.1.0
+url: /products/searchlight/5.1.0/reference/searchlight/
 aliases:
-  - products/searchlight/5.0.0/reference/searchlight/searchlight/
+  - products/searchlight/5.1.0/reference/searchlight/searchlight/
 
 ---
 ## searchlight
@@ -32,8 +32,8 @@ Searchlight by AppsCode - Alerts for Kubernetes
   -h, --help                                         help for searchlight
       --log_backtrace_at traceLocation               when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                               If non-empty, write log files in this directory
-      --logtostderr                                  log to standard error instead of files (default true)
-      --stderrthreshold severity                     logs at or above this threshold go to stderr (default 2)
+      --logtostderr                                  log to standard error instead of files
+      --stderrthreshold severity                     logs at or above this threshold go to stderr
   -v, --v Level                                      log level for V logs
       --vmodule moduleSpec                           comma-separated list of pattern=N settings for file-filtered logging
 ```

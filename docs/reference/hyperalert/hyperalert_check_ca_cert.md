@@ -1,13 +1,13 @@
 ---
 title: Check Ca Cert
 menu:
-  product_searchlight_5.0.0:
+  product_searchlight_5.1.0:
     identifier: hyperalert-check-ca-cert
     name: Check Ca Cert
     parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_5.0.0
+menu_name: product_searchlight_5.1.0
 ---
 ## hyperalert check_ca_cert
 
@@ -37,8 +37,8 @@ hyperalert check_ca_cert [flags]
       --analytics                                    Send analytical events to Google Analytics (default true)
       --log_backtrace_at traceLocation               when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                               If non-empty, write log files in this directory
-      --logtostderr                                  log to standard error instead of files (default true)
-      --stderrthreshold severity                     logs at or above this threshold go to stderr (default 2)
+      --logtostderr                                  log to standard error instead of files
+      --stderrthreshold severity                     logs at or above this threshold go to stderr
   -v, --v Level                                      log level for V logs
       --vmodule moduleSpec                           comma-separated list of pattern=N settings for file-filtered logging
 ```

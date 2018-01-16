@@ -2,13 +2,13 @@
 title: Uninstall
 description: Searchlight Uninstall
 menu:
-  product_searchlight_5.0.0:
+  product_searchlight_5.1.0:
     identifier: uninstall-searchlight
     name: Uninstall
     parent: setup
     weight: 25
 product_name: searchlight
-menu_name: product_searchlight_5.0.0
+menu_name: product_searchlight_5.1.0
 section_menu_id: setup
 ---
 
@@ -21,7 +21,7 @@ Please follow the steps below to uninstall Searchlight:
 - Delete the various objects created for Searchlight operator.
 
 ```console
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.0.0/hack/deploy/uninstall.sh | bash
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/uninstall.sh | bash
 
 + kubectl delete deployment -l app=searchlight -n kube-system
 deployment "searchlight-operator" deleted
