@@ -65,7 +65,7 @@ func getAlert(kh *icinga.IcingaHost, extClient cs.MonitoringV1alpha1Interface, a
 	case icinga.TypeCluster:
 		return extClient.ClusterAlerts(kh.AlertNamespace).Get(alertName, metav1.GetOptions{})
 	}
-	return nil, fmt.Errorf("Unknown host type %s", kh.Type)
+	return nil, fmt.Errorf("unknown host type %s", kh.Type)
 }
 
 func sendNotification(req *Request) {
