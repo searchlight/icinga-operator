@@ -68,7 +68,7 @@ spec:
   check: pod_exists
   vars:
     selector: app=nginx
-    count: 2
+    count: '2'
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
@@ -112,7 +112,7 @@ spec:
   check: pod_exists
   vars:
     podName: busybox
-    count: 1
+    count: '1'
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config

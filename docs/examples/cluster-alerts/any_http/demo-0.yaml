@@ -6,7 +6,7 @@ metadata:
 spec:
   check: any_http
   vars:
-    count: 1
+    count: '1'
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config

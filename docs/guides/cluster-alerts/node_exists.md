@@ -68,7 +68,7 @@ spec:
   check: node_exists
   vars:
     selector: beta.kubernetes.io/os=linux
-    count: 1
+    count: '1'
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
@@ -112,7 +112,7 @@ spec:
   check: node_exists
   vars:
     nodeName: minikube
-    count: 1
+    count: '1'
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config

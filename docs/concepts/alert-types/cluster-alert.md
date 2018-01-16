@@ -30,7 +30,7 @@ spec:
   check: pod_exists
   vars:
     selector: app=nginx
-    count: 2
+    count: '2'
   checkInterval: 60s
   alertInterval: 3m
   notifierSecretName: notifier-config

@@ -68,8 +68,8 @@ spec:
   check: node_volume
   vars:
     mountpoint: /mnt/sda1
-    warning: 70
-    critical: 95
+    warning: '70'
+    critical: '95'
   checkInterval: 5m
   alertInterval: 3m
   notifierSecretName: notifier-config
@@ -114,8 +114,8 @@ spec:
   check: node_volume
   vars:
     mountpoint: /mnt/sda1
-    warning: 70
-    critical: 95
+    warning: '70'
+    critical: '95'
   checkInterval: 5m
   alertInterval: 3m
   notifierSecretName: notifier-config
@@ -156,8 +156,8 @@ spec:
   check: node_volume
   vars:
     mountpoint: /mnt/sda1
-    warning: 70
-    critical: 95
+    warning: '70'
+    critical: '95'
   checkInterval: 5m
   alertInterval: 3m
   notifierSecretName: notifier-config

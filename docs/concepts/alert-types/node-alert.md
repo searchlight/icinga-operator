@@ -32,8 +32,8 @@ spec:
     beta.kubernetes.io/os: linux
   check: node_volume
   vars:
-    warning: 70
-    critical: 95
+    warning: '70'
+    critical: '95'
   checkInterval: 5m
   alertInterval: 3m
   notifierSecretName: notifier-config

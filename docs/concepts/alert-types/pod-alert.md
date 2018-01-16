@@ -34,8 +34,8 @@ spec:
   check: pod_volume
   vars:
     volumeName: webstore
-    warning: 70
-    critical: 95
+    warning: '70'
+    critical: '95'
   checkInterval: 5m
   alertInterval: 3m
   notifierSecretName: notifier-config

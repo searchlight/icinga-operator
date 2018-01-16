@@ -71,8 +71,8 @@ spec:
   check: pod_volume
   vars:
     volumeName: www
-    warning: 70
-    critical: 95
+    warning: '70'
+    critical: '95'
   checkInterval: 5m
   alertInterval: 3m
   notifierSecretName: notifier-config
@@ -125,8 +125,8 @@ spec:
   check: pod_volume
   vars:
     volumeName: mypd
-    warning: 70
-    critical: 95
+    warning: '70'
+    critical: '95'
   checkInterval: 5m
   alertInterval: 3m
   notifierSecretName: notifier-config

@@ -6,7 +6,7 @@ metadata:
 spec:
   check: json_path
   vars:
-    inClusterConfig: true
+    inClusterConfig: 'true'
     critical: '.metadata.env!="prod"'
   checkInterval: 30s
   alertInterval: 2m
