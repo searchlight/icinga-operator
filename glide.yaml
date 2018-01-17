@@ -5,7 +5,9 @@ import:
 - package: github.com/appscode/envconfig
   version: master
 - package: github.com/appscode/go-notify
+  version: master
 - package: github.com/appscode/go
+  version: master
 - package: github.com/appscode/kutil
   version: release-5.0
 - package: github.com/appscode/pat
@@ -23,7 +25,7 @@ import:
   vcs: git
   version: master
 - package: github.com/influxdata/influxdb
-  version: v1.3.5
+  version: v1.3.3
 - package: github.com/jpillora/go-ogle-analytics
 - package: github.com/onsi/gomega
   version: v1.2.0

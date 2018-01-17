@@ -1,10 +1,10 @@
-hash: 997237e791608903358a01a24eb4def703216c75078f54ebcd9358b7b3c17046
-updated: 2018-01-16T04:33:35.261402688-08:00
+hash: 26cdbfb28b18ac093bd0d45eda238bdeb25e9e9ec33a3ad9dadf323be1374f06
+updated: 2018-01-17T06:46:08.874475866-08:00
 imports:
 - name: github.com/appscode/envconfig
   version: 183bbe643a2875eaa69c85627ac6b25813983203
 - name: github.com/appscode/go
-  version: 702364e848d80e8f4d6af7045aef800f36b3db80
+  version: 74ddf42f1ee8313728203a06092be9cb91d42f7c
   subpackages:
   - analytics
   - context
@@ -33,7 +33,7 @@ imports:
   - unified
   - webhook
 - name: github.com/appscode/kutil
-  version: 1246ec828f2f5024b54a1fe84ad4afaf3de0ed37
+  version: de69f2e242cc9e4df5dcf41d0d314e5fce818154
   subpackages:
   - apiextensions/v1beta1
   - core/v1
@@ -197,7 +197,7 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: 9d9001036d3585cf21925c13a57881bc6c8dcc7e
+  version: e37afaf09bdd91fab4713536c7bdbdc549ee7dc6
   subpackages:
   - client
   - models
@@ -307,7 +307,7 @@ imports:
 - name: github.com/ssor/bom
   version: 6386211fdfcf24c0bfbdaceafd02849ed9a8a509
 - name: github.com/StackExchange/wmi
-  version: ea383cf3ba6ec950874b8486cd72356d007c768f
+  version: 5d049714c4a64225c3c79a7cf7d02f7fb5b96338
 - name: github.com/tbruyelle/hipchat-go
   version: 749fb9e14beb9995f677c101a754393cecb64b0f
   subpackages:
