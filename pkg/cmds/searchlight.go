@@ -3,13 +3,17 @@ package cmds
 import (
 	"flag"
 	"log"
+	"os"
 	"strings"
 
 	v "github.com/appscode/go/version"
 	"github.com/appscode/kutil/tools/analytics"
+	"github.com/appscode/searchlight/pkg/admission/plugin"
 	"github.com/jpillora/go-ogle-analytics"
+	"github.com/openshift/generic-admission-server/pkg/cmd/server"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	genericapiserver "k8s.io/apiserver/pkg/server"
 )
 
 const (
@@ -20,7 +24,7 @@ func NewCmdSearchlight() *cobra.Command {
 	var (
 		enableAnalytics = true
 	)
-	cmd := &cobra.Command{
+	rootCmd := &cobra.Command{
 		Use:   "searchlight [command]",
 		Short: `Searchlight by AppsCode - Alerts for Kubernetes`,
 		PersistentPreRun: func(c *cobra.Command, args []string) {
@@ -36,13 +40,21 @@ func NewCmdSearchlight() *cobra.Command {
 			}
 		},
 	}
-	cmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
+	rootCmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
 	// ref: https://github.com/kubernetes/kubernetes/issues/17162#issuecomment-225596212
 	flag.CommandLine.Parse([]string{})
-	cmd.PersistentFlags().BoolVar(&enableAnalytics, "analytics", enableAnalytics, "Send analytical events to Google Analytics")
+	rootCmd.PersistentFlags().BoolVar(&enableAnalytics, "analytics", enableAnalytics, "Send analytical events to Google Analytics")
 
-	cmd.AddCommand(NewCmdOperator())
-	cmd.AddCommand(NewCmdConfigure())
-	cmd.AddCommand(v.NewCmdVersion())
-	return cmd
+	rootCmd.AddCommand(NewCmdOperator())
+	rootCmd.AddCommand(NewCmdConfigure())
+	rootCmd.AddCommand(v.NewCmdVersion())
+
+	stopCh := genericapiserver.SetupSignalHandler()
+	cmd := server.NewCommandStartAdmissionServer(os.Stdout, os.Stderr, stopCh, &plugin.AdmissionHook{})
+	cmd.Use = "admission-webhook"
+	cmd.Long = "Launch Searchlight admission webhook server"
+	cmd.Short = cmd.Long
+	rootCmd.AddCommand(cmd)
+
+	return rootCmd
 }

@@ -28,7 +28,7 @@ spec:
       imagePullSecrets: [$SEARCHLIGHT_IMAGE_PULL_SECRET]
       containers:
       - name: operator
-        image: $STASH_DOCKER_REGISTRY/searchlight:5.1.0
+        image: $SEARCHLIGHT_DOCKER_REGISTRY/searchlight:5.1.0
         imagePullPolicy: IfNotPresent
         args:
         - run
@@ -48,7 +48,7 @@ spec:
         - name: data
           mountPath: /srv
       - name: icinga
-        image: $STASH_DOCKER_REGISTRY/icinga:5.1.0-k8s
+        image: $SEARCHLIGHT_DOCKER_REGISTRY/icinga:5.1.0-k8s
         imagePullPolicy: IfNotPresent
         ports:
         - name: icinga
@@ -71,7 +71,7 @@ spec:
         - name: data
           mountPath: /srv
       - name: ido
-        image: $STASH_DOCKER_REGISTRY/postgres:9.5-alpine
+        image: $SEARCHLIGHT_DOCKER_REGISTRY/postgres:9.5-alpine
         imagePullPolicy: IfNotPresent
         env:
         - name: PGDATA
@@ -87,8 +87,8 @@ spec:
       - name: data
         emptyDir: {}
       tolerations:
-      - key: "CriticalAddonsOnly"
-        operator: "Exists"
+      - key: CriticalAddonsOnly
+        operator: Exists
 ---
 apiVersion: v1
 kind: Service

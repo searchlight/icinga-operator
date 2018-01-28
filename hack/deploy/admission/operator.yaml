@@ -1,0 +1,199 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: searchlight-operator
+  namespace: $SEARCHLIGHT_NAMESPACE
+  labels:
+    app: searchlight
+data:
+  ICINGA_WEB_UI_PASSWORD: Y2hhbmdlaXQ=
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: searchlight-operator
+  namespace: $SEARCHLIGHT_NAMESPACE
+  labels:
+    app: searchlight
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: searchlight
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+    spec:
+      serviceAccountName: $SEARCHLIGHT_SERVICE_ACCOUNT
+      imagePullSecrets: [$SEARCHLIGHT_IMAGE_PULL_SECRET]
+      containers:
+      - name: operator
+        image: $SEARCHLIGHT_DOCKER_REGISTRY/searchlight:5.1.0
+        imagePullPolicy: IfNotPresent
+        args:
+        - run
+        - --v=3
+        - --config-dir=/srv
+        - --config-secret-name=searchlight-operator
+        - --api.address=:8080
+        - --web.address=:56790
+        ports:
+        - name: api
+          containerPort: 8080
+          protocol: TCP
+        - name: web
+          containerPort: 56790
+          protocol: TCP
+        volumeMounts:
+        - name: data
+          mountPath: /srv
+      - name: icinga
+        image: $SEARCHLIGHT_DOCKER_REGISTRY/icinga:5.1.0-k8s
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: icinga
+          containerPort: 5665
+          protocol: TCP
+        - name: ui
+          containerPort: 60006
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            scheme: HTTPS
+            port: 5665
+            path: /v1/status
+            httpHeaders:
+              - name: Authorization
+                value: "Basic c3RhdHVzdXNlcjpzdGF0dXNwYXNz"
+          initialDelaySeconds: 120
+          periodSeconds: 30
+        volumeMounts:
+        - name: data
+          mountPath: /srv
+      - name: ido
+        image: $SEARCHLIGHT_DOCKER_REGISTRY/postgres:9.5-alpine
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        ports:
+        - name: ido
+          containerPort: 5432
+          protocol: TCP
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+      - name: webhook
+        args:
+        - admission-webhook
+        - --secure-port=8443
+        - --audit-log-path=-
+        - --tls-cert-file=/var/serving-cert/tls.crt
+        - --tls-private-key-file=/var/serving-cert/tls.key
+        - --v=3
+        image: $SEARCHLIGHT_DOCKER_REGISTRY/searchlight:5.1.0
+        ports:
+        - containerPort: 8443
+        volumeMounts:
+        - mountPath: /var/serving-cert
+          name: serving-cert
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8443
+            scheme: HTTPS
+      volumes:
+      - name: data
+        emptyDir: {}
+      - name: serving-cert
+        secret:
+          defaultMode: 420
+          secretName: searchlight-admission-webhook-cert
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+---
+# kube lacks the service serving cert signer, so provide a manual secret for it
+apiVersion: v1
+kind: Secret
+metadata:
+  name: searchlight-admission-webhook-cert
+  namespace: $SEARCHLIGHT_NAMESPACE
+  labels:
+    app: searchlight
+type: kubernetes.io/tls
+data:
+  tls.crt: $TLS_SERVING_CERT
+  tls.key: $TLS_SERVING_KEY
+---
+# to be able to expose TSB inside the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: searchlight-operator
+  namespace: $SEARCHLIGHT_NAMESPACE
+  labels:
+    app: searchlight
+spec:
+  ports:
+  - name: ui
+    port: 80
+    targetPort: ui
+  - name: admission
+    port: 443
+    targetPort: 8443
+  - name: icinga
+    port: 5665
+    targetPort: icinga
+  - name: api
+    port: 8080
+    targetPort: api
+  - name: web
+    port: 56790
+    targetPort: web
+  selector:
+    app: searchlight
+---
+# register as aggregated apiserver
+apiVersion: apiregistration.k8s.io/v1beta1
+kind: APIService
+metadata:
+  name: v1alpha1.admission.monitoring.appscode.com
+  labels:
+    app: searchlight
+spec:
+  caBundle: $SERVICE_SERVING_CERT_CA
+  group: admission.monitoring.appscode.com
+  groupPriorityMinimum: 1000
+  versionPriority: 15
+  service:
+    name: searchlight-operator
+    namespace: $SEARCHLIGHT_NAMESPACE
+  version: v1alpha1
+---
+# register to intercept searchlight CRD creates / updates
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: admission.monitoring.appscode.com
+  labels:
+    app: searchlight
+webhooks:
+- name: admission.monitoring.appscode.com
+  clientConfig:
+    service:
+      namespace: default
+      name: kubernetes
+      path: /apis/admission.monitoring.appscode.com/v1alpha1/reviews
+    caBundle: $KUBE_CA
+  rules:
+  - operations:
+    - CREATE
+    - UPDATE
+    apiGroups:
+    - monitoring.appscode.com
+    apiVersions:
+    - "*"
+    resources:
+    - "*"
+  failurePolicy: Fail

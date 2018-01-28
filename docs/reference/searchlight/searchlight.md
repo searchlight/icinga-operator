@@ -40,6 +40,7 @@ Searchlight by AppsCode - Alerts for Kubernetes
 
 ### SEE ALSO
 
+* [searchlight admission-webhook](/docs/reference/searchlight/searchlight_admission-webhook.md)	 - Launch Searchlight admission webhook server
 * [searchlight configure](/docs/reference/searchlight/searchlight_configure.md)	 - Generate icinga configuration
 * [searchlight run](/docs/reference/searchlight/searchlight_run.md)	 - Run operator
 * [searchlight version](/docs/reference/searchlight/searchlight_version.md)	 - Prints binary version number.
