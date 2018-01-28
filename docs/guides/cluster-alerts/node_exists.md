@@ -1,13 +1,13 @@
 ---
 title: Node Exists
 menu:
-  product_searchlight_5.1.0:
+  product_searchlight_6.0.0-alpha.0:
     identifier: guides-node-exists
     name: Node Exists
     parent: cluster-alert
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_5.1.0
+menu_name: product_searchlight_6.0.0-alpha.0
 section_menu_id: guides
 ---
 

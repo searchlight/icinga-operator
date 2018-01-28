@@ -2,13 +2,13 @@
 title: Install
 description: Searchlight Install
 menu:
-  product_searchlight_5.1.0:
+  product_searchlight_6.0.0-alpha.0:
     identifier: install-searchlight
     name: Install
     parent: setup
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_5.1.0
+menu_name: product_searchlight_6.0.0-alpha.0
 section_menu_id: setup
 ---
 
@@ -19,10 +19,10 @@ section_menu_id: setup
 ## Using YAML
 [![Install Searchlight](https://img.youtube.com/vi/Po4yXrQuHtQ/0.jpg)](https://www.youtube-nocookie.com/embed/Po4yXrQuHtQ)
 
-Searchlight can be installed via installer script included in the [/hack/deploy](https://github.com/appscode/searchlight/tree/5.1.0/hack/deploy) folder.
+Searchlight can be installed via installer script included in the [/hack/deploy](https://github.com/appscode/searchlight/tree/6.0.0-alpha.0/hack/deploy) folder.
 
 ```console
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/searchlight.sh | bash -s -- -h
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh | bash -s -- -h
 searchlight.sh - install searchlight operator
 
 searchlight.sh [options]
@@ -37,18 +37,18 @@ options:
     --enable-admission-webhook     configure admission webhook for stash CRDs
 
 # install without RBAC roles
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/searchlight.sh \
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh \
     | bash
 
 # Install with RBAC roles
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/searchlight.sh \
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh \
     | bash -s -- --rbac
 ```
 
 If you would like to run Searchlight operator pod in `master` instances, pass the `--run-on-master` flag:
 
 ```console
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/searchlight.sh \
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh \
     | bash -s -- --run-on-master [--rbac]
 ```
 
@@ -56,7 +56,7 @@ Searchlight operator will be installed in a `kube-system` namespace by default. 
 
 ```console
 $ kubectl create namespace searchlight
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/searchlight.sh \
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh \
     | bash -s -- --namespace=searchlight [--run-on-master] [--rbac]
 ```
 
@@ -70,14 +70,14 @@ To pass the address of your private registry and optionally a image pull secret 
 
 ```console
 $ kubectl create namespace searchlight
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/searchlight.sh \
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh \
     | bash -s -- --docker-registry=MY_REGISTRY [--image-pull-secret=SECRET_NAME] [--rbac]
 ```
 
 Searchlight implements a [validating admission webhook](https://kubernetes.io/docs/admin/admission-controllers/#validatingadmissionwebhook-alpha-in-18-beta-in-19) to validate Searchlight CRDs. To enable this feature, pass the `--enable-admission-webhook` flag. _Please note that, this works with Kubernetes 1.9 or following versions_.
 
 ```console
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/searchlight.sh \
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh \
     | bash -s -- --enable-admission-webhook [--rbac]
 ```
 
@@ -180,12 +180,12 @@ $ POD_NAMESPACE=kube-system
 $ POD_NAME=$(kubectl get pods -n $POD_NAMESPACE -l app=searchlight -o jsonpath={.items[0].metadata.name})
 $ kubectl exec -it $POD_NAME -c operator -n $POD_NAMESPACE searchlight version
 
-Version = 5.1.0
+Version = 6.0.0-alpha.0
 VersionStrategy = tag
 Os = alpine
 Arch = amd64
 CommitHash = 9442863beb09a50a2c3818ab586fa5b1541fddf1
 GitBranch = release-4.0
-GitTag = 5.1.0
+GitTag = 6.0.0-alpha.0
 CommitTimestamp = 2017-09-26T03:00:58
 ```

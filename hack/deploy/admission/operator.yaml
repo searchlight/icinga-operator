@@ -28,7 +28,7 @@ spec:
       imagePullSecrets: [$SEARCHLIGHT_IMAGE_PULL_SECRET]
       containers:
       - name: operator
-        image: $SEARCHLIGHT_DOCKER_REGISTRY/searchlight:5.1.0
+        image: $SEARCHLIGHT_DOCKER_REGISTRY/searchlight:6.0.0-alpha.0
         imagePullPolicy: IfNotPresent
         args:
         - run
@@ -48,7 +48,7 @@ spec:
         - name: data
           mountPath: /srv
       - name: icinga
-        image: $SEARCHLIGHT_DOCKER_REGISTRY/icinga:5.1.0-k8s
+        image: $SEARCHLIGHT_DOCKER_REGISTRY/icinga:6.0.0-alpha.0-k8s
         imagePullPolicy: IfNotPresent
         ports:
         - name: icinga
@@ -91,7 +91,7 @@ spec:
         - --tls-cert-file=/var/serving-cert/tls.crt
         - --tls-private-key-file=/var/serving-cert/tls.key
         - --v=3
-        image: $SEARCHLIGHT_DOCKER_REGISTRY/searchlight:5.1.0
+        image: $SEARCHLIGHT_DOCKER_REGISTRY/searchlight:6.0.0-alpha.0
         ports:
         - containerPort: 8443
         volumeMounts:
