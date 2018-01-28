@@ -38,19 +38,34 @@ type PodAlertInformer interface {
 }
 
 type podAlertInformer struct {
-	factory internalinterfaces.SharedInformerFactory
+	factory          internalinterfaces.SharedInformerFactory
+	tweakListOptions internalinterfaces.TweakListOptionsFunc
+	namespace        string
 }
 
 // NewPodAlertInformer constructs a new informer for PodAlert type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
 func NewPodAlertInformer(client client.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredPodAlertInformer(client, namespace, resyncPeriod, indexers, nil)
+}
+
+// NewFilteredPodAlertInformer constructs a new informer for PodAlert type.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewFilteredPodAlertInformer(client client.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&options)
+				}
 				return client.MonitoringV1alpha1().PodAlerts(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&options)
+				}
 				return client.MonitoringV1alpha1().PodAlerts(namespace).Watch(options)
 			},
 		},
@@ -60,12 +75,12 @@ func NewPodAlertInformer(client client.Interface, namespace string, resyncPeriod
 	)
 }
 
-func defaultPodAlertInformer(client client.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewPodAlertInformer(client, v1.NamespaceAll, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc})
+func (f *podAlertInformer) defaultInformer(client client.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredPodAlertInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
 func (f *podAlertInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&monitoring_v1alpha1.PodAlert{}, defaultPodAlertInformer)
+	return f.factory.InformerFor(&monitoring_v1alpha1.PodAlert{}, f.defaultInformer)
 }
 
 func (f *podAlertInformer) Lister() v1alpha1.PodAlertLister {

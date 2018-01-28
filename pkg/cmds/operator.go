@@ -8,7 +8,6 @@ import (
 	"github.com/appscode/kutil/meta"
 	cs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/pkg/migrator"
 	"github.com/appscode/searchlight/pkg/operator"
 	"github.com/spf13/cobra"
 	crd_cs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
@@ -85,10 +84,6 @@ func run(opt operator.Options) {
 
 	op := operator.New(kubeClient, apiExtKubeClient, extClient, icingaClient, opt)
 	if err := op.Setup(); err != nil {
-		log.Fatalln(err)
-	}
-
-	if err = migrator.NewMigrator(kubeClient, apiExtKubeClient, extClient).RunMigration(); err != nil {
 		log.Fatalln(err)
 	}
 

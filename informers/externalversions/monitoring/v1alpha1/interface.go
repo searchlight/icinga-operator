@@ -33,25 +33,27 @@ type Interface interface {
 }
 
 type version struct {
-	internalinterfaces.SharedInformerFactory
+	factory          internalinterfaces.SharedInformerFactory
+	namespace        string
+	tweakListOptions internalinterfaces.TweakListOptionsFunc
 }
 
 // New returns a new Interface.
-func New(f internalinterfaces.SharedInformerFactory) Interface {
-	return &version{f}
+func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakListOptions internalinterfaces.TweakListOptionsFunc) Interface {
+	return &version{factory: f, namespace: namespace, tweakListOptions: tweakListOptions}
 }
 
 // ClusterAlerts returns a ClusterAlertInformer.
 func (v *version) ClusterAlerts() ClusterAlertInformer {
-	return &clusterAlertInformer{factory: v.SharedInformerFactory}
+	return &clusterAlertInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // NodeAlerts returns a NodeAlertInformer.
 func (v *version) NodeAlerts() NodeAlertInformer {
-	return &nodeAlertInformer{factory: v.SharedInformerFactory}
+	return &nodeAlertInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // PodAlerts returns a PodAlertInformer.
 func (v *version) PodAlerts() PodAlertInformer {
-	return &podAlertInformer{factory: v.SharedInformerFactory}
+	return &podAlertInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
