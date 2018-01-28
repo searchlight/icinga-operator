@@ -28,7 +28,7 @@ spec:
       imagePullSecrets: [$SEARCHLIGHT_IMAGE_PULL_SECRET]
       containers:
       - name: operator
-        image: appscode/searchlight:5.1.0
+        image: $STASH_DOCKER_REGISTRY/searchlight:5.1.0
         imagePullPolicy: IfNotPresent
         args:
         - run
@@ -48,7 +48,7 @@ spec:
         - name: data
           mountPath: /srv
       - name: icinga
-        image: appscode/icinga:5.1.0-k8s
+        image: $STASH_DOCKER_REGISTRY/icinga:5.1.0-k8s
         imagePullPolicy: IfNotPresent
         ports:
         - name: icinga
@@ -71,7 +71,7 @@ spec:
         - name: data
           mountPath: /srv
       - name: ido
-        image: appscode/postgres:9.5-alpine
+        image: $STASH_DOCKER_REGISTRY/postgres:9.5-alpine
         imagePullPolicy: IfNotPresent
         env:
         - name: PGDATA

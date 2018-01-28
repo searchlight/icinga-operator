@@ -59,10 +59,11 @@ $ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/d
     | bash -s -- --namespace=searchlight [--run-on-master] [--rbac]
 ```
 
-If you are using a private Docker registry, you need to pull the following 2 docker images:
+If you are using a private Docker registry, you need to pull the following 3 docker images:
 
  - [appscode/searchlight](https://hub.docker.com/r/appscode/searchlight)
- - [appscode/kubectl](https://hub.docker.com/r/appscode/kubectl)
+ - [appscode/icinga](https://hub.docker.com/r/appscode/icinga)
+ - [appscode/postgres](https://hub.docker.com/r/appscode/postgres)
 
 To pass the address of your private registry and optionally a image pull secret use flags `--docker-registry` and `--image-pull-secret` respectively.
 
