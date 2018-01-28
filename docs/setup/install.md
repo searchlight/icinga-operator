@@ -19,15 +19,57 @@ section_menu_id: setup
 ## Using YAML
 [![Install Searchlight](https://img.youtube.com/vi/Po4yXrQuHtQ/0.jpg)](https://www.youtube-nocookie.com/embed/Po4yXrQuHtQ)
 
-Searchlight can be installed using YAML files includes in the [/hack/deploy](https://github.com/appscode/searchlight/blob/master/hack/deploy) folder.
+Searchlight can be installed via installer script included in the [/hack/deploy](https://github.com/appscode/searchlight/tree/5.1.0/hack/deploy) folder.
 
 ```console
-# Install without RBAC roles
-$ kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/without-rbac.yaml
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/searchlight.sh | bash -s -- -h
+searchlight.sh - install searchlight operator
 
+searchlight.sh [options]
+
+options:
+-h, --help                         show brief help
+-n, --namespace=NAMESPACE          specify namespace (default: kube-system)
+    --rbac                         create RBAC roles and bindings
+    --docker-registry              docker registry used to pull searchlight images (default: appscode)
+    --image-pull-secret            name of secret used to pull searchlight operator images
+    --run-on-master                run searchlight operator on master
+
+# install without RBAC roles
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/searchlight.sh \
+    | bash
 
 # Install with RBAC roles
-$ kubectl apply -f https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/with-rbac.yaml
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/searchlight.sh \
+    | bash -s -- --rbac
+```
+
+If you would like to run Searchlight operator pod in `master` instances, pass the `--run-on-master` flag:
+
+```console
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/searchlight.sh \
+    | bash -s -- --run-on-master [--rbac]
+```
+
+Searchlight operator will be installed in a `kube-system` namespace by default. If you would like to run Searchlight operator pod in `searchlight` namespace, pass the `--namespace=searchlight` flag:
+
+```console
+$ kubectl create namespace searchlight
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/searchlight.sh \
+    | bash -s -- --namespace=searchlight [--run-on-master] [--rbac]
+```
+
+If you are using a private Docker registry, you need to pull the following 2 docker images:
+
+ - [appscode/searchlight](https://hub.docker.com/r/appscode/searchlight)
+ - [appscode/kubectl](https://hub.docker.com/r/appscode/kubectl)
+
+To pass the address of your private registry and optionally a image pull secret use flags `--docker-registry` and `--image-pull-secret` respectively.
+
+```console
+$ kubectl create namespace searchlight
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/5.1.0/hack/deploy/searchlight.sh \
+    | bash -s -- --docker-registry=MY_REGISTRY [--image-pull-secret=SECRET_NAME] [--rbac]
 ```
 
 
