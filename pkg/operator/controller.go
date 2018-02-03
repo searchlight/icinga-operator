@@ -7,9 +7,11 @@ import (
 
 	"github.com/appscode/go/log"
 	apiext_util "github.com/appscode/kutil/apiextensions/v1beta1"
+	"github.com/appscode/kutil/tools/queue"
 	"github.com/appscode/pat"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	cs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
+	cs "github.com/appscode/searchlight/client"
+	searchlightinformers "github.com/appscode/searchlight/informers/externalversions"
 	slite_listers "github.com/appscode/searchlight/listers/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/icinga"
@@ -17,12 +19,11 @@ import (
 	crd_api "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	ecs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
 	"k8s.io/apimachinery/pkg/util/runtime"
-	"k8s.io/apimachinery/pkg/util/wait"
+	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	core_listers "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
-	"k8s.io/client-go/util/workqueue"
 )
 
 type Options struct {
@@ -35,66 +36,66 @@ type Options struct {
 	WebAddress       string
 	ResyncPeriod     time.Duration
 	MaxNumRequeues   int
+	NumThreads       int
 }
 
 type Operator struct {
 	KubeClient   kubernetes.Interface
 	CRDClient    ecs.ApiextensionsV1beta1Interface
-	ExtClient    cs.MonitoringV1alpha1Interface
+	ExtClient    cs.Interface
 	IcingaClient *icinga.Client // TODO: init
 
-	Opt         Options
+	kubeInformerFactory        informers.SharedInformerFactory
+	searchlightInformerFactory searchlightinformers.SharedInformerFactory
+
+	options     Options
 	clusterHost *icinga.ClusterHost
 	nodeHost    *icinga.NodeHost
 	podHost     *icinga.PodHost
 	recorder    record.EventRecorder
 
 	// Namespace
-	nsIndexer  cache.Indexer
-	nsInformer cache.Controller
+	nsInformer cache.SharedIndexInformer
 
 	// Node
-	nQueue    workqueue.RateLimitingInterface
-	nIndexer  cache.Indexer
-	nInformer cache.Controller
+	nQueue    *queue.Worker
+	nInformer cache.SharedIndexInformer
 	nLister   core_listers.NodeLister
 
 	// Pod
-	pQueue    workqueue.RateLimitingInterface
-	pIndexer  cache.Indexer
-	pInformer cache.Controller
+	pQueue    *queue.Worker
+	pInformer cache.SharedIndexInformer
 	pLister   core_listers.PodLister
 
 	// ClusterAlert
-	caQueue    workqueue.RateLimitingInterface
-	caIndexer  cache.Indexer
-	caInformer cache.Controller
+	caQueue    *queue.Worker
+	caInformer cache.SharedIndexInformer
 	caLister   slite_listers.ClusterAlertLister
 
 	// NodeAlert
-	naQueue    workqueue.RateLimitingInterface
-	naIndexer  cache.Indexer
-	naInformer cache.Controller
+	naQueue    *queue.Worker
+	naInformer cache.SharedIndexInformer
 	naLister   slite_listers.NodeAlertLister
 
 	// PodAlert
-	paQueue    workqueue.RateLimitingInterface
-	paIndexer  cache.Indexer
-	paInformer cache.Controller
+	paQueue    *queue.Worker
+	paInformer cache.SharedIndexInformer
 	paLister   slite_listers.PodAlertLister
 }
 
-func New(kubeClient kubernetes.Interface, crdClient ecs.ApiextensionsV1beta1Interface, extClient cs.MonitoringV1alpha1Interface, icingaClient *icinga.Client, opt Options) *Operator {
+func New(kubeClient kubernetes.Interface, crdClient ecs.ApiextensionsV1beta1Interface, extClient cs.Interface, icingaClient *icinga.Client, opt Options) *Operator {
 	return &Operator{
-		KubeClient:   kubeClient,
-		CRDClient:    crdClient,
-		ExtClient:    extClient,
-		IcingaClient: icingaClient,
-		Opt:          opt,
-		clusterHost:  icinga.NewClusterHost(icingaClient),
-		nodeHost:     icinga.NewNodeHost(icingaClient),
-		podHost:      icinga.NewPodHost(icingaClient),
-		recorder:     eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
+		KubeClient:                 kubeClient,
+		kubeInformerFactory:        informers.NewSharedInformerFactory(kubeClient, opt.ResyncPeriod),
+		CRDClient:                  crdClient,
+		ExtClient:                  extClient,
+		searchlightInformerFactory: searchlightinformers.NewSharedInformerFactory(extClient, opt.ResyncPeriod),
+		IcingaClient:               icingaClient,
+		options:                    opt,
+		clusterHost:                icinga.NewClusterHost(icingaClient),
+		nodeHost:                   icinga.NewNodeHost(icingaClient),
+		podHost:                    icinga.NewPodHost(icingaClient),
+		recorder:                   eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
 	}
 }
 
@@ -132,61 +133,37 @@ func (op *Operator) RunAPIServer() {
 
 	router.Get("/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) }))
 
-	log.Infoln("Listening on", op.Opt.APIAddress)
-	log.Fatal(http.ListenAndServe(op.Opt.APIAddress, router))
+	log.Infoln("Listening on", op.options.APIAddress)
+	log.Fatal(http.ListenAndServe(op.options.APIAddress, router))
 }
 
-func (op *Operator) Run(threadiness int, stopCh chan struct{}) {
+func (op *Operator) Run(stopCh chan struct{}) {
 	defer runtime.HandleCrash()
 
-	// Let the workers stop when we are done
-	defer op.nQueue.ShutDown()
-	defer op.pQueue.ShutDown()
-	defer op.caQueue.ShutDown()
-	defer op.naQueue.ShutDown()
-	defer op.paQueue.ShutDown()
 	glog.Info("Starting Searchlight controller")
 
-	go op.nsInformer.Run(stopCh)
-	go op.nInformer.Run(stopCh)
-	go op.pInformer.Run(stopCh)
-	go op.caInformer.Run(stopCh)
-	go op.naInformer.Run(stopCh)
-	go op.paInformer.Run(stopCh)
+	go op.kubeInformerFactory.Start(stopCh)
+	go op.searchlightInformerFactory.Start(stopCh)
 
 	// Wait for all involved caches to be synced, before processing items from the queue is started
-	if !cache.WaitForCacheSync(stopCh, op.nsInformer.HasSynced) {
-		runtime.HandleError(fmt.Errorf("timed out waiting for caches to sync"))
-		return
+	for _, v := range op.kubeInformerFactory.WaitForCacheSync(stopCh) {
+		if !v {
+			runtime.HandleError(fmt.Errorf("timed out waiting for caches to sync"))
+			return
+		}
 	}
-	if !cache.WaitForCacheSync(stopCh, op.nInformer.HasSynced) {
-		runtime.HandleError(fmt.Errorf("timed out waiting for caches to sync"))
-		return
-	}
-	if !cache.WaitForCacheSync(stopCh, op.pInformer.HasSynced) {
-		runtime.HandleError(fmt.Errorf("timed out waiting for caches to sync"))
-		return
-	}
-	if !cache.WaitForCacheSync(stopCh, op.caInformer.HasSynced) {
-		runtime.HandleError(fmt.Errorf("timed out waiting for caches to sync"))
-		return
-	}
-	if !cache.WaitForCacheSync(stopCh, op.naInformer.HasSynced) {
-		runtime.HandleError(fmt.Errorf("timed out waiting for caches to sync"))
-		return
-	}
-	if !cache.WaitForCacheSync(stopCh, op.paInformer.HasSynced) {
-		runtime.HandleError(fmt.Errorf("timed out waiting for caches to sync"))
-		return
+	for _, v := range op.searchlightInformerFactory.WaitForCacheSync(stopCh) {
+		if !v {
+			runtime.HandleError(fmt.Errorf("timed out waiting for caches to sync"))
+			return
+		}
 	}
 
-	for i := 0; i < threadiness; i++ {
-		go wait.Until(op.runNodeWatcher, time.Second, stopCh)
-		go wait.Until(op.runPodWatcher, time.Second, stopCh)
-		go wait.Until(op.runClusterAlertWatcher, time.Second, stopCh)
-		go wait.Until(op.runNodeAlertWatcher, time.Second, stopCh)
-		go wait.Until(op.runPodAlertWatcher, time.Second, stopCh)
-	}
+	op.nQueue.Run(stopCh)
+	op.pQueue.Run(stopCh)
+	op.caQueue.Run(stopCh)
+	op.naQueue.Run(stopCh)
+	op.paQueue.Run(stopCh)
 
 	<-stopCh
 	glog.Info("Stopping Searchlight controller")

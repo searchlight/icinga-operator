@@ -3,18 +3,18 @@ package util
 import (
 	"github.com/appscode/go-notify/unified"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	cs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
+	cs "github.com/appscode/searchlight/client"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 )
 
-func CheckNotifiers(kubeClient kubernetes.Interface, alert api.Alert) error {
+func CheckNotifiers(client kubernetes.Interface, alert api.Alert) error {
 	if alert.GetNotifierSecretName() == "" && len(alert.GetReceivers()) == 0 {
 		return nil
 	}
-	secret, err := kubeClient.CoreV1().Secrets(alert.GetNamespace()).Get(alert.GetNotifierSecretName(), metav1.GetOptions{})
+	secret, err := client.CoreV1().Secrets(alert.GetNamespace()).Get(alert.GetNotifierSecretName(), metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -32,8 +32,8 @@ func CheckNotifiers(kubeClient kubernetes.Interface, alert api.Alert) error {
 	return nil
 }
 
-func FindPodAlert(searchlightClient cs.MonitoringV1alpha1Interface, obj metav1.ObjectMeta) ([]*api.PodAlert, error) {
-	alerts, err := searchlightClient.PodAlerts(obj.Namespace).List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
+func FindPodAlert(client cs.Interface, obj metav1.ObjectMeta) ([]*api.PodAlert, error) {
+	alerts, err := client.MonitoringV1alpha1().PodAlerts(obj.Namespace).List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
 	if kerr.IsNotFound(err) {
 		return nil, nil
 	} else if err != nil {
@@ -57,8 +57,8 @@ func FindPodAlert(searchlightClient cs.MonitoringV1alpha1Interface, obj metav1.O
 	return result, nil
 }
 
-func FindNodeAlert(searchlightClient cs.MonitoringV1alpha1Interface, obj metav1.ObjectMeta) ([]*api.NodeAlert, error) {
-	alerts, err := searchlightClient.NodeAlerts(obj.Namespace).List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
+func FindNodeAlert(client cs.Interface, obj metav1.ObjectMeta) ([]*api.NodeAlert, error) {
+	alerts, err := client.MonitoringV1alpha1().NodeAlerts(obj.Namespace).List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
 	if kerr.IsNotFound(err) {
 		return nil, nil
 	} else if err != nil {

@@ -28,16 +28,16 @@ func (f *Invocation) ClusterAlert() *api.ClusterAlert {
 }
 
 func (f *Framework) CreateClusterAlert(obj *api.ClusterAlert) error {
-	_, err := f.extClient.ClusterAlerts(obj.Namespace).Create(obj)
+	_, err := f.extClient.MonitoringV1alpha1().ClusterAlerts(obj.Namespace).Create(obj)
 	return err
 }
 
 func (f *Framework) GetClusterAlert(meta metav1.ObjectMeta) (*api.ClusterAlert, error) {
-	return f.extClient.ClusterAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
+	return f.extClient.MonitoringV1alpha1().ClusterAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
 }
 
 func (f *Framework) DeleteClusterAlert(meta metav1.ObjectMeta) error {
-	return f.extClient.ClusterAlerts(meta.Namespace).Delete(meta.Name, &metav1.DeleteOptions{})
+	return f.extClient.MonitoringV1alpha1().ClusterAlerts(meta.Namespace).Delete(meta.Name, &metav1.DeleteOptions{})
 }
 
 func (f *Framework) getClusterAlertObjects(meta metav1.ObjectMeta, clusterAlertSpec api.ClusterAlertSpec) ([]icinga.IcingaHost, error) {

@@ -28,16 +28,16 @@ func (f *Invocation) PodAlert() *api.PodAlert {
 }
 
 func (f *Framework) CreatePodAlert(obj *api.PodAlert) error {
-	_, err := f.extClient.PodAlerts(obj.Namespace).Create(obj)
+	_, err := f.extClient.MonitoringV1alpha1().PodAlerts(obj.Namespace).Create(obj)
 	return err
 }
 
 func (f *Framework) GetPodAlert(meta metav1.ObjectMeta) (*api.PodAlert, error) {
-	return f.extClient.PodAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
+	return f.extClient.MonitoringV1alpha1().PodAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
 }
 
 func (f *Framework) DeletePodAlert(meta metav1.ObjectMeta) error {
-	return f.extClient.PodAlerts(meta.Namespace).Delete(meta.Name, &metav1.DeleteOptions{})
+	return f.extClient.MonitoringV1alpha1().PodAlerts(meta.Namespace).Delete(meta.Name, &metav1.DeleteOptions{})
 }
 
 func (f *Framework) getPodAlertObjects(meta metav1.ObjectMeta, podAlertSpec api.PodAlertSpec) ([]icinga.IcingaHost, error) {

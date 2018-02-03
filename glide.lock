@@ -1,12 +1,12 @@
 hash: 2d36315b0e0f249810c86f4b17bb9c4227b6a35ebe49f203799e45900f7b922c
-updated: 2018-02-05T15:48:25.742097654-08:00
+updated: 2018-02-13T14:41:56.270378313-08:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
 - name: github.com/appscode/envconfig
   version: 183bbe643a2875eaa69c85627ac6b25813983203
 - name: github.com/appscode/go
-  version: fe2dd84a755c383d0516595f4537c2298be9fce5
+  version: 1be9b0441d73831aaa93df76e42a751caa5dba88
   subpackages:
   - analytics
   - context
@@ -35,7 +35,7 @@ imports:
   - unified
   - webhook
 - name: github.com/appscode/kutil
-  version: 3037bd8a4c122f37b93108e0ef1f7b874079b93a
+  version: 579ddb8cc946c9e5f09d59863a3c5fe27cdc56f5
   subpackages:
   - apiextensions/v1beta1
   - core/v1
@@ -43,6 +43,7 @@ imports:
   - extensions/v1beta1
   - meta
   - tools/analytics
+  - tools/queue
 - name: github.com/appscode/mergo
   version: e3000cb3d28c72b837601cac94debd91032d19fe
 - name: github.com/appscode/pat
@@ -139,7 +140,7 @@ imports:
 - name: github.com/go-macaron/toolbox
   version: 6766b8f16d1b135b250f09ba4dc4e24ab65b1107
 - name: github.com/go-ole/go-ole
-  version: a41e3c4b706f6ae8dfbff342b06e40fa4d2d0506
+  version: a1ec82a652ebc7e784d7df887cfb31061aeabbcc
   subpackages:
   - oleutil
 - name: github.com/go-openapi/jsonpointer
@@ -203,7 +204,7 @@ imports:
   - compiler
   - extensions
 - name: github.com/gorilla/websocket
-  version: 6eb6ad425a89d9da7a5549bc6da8f79ba5c17844
+  version: ea4d1f681babbce9545c9c5f3d5194a789c89f5b
 - name: github.com/gregjones/httpcache
   version: 787624de3eb7bd915c329cba748687a3b22666a6
   subpackages:
@@ -273,7 +274,7 @@ imports:
   subpackages:
   - flowrate
 - name: github.com/nlopes/slack
-  version: db1988bcee7431c807305524daebdfaa323dbb6a
+  version: 8ab4d0b364ef1e9af5d102531da20d5ec902b6c4
 - name: github.com/NYTimes/gziphandler
   version: 56545f4a5d46df9a6648819d1664c3a03a13ffdb
 - name: github.com/olekukonko/tablewriter
@@ -343,7 +344,7 @@ imports:
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/spf13/cobra
-  version: 93959269ad99e80983c9ba742a7e01203a4c0e4f
+  version: be77323fc05148ef091e83b3866c0d47c8e74a8b
   subpackages:
   - doc
 - name: github.com/spf13/pflag

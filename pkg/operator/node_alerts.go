@@ -6,8 +6,8 @@ import (
 	"reflect"
 
 	"github.com/appscode/go/log"
+	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	slite_listers "github.com/appscode/searchlight/listers/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/util"
 	"github.com/golang/glog"
@@ -19,27 +19,12 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/tools/cache"
-	"k8s.io/client-go/util/workqueue"
 )
 
 func (op *Operator) initNodeAlertWatcher() {
-	lw := &cache.ListWatch{
-		ListFunc: func(options metav1.ListOptions) (rt.Object, error) {
-			return op.ExtClient.NodeAlerts(core.NamespaceAll).List(options)
-		},
-		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-			return op.ExtClient.NodeAlerts(core.NamespaceAll).Watch(options)
-		},
-	}
-
-	// create the workqueue
-	op.naQueue = workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "node-alert")
-
-	// Bind the workqueue to a cache with the help of an informer. This way we make sure that
-	// whenever the cache is updated, the pod key is added to the workqueue.
-	// Note that when we finally process the item from the workqueue, we might see a newer version
-	// of the NodeAlert than the version which was responsible for triggering the update.
-	op.naIndexer, op.naInformer = cache.NewIndexerInformer(lw, &api.NodeAlert{}, op.Opt.ResyncPeriod, cache.ResourceEventHandlerFuncs{
+	op.naInformer = op.searchlightInformerFactory.Monitoring().V1alpha1().NodeAlerts().Informer()
+	op.naQueue = queue.New("NodeAlert", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcileNodeAlert)
+	op.naInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			if alert, ok := obj.(*api.NodeAlert); ok {
 				if ok, err := alert.IsValid(); !ok {
@@ -52,23 +37,19 @@ func (op *Operator) initNodeAlertWatcher() {
 						err,
 					)
 					return
-				} else {
-					key, err := cache.MetaNamespaceKeyFunc(obj)
-					if err == nil {
-						op.naQueue.Add(key)
-					}
 				}
+				queue.Enqueue(op.naQueue.GetQueue(), obj)
 			}
 		},
 		UpdateFunc: func(old interface{}, new interface{}) {
 			oldAlert, ok := old.(*api.NodeAlert)
 			if !ok {
-				log.Errorln("Invalid NodeAlert object")
+				log.Errorln("invalid NodeAlert object")
 				return
 			}
 			newAlert, ok := new.(*api.NodeAlert)
 			if !ok {
-				log.Errorln("Invalid NodeAlert object")
+				log.Errorln("invalid NodeAlert object")
 				return
 			}
 			if ok, err := newAlert.IsValid(); !ok {
@@ -83,73 +64,21 @@ func (op *Operator) initNodeAlertWatcher() {
 				return
 			}
 			if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
-				key, err := cache.MetaNamespaceKeyFunc(new)
-				if err == nil {
-					op.naQueue.Add(key)
-				}
+				queue.Enqueue(op.naQueue.GetQueue(), new)
 			}
 		},
 		DeleteFunc: func(obj interface{}) {
-			// IndexerInformer uses a delta queue, therefore for deletes we have to use this
-			// key function.
-			key, err := cache.DeletionHandlingMetaNamespaceKeyFunc(obj)
-			if err == nil {
-				op.naQueue.Add(key)
-			}
+			queue.Enqueue(op.naQueue.GetQueue(), obj)
 		},
-	}, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc})
-	op.naLister = slite_listers.NewNodeAlertLister(op.naIndexer)
-}
-
-func (op *Operator) runNodeAlertWatcher() {
-	for op.processNextNodeAlert() {
-	}
-}
-
-func (op *Operator) processNextNodeAlert() bool {
-	// Wait until there is a new item in the working queue
-	key, quit := op.naQueue.Get()
-	if quit {
-		return false
-	}
-	// Tell the queue that we are done with processing this key. This unblocks the key for other workers
-	// This allows safe parallel processing because two deployments with the same key are never processed in
-	// parallel.
-	defer op.naQueue.Done(key)
-
-	// Invoke the method containing the business logic
-	err := op.runNodeAlertInjector(key.(string))
-	if err == nil {
-		// Forget about the #AddRateLimited history of the key on every successful synchronization.
-		// This ensures that future processing of updates for this key is not delayed because of
-		// an outdated error history.
-		op.naQueue.Forget(key)
-		return true
-	}
-	log.Errorf("Failed to process NodeAlert %v. Reason: %s", key, err)
-
-	// This controller retries 5 times if something goes wrong. After that, it stops trying.
-	if op.naQueue.NumRequeues(key) < op.Opt.MaxNumRequeues {
-		glog.Infof("Error syncing deployment %v: %v", key, err)
-
-		// Re-enqueue the key rate limited. Based on the rate limiter on the
-		// queue and the re-enqueue history, the key will be processed later again.
-		op.naQueue.AddRateLimited(key)
-		return true
-	}
-
-	op.naQueue.Forget(key)
-	// Report to an external entity that, even after several retries, we could not successfully process this key
-	runtime.HandleError(err)
-	glog.Infof("Dropping deployment %q out of the queue: %v", key, err)
-	return true
+	})
+	op.naLister = op.searchlightInformerFactory.Monitoring().V1alpha1().NodeAlerts().Lister()
 }
 
 // syncToStdout is the business logic of the controller. In this controller it simply prints
 // information about the deployment to stdout. In case an error happened, it has to simply return the error.
 // The retry logic should not be part of the business logic.
-func (op *Operator) runNodeAlertInjector(key string) error {
-	obj, exists, err := op.naIndexer.GetByKey(key)
+func (op *Operator) reconcileNodeAlert(key string) error {
+	obj, exists, err := op.naInformer.GetIndexer().GetByKey(key)
 	if err != nil {
 		glog.Errorf("Fetching object with key %s from store failed with %v", key, err)
 		return err
@@ -178,15 +107,15 @@ func (op *Operator) WatchNodeAlerts() {
 
 	lw := &cache.ListWatch{
 		ListFunc: func(opts metav1.ListOptions) (rt.Object, error) {
-			return op.ExtClient.NodeAlerts(core.NamespaceAll).List(metav1.ListOptions{})
+			return op.ExtClient.MonitoringV1alpha1().NodeAlerts(core.NamespaceAll).List(metav1.ListOptions{})
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-			return op.ExtClient.NodeAlerts(core.NamespaceAll).Watch(metav1.ListOptions{})
+			return op.ExtClient.MonitoringV1alpha1().NodeAlerts(core.NamespaceAll).Watch(metav1.ListOptions{})
 		},
 	}
 	_, ctrl := cache.NewInformer(lw,
 		&api.NodeAlert{},
-		op.Opt.ResyncPeriod,
+		op.options.ResyncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				if alert, ok := obj.(*api.NodeAlert); ok {

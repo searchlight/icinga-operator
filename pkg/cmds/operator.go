@@ -8,7 +8,7 @@ import (
 	"github.com/appscode/go/log"
 	"github.com/appscode/kutil/meta"
 	"github.com/appscode/pat"
-	cs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
+	cs "github.com/appscode/searchlight/client"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/operator"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -26,6 +26,8 @@ func NewCmdOperator() *cobra.Command {
 		APIAddress:       ":8080",
 		WebAddress:       ":56790",
 		ResyncPeriod:     5 * time.Minute,
+		MaxNumRequeues:   5,
+		NumThreads:       1,
 	}
 	cmd := &cobra.Command{
 		Use:   "run",
@@ -94,13 +96,13 @@ func run(opt operator.Options) {
 	// Now let's start the controller
 	stop := make(chan struct{})
 	defer close(stop)
-	go op.Run(1, stop)
+	go op.Run(stop)
 
 	go op.RunAPIServer()
 
 	m := pat.New()
 	m.Get("/metrics", promhttp.Handler())
 	http.Handle("/", m)
-	log.Infoln("Listening on", op.Opt.WebAddress)
-	log.Fatal(http.ListenAndServe(op.Opt.WebAddress, nil))
+	log.Infoln("Listening on", opt.WebAddress)
+	log.Fatal(http.ListenAndServe(opt.WebAddress, nil))
 }

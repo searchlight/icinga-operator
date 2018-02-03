@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	cs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
+	cs "github.com/appscode/searchlight/client"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/operator"
 	"github.com/appscode/searchlight/test/e2e"
@@ -67,11 +67,11 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 
 	// Create Searchlight deployment
-	slDeployment := root.Invoke().DeploymentExtensionSearchlight()
-	err = root.CreateDeploymentExtension(slDeployment)
+	slDeployment := root.Invoke().DeploymentSearchlight()
+	err = root.CreateDeployment(slDeployment)
 	Expect(err).NotTo(HaveOccurred())
 	By("Waiting for Running pods")
-	root.EventuallyDeploymentExtension(slDeployment.ObjectMeta).Should(HaveRunningPods(*slDeployment.Spec.Replicas))
+	root.EventuallyDeployment(slDeployment.ObjectMeta).Should(HaveRunningPods(*slDeployment.Spec.Replicas))
 
 	// Create Searchlight service
 	slService := root.Invoke().ServiceSearchlight()
@@ -107,10 +107,7 @@ var _ = BeforeSuite(func() {
 	op = operator.New(kubeClient, apiExtKubeClient, extClient, icingaClient, operator.Options{})
 	err = op.Setup()
 	Expect(err).NotTo(HaveOccurred())
-	op.Run()
-	root.EventuallyClusterAlert().Should(Succeed())
-	root.EventuallyNodeAlert().Should(Succeed())
-	root.EventuallyPodAlert().Should(Succeed())
+	op.Run(nil)
 })
 
 var _ = AfterSuite(func() {

@@ -96,7 +96,7 @@ func (c *Config) Complete() CompletedConfig {
 
 // New returns a new instance of AdmissionServer from the given config.
 func (c completedConfig) New() (*AdmissionServer, error) {
-	genericServer, err := c.GenericConfig.New("searchlight-apiserver", genericapiserver.EmptyDelegate) // completion is done in Complete, no need for a second time
+	genericServer, err := c.GenericConfig.New("apiserver", genericapiserver.EmptyDelegate) // completion is done in Complete, no need for a second time
 	if err != nil {
 		return nil, err
 	}

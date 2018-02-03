@@ -91,7 +91,7 @@ func Acknowledge(client *icinga.Client, w http.ResponseWriter, r *http.Request) 
 
 	jsonStr, err := json.Marshal(mp)
 	if err != nil {
-		http.Error(w, "Invalid data", http.StatusBadRequest)
+		http.Error(w, "invalid data", http.StatusBadRequest)
 		return
 	}
 	resp := client.Actions("acknowledge-problem").Update([]string{}, string(jsonStr)).Do()

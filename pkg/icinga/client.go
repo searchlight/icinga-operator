@@ -97,7 +97,7 @@ func (ic *APIRequest) Get(name []string, jsonBody ...string) *APIRequest {
 	} else if len(jsonBody) == 1 {
 		ic.req, ic.Err = ic.newRequest("GET", addUri(ic.uri, name), bytes.NewBuffer([]byte(jsonBody[0])))
 	} else {
-		ic.Err = errors.New("Invalid request")
+		ic.Err = errors.New("invalid request")
 	}
 	return ic
 }
