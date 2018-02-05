@@ -1,12 +1,12 @@
-hash: c7656f121cf7d86a1584cb2e8bf657178fd922558d9a96bf2502f50280e731c0
-updated: 2018-01-27T23:37:52.837169947-08:00
+hash: 2d36315b0e0f249810c86f4b17bb9c4227b6a35ebe49f203799e45900f7b922c
+updated: 2018-02-05T15:48:25.742097654-08:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
 - name: github.com/appscode/envconfig
   version: 183bbe643a2875eaa69c85627ac6b25813983203
 - name: github.com/appscode/go
-  version: 99dbf420807d9459b63d1d0bf702537bb7aa976f
+  version: fe2dd84a755c383d0516595f4537c2298be9fce5
   subpackages:
   - analytics
   - context
@@ -35,10 +35,11 @@ imports:
   - unified
   - webhook
 - name: github.com/appscode/kutil
-  version: 60ced7f055b34d512a84f65ca0a7d412ec3d6ef2
+  version: 3037bd8a4c122f37b93108e0ef1f7b874079b93a
   subpackages:
   - apiextensions/v1beta1
   - core/v1
+  - discovery
   - extensions/v1beta1
   - meta
   - tools/analytics
@@ -181,7 +182,7 @@ imports:
   - go/x509
   - go/x509/pkix
 - name: github.com/google/go-cmp
-  version: 97aa668b73e764ccdd786bc3ccd2edffe621150e
+  version: 3af367b6b30c263d47e8895973edcca9a49cf029
   subpackages:
   - cmp
   - cmp/internal/diff
@@ -236,7 +237,7 @@ imports:
   - models
   - pkg/escape
 - name: github.com/jaytaylor/html2text
-  version: 7cd445abb89c7dbb8220e616a1805fc904cc541b
+  version: e76a2f8aa970543f8f3dcadaa2223682ef582086
 - name: github.com/jmoiron/sqlx
   version: 398dd5876282499cdfd4cb8ea0f31a672abe9495
   repo: https://github.com/jmoiron/sqlx
@@ -272,11 +273,11 @@ imports:
   subpackages:
   - flowrate
 - name: github.com/nlopes/slack
-  version: 280245264a9d8c496e95ead447421d37cd95f93a
+  version: db1988bcee7431c807305524daebdfaa323dbb6a
 - name: github.com/NYTimes/gziphandler
   version: 56545f4a5d46df9a6648819d1664c3a03a13ffdb
 - name: github.com/olekukonko/tablewriter
-  version: 96aac992fc8b1a4c83841a6c3e7178d20d989625
+  version: cca8bbc0798408af109aaaa239cbd2634846b340
 - name: github.com/onsi/gomega
   version: c893efa28eb45626cdaa76c9f653b62488858837
   subpackages:
@@ -291,12 +292,6 @@ imports:
   - matchers/support/goraph/node
   - matchers/support/goraph/util
   - types
-- name: github.com/openshift/generic-admission-server
-  version: fee7efcb54503879f889c25d091d0e5758757c85
-  subpackages:
-  - pkg/apiserver
-  - pkg/cmd/server
-  - pkg/registry/admissionreview
 - name: github.com/pborman/uuid
   version: ca53cad383cad2479bbba7f7a1a05797ec1386e4
 - name: github.com/peterbourgon/diskv
@@ -328,6 +323,10 @@ imports:
   version: 5bd2802263f21d8788851d5305584c82a5c75d7e
 - name: github.com/russross/blackfriday
   version: 300106c228d52c8941d4b3de6054a6062a86dda3
+- name: github.com/sergi/go-diff
+  version: 97b2266dfe4bd4ea1b81a463322f04f8b724801e
+  subpackages:
+  - diffmatchpatch
 - name: github.com/shirou/gopsutil
   version: a452de7c734a0fa0f16d2e5725b0fa5934d9fbec
   subpackages:
@@ -344,7 +343,7 @@ imports:
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/spf13/cobra
-  version: f91529fc609202eededff4de2dc0ba2f662240a3
+  version: 93959269ad99e80983c9ba742a7e01203a4c0e4f
   subpackages:
   - doc
 - name: github.com/spf13/pflag
@@ -365,6 +364,12 @@ imports:
   version: 7677a1d7c1137cd3dd5ba7a076d0c898a1ef4520
 - name: github.com/vaughan0/go-ini
   version: a98ad7ee00ec53921f08832bc06ecf7fd600e6a1
+- name: github.com/yudai/gojsondiff
+  version: 7b1b7adf999dab73a6eb02669c3d82dbb27a3dd6
+  subpackages:
+  - formatter
+- name: github.com/yudai/golcs
+  version: d1c525dea8ce39ea9a783d33cf08932305373f2c
 - name: golang.org/x/crypto
   version: 81e90905daefcd6fd217b62423c0908922eadb30
   subpackages:

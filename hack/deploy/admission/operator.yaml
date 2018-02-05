@@ -85,7 +85,7 @@ spec:
           mountPath: /var/lib/postgresql/data
       - name: webhook
         args:
-        - admission-webhook
+        - apiserver
         - --secure-port=8443
         - --audit-log-path=-
         - --tls-cert-file=/var/serving-cert/tls.crt
@@ -108,7 +108,7 @@ spec:
       - name: serving-cert
         secret:
           defaultMode: 420
-          secretName: searchlight-admission-webhook-cert
+          secretName: searchlight-apiserver-cert
       tolerations:
       - key: CriticalAddonsOnly
         operator: Exists
@@ -117,7 +117,7 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: searchlight-admission-webhook-cert
+  name: searchlight-apiserver-cert
   namespace: $SEARCHLIGHT_NAMESPACE
   labels:
     app: searchlight
@@ -184,7 +184,7 @@ webhooks:
     service:
       namespace: default
       name: kubernetes
-      path: /apis/admission.monitoring.appscode.com/v1alpha1/reviews
+      path: /apis/admission.monitoring.appscode.com/v1alpha1/admissionreviews
     caBundle: $KUBE_CA
   rules:
   - operations:

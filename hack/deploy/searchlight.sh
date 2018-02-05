@@ -25,7 +25,7 @@ show_help() {
     echo "    --docker-registry              docker registry used to pull searchlight images (default: appscode)"
     echo "    --image-pull-secret            name of secret used to pull searchlight operator images"
     echo "    --run-on-master                run searchlight operator on master"
-    echo "    --enable-admission-webhook     configure admission webhook for searchlight CRDs"
+    echo "    --enable-apiserver     configure admission webhook for searchlight CRDs"
 }
 
 while test $# -gt 0; do
@@ -57,7 +57,7 @@ while test $# -gt 0; do
             export SEARCHLIGHT_IMAGE_PULL_SECRET="name: '$secret'"
             shift
             ;;
-        --enable-admission-webhook)
+        --enable-apiserver)
             export SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK=true
             shift
             ;;

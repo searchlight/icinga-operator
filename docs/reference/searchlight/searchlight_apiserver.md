@@ -1,24 +1,24 @@
 ---
-title: Admission-Webhook
+title: Apiserver
 menu:
   product_searchlight_6.0.0-alpha.0:
-    identifier: searchlight-admission-webhook
-    name: Admission-Webhook
+    identifier: searchlight-apiserver
+    name: Apiserver
     parent: searchlight-cli
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_6.0.0-alpha.0
 ---
-## searchlight admission-webhook
+## searchlight apiserver
 
-Launch Searchlight admission webhook server
+Launch Searchlight API server
 
 ### Synopsis
 
-Launch Searchlight admission webhook server
+Launch Searchlight API server
 
 ```
-searchlight admission-webhook [flags]
+searchlight apiserver [flags]
 ```
 
 ### Options
@@ -43,7 +43,7 @@ searchlight admission-webhook [flags]
       --client-ca-file string                                   If set, any request presenting a client certificate signed by one of the authorities in the client-ca-file is authenticated with an identity corresponding to the CommonName of the client certificate.
       --contention-profiling                                    Enable lock contention profiling, if profiling is enabled
       --enable-swagger-ui                                       Enables swagger ui on the apiserver at /swagger-ui
-  -h, --help                                                    help for admission-webhook
+  -h, --help                                                    help for apiserver
       --kubeconfig string                                       kubeconfig file pointing at the 'core' kubernetes server.
       --profiling                                               Enable profiling via web interface host:port/debug/pprof/ (default true)
       --requestheader-allowed-names stringSlice                 List of client certificate common names to allow to provide usernames in headers specified by --requestheader-username-headers. If empty, any client certificate validated by the authorities in --requestheader-client-ca-file is allowed.
@@ -66,7 +66,7 @@ searchlight admission-webhook [flags]
       --analytics                                    Send analytical events to Google Analytics (default true)
       --log_backtrace_at traceLocation               when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                               If non-empty, write log files in this directory
-      --logtostderr                                  log to standard error instead of files
+      --logtostderr                                  log to standard error instead of files (default true)
       --stderrthreshold severity                     logs at or above this threshold go to stderr
   -v, --v Level                                      log level for V logs
       --vmodule moduleSpec                           comma-separated list of pattern=N settings for file-filtered logging

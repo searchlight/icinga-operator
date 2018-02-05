@@ -15,16 +15,16 @@ import (
 type AdmissionHook struct {
 }
 
-func (a *AdmissionHook) ValidatingResource() (plural schema.GroupVersionResource, singular string) {
+func (a *AdmissionHook) Resource() (plural schema.GroupVersionResource, singular string) {
 	return schema.GroupVersionResource{
 			Group:    "admission.monitoring.appscode.com",
 			Version:  "v1alpha1",
-			Resource: "reviews",
+			Resource: "admissionreviews",
 		},
-		"review"
+		"admissionreview"
 }
 
-func (a *AdmissionHook) Validate(req *admission.AdmissionRequest) *admission.AdmissionResponse {
+func (a *AdmissionHook) Admit(req *admission.AdmissionRequest) *admission.AdmissionResponse {
 	status := &admission.AdmissionResponse{}
 	supportedKinds := sets.NewString(api.ResourceKindClusterAlert, api.ResourceKindNodeAlert, api.ResourceKindPodAlert)
 

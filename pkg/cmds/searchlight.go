@@ -8,9 +8,7 @@ import (
 
 	v "github.com/appscode/go/version"
 	"github.com/appscode/kutil/tools/analytics"
-	"github.com/appscode/searchlight/pkg/admission/plugin"
 	"github.com/jpillora/go-ogle-analytics"
-	"github.com/openshift/generic-admission-server/pkg/cmd/server"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	genericapiserver "k8s.io/apiserver/pkg/server"
@@ -50,10 +48,7 @@ func NewCmdSearchlight() *cobra.Command {
 	rootCmd.AddCommand(v.NewCmdVersion())
 
 	stopCh := genericapiserver.SetupSignalHandler()
-	cmd := server.NewCommandStartAdmissionServer(os.Stdout, os.Stderr, stopCh, &plugin.AdmissionHook{})
-	cmd.Use = "admission-webhook"
-	cmd.Long = "Launch Searchlight admission webhook server"
-	cmd.Short = cmd.Long
+	cmd := NewCommandStartAPIServer(os.Stdout, os.Stderr, stopCh)
 	rootCmd.AddCommand(cmd)
 
 	return rootCmd
