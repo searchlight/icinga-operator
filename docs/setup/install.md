@@ -34,7 +34,8 @@ options:
     --docker-registry              docker registry used to pull searchlight images (default: appscode)
     --image-pull-secret            name of secret used to pull searchlight operator images
     --run-on-master                run searchlight operator on master
-    --enable-apiserver     configure admission webhook for searchlight CRDs
+    --enable-admission-webhook     configure admission webhook for searchlight CRDs
+    --uninstall                    uninstall searchlight
 
 # install without RBAC roles
 $ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh \
@@ -74,11 +75,11 @@ $ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.
     | bash -s -- --docker-registry=MY_REGISTRY [--image-pull-secret=SECRET_NAME] [--rbac]
 ```
 
-Searchlight implements a [validating admission webhook](https://kubernetes.io/docs/admin/admission-controllers/#validatingadmissionwebhook-alpha-in-18-beta-in-19) to validate Searchlight CRDs. To enable this feature, pass the `--enable-apiserver` flag. _Please note that, this works with Kubernetes 1.9 or following versions_.
+Searchlight implements a [validating admission webhook](https://kubernetes.io/docs/admin/admission-controllers/#validatingadmissionwebhook-alpha-in-18-beta-in-19) to validate Searchlight CRDs. To enable this feature, pass the `--enable-admission-webhook` flag. _Please note that, this works with Kubernetes 1.9 or following versions_.
 
 ```console
 $ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh \
-    | bash -s -- --enable-apiserver [--rbac]
+    | bash -s -- --enable-admission-webhook [--rbac]
 ```
 
 

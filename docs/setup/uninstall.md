@@ -21,7 +21,8 @@ Please follow the steps below to uninstall Searchlight:
 - Delete the various objects created for Searchlight operator.
 
 ```console
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/uninstall.sh | bash
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh \
+    | bash -s -- --uninstall [--namespace=NAMESPACE]
 
 + kubectl delete deployment -l app=searchlight -n kube-system
 deployment "searchlight-operator" deleted
