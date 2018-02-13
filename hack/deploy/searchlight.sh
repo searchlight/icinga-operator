@@ -49,7 +49,7 @@ export SEARCHLIGHT_IMAGE_PULL_SECRET=
 
 KUBE_APISERVER_VERSION=$(kubectl version -o=json | $ONESSL jsonpath '{.serverVersion.gitVersion}')
 $ONESSL semver --check='>=1.9.0' $KUBE_APISERVER_VERSION
-if [ -eq "$?" 0 ]; then
+if [ $? -eq 0 ]; then
     export SEARCHLIGH_ENABLE_ADMISSION_WEBHOOK=true
 fi
 
@@ -127,10 +127,14 @@ if [ "$SEARCHLIGHT_UNINSTALL" -eq 1 ]; then
     kubectl delete service -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
     kubectl delete secret -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
     kubectl delete apiservice -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
+    kubectl delete validatingwebhookconfiguration -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
+    kubectl delete mutatingwebhookconfiguration -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
     # Delete RBAC objects, if --rbac flag was used.
     kubectl delete serviceaccount -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
     kubectl delete clusterrolebindings -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
     kubectl delete clusterrole -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
+    kubectl delete rolebindings -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
+    kubectl delete role -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
 
     exit 0
 fi

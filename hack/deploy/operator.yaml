@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: searchlight-operator
-  namespace: $SEARCHLIGHT_NAMESPACE
+  namespace: ${SEARCHLIGHT_NAMESPACE}
   labels:
     app: searchlight
 data:
@@ -12,7 +12,7 @@ apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: searchlight-operator
-  namespace: $SEARCHLIGHT_NAMESPACE
+  namespace: ${SEARCHLIGHT_NAMESPACE}
   labels:
     app: searchlight
 spec:
@@ -24,11 +24,11 @@ spec:
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
-      serviceAccountName: $SEARCHLIGHT_SERVICE_ACCOUNT
-      imagePullSecrets: [$SEARCHLIGHT_IMAGE_PULL_SECRET]
+      serviceAccountName: ${SEARCHLIGHT_SERVICE_ACCOUNT}
+      imagePullSecrets: [${SEARCHLIGHT_IMAGE_PULL_SECRET}]
       containers:
       - name: operator
-        image: $SEARCHLIGHT_DOCKER_REGISTRY/searchlight:6.0.0-alpha.0
+        image: ${SEARCHLIGHT_DOCKER_REGISTRY}/searchlight:6.0.0-alpha.0
         imagePullPolicy: IfNotPresent
         args:
         - run
@@ -48,7 +48,7 @@ spec:
         - name: data
           mountPath: /srv
       - name: icinga
-        image: $SEARCHLIGHT_DOCKER_REGISTRY/icinga:6.0.0-alpha.0-k8s
+        image: ${SEARCHLIGHT_DOCKER_REGISTRY}/icinga:6.0.0-alpha.0-k8s
         imagePullPolicy: IfNotPresent
         ports:
         - name: icinga
@@ -71,7 +71,7 @@ spec:
         - name: data
           mountPath: /srv
       - name: ido
-        image: $SEARCHLIGHT_DOCKER_REGISTRY/postgres:9.5-alpine
+        image: ${SEARCHLIGHT_DOCKER_REGISTRY}/postgres:9.5-alpine
         imagePullPolicy: IfNotPresent
         env:
         - name: PGDATA
@@ -91,7 +91,7 @@ spec:
         - --tls-cert-file=/var/serving-cert/tls.crt
         - --tls-private-key-file=/var/serving-cert/tls.key
         - --v=3
-        image: $SEARCHLIGHT_DOCKER_REGISTRY/searchlight:6.0.0-alpha.0
+        image: ${SEARCHLIGHT_DOCKER_REGISTRY}/searchlight:6.0.0-alpha.0
         ports:
         - containerPort: 8443
         volumeMounts:
@@ -118,20 +118,20 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: searchlight-apiserver-cert
-  namespace: $SEARCHLIGHT_NAMESPACE
+  namespace: ${SEARCHLIGHT_NAMESPACE}
   labels:
     app: searchlight
 type: kubernetes.io/tls
 data:
-  tls.crt: $TLS_SERVING_CERT
-  tls.key: $TLS_SERVING_KEY
+  tls.crt: ${TLS_SERVING_CERT}
+  tls.key: ${TLS_SERVING_KEY}
 ---
 # to be able to expose TSB inside the cluster
 apiVersion: v1
 kind: Service
 metadata:
   name: searchlight-operator
-  namespace: $SEARCHLIGHT_NAMESPACE
+  namespace: ${SEARCHLIGHT_NAMESPACE}
   labels:
     app: searchlight
 spec:
@@ -162,11 +162,11 @@ metadata:
   labels:
     app: searchlight
 spec:
-  caBundle: $SERVICE_SERVING_CERT_CA
+  caBundle: ${SERVICE_SERVING_CERT_CA}
   group: admission.monitoring.appscode.com
   groupPriorityMinimum: 1000
   versionPriority: 15
   service:
     name: searchlight-operator
-    namespace: $SEARCHLIGHT_NAMESPACE
+    namespace: ${SEARCHLIGHT_NAMESPACE}
   version: v1alpha1

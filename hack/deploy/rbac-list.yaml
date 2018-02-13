@@ -54,8 +54,8 @@ roleRef:
   name: searchlight-operator
 subjects:
 - kind: ServiceAccount
-  name: $SEARCHLIGHT_SERVICE_ACCOUNT
-  namespace: $SEARCHLIGHT_NAMESPACE
+  name: ${SEARCHLIGHT_SERVICE_ACCOUNT}
+  namespace: ${SEARCHLIGHT_NAMESPACE}
 ---
 # to read the config for terminating authentication
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -63,14 +63,16 @@ kind: RoleBinding
 metadata:
   name: searchlight-apiserver-extension-server-authentication-reader
   namespace: kube-system
+  labels:
+    app: searchlight
 roleRef:
   kind: Role
   apiGroup: rbac.authorization.k8s.io
   name: extension-apiserver-authentication-reader
 subjects:
 - kind: ServiceAccount
-  name: $SEARCHLIGHT_SERVICE_ACCOUNT
-  namespace: $SEARCHLIGHT_NAMESPACE
+  name: ${SEARCHLIGHT_SERVICE_ACCOUNT}
+  namespace: ${SEARCHLIGHT_NAMESPACE}
 ---
 # to delegate authentication and authorization
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -85,5 +87,5 @@ roleRef:
   name: system:auth-delegator
 subjects:
 - kind: ServiceAccount
-  name: $SEARCHLIGHT_SERVICE_ACCOUNT
-  namespace: $SEARCHLIGHT_NAMESPACE
+  name: ${SEARCHLIGHT_SERVICE_ACCOUNT}
+  namespace: ${SEARCHLIGHT_NAMESPACE}
