@@ -5,7 +5,7 @@ import (
 	"os"
 
 	logs "github.com/appscode/go/log/golog"
-	_ "github.com/appscode/searchlight/client/scheme"
+	_ "github.com/appscode/searchlight/client/clientset/versioned/scheme"
 	"github.com/appscode/searchlight/plugins/hyperalert"
 	_ "k8s.io/api/core/v1"
 	_ "k8s.io/client-go/kubernetes/fake"

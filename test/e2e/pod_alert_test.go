@@ -7,7 +7,7 @@ import (
 	"github.com/appscode/go/types"
 	ext_util "github.com/appscode/kutil/extensions/v1beta1"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/client/typed/monitoring/v1alpha1/util"
+	"github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/util"
 	"github.com/appscode/searchlight/test/e2e/framework"
 	. "github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/ginkgo"

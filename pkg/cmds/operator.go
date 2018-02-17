@@ -8,7 +8,7 @@ import (
 	"github.com/appscode/go/log"
 	"github.com/appscode/kutil/meta"
 	"github.com/appscode/pat"
-	cs "github.com/appscode/searchlight/client"
+	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/operator"
 	"github.com/prometheus/client_golang/prometheus/promhttp"

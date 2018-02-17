@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	cs "github.com/appscode/searchlight/client"
+	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
