@@ -19,8 +19,8 @@ limitations under the License.
 package monitoring
 
 import (
-	internalinterfaces "github.com/appscode/searchlight/client/clientset/versioned/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/informers/externalversions/monitoring/v1alpha1"
+	internalinterfaces "github.com/appscode/searchlight/client/informers/externalversions/internalinterfaces"
+	v1alpha1 "github.com/appscode/searchlight/client/informers/externalversions/monitoring/v1alpha1"
 )
 
 // Interface provides access to each of this group's versions.

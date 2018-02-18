@@ -17,7 +17,7 @@ docker run --rm -ti -u $(id -u):$(id -g) \
   -v "$REPO_ROOT":"$DOCKER_REPO_ROOT" \
   -w "$DOCKER_REPO_ROOT" \
   appscode/gengo:release-1.9 "$DOCKER_CODEGEN_PKG"/generate-groups.sh "deepcopy,client,informer,lister" \
-  github.com/appscode/searchlight/client/clientset/versioned \
+  github.com/appscode/searchlight/client \
   github.com/appscode/searchlight/apis \
   monitoring:v1alpha1 \
   --go-header-file "$DOCKER_REPO_ROOT/hack/gengo/boilerplate.go.txt"

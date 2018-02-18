@@ -17,9 +17,9 @@ limitations under the License.
 package fake
 
 import (
-	clientset "github.com/appscode/searchlight/client/clientset/versioned/clientset/versioned"
-	monitoringv1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/clientset/versioned/typed/monitoring/v1alpha1"
-	fakemonitoringv1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/clientset/versioned/typed/monitoring/v1alpha1/fake"
+	clientset "github.com/appscode/searchlight/client/clientset/versioned"
+	monitoringv1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
+	fakemonitoringv1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"

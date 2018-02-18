@@ -23,9 +23,9 @@ import (
 	sync "sync"
 	time "time"
 
-	versioned "github.com/appscode/searchlight/client/clientset/versioned/clientset/versioned"
-	internalinterfaces "github.com/appscode/searchlight/client/clientset/versioned/informers/externalversions/internalinterfaces"
-	monitoring "github.com/appscode/searchlight/client/clientset/versioned/informers/externalversions/monitoring"
+	versioned "github.com/appscode/searchlight/client/clientset/versioned"
+	internalinterfaces "github.com/appscode/searchlight/client/informers/externalversions/internalinterfaces"
+	monitoring "github.com/appscode/searchlight/client/informers/externalversions/monitoring"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"

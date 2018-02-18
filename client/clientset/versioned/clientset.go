@@ -17,7 +17,7 @@ limitations under the License.
 package versioned
 
 import (
-	monitoringv1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/clientset/versioned/typed/monitoring/v1alpha1"
+	monitoringv1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
 	glog "github.com/golang/glog"
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"

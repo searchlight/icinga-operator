@@ -8,10 +8,12 @@ import (
 
 	v "github.com/appscode/go/version"
 	"github.com/appscode/kutil/tools/analytics"
+	"github.com/appscode/searchlight/client/clientset/versioned/scheme"
 	"github.com/jpillora/go-ogle-analytics"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	genericapiserver "k8s.io/apiserver/pkg/server"
+	clientsetscheme "k8s.io/client-go/kubernetes/scheme"
 )
 
 const (
@@ -36,6 +38,7 @@ func NewCmdSearchlight() *cobra.Command {
 					client.Send(ga.NewEvent(parts[0], strings.Join(parts[1:], "/")).Label(v.Version.Version))
 				}
 			}
+			scheme.AddToScheme(clientsetscheme.Scheme)
 		},
 	}
 	rootCmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)

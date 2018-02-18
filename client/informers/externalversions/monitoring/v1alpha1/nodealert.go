@@ -22,9 +22,9 @@ import (
 	time "time"
 
 	monitoring_v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	versioned "github.com/appscode/searchlight/client/clientset/versioned/clientset/versioned"
-	internalinterfaces "github.com/appscode/searchlight/client/clientset/versioned/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/listers/monitoring/v1alpha1"
+	versioned "github.com/appscode/searchlight/client/clientset/versioned"
+	internalinterfaces "github.com/appscode/searchlight/client/informers/externalversions/internalinterfaces"
+	v1alpha1 "github.com/appscode/searchlight/client/listers/monitoring/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	watch "k8s.io/apimachinery/pkg/watch"
