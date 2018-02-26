@@ -31,10 +31,10 @@ rules:
 - apiGroups: [""]
   resources:
   - secrets
-  - componentStatuses
-  - persistentVolumes
-  - persistentVolumeClaims
-  verbs: ["get"]
+  - componentstatuses
+  - persistentvolumes
+  - persistentvolumeclaims
+  verbs: ["get", "list"]
 - apiGroups: [""]
   resources:
   - pods
