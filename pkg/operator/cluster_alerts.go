@@ -78,14 +78,10 @@ func (op *Operator) reconcileClusterAlert(key string) error {
 	}
 
 	if !exists {
+		alert := obj.(*api.ClusterAlert)
 		// Below we will warm up our cache with a ClusterAlert, so that we will see a delete for one d
 		fmt.Printf("ClusterAlert %s does not exist anymore\n", key)
-
-		namespace, name, err := cache.SplitMetaNamespaceKey(key)
-		if err != nil {
-			return err
-		}
-		return op.clusterHost.Delete(namespace, name)
+		return op.EnsureIcingaClusterAlertDeleted(alert)
 	} else {
 		alert := obj.(*api.ClusterAlert)
 		fmt.Printf("Sync/Add/Update for ClusterAlert %s\n", alert.GetName())
@@ -101,40 +97,59 @@ func (op *Operator) reconcileClusterAlert(key string) error {
 			)
 			return err
 		}
-		op.EnsureClusterAlert(nil, alert)
+		return op.EnsureIcingaClusterAlert(alert)
 	}
 	return nil
 }
 
-func (op *Operator) EnsureClusterAlert(old, new *api.ClusterAlert) (err error) {
+func (op *Operator) EnsureIcingaClusterAlert(alert *api.ClusterAlert) (err error) {
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
-				new.ObjectReference(),
+				alert.ObjectReference(),
 				core.EventTypeNormal,
 				eventer.EventReasonSuccessfulSync,
 				`Applied ClusterAlert: "%v"`,
-				new.Name,
+				alert.Name,
 			)
-			return
 		} else {
 			op.recorder.Eventf(
-				new.ObjectReference(),
+				alert.ObjectReference(),
 				core.EventTypeWarning,
 				eventer.EventReasonFailedToSync,
-				`Fail to be apply ClusterAlert: "%v". Reason: %v`,
-				new.Name,
+				`Fail to apply ClusterAlert: "%v". Reason: %v`,
+				alert.Name,
 				err,
 			)
 			log.Errorln(err)
-			return
 		}
 	}()
+	err = op.clusterHost.Create(alert)
+	return
+}
 
-	if old == nil {
-		err = op.clusterHost.Create(*new)
-	} else {
-		err = op.clusterHost.Update(*new)
-	}
+func (op *Operator) EnsureIcingaClusterAlertDeleted(alert *api.ClusterAlert) (err error) {
+	defer func() {
+		if err == nil {
+			op.recorder.Eventf(
+				alert.ObjectReference(),
+				core.EventTypeNormal,
+				eventer.EventReasonSuccessfulDelete,
+				`Deleted ClusterAlert: "%v"`,
+				alert.Name,
+			)
+		} else {
+			op.recorder.Eventf(
+				alert.ObjectReference(),
+				core.EventTypeWarning,
+				eventer.EventReasonFailedToDelete,
+				`Fail to delete ClusterAlert: "%v". Reason: %v`,
+				alert.Name,
+				err,
+			)
+			log.Errorln(err)
+		}
+	}()
+	err = op.clusterHost.Delete(alert)
 	return
 }

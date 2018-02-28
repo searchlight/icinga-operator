@@ -1,8 +1,8 @@
 package icinga
 
 import (
-	"github.com/appscode/go/errors"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"github.com/pkg/errors"
 )
 
 type ClusterHost struct {
@@ -25,38 +25,18 @@ func (h *ClusterHost) getHost(namespace string) IcingaHost {
 	}
 }
 
-func (h *ClusterHost) Create(alert api.ClusterAlert) error {
+func (h *ClusterHost) Create(alert *api.ClusterAlert) error {
 	alertSpec := alert.Spec
 	kh := h.getHost(alert.Namespace)
 
-	if has, err := h.CheckIcingaService(alert.Name, kh); err != nil || has {
-		return err
+	if err := h.EnsureIcingaHost(kh); err != nil {
+		return errors.WithStack(err)
 	}
 
-	if err := h.CreateIcingaHost(kh); err != nil {
-		return errors.FromErr(err).Err()
+	has, err := h.CheckIcingaService(alert.Name, kh)
+	if err != nil {
+		return errors.WithStack(err)
 	}
-
-	attrs := make(map[string]interface{})
-	attrs["check_command"] = alertSpec.Check
-	if alertSpec.CheckInterval.Seconds() > 0 {
-		attrs["check_interval"] = alertSpec.CheckInterval.Seconds()
-	}
-	commandVars := api.ClusterCommands[alertSpec.Check].Vars
-	for key, val := range alertSpec.Vars {
-		if _, found := commandVars[key]; found {
-			attrs[IVar(key)] = val
-		}
-	}
-	if err := h.CreateIcingaService(alert.Name, kh, attrs); err != nil {
-		return errors.FromErr(err).Err()
-	}
-	return h.CreateIcingaNotification(alert, kh)
-}
-
-func (h *ClusterHost) Update(alert api.ClusterAlert) error {
-	alertSpec := alert.Spec
-	kh := h.getHost(alert.Namespace)
 
 	attrs := make(map[string]interface{})
 	if alertSpec.CheckInterval.Seconds() > 0 {
@@ -68,17 +48,25 @@ func (h *ClusterHost) Update(alert api.ClusterAlert) error {
 			attrs[IVar(key)] = val
 		}
 	}
-	if err := h.UpdateIcingaService(alert.Name, kh, attrs); err != nil {
-		return errors.FromErr(err).Err()
+
+	if !has {
+		attrs["check_command"] = alertSpec.Check
+		if err := h.CreateIcingaService(alert.Name, kh, attrs); err != nil {
+			return errors.WithStack(err)
+		}
+	} else {
+		if err := h.UpdateIcingaService(alert.Name, kh, attrs); err != nil {
+			return errors.WithStack(err)
+		}
 	}
 
-	return h.UpdateIcingaNotification(alert, kh)
+	return h.EnsureIcingaNotification(alert, kh)
 }
 
-func (h *ClusterHost) Delete(namespace, name string) error {
-	kh := h.getHost(namespace)
-	if err := h.DeleteIcingaService(name, kh); err != nil {
-		return errors.FromErr(err).Err()
+func (h *ClusterHost) Delete(alert *api.ClusterAlert) error {
+	kh := h.getHost(alert.Namespace)
+	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
+		return errors.WithStack(err)
 	}
 	return h.DeleteIcingaHost(kh)
 }

@@ -1,11 +1,12 @@
 package operator
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/appscode/go/log"
+	core_util "github.com/appscode/kutil/core/v1"
 	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/eventer"
@@ -13,23 +14,73 @@ import (
 	"github.com/golang/glog"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	rt "k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/util/runtime"
-	"k8s.io/apimachinery/pkg/util/wait"
-	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/tools/cache"
 )
 
 func (op *Operator) initNodeWatcher() {
 	op.nInformer = op.kubeInformerFactory.Core().V1().Nodes().Informer()
 	op.nQueue = queue.New("Node", op.options.MaxNumRequeues, op.options.NumThreads, op.runNodeInjector)
-	op.nInformer.AddEventHandler(queue.DefaultEventHandler(op.nQueue.GetQueue()))
+	op.nInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
+		AddFunc: func(obj interface{}) {
+			queue.Enqueue(op.nQueue.GetQueue(), obj)
+		},
+		UpdateFunc: func(old interface{}, new interface{}) {
+			oldNode, ok := old.(*core.Node)
+			if !ok {
+				log.Errorln("invalid Node object")
+				return
+			}
+			newNode, ok := new.(*core.Node)
+			if !ok {
+				log.Errorln("invalid Node object")
+				return
+			}
+			if !reflect.DeepEqual(oldNode.Labels, newNode.Labels) {
+				queue.Enqueue(op.naQueue.GetQueue(), new)
+			}
+		},
+		DeleteFunc: func(obj interface{}) {
+			queue.Enqueue(op.nQueue.GetQueue(), obj)
+		},
+	})
 	op.nLister = op.kubeInformerFactory.Core().V1().Nodes().Lister()
 }
 
 // syncToStdout is the business logic of the controller. In this controller it simply prints
 // information about the deployment to stdout. In case an error happened, it has to simply return the error.
 // The retry logic should not be part of the business logic.
+func (op *Operator) reconcileNode(key string) error {
+	obj, exists, err := op.nInformer.GetIndexer().GetByKey(key)
+	if err != nil {
+		glog.Errorf("Fetching object with key %s from store failed with %v", key, err)
+		return err
+	}
+
+	if !exists {
+		node := obj.(*core.Node)
+		// Below we will warm up our cache with a NodeAlert, so that we will see a delete for one d
+		fmt.Printf("NodeAlert %s does not exist anymore\n", key)
+		op.EnsureNodeDeleted(node)
+	} else {
+		alert := obj.(*api.NodeAlert)
+		fmt.Printf("Sync/Add/Update for NodeAlert %s\n", alert.GetName())
+
+		if err := util.CheckNotifiers(op.KubeClient, alert); err != nil {
+			op.recorder.Eventf(
+				alert.ObjectReference(),
+				core.EventTypeWarning,
+				eventer.EventReasonBadNotifier,
+				`Bad notifier config for NodeAlert: "%v". Reason: %v`,
+				alert.Name,
+				err,
+			)
+			return err
+		}
+		op.EnsureNodeAlert(alert)
+	}
+	return nil
+}
+
 func (op *Operator) runNodeInjector(key string) error {
 	obj, exists, err := op.nInformer.GetIndexer().GetByKey(key)
 	if err != nil {
@@ -38,188 +89,97 @@ func (op *Operator) runNodeInjector(key string) error {
 	}
 
 	if !exists {
+		node := obj.(*core.Node)
 		// Below we will warm up our cache with a Node, so that we will see a delete for one d
 		fmt.Printf("Node %s does not exist anymore\n", key)
+		op.EnsureNodeDeleted(node)
 	} else {
-		pod := obj.(*core.Node)
-		fmt.Printf("Sync/Add/Update for Node %s\n", pod.GetName())
-
+		node := obj.(*core.Node)
+		fmt.Printf("Sync/Add/Update for Node %s\n", node.GetName())
+		op.EnsureNode(node)
 	}
 	return nil
 }
 
-// Blocks caller. Intended to be called as a Go routine.
-func (op *Operator) WatchNodes() {
-	defer runtime.HandleCrash()
+func (op *Operator) EnsureNode(node *core.Node) error {
+	fmt.Printf("Sync/Add/Update for Node %s\n", node.GetName())
 
-	lw := &cache.ListWatch{
-		ListFunc: func(opts metav1.ListOptions) (rt.Object, error) {
-			return op.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{})
-		},
-		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-			return op.KubeClient.CoreV1().Nodes().Watch(metav1.ListOptions{})
-		},
+	oldAlerts := make([]*api.NodeAlert, 0)
+	if names, ok := node.Annotations[annotationAlertsName]; ok {
+		list := strings.Split(names, ",")
+		for _, l := range list {
+			oldAlerts = append(oldAlerts, &api.NodeAlert{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      strings.Trim(l, " "),
+					Namespace: node.Namespace,
+				},
+			})
+		}
 	}
-	_, ctrl := cache.NewInformer(lw,
-		&core.Node{},
-		op.options.ResyncPeriod,
-		cache.ResourceEventHandlerFuncs{
-			AddFunc: func(obj interface{}) {
-				if resource, ok := obj.(*core.Node); ok {
-					log.Infof("Node %s@%s added", resource.Name, resource.Namespace)
 
-					alerts, err := util.FindNodeAlert(op.ExtClient, resource.ObjectMeta)
-					if err != nil {
-						log.Errorf("Error while searching NodeAlert for Node %s@%s.", resource.Name, resource.Namespace)
-						return
-					}
-					if len(alerts) == 0 {
-						log.Errorf("No NodeAlert found for Node %s@%s.", resource.Name, resource.Namespace)
-						return
-					}
-					for i := range alerts {
-						err = op.EnsureNode(resource, nil, alerts[i])
-						if err != nil {
-							log.Errorf("Failed to add icinga2 alert for Node %s@%s.", resource.Name, resource.Namespace)
-							// return
-						}
-					}
-				}
-			},
-			UpdateFunc: func(old, new interface{}) {
-				oldNode, ok := old.(*core.Node)
-				if !ok {
-					log.Errorln(errors.New("invalid Node object"))
-					return
-				}
-				newNode, ok := new.(*core.Node)
-				if !ok {
-					log.Errorln(errors.New("invalid Node object"))
-					return
-				}
-				if !reflect.DeepEqual(oldNode.Labels, newNode.Labels) {
-					oldAlerts, err := util.FindNodeAlert(op.ExtClient, oldNode.ObjectMeta)
-					if err != nil {
-						log.Errorf("Error while searching NodeAlert for Node %s@%s.", oldNode.Name, oldNode.Namespace)
-						return
-					}
-					newAlerts, err := util.FindNodeAlert(op.ExtClient, newNode.ObjectMeta)
-					if err != nil {
-						log.Errorf("Error while searching NodeAlert for Node %s@%s.", newNode.Name, newNode.Namespace)
-						return
-					}
+	newAlerts, err := util.FindNodeAlert(op.ExtClient, node.ObjectMeta)
+	if err != nil {
+		return err
+	}
 
-					type change struct {
-						old *api.NodeAlert
-						new *api.NodeAlert
-					}
-					diff := make(map[string]*change)
-					for i := range oldAlerts {
-						diff[oldAlerts[i].Name] = &change{old: oldAlerts[i]}
-					}
-					for i := range newAlerts {
-						if ch, ok := diff[newAlerts[i].Name]; ok {
-							ch.new = newAlerts[i]
-						} else {
-							diff[newAlerts[i].Name] = &change{new: newAlerts[i]}
-						}
-					}
-					for alert := range diff {
-						ch := diff[alert]
-						if ch.old == nil && ch.new != nil {
-							go op.EnsureNode(newNode, nil, ch.new)
-						} else if ch.old != nil && ch.new == nil {
-							go op.EnsureNodeDeleted(newNode, ch.old)
-						} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
-							go op.EnsureNode(newNode, ch.old, ch.new)
-						}
-					}
-				}
-			},
-			DeleteFunc: func(obj interface{}) {
-				if resource, ok := obj.(*core.Node); ok {
-					log.Infof("Node %s@%s deleted", resource.Name, resource.Namespace)
+	type change struct {
+		old *api.NodeAlert
+		new *api.NodeAlert
+	}
+	diff := make(map[string]*change)
+	for i := range oldAlerts {
+		diff[oldAlerts[i].Name] = &change{old: oldAlerts[i]}
+	}
 
-					alerts, err := util.FindNodeAlert(op.ExtClient, resource.ObjectMeta)
-					if err != nil {
-						log.Errorf("Error while searching NodeAlert for Node %s@%s.", resource.Name, resource.Namespace)
-						return
-					}
-					if len(alerts) == 0 {
-						log.Errorf("No NodeAlert found for Node %s@%s.", resource.Name, resource.Namespace)
-						return
-					}
-					for i := range alerts {
-						err = op.EnsureNodeDeleted(resource, alerts[i])
-						if err != nil {
-							log.Errorf("Failed to delete icinga2 alert for Node %s@%s.", resource.Name, resource.Namespace)
-							// return
-						}
-					}
-				}
-			},
-		},
-	)
-	ctrl.Run(wait.NeverStop)
+	newAlertNameList := make([]string, 0)
+
+	for i := range newAlerts {
+		newAlertNameList = append(newAlertNameList, newAlerts[i].Name)
+		if ch, ok := diff[newAlerts[i].Name]; ok {
+			ch.new = newAlerts[i]
+		} else {
+			diff[newAlerts[i].Name] = &change{new: newAlerts[i]}
+		}
+	}
+
+	for alert := range diff {
+		ch := diff[alert]
+		if ch.old == nil && ch.new != nil {
+			go op.EnsureIcingaNodeAlert(ch.new, node)
+		} else if ch.old != nil && ch.new == nil {
+			go op.EnsureIcingaNodeAlertDeleted(ch.old, node)
+		} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
+			go op.EnsureIcingaNodeAlert(ch.new, node)
+		}
+	}
+
+	_, vr, err := core_util.PatchNode(op.KubeClient, node, func(in *core.Node) *core.Node {
+		if in.Annotations == nil {
+			in.Annotations = make(map[string]string, 0)
+		}
+		in.Annotations[annotationAlertsName] = strings.Join(newAlertNameList, ", ")
+		return in
+	})
+	if err != nil {
+		log.Errorf("Failed to %v Node %s", vr, node.Name)
+	}
+
+	return nil
 }
 
-func (op *Operator) EnsureNode(node *core.Node, old, new *api.NodeAlert) (err error) {
-	defer func() {
-		if err == nil {
-			op.recorder.Eventf(
-				new.ObjectReference(),
-				core.EventTypeNormal,
-				eventer.EventReasonSuccessfulSync,
-				`Applied NodeAlert: "%v"`,
-				new.Name,
-			)
-			return
-		} else {
-			op.recorder.Eventf(
-				new.ObjectReference(),
-				core.EventTypeWarning,
-				eventer.EventReasonFailedToSync,
-				`Fail to be apply NodeAlert: "%v". Reason: %v`,
-				new.Name,
-				err,
-			)
-			log.Errorln(err)
-			return
-		}
-	}()
-
-	if old == nil {
-		err = op.nodeHost.Create(*new, *node)
-	} else {
-		err = op.nodeHost.Update(*new, *node)
+func (op *Operator) EnsureNodeDeleted(node *core.Node) error {
+	alerts, err := util.FindNodeAlert(op.ExtClient, node.ObjectMeta)
+	if err != nil {
+		log.Errorf("Error while searching NodeAlert for Node %s@%s.", node.Name, node.Namespace)
+		return err
 	}
-	return
-}
+	if len(alerts) == 0 {
+		log.Errorf("No NodeAlert found for Node %s@%s.", node.Name, node.Namespace)
+		return err
+	}
+	for _, alert := range alerts {
+		go op.EnsureIcingaNodeAlertDeleted(alert, node)
+	}
 
-func (op *Operator) EnsureNodeDeleted(node *core.Node, alert *api.NodeAlert) (err error) {
-	defer func() {
-		if err == nil {
-			op.recorder.Eventf(
-				alert.ObjectReference(),
-				core.EventTypeNormal,
-				eventer.EventReasonSuccessfulDelete,
-				`Deleted NodeAlert: "%v"`,
-				alert.Name,
-			)
-			return
-		} else {
-			op.recorder.Eventf(
-				alert.ObjectReference(),
-				core.EventTypeWarning,
-				eventer.EventReasonFailedToDelete,
-				`Fail to be delete NodeAlert: "%v". Reason: %v`,
-				alert.Name,
-				err,
-			)
-			log.Errorln(err)
-			return
-		}
-	}()
-	err = op.nodeHost.Delete(alert.Namespace, alert.Name, *node)
-	return
+	return nil
 }

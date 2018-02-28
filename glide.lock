@@ -1,17 +1,16 @@
-hash: 2d36315b0e0f249810c86f4b17bb9c4227b6a35ebe49f203799e45900f7b922c
-updated: 2018-02-13T14:41:56.270378313-08:00
+hash: a8bc0d8f14890b52ab7be873ce9ac53c6f0c36577f45c10927bd6a449734e243
+updated: 2018-02-28T12:55:30.550663846+06:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
 - name: github.com/appscode/envconfig
   version: 183bbe643a2875eaa69c85627ac6b25813983203
 - name: github.com/appscode/go
-  version: 1be9b0441d73831aaa93df76e42a751caa5dba88
+  version: 83e7fc1967ed737eedfc87da60c42e9fc4dc684c
   subpackages:
   - analytics
   - context
   - crypto/rand
-  - errors
   - flags
   - homedir
   - log
@@ -35,7 +34,7 @@ imports:
   - unified
   - webhook
 - name: github.com/appscode/kutil
-  version: 579ddb8cc946c9e5f09d59863a3c5fe27cdc56f5
+  version: 6a5c108367b50c78b783e51490f015d03ce62259
   subpackages:
   - apiextensions/v1beta1
   - core/v1
@@ -129,10 +128,8 @@ imports:
   version: dcef7f55730566d41eae5db10e7d6981829720f6
 - name: github.com/evanphx/json-patch
   version: 944e07253867aacae43c04b2e6a239005443f33a
-- name: github.com/facebookgo/stack
-  version: 751773369052141c013c6e827a71e8f35c07879c
 - name: github.com/ghodss/yaml
-  version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
+  version: 0ca9ea5df5451ffdf184b4428c902747c2c11cd7
 - name: github.com/go-macaron/auth
   version: 884c0e6c9b92ceebf12101d6cf1417fe0f61bcac
 - name: github.com/go-macaron/inject
@@ -204,7 +201,7 @@ imports:
   - compiler
   - extensions
 - name: github.com/gorilla/websocket
-  version: ea4d1f681babbce9545c9c5f3d5194a789c89f5b
+  version: 6eb6ad425a89d9da7a5549bc6da8f79ba5c17844
 - name: github.com/gregjones/httpcache
   version: 787624de3eb7bd915c329cba748687a3b22666a6
   subpackages:
@@ -218,7 +215,7 @@ imports:
   - runtime/internal
   - utilities
 - name: github.com/hashicorp/go-version
-  version: 53932f80ddea12bea96be074f9fb2dc545806aba
+  version: 40efc0a21ca93e3bfbddefd4b5309a3e79d0aeb7
   repo: https://github.com/appscode/go-version.git
   vcs: git
 - name: github.com/hashicorp/golang-lru
@@ -238,7 +235,7 @@ imports:
   - models
   - pkg/escape
 - name: github.com/jaytaylor/html2text
-  version: e76a2f8aa970543f8f3dcadaa2223682ef582086
+  version: 190166da35878a77103b951ae035a473531c1fc2
 - name: github.com/jmoiron/sqlx
   version: 398dd5876282499cdfd4cb8ea0f31a672abe9495
   repo: https://github.com/jmoiron/sqlx
@@ -274,7 +271,7 @@ imports:
   subpackages:
   - flowrate
 - name: github.com/nlopes/slack
-  version: 8ab4d0b364ef1e9af5d102531da20d5ec902b6c4
+  version: 1217b9d3e4304348a9be15c2afd80ad4691f31e5
 - name: github.com/NYTimes/gziphandler
   version: 56545f4a5d46df9a6648819d1664c3a03a13ffdb
 - name: github.com/olekukonko/tablewriter
@@ -298,7 +295,7 @@ imports:
 - name: github.com/peterbourgon/diskv
   version: 5f041e8faa004a95c88a202771f4cc3e991971e6
 - name: github.com/pkg/errors
-  version: 645ef00459ed84a119197bfb8d8205042c6df63d
+  version: f15c970de5b76fac0b59abb32d62c17cc7bed265
 - name: github.com/prometheus/client_golang
   version: c5b7fccd204277076155f10851dad72b76a49317
   subpackages:
@@ -344,7 +341,7 @@ imports:
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/spf13/cobra
-  version: be77323fc05148ef091e83b3866c0d47c8e74a8b
+  version: 6644d46b81fa1831979c4cded0106e774e0ef0ab
   subpackages:
   - doc
 - name: github.com/spf13/pflag
@@ -482,7 +479,7 @@ imports:
   - policy/v1beta1
   - rbac/v1
   - rbac/v1alpha1
-  - rbac/v1
+  - rbac/v1beta1
   - scheduling/v1alpha1
   - settings/v1alpha1
   - storage/v1
@@ -679,7 +676,7 @@ imports:
   - informers/rbac
   - informers/rbac/v1
   - informers/rbac/v1alpha1
-  - informers/rbac/v1
+  - informers/rbac/v1beta1
   - informers/scheduling
   - informers/scheduling/v1alpha1
   - informers/settings
@@ -735,8 +732,8 @@ imports:
   - kubernetes/typed/rbac/v1/fake
   - kubernetes/typed/rbac/v1alpha1
   - kubernetes/typed/rbac/v1alpha1/fake
-  - kubernetes/typed/rbac/v1
-  - kubernetes/typed/rbac/v1/fake
+  - kubernetes/typed/rbac/v1beta1
+  - kubernetes/typed/rbac/v1beta1/fake
   - kubernetes/typed/scheduling/v1alpha1
   - kubernetes/typed/scheduling/v1alpha1/fake
   - kubernetes/typed/settings/v1alpha1
@@ -765,7 +762,7 @@ imports:
   - listers/policy/v1beta1
   - listers/rbac/v1
   - listers/rbac/v1alpha1
-  - listers/rbac/v1
+  - listers/rbac/v1beta1
   - listers/scheduling/v1alpha1
   - listers/settings/v1alpha1
   - listers/storage/v1

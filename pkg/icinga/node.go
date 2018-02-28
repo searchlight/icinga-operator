@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"text/template"
 
-	"github.com/appscode/go/errors"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"github.com/pkg/errors"
 	core "k8s.io/api/core/v1"
 )
 
@@ -23,7 +23,7 @@ func NewNodeHost(IcingaClient *Client) *NodeHost {
 	}
 }
 
-func (h *NodeHost) getHost(namespace string, node core.Node) IcingaHost {
+func (h *NodeHost) getHost(namespace string, node *core.Node) IcingaHost {
 	nodeIP := "127.0.0.1"
 	for _, ip := range node.Status.Addresses {
 		if ip.Type == internalIP {
@@ -62,63 +62,53 @@ func (h *NodeHost) expandVars(alertSpec api.NodeAlertSpec, kh IcingaHost, attrs 
 				attrs[IVar(key)] = val
 			}
 		} else {
-			return errors.Newf("variable %v not found", key).Err()
+			return errors.Errorf("variable %v not found", key)
 		}
 	}
 	return nil
 }
 
 // set Alert in Icinga LocalHost
-func (h *NodeHost) Create(alert api.NodeAlert, node core.Node) error {
+func (h *NodeHost) Create(alert *api.NodeAlert, node *core.Node) error {
 	alertSpec := alert.Spec
 	kh := h.getHost(alert.Namespace, node)
 
-	if has, err := h.CheckIcingaService(alert.Name, kh); err != nil || has {
-		return err
+	if err := h.EnsureIcingaHost(kh); err != nil {
+		return errors.WithStack(err)
 	}
 
-	if err := h.CreateIcingaHost(kh); err != nil {
-		return errors.FromErr(err).Err()
+	has, err := h.CheckIcingaService(alert.Name, kh)
+	if err != nil {
+		return errors.WithStack(err)
 	}
-
-	attrs := make(map[string]interface{})
-	attrs["check_command"] = alertSpec.Check
-	if alertSpec.CheckInterval.Seconds() > 0 {
-		attrs["check_interval"] = alertSpec.CheckInterval.Seconds()
-	}
-	if err := h.expandVars(alertSpec, kh, attrs); err != nil {
-		return err
-	}
-	if err := h.CreateIcingaService(alert.Name, kh, attrs); err != nil {
-		return errors.FromErr(err).Err()
-	}
-
-	return h.CreateIcingaNotification(alert, kh)
-}
-
-func (h *NodeHost) Update(alert api.NodeAlert, node core.Node) error {
-	alertSpec := alert.Spec
-	kh := h.getHost(alert.Namespace, node)
 
 	attrs := make(map[string]interface{})
 	if alertSpec.CheckInterval.Seconds() > 0 {
 		attrs["check_interval"] = alertSpec.CheckInterval.Seconds()
 	}
 	if err := h.expandVars(alertSpec, kh, attrs); err != nil {
-		return err
-	}
-	if err := h.UpdateIcingaService(alert.Name, kh, attrs); err != nil {
-		return errors.FromErr(err).Err()
+		return errors.WithStack(err)
 	}
 
-	return h.UpdateIcingaNotification(alert, kh)
+	if !has {
+		attrs["check_command"] = alertSpec.Check
+		if err := h.CreateIcingaService(alert.Name, kh, attrs); err != nil {
+			return errors.WithStack(err)
+		}
+	} else {
+		if err := h.UpdateIcingaService(alert.Name, kh, attrs); err != nil {
+			return errors.WithStack(err)
+		}
+	}
+
+	return h.EnsureIcingaNotification(alert, kh)
 }
 
-func (h *NodeHost) Delete(namespace, name string, node core.Node) error {
-	kh := h.getHost(namespace, node)
+func (h *NodeHost) Delete(alert *api.NodeAlert, node *core.Node) error {
+	kh := h.getHost(alert.Namespace, node)
 
-	if err := h.DeleteIcingaService(name, kh); err != nil {
-		return errors.FromErr(err).Err()
+	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
+		return errors.WithStack(err)
 	}
 	return h.DeleteIcingaHost(kh)
 }

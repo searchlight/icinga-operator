@@ -7,6 +7,7 @@ import (
 
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
+	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -34,7 +35,7 @@ func (kh IcingaHost) Name() (string, error) {
 	case TypeCluster:
 		return kh.AlertNamespace + "@" + kh.Type, nil
 	}
-	return "", fmt.Errorf("unknown host type %s", kh.Type)
+	return "", errors.Errorf("unknown host type %s", kh.Type)
 }
 
 func (kh IcingaHost) GetAlert(extClient cs.Interface, alertName string) (api.Alert, error) {
@@ -46,19 +47,19 @@ func (kh IcingaHost) GetAlert(extClient cs.Interface, alertName string) (api.Ale
 	case TypeCluster:
 		return extClient.MonitoringV1alpha1().ClusterAlerts(kh.AlertNamespace).Get(alertName, metav1.GetOptions{})
 	}
-	return nil, fmt.Errorf("unknown host type %s", kh.Type)
+	return nil, errors.Errorf("unknown host type %s", kh.Type)
 }
 
 func ParseHost(name string) (*IcingaHost, error) {
 	parts := strings.SplitN(name, "@", 3)
 	if !(len(parts) == 2 || len(parts) == 3) {
-		return nil, fmt.Errorf("host %s has a bad format", name)
+		return nil, errors.Errorf("host %s has a bad format", name)
 	}
 	t := parts[1]
 	switch t {
 	case TypePod, TypeNode:
 		if len(parts) != 3 {
-			return nil, fmt.Errorf("host %s has a bad format", name)
+			return nil, errors.Errorf("host %s has a bad format", name)
 		}
 		return &IcingaHost{
 			AlertNamespace: parts[0],
@@ -67,14 +68,14 @@ func ParseHost(name string) (*IcingaHost, error) {
 		}, nil
 	case TypeCluster:
 		if len(parts) != 2 {
-			return nil, fmt.Errorf("host %s has a bad format", name)
+			return nil, errors.Errorf("host %s has a bad format", name)
 		}
 		return &IcingaHost{
 			AlertNamespace: parts[0],
 			Type:           t,
 		}, nil
 	}
-	return nil, fmt.Errorf("unknown host type %s", t)
+	return nil, errors.Errorf("unknown host type %s", t)
 }
 
 type IcingaObject struct {
