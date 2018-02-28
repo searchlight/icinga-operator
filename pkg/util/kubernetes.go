@@ -3,7 +3,7 @@ package util
 import (
 	"github.com/appscode/go-notify/unified"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	cs "github.com/appscode/searchlight/client/clientset/versioned"
+	slite_listers "github.com/appscode/searchlight/client/listers/monitoring/v1alpha1"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -32,8 +32,8 @@ func CheckNotifiers(client kubernetes.Interface, alert api.Alert) error {
 	return nil
 }
 
-func FindPodAlert(client cs.Interface, obj metav1.ObjectMeta) ([]*api.PodAlert, error) {
-	alerts, err := client.MonitoringV1alpha1().PodAlerts(obj.Namespace).List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
+func FindPodAlert(pa slite_listers.PodAlertLister, obj metav1.ObjectMeta) ([]*api.PodAlert, error) {
+	alerts, err := pa.PodAlerts(obj.Namespace).List(labels.Everything())
 	if kerr.IsNotFound(err) {
 		return nil, nil
 	} else if err != nil {
@@ -41,7 +41,7 @@ func FindPodAlert(client cs.Interface, obj metav1.ObjectMeta) ([]*api.PodAlert, 
 	}
 
 	result := make([]*api.PodAlert, 0)
-	for i, alert := range alerts.Items {
+	for i, alert := range alerts {
 		if ok, _ := alert.IsValid(); !ok {
 			continue
 		}
@@ -50,15 +50,15 @@ func FindPodAlert(client cs.Interface, obj metav1.ObjectMeta) ([]*api.PodAlert, 
 		}
 		if selector, err := metav1.LabelSelectorAsSelector(&alert.Spec.Selector); err == nil {
 			if selector.Matches(labels.Set(obj.Labels)) {
-				result = append(result, &alerts.Items[i])
+				result = append(result, alerts[i])
 			}
 		}
 	}
 	return result, nil
 }
 
-func FindNodeAlert(client cs.Interface, obj metav1.ObjectMeta) ([]*api.NodeAlert, error) {
-	alerts, err := client.MonitoringV1alpha1().NodeAlerts(obj.Namespace).List(metav1.ListOptions{LabelSelector: labels.Everything().String()})
+func FindNodeAlert(na slite_listers.NodeAlertLister, obj metav1.ObjectMeta) ([]*api.NodeAlert, error) {
+	alerts, err := na.NodeAlerts(obj.Namespace).List(labels.Everything())
 	if kerr.IsNotFound(err) {
 		return nil, nil
 	} else if err != nil {
@@ -66,7 +66,7 @@ func FindNodeAlert(client cs.Interface, obj metav1.ObjectMeta) ([]*api.NodeAlert
 	}
 
 	result := make([]*api.NodeAlert, 0)
-	for i, alert := range alerts.Items {
+	for i, alert := range alerts {
 		if ok, _ := alert.IsValid(); !ok {
 			continue
 		}
@@ -75,7 +75,7 @@ func FindNodeAlert(client cs.Interface, obj metav1.ObjectMeta) ([]*api.NodeAlert
 		}
 		selector := labels.SelectorFromSet(alert.Spec.Selector)
 		if selector.Matches(labels.Set(obj.Labels)) {
-			result = append(result, &alerts.Items[i])
+			result = append(result, alerts[i])
 		}
 	}
 	return result, nil

@@ -35,7 +35,7 @@ func (h *commonHost) EnsureIcingaHost(kh IcingaHost) error {
 
 	resp = h.IcingaClient.Objects().Hosts(host).Create([]string{}, string(jsonStr)).Do()
 	if resp.Err != nil {
-		return errors.WithStack(resp.Err)
+		return errors.Wrap(resp.Err, string(resp.ResponseBody))
 	}
 	if resp.Status != 200 {
 		return errors.Errorf("Can't create Icinga host: %d", resp.Status)

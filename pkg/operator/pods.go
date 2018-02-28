@@ -18,7 +18,7 @@ import (
 
 func (op *Operator) initPodWatcher() {
 	op.pInformer = op.kubeInformerFactory.Core().V1().Pods().Informer()
-	op.pQueue = queue.New("Pod", op.options.MaxNumRequeues, op.options.NumThreads, op.runNodeInjector)
+	op.pQueue = queue.New("Pod", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcilePod)
 	op.pInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			if pod, ok := obj.(*core.Pod); ok {
@@ -41,11 +41,11 @@ func (op *Operator) initPodWatcher() {
 				return
 			}
 			if !reflect.DeepEqual(oldPod.Labels, newPod.Labels) || oldPod.Status.PodIP != newPod.Status.PodIP {
-				queue.Enqueue(op.naQueue.GetQueue(), new)
+				queue.Enqueue(op.pQueue.GetQueue(), new)
 			}
 		},
 		DeleteFunc: func(obj interface{}) {
-			queue.Enqueue(op.nQueue.GetQueue(), obj)
+			queue.Enqueue(op.pQueue.GetQueue(), obj)
 		},
 	})
 	op.pLister = op.kubeInformerFactory.Core().V1().Pods().Lister()
@@ -65,17 +65,15 @@ func (op *Operator) reconcilePod(key string) error {
 		pod := obj.(*core.Pod)
 		// Below we will warm up our cache with a Pod, so that we will see a delete for one d
 		fmt.Printf("Pod %s does not exist anymore\n", key)
-		err := op.EnsurePodDeleted(pod)
-		if err != nil {
+
+		if err := op.EnsurePodDeleted(pod); err != nil {
 			log.Errorf("Failed to delete alert for Pod %s@%s", pod.Name, pod.Namespace)
 		}
 	} else {
 		pod := obj.(*core.Pod)
-		err := op.EnsurePod(pod)
-		if err != nil {
+		if err := op.EnsurePod(pod); err != nil {
 			log.Errorf("Failed to patch alert for Pod %s@%s", pod.Name, pod.Namespace)
 		}
-
 	}
 	return nil
 }
@@ -96,7 +94,7 @@ func (op *Operator) EnsurePod(pod *core.Pod) error {
 		}
 	}
 
-	newAlerts, err := util.FindPodAlert(op.ExtClient, pod.ObjectMeta)
+	newAlerts, err := util.FindPodAlert(op.paLister, pod.ObjectMeta)
 	if err != nil {
 		return err
 	}
@@ -147,7 +145,7 @@ func (op *Operator) EnsurePod(pod *core.Pod) error {
 }
 
 func (op *Operator) EnsurePodDeleted(pod *core.Pod) error {
-	alerts, err := util.FindPodAlert(op.ExtClient, pod.ObjectMeta)
+	alerts, err := util.FindPodAlert(op.paLister, pod.ObjectMeta)
 	if err != nil {
 		log.Errorf("Error while searching PodAlert for Pod %s@%s.", pod.Name, pod.Namespace)
 		return err
@@ -157,10 +155,7 @@ func (op *Operator) EnsurePodDeleted(pod *core.Pod) error {
 		return err
 	}
 	for i := range alerts {
-		err = op.EnsureIcingaPodAlertDeleted(pod, alerts[i])
-		if err != nil {
-			log.Errorf("Failed to delete icinga2 alert for Pod %s@%s.", pod.Name, pod.Namespace)
-		}
+		op.EnsureIcingaPodAlertDeleted(pod, alerts[i])
 	}
 
 	return nil

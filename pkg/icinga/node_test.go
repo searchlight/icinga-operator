@@ -11,7 +11,7 @@ import (
 
 func TestSetParameterizedNodeVariables(t *testing.T) {
 	alertSpec := api.PodAlertSpec{
-		Vars: map[string]interface{}{
+		Vars: map[string]string{
 			"A": `Fake Query for nodename   =  '?'`,
 			"B": `Fake Query for nodename='?'`,
 		},

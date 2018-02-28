@@ -9,7 +9,6 @@ import (
 	core_util "github.com/appscode/kutil/core/v1"
 	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/util"
 	"github.com/golang/glog"
 	core "k8s.io/api/core/v1"
@@ -19,7 +18,7 @@ import (
 
 func (op *Operator) initNodeWatcher() {
 	op.nInformer = op.kubeInformerFactory.Core().V1().Nodes().Informer()
-	op.nQueue = queue.New("Node", op.options.MaxNumRequeues, op.options.NumThreads, op.runNodeInjector)
+	op.nQueue = queue.New("Node", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcileNode)
 	op.nInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			queue.Enqueue(op.nQueue.GetQueue(), obj)
@@ -36,7 +35,7 @@ func (op *Operator) initNodeWatcher() {
 				return
 			}
 			if !reflect.DeepEqual(oldNode.Labels, newNode.Labels) {
-				queue.Enqueue(op.naQueue.GetQueue(), new)
+				queue.Enqueue(op.nQueue.GetQueue(), new)
 			}
 		},
 		DeleteFunc: func(obj interface{}) {
@@ -58,45 +57,18 @@ func (op *Operator) reconcileNode(key string) error {
 
 	if !exists {
 		node := obj.(*core.Node)
-		// Below we will warm up our cache with a NodeAlert, so that we will see a delete for one d
-		fmt.Printf("NodeAlert %s does not exist anymore\n", key)
-		op.EnsureNodeDeleted(node)
-	} else {
-		alert := obj.(*api.NodeAlert)
-		fmt.Printf("Sync/Add/Update for NodeAlert %s\n", alert.GetName())
-
-		if err := util.CheckNotifiers(op.KubeClient, alert); err != nil {
-			op.recorder.Eventf(
-				alert.ObjectReference(),
-				core.EventTypeWarning,
-				eventer.EventReasonBadNotifier,
-				`Bad notifier config for NodeAlert: "%v". Reason: %v`,
-				alert.Name,
-				err,
-			)
-			return err
-		}
-		op.EnsureNodeAlert(alert)
-	}
-	return nil
-}
-
-func (op *Operator) runNodeInjector(key string) error {
-	obj, exists, err := op.nInformer.GetIndexer().GetByKey(key)
-	if err != nil {
-		glog.Errorf("Fetching object with key %s from store failed with %v", key, err)
-		return err
-	}
-
-	if !exists {
-		node := obj.(*core.Node)
 		// Below we will warm up our cache with a Node, so that we will see a delete for one d
 		fmt.Printf("Node %s does not exist anymore\n", key)
-		op.EnsureNodeDeleted(node)
+
+		if err := op.EnsureNodeDeleted(node); err != nil {
+			log.Errorf("Failed to delete alert for Node %s@%s", node.Name, node.Namespace)
+		}
 	} else {
 		node := obj.(*core.Node)
 		fmt.Printf("Sync/Add/Update for Node %s\n", node.GetName())
-		op.EnsureNode(node)
+		if err := op.EnsureNode(node); err != nil {
+			log.Errorf("Failed to patch alert for Node %s@%s", node.Name, node.Namespace)
+		}
 	}
 	return nil
 }
@@ -117,7 +89,7 @@ func (op *Operator) EnsureNode(node *core.Node) error {
 		}
 	}
 
-	newAlerts, err := util.FindNodeAlert(op.ExtClient, node.ObjectMeta)
+	newAlerts, err := util.FindNodeAlert(op.naLister, node.ObjectMeta)
 	if err != nil {
 		return err
 	}
@@ -168,7 +140,7 @@ func (op *Operator) EnsureNode(node *core.Node) error {
 }
 
 func (op *Operator) EnsureNodeDeleted(node *core.Node) error {
-	alerts, err := util.FindNodeAlert(op.ExtClient, node.ObjectMeta)
+	alerts, err := util.FindNodeAlert(op.naLister, node.ObjectMeta)
 	if err != nil {
 		log.Errorf("Error while searching NodeAlert for Node %s@%s.", node.Name, node.Namespace)
 		return err

@@ -83,8 +83,8 @@ func (op *Operator) reconcilePodAlert(key string) error {
 		alert := obj.(*api.PodAlert)
 		// Below we will warm up our cache with a PodAlert, so that we will see a delete for one d
 		fmt.Printf("PodAlert %s does not exist anymore\n", key)
-		err := op.EnsurePodAlertDeleted(alert)
-		if err != nil {
+
+		if err := op.EnsurePodAlertDeleted(alert); err != nil {
 			log.Errorf("Failed to delete PodAlert %s@%s", alert.Name, alert.Namespace)
 		}
 	} else {
@@ -103,8 +103,7 @@ func (op *Operator) reconcilePodAlert(key string) error {
 			return err
 		}
 
-		err := op.EnsurePodAlert(alert)
-		if err != nil {
+		if err := op.EnsurePodAlert(alert); err != nil {
 			log.Errorf("Failed to patch PodAlert %s@%s", alert.Name, alert.Namespace)
 		}
 
@@ -118,23 +117,23 @@ func (op *Operator) EnsurePodAlert(new *api.PodAlert) error {
 		return err
 	}
 	if new.Spec.PodName != "" {
-		if resource, err := op.KubeClient.CoreV1().Pods(new.Namespace).Get(new.Spec.PodName, metav1.GetOptions{}); err == nil {
-			if newSel.Matches(labels.Set(resource.Labels)) {
-				if resource.Status.PodIP == "" {
-					log.Warningf("Skipping pod %s@%s, since it has no IP", resource.Name, resource.Namespace)
+		if pod, err := op.KubeClient.CoreV1().Pods(new.Namespace).Get(new.Spec.PodName, metav1.GetOptions{}); err == nil {
+			if newSel.Matches(labels.Set(pod.Labels)) {
+				if pod.Status.PodIP == "" {
+					log.Warningf("Skipping pod %s@%s, since it has no IP", pod.Name, pod.Namespace)
 				}
-				go op.EnsureIcingaPodAlert(resource, new)
+				go op.EnsureIcingaPodAlert(pod, new)
 			}
 		}
 	} else {
-		if resources, err := op.KubeClient.CoreV1().Pods(new.Namespace).List(metav1.ListOptions{LabelSelector: newSel.String()}); err == nil {
-			for i := range resources.Items {
-				resource := resources.Items[i]
-				if resource.Status.PodIP == "" {
-					log.Warningf("Skipping pod %s@%s, since it has no IP", resource.Name, resource.Namespace)
+		if pods, err := op.KubeClient.CoreV1().Pods(new.Namespace).List(metav1.ListOptions{LabelSelector: newSel.String()}); err == nil {
+			for i := range pods.Items {
+				pod := pods.Items[i]
+				if pod.Status.PodIP == "" {
+					log.Warningf("Skipping pod %s@%s, since it has no IP", pod.Name, pod.Namespace)
 					continue
 				}
-				go op.EnsureIcingaPodAlert(&resource, new)
+				go op.EnsureIcingaPodAlert(&pod, new)
 			}
 		}
 	}
@@ -164,7 +163,8 @@ func (op *Operator) EnsurePodAlertDeleted(alert *api.PodAlert) error {
 	return nil
 }
 
-func (op *Operator) EnsureIcingaPodAlert(pod *core.Pod, new *api.PodAlert) (err error) {
+func (op *Operator) EnsureIcingaPodAlert(pod *core.Pod, new *api.PodAlert) {
+	var err error
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
@@ -189,11 +189,12 @@ func (op *Operator) EnsureIcingaPodAlert(pod *core.Pod, new *api.PodAlert) (err 
 		}
 	}()
 
-	err = op.podHost.Create(new, pod)
+	err = op.podHost.Create(new.DeepCopy(), pod.DeepCopy())
 	return
 }
 
-func (op *Operator) EnsureIcingaPodAlertDeleted(pod *core.Pod, alert *api.PodAlert) (err error) {
+func (op *Operator) EnsureIcingaPodAlertDeleted(pod *core.Pod, alert *api.PodAlert) {
+	var err error
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
@@ -218,6 +219,6 @@ func (op *Operator) EnsureIcingaPodAlertDeleted(pod *core.Pod, alert *api.PodAle
 		}
 	}()
 
-	err = op.podHost.Delete(alert.Namespace, alert.Name, *pod)
+	err = op.podHost.Delete(alert.DeepCopy(), pod.DeepCopy())
 	return
 }

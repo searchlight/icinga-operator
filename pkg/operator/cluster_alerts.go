@@ -81,7 +81,7 @@ func (op *Operator) reconcileClusterAlert(key string) error {
 		alert := obj.(*api.ClusterAlert)
 		// Below we will warm up our cache with a ClusterAlert, so that we will see a delete for one d
 		fmt.Printf("ClusterAlert %s does not exist anymore\n", key)
-		return op.EnsureIcingaClusterAlertDeleted(alert)
+		op.EnsureIcingaClusterAlertDeleted(alert)
 	} else {
 		alert := obj.(*api.ClusterAlert)
 		fmt.Printf("Sync/Add/Update for ClusterAlert %s\n", alert.GetName())
@@ -97,12 +97,13 @@ func (op *Operator) reconcileClusterAlert(key string) error {
 			)
 			return err
 		}
-		return op.EnsureIcingaClusterAlert(alert)
+		op.EnsureIcingaClusterAlert(alert)
 	}
 	return nil
 }
 
-func (op *Operator) EnsureIcingaClusterAlert(alert *api.ClusterAlert) (err error) {
+func (op *Operator) EnsureIcingaClusterAlert(alert *api.ClusterAlert) {
+	var err error
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
@@ -124,11 +125,12 @@ func (op *Operator) EnsureIcingaClusterAlert(alert *api.ClusterAlert) (err error
 			log.Errorln(err)
 		}
 	}()
-	err = op.clusterHost.Create(alert)
+	err = op.clusterHost.Create(alert.DeepCopy())
 	return
 }
 
-func (op *Operator) EnsureIcingaClusterAlertDeleted(alert *api.ClusterAlert) (err error) {
+func (op *Operator) EnsureIcingaClusterAlertDeleted(alert *api.ClusterAlert) {
+	var err error
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
@@ -150,6 +152,6 @@ func (op *Operator) EnsureIcingaClusterAlertDeleted(alert *api.ClusterAlert) (er
 			log.Errorln(err)
 		}
 	}()
-	err = op.clusterHost.Delete(alert)
+	err = op.clusterHost.Delete(alert.DeepCopy())
 	return
 }

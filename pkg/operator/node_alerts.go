@@ -142,7 +142,8 @@ func (op *Operator) EnsureNodeAlertDeleted(alert *api.NodeAlert) {
 	return
 }
 
-func (op *Operator) EnsureIcingaNodeAlert(alert *api.NodeAlert, node *core.Node) (err error) {
+func (op *Operator) EnsureIcingaNodeAlert(alert *api.NodeAlert, node *core.Node) {
+	var err error
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
@@ -167,11 +168,12 @@ func (op *Operator) EnsureIcingaNodeAlert(alert *api.NodeAlert, node *core.Node)
 		}
 	}()
 
-	err = op.nodeHost.Create(alert, node)
+	err = op.nodeHost.Create(alert.DeepCopy(), node.DeepCopy())
 	return
 }
 
-func (op *Operator) EnsureIcingaNodeAlertDeleted(alert *api.NodeAlert, node *core.Node) (err error) {
+func (op *Operator) EnsureIcingaNodeAlertDeleted(alert *api.NodeAlert, node *core.Node) {
+	var err error
 	defer func() {
 		if err == nil {
 			op.recorder.Eventf(
@@ -195,6 +197,6 @@ func (op *Operator) EnsureIcingaNodeAlertDeleted(alert *api.NodeAlert, node *cor
 			return
 		}
 	}()
-	err = op.nodeHost.Delete(alert, node)
+	err = op.nodeHost.Delete(alert.DeepCopy(), node.DeepCopy())
 	return
 }
