@@ -94,6 +94,7 @@ func (o APIServerOptions) Config() (*apiserver.Config, error) {
 		GenericConfig: serverConfig,
 		ExtraConfig: apiserver.ExtraConfig{
 			AdmissionHooks: o.AdmissionHooks,
+			ClientConfig:   serverConfig.ClientConfig,
 		},
 	}
 	return config, nil
