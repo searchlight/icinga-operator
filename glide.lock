@@ -1,5 +1,5 @@
 hash: a8bc0d8f14890b52ab7be873ce9ac53c6f0c36577f45c10927bd6a449734e243
-updated: 2018-02-28T12:55:30.550663846+06:00
+updated: 2018-02-27T23:25:08.196924963-08:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -201,7 +201,7 @@ imports:
   - compiler
   - extensions
 - name: github.com/gorilla/websocket
-  version: 6eb6ad425a89d9da7a5549bc6da8f79ba5c17844
+  version: 2d1e4548da234d9cb742cc3628556fef86aafbac
 - name: github.com/gregjones/httpcache
   version: 787624de3eb7bd915c329cba748687a3b22666a6
   subpackages:
@@ -215,7 +215,7 @@ imports:
   - runtime/internal
   - utilities
 - name: github.com/hashicorp/go-version
-  version: 40efc0a21ca93e3bfbddefd4b5309a3e79d0aeb7
+  version: 53932f80ddea12bea96be074f9fb2dc545806aba
   repo: https://github.com/appscode/go-version.git
   vcs: git
 - name: github.com/hashicorp/golang-lru
@@ -295,7 +295,7 @@ imports:
 - name: github.com/peterbourgon/diskv
   version: 5f041e8faa004a95c88a202771f4cc3e991971e6
 - name: github.com/pkg/errors
-  version: f15c970de5b76fac0b59abb32d62c17cc7bed265
+  version: e881fd58d78e04cf6d0de1217f8707c8cc2249bc
 - name: github.com/prometheus/client_golang
   version: c5b7fccd204277076155f10851dad72b76a49317
   subpackages:
