@@ -562,7 +562,6 @@ spec:
 ```
 
 ## Webhook Notifier
-## Webhook Notification
 To receive chat notifications via Webhook, create a Secret with the following keys:
 
 | Name                         | Description                                                                       |
