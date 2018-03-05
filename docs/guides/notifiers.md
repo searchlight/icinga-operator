@@ -561,6 +561,74 @@ spec:
     to: ["-1001210429328"]
 ```
 
+## Webhook Notifier
+To receive chat notifications via Webhook, create a Secret with the following keys:
+
+| Name                         | Description                                                                       |
+|------------------------------|-----------------------------------------------------------------------------------|
+| WEBHOOK_URL                  | `Required` URL of webhook server where notification is sent                       |
+| WEBHOOK_USERNAME             | `Optional` Username for basic auth                                                |
+| WEBHOOK_PASSWORD             | `Optional` Password for basic auth                                                |
+| WEBHOOK_TOKEN                | `Optional` Token for bearer auth                                                  |
+| WEBHOOK_CA_CERT_DATA         | `Optional` PEM encoded CA certificate used by Webhook server                      |
+| WEBHOOK_CLIENT_CERT_DATA     | `Optional` PEM encoded client certificate used to authenticate to Webhook server  |
+| WEBHOOK_CLIENT_KEY_DATA      | `Optional` PEM encoded client private key used to authenticate to Webhook server  |
+| WEBHOOK_INSECURE_SKIP_VERIFY | `Optional` If set to `true`, skips SSL verification of Webhook server certificate |
+
+```console
+$ echo -n '' > WEBHOOK_URL
+$ echo -n '' > WEBHOOK_TOKEN
+$ echo -n '' > WEBHOOK_CA_CERT_DATA
+$ kubectl create secret generic notifier-config -n demo \
+    --from-file=./WEBHOOK_URL \
+    --from-file=./WEBHOOK_TOKEN \
+    --from-file=./WEBHOOK_CA_CERT_DATA
+secret "notifier-config" created
+```
+
+```yaml
+apiVersion: v1
+data:
+  WEBHOOK_URL: eW91ci1oaXBjaGF0LWF1dGgtdG9rZW4=
+  WEBHOOK_TOKEN: eW91ci1oaXBjaGF0LWF1dGgtdG9rZW4=
+  WEBHOOK_CA_CERT_DATA: eW91ci1oaXBjaGF0LWF1dGgtdG9rZW4=
+kind: Secret
+metadata:
+  creationTimestamp: 2017-07-25T01:54:37Z
+  name: notifier-config
+  namespace: demo
+  resourceVersion: "2244"
+  selfLink: /api/v1/namespaces/demo/secrets/notifier-config
+  uid: 372bc159-70dc-11e7-9b0b-080027503732
+type: Opaque
+```
+
+Now, to receiver notifications via Webhook, configure receiver as below:
+
+- notifier: `Webhook`
+- to: a list of receiver names
+
+```yaml
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: ClusterAlert
+metadata:
+  name: check-ca-cert
+  namespace: demo
+spec:
+  check: ca_cert
+  vars:
+    warning: 240h
+    critical: 72h
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: Webhook
+    state: CRITICAL
+    to: ["ops-alerts"]
+```
+
+
 ## Using multiple notifiers
 Searchlight supports using different notifiers in different states. First add the credentials for the different notifiers in the same Secret `notifier-config` and deploy that to Kubernetes. Then in the Alert object, specify the appropriate notifier for each feature.
 

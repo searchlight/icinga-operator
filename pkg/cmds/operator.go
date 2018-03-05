@@ -1,6 +1,7 @@
 package cmds
 
 import (
+	"fmt"
 	"net/http"
 	_ "net/http/pprof"
 	"time"
@@ -79,6 +80,12 @@ func run(opt operator.Options) {
 	}
 	icingaClient := icinga.NewClient(*cfg)
 	for {
+		r := icingaClient.Check().Get(nil).Do()
+		if r.Err != nil {
+			fmt.Println(r.Err)
+			time.Sleep(2 * time.Second)
+			continue
+		}
 		if icingaClient.Check().Get(nil).Do().Status == 200 {
 			log.Infoln("connected to icinga api")
 			break

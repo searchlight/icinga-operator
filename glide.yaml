@@ -54,6 +54,8 @@ import:
   version: release-6.0
 - package: github.com/pkg/errors
   version: master
+- package: github.com/nlopes/slack
+  version: v0.2.0
 testImport:
 - package: github.com/onsi/ginkgo
   version: v1.4.0

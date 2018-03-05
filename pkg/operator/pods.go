@@ -1,14 +1,15 @@
 package operator
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
-	"strings"
 
 	"github.com/appscode/go/log"
 	core_util "github.com/appscode/kutil/core/v1"
 	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/util"
 	"github.com/golang/glog"
 	core "k8s.io/api/core/v1"
@@ -62,12 +63,15 @@ func (op *Operator) reconcilePod(key string) error {
 	}
 
 	if !exists {
-		pod := obj.(*core.Pod)
-		// Below we will warm up our cache with a Pod, so that we will see a delete for one d
-		fmt.Printf("Pod %s does not exist anymore\n", key)
+		log.Debugf("Pod %s does not exist anymore\n", key)
 
-		if err := op.EnsurePodDeleted(pod); err != nil {
-			log.Errorf("Failed to delete alert for Pod %s@%s", pod.Name, pod.Namespace)
+		namespace, name, err := cache.SplitMetaNamespaceKey(key)
+		if err != nil {
+			return err
+		}
+
+		if err := op.ForceDeleteIcingaObjectsForPod(namespace, name); err != nil {
+			log.Errorf("Failed to delete alert for Pod %s@%s", name, namespace)
 		}
 	} else {
 		pod := obj.(*core.Pod)
@@ -82,16 +86,20 @@ func (op *Operator) EnsurePod(pod *core.Pod) error {
 	fmt.Printf("Sync/Add/Update for Pod %s\n", pod.GetName())
 
 	oldAlerts := make([]*api.PodAlert, 0)
-	if names, ok := pod.Annotations[annotationAlertsName]; ok {
-		list := strings.Split(names, ",")
-		for _, l := range list {
-			oldAlerts = append(oldAlerts, &api.PodAlert{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      strings.Trim(l, " "),
-					Namespace: pod.Namespace,
-				},
-			})
+
+	oldAlertNames := make([]string, 0)
+	if val, ok := pod.Annotations[annotationAlertsName]; ok {
+		if err := json.Unmarshal([]byte(val), &oldAlertNames); err != nil {
+			return err
 		}
+	}
+	for _, l := range oldAlertNames {
+		oldAlerts = append(oldAlerts, &api.PodAlert{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      l,
+				Namespace: pod.Namespace,
+			},
+		})
 	}
 
 	newAlerts, err := util.FindPodAlert(op.paLister, pod.ObjectMeta)
@@ -108,10 +116,10 @@ func (op *Operator) EnsurePod(pod *core.Pod) error {
 		diff[oldAlerts[i].Name] = &change{old: oldAlerts[i]}
 	}
 
-	newAlertNameList := make([]string, 0)
+	alertNames := make([]string, 0)
 
 	for i := range newAlerts {
-		newAlertNameList = append(newAlertNameList, newAlerts[i].Name)
+		alertNames = append(alertNames, newAlerts[i].Name)
 		if ch, ok := diff[newAlerts[i].Name]; ok {
 			ch.new = newAlerts[i]
 		} else {
@@ -121,20 +129,24 @@ func (op *Operator) EnsurePod(pod *core.Pod) error {
 
 	for alert := range diff {
 		ch := diff[alert]
-		if ch.old == nil && ch.new != nil {
-			go op.EnsureIcingaPodAlert(pod, ch.new)
-		} else if ch.old != nil && ch.new == nil {
-			go op.EnsureIcingaPodAlertDeleted(pod, ch.old)
-		} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
-			go op.EnsureIcingaPodAlert(pod, ch.new)
+		if ch.old != nil && ch.new == nil {
+			op.EnsureIcingaPodAlertDeleted(ch.old, pod)
+		} else {
+			op.EnsureIcingaPodAlert(ch.new, pod)
 		}
 	}
 
 	_, vr, err := core_util.PatchPod(op.KubeClient, pod, func(in *core.Pod) *core.Pod {
-		if in.Annotations == nil {
-			in.Annotations = make(map[string]string, 0)
+		if len(newAlerts) > 0 {
+			if in.Annotations == nil {
+				in.Annotations = make(map[string]string, 0)
+			}
+			data, _ := json.Marshal(alertNames)
+			in.Annotations[annotationAlertsName] = string(data)
+		} else {
+			delete(in.Annotations, annotationAlertsName)
 		}
-		in.Annotations[annotationAlertsName] = strings.Join(newAlertNameList, ", ")
+
 		return in
 	})
 	if err != nil {
@@ -144,19 +156,18 @@ func (op *Operator) EnsurePod(pod *core.Pod) error {
 	return nil
 }
 
-func (op *Operator) EnsurePodDeleted(pod *core.Pod) error {
-	alerts, err := util.FindPodAlert(op.paLister, pod.ObjectMeta)
-	if err != nil {
-		log.Errorf("Error while searching PodAlert for Pod %s@%s.", pod.Name, pod.Namespace)
-		return err
-	}
-	if len(alerts) == 0 {
-		log.Errorf("No PodAlert found for Pod %s@%s.", pod.Name, pod.Namespace)
-		return err
-	}
-	for i := range alerts {
-		op.EnsureIcingaPodAlertDeleted(pod, alerts[i])
-	}
+func (op *Operator) ForceDeleteIcingaObjectsForPod(namespace, name string) (err error) {
+	defer func() {
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+	}()
 
-	return nil
+	err = op.podHost.ForceDeleteIcingaHost(icinga.IcingaHost{
+		Type:           icinga.TypePod,
+		AlertNamespace: namespace,
+		ObjectName:     name,
+	})
+	return
 }

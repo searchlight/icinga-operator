@@ -184,6 +184,12 @@ def default():
     die(call('GO15VENDOREXPERIMENT=1 ' + libbuild.GOC + ' install ./cmd/... ./test/...'))
 
 
+def test(type, *args):
+    if type == 'e2e':
+        die(call('ginkgo -r -v -progress -trace test/e2e -- ' + " ".join(args)))
+    else:
+        print '{test e2e}'
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         # http://stackoverflow.com/a/834451

@@ -87,3 +87,13 @@ func (f *Framework) EventuallyClusterAlertIcingaService(meta metav1.ObjectMeta, 
 		time.Second*5,
 	)
 }
+
+func (f *Framework) CleanClusterAlert() {
+	caList, err := f.extClient.MonitoringV1alpha1().ClusterAlerts(f.namespace).List(metav1.ListOptions{})
+	if err != nil {
+		return
+	}
+	for _, e := range caList.Items {
+		f.extClient.MonitoringV1alpha1().ClusterAlerts(f.namespace).Delete(e.Name, &metav1.DeleteOptions{})
+	}
+}

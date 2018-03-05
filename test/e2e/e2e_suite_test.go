@@ -4,10 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
-	cs "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
+	logs "github.com/appscode/go/log/golog"
+	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/operator"
 	"github.com/appscode/searchlight/test/e2e"
@@ -16,18 +18,24 @@ import (
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/reporters"
 	. "github.com/onsi/gomega"
+	core "k8s.io/api/core/v1"
 	crd_cs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 )
 
-var provider string
-var storageClass string
+var (
+	provider       string
+	storageClass   string
+	providedIcinga string
+)
 
 func init() {
 	flag.StringVar(&provider, "provider", "minikube", "Kubernetes cloud provider")
 	flag.StringVar(&storageClass, "storageclass", "", "Kubernetes StorageClass name")
+	flag.StringVar(&providedIcinga, "provided-icinga", "", "Running Icinga reference")
 }
 
 const (
@@ -40,6 +48,7 @@ var (
 )
 
 func TestE2e(t *testing.T) {
+	logs.InitLogs()
 	RegisterFailHandler(Fail)
 	SetDefaultEventuallyTimeout(TIMEOUT)
 
@@ -66,18 +75,29 @@ var _ = BeforeSuite(func() {
 	err = root.CreateNamespace()
 	Expect(err).NotTo(HaveOccurred())
 
-	// Create Searchlight deployment
-	slDeployment := root.Invoke().DeploymentSearchlight()
-	err = root.CreateDeployment(slDeployment)
-	Expect(err).NotTo(HaveOccurred())
-	By("Waiting for Running pods")
-	root.EventuallyDeployment(slDeployment.ObjectMeta).Should(HaveRunningPods(*slDeployment.Spec.Replicas))
+	var slService *core.Service
+	if providedIcinga == "" {
+		// Create Searchlight deployment
+		slDeployment := root.Invoke().DeploymentSearchlight()
+		err = root.CreateDeployment(slDeployment)
+		Expect(err).NotTo(HaveOccurred())
+		By("Waiting for Running pods")
+		root.EventuallyDeployment(slDeployment.ObjectMeta).Should(HaveRunningPods(*slDeployment.Spec.Replicas))
+		// Create Searchlight service
+		slService = root.Invoke().ServiceSearchlight()
+		err = root.CreateService(slService)
+		Expect(err).NotTo(HaveOccurred())
+		root.EventuallyServiceLoadBalancer(slService.ObjectMeta, "icinga").Should(BeTrue())
 
-	// Create Searchlight service
-	slService := root.Invoke().ServiceSearchlight()
-	err = root.CreateService(slService)
-	Expect(err).NotTo(HaveOccurred())
-	root.EventuallyServiceLoadBalancer(slService.ObjectMeta, "icinga").Should(BeTrue())
+
+	} else {
+		parts := strings.Split(providedIcinga, "@")
+		om := metav1.ObjectMeta{
+			Name:      parts[0],
+			Namespace: parts[1],
+		}
+		slService = &core.Service{ObjectMeta: om}
+	}
 
 	// Get Icinga Ingress Hostname
 	endpoint, err := root.GetServiceEndpoint(slService.ObjectMeta, "icinga")
@@ -86,6 +106,7 @@ var _ = BeforeSuite(func() {
 	// Icinga Config
 	cfg := &icinga.Config{
 		Endpoint: fmt.Sprintf("https://%v/v1", endpoint),
+		CACert: nil,
 	}
 
 	cfg.BasicAuth.Username = e2e.ICINGA_API_USER
@@ -99,18 +120,24 @@ var _ = BeforeSuite(func() {
 	icingawebEndpoint, err := root.GetServiceEndpoint(slService.ObjectMeta, "ui")
 	Expect(err).NotTo(HaveOccurred())
 	fmt.Println()
-	fmt.Println("Icingaweb2:     ", fmt.Sprintf("http://%v/icingaweb2", icingawebEndpoint))
+	fmt.Println("Icingaweb2:     ", fmt.Sprintf("http://%v/", icingawebEndpoint))
 	fmt.Println("Login password: ", e2e.ICINGA_WEB_UI_PASSWORD)
 	fmt.Println()
 
 	// Controller
-	op = operator.New(kubeClient, apiExtKubeClient, extClient, icingaClient, operator.Options{})
+	op = operator.New(kubeClient, apiExtKubeClient, extClient, icingaClient, operator.Options{
+		MaxNumRequeues: 3,
+		NumThreads: 3,
+	})
 	err = op.Setup()
 	Expect(err).NotTo(HaveOccurred())
-	op.Run(nil)
+	go op.Run(nil)
 })
 
 var _ = AfterSuite(func() {
+	root.CleanPodAlert()
+	root.CleanNodeAlert()
+	root.CleanClusterAlert()
 	err := root.DeleteNamespace()
 	Expect(err).NotTo(HaveOccurred())
 	e2e.PrintSeparately("Deleted namespace")

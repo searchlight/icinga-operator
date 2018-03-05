@@ -98,8 +98,13 @@ while test $# -gt 0; do
             export SEARCHLIGHT_IMAGE_PULL_SECRET="name: '$secret'"
             shift
             ;;
-        --enable-admission-webhook)
-            export SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK=true
+        --enable-admission-webhook*)
+            val=`echo $1 | sed -e 's/^[^=]*=//g'`
+            if [ "$val" = "false" ]; then
+                export SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK=false
+            else
+                export SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK=true
+            fi
             shift
             ;;
         --rbac)

@@ -119,3 +119,13 @@ func (f *Framework) EventuallyPodAlertIcingaService(meta metav1.ObjectMeta, podA
 		time.Second*5,
 	)
 }
+
+func (f *Framework) CleanPodAlert() {
+	caList, err := f.extClient.MonitoringV1alpha1().PodAlerts(f.namespace).List(metav1.ListOptions{})
+	if err != nil {
+		return
+	}
+	for _, e := range caList.Items {
+		f.extClient.MonitoringV1alpha1().PodAlerts(f.namespace).Delete(e.Name, &metav1.DeleteOptions{})
+	}
+}

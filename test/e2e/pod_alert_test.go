@@ -6,6 +6,7 @@ import (
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/go/types"
 	ext_util "github.com/appscode/kutil/extensions/v1beta1"
+	kutil_core "github.com/appscode/kutil/core/v1"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/util"
 	"github.com/appscode/searchlight/test/e2e/framework"
@@ -263,6 +264,65 @@ var _ = Describe("PodAlert", func() {
 					rs.Spec.Template.Spec.Containers[0].Image = "invalid-image"
 				})
 				It("should handle icinga service for Critical State", shouldHandleIcingaServiceForCriticalState)
+			})
+
+			Context("change labels", func() {
+				BeforeEach(func() {
+					alert.Spec.Selector = *metav1.SetAsLabelSelector(pod.Labels)
+				})
+
+				It("should manage icinga service for Pod label changed", func() {
+					By("Create Pod: " + pod.Name)
+					pod, err = f.CreatePod(pod)
+					Expect(err).NotTo(HaveOccurred())
+
+					By("Wait for Running pods")
+					f.EventuallyPodRunning(pod.ObjectMeta).Should(HaveRunningPods(1))
+
+					By("Create matching podalert: " + alert.Name)
+					err = f.CreatePodAlert(alert)
+					Expect(err).NotTo(HaveOccurred())
+
+					By("Check icinga services")
+					f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
+						Should(HaveIcingaObject(IcingaServiceState{Ok: 1}))
+
+					newAlert := alert.DeepCopy()
+					newAlert.Name = newAlert.Name + "-new"
+					newAlert.Spec.Selector.MatchLabels["app"] = newAlert.Spec.Selector.MatchLabels["app"]+"-new"
+
+					By("Create podalert: " + newAlert.Name)
+					err = f.CreatePodAlert(newAlert)
+					Expect(err).NotTo(HaveOccurred())
+
+					By("Patch Pod: " + pod.Name)
+					_, _, err = kutil_core.PatchPod(f.KubeClient(), pod, func(in *core.Pod) *core.Pod {
+						in.Labels["app"] = newAlert.Spec.Selector.MatchLabels["app"]
+						return in
+					})
+					Expect(err).NotTo(HaveOccurred())
+
+					By("Check icinga services " + newAlert.Name)
+					f.EventuallyPodAlertIcingaService(newAlert.ObjectMeta, newAlert.Spec).
+						Should(HaveIcingaObject(IcingaServiceState{Ok: 1}))
+
+					By("Wait for icinga services to be deleted " + alert.Name)
+					f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
+						Should(HaveIcingaObject(IcingaServiceState{}))
+
+					By("Delete podalert " + alert.Name)
+					err = f.DeletePodAlert(newAlert.ObjectMeta)
+					Expect(err).NotTo(HaveOccurred())
+
+					By("Wait for icinga services to be deleted " + newAlert.Name)
+					f.EventuallyPodAlertIcingaService(newAlert.ObjectMeta, newAlert.Spec).
+						Should(HaveIcingaObject(IcingaServiceState{}))
+
+					By("Delete podalert " + alert.Name)
+					err = f.DeletePodAlert(alert.ObjectMeta)
+					Expect(err).NotTo(HaveOccurred())
+
+				})
 			})
 		})
 

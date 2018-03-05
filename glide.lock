@@ -1,12 +1,12 @@
-hash: a8bc0d8f14890b52ab7be873ce9ac53c6f0c36577f45c10927bd6a449734e243
-updated: 2018-02-27T23:25:08.196924963-08:00
+hash: 217dd301d63062a1b17110e4615a03f3ae97694eee5451173786e9b3b3a83fc1
+updated: 2018-03-05T15:07:13.947084801+06:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
 - name: github.com/appscode/envconfig
   version: 183bbe643a2875eaa69c85627ac6b25813983203
 - name: github.com/appscode/go
-  version: 83e7fc1967ed737eedfc87da60c42e9fc4dc684c
+  version: c312c0a1fe0d4988480073287b8633fc5a244647
   subpackages:
   - analytics
   - context
@@ -17,6 +17,7 @@ imports:
   - log/golog
   - net/httpclient
   - runtime
+  - sets
   - types
   - version
 - name: github.com/appscode/go-notify
@@ -33,9 +34,12 @@ imports:
   - twilio
   - unified
   - webhook
+- name: github.com/appscode/jsonpatch
+  version: 3e75a56b8967932466984d4432401e1c1a7ff61e
 - name: github.com/appscode/kutil
-  version: 6a5c108367b50c78b783e51490f015d03ce62259
+  version: 53ea956d44dd41e34f35254a9ed08d68fce7b8cb
   subpackages:
+  - admission/api
   - apiextensions/v1beta1
   - core/v1
   - discovery
@@ -107,7 +111,7 @@ imports:
   subpackages:
   - capnslog
 - name: github.com/cpuguy83/go-md2man
-  version: 71acacd42f85e5e82f70a55327789582a5200a90
+  version: 48d8747a2ca13185e7cc8efe6e9fc196a83f71a5
   subpackages:
   - md2man
 - name: github.com/davecgh/go-spew
@@ -180,7 +184,7 @@ imports:
   - go/x509
   - go/x509/pkix
 - name: github.com/google/go-cmp
-  version: 3af367b6b30c263d47e8895973edcca9a49cf029
+  version: 0c93777250bd58222171888d1651979319d8b381
   subpackages:
   - cmp
   - cmp/internal/diff
@@ -201,7 +205,7 @@ imports:
   - compiler
   - extensions
 - name: github.com/gorilla/websocket
-  version: 2d1e4548da234d9cb742cc3628556fef86aafbac
+  version: 6656ddce919367f4c4090b0f89a45854d26da020
 - name: github.com/gregjones/httpcache
   version: 787624de3eb7bd915c329cba748687a3b22666a6
   subpackages:
@@ -261,7 +265,7 @@ imports:
   - jlexer
   - jwriter
 - name: github.com/mattn/go-runewidth
-  version: 97311d9f7767e3d6f422ea06661bc2c7a19e8a5d
+  version: a9d6d1e4dc51df2130326793d49971f238839169
 - name: github.com/matttproud/golang_protobuf_extensions
   version: fc2b8d3a73c4867e51861bbdd5ae3c1f0869dd6a
   subpackages:
@@ -271,11 +275,11 @@ imports:
   subpackages:
   - flowrate
 - name: github.com/nlopes/slack
-  version: 1217b9d3e4304348a9be15c2afd80ad4691f31e5
+  version: 8ab4d0b364ef1e9af5d102531da20d5ec902b6c4
 - name: github.com/NYTimes/gziphandler
   version: 56545f4a5d46df9a6648819d1664c3a03a13ffdb
 - name: github.com/olekukonko/tablewriter
-  version: cca8bbc0798408af109aaaa239cbd2634846b340
+  version: b8a9be070da40449e501c3c4730a889e42d87a9e
 - name: github.com/onsi/gomega
   version: c893efa28eb45626cdaa76c9f653b62488858837
   subpackages:
@@ -295,7 +299,7 @@ imports:
 - name: github.com/peterbourgon/diskv
   version: 5f041e8faa004a95c88a202771f4cc3e991971e6
 - name: github.com/pkg/errors
-  version: e881fd58d78e04cf6d0de1217f8707c8cc2249bc
+  version: 30136e27e2ac8d167177e8a583aa4c3fea5be833
 - name: github.com/prometheus/client_golang
   version: c5b7fccd204277076155f10851dad72b76a49317
   subpackages:
@@ -320,9 +324,10 @@ imports:
 - name: github.com/PuerkitoBio/urlesc
   version: 5bd2802263f21d8788851d5305584c82a5c75d7e
 - name: github.com/russross/blackfriday
-  version: 300106c228d52c8941d4b3de6054a6062a86dda3
+  version: 55d61fa8aa702f59229e6cff85793c22e580eaf5
 - name: github.com/sergi/go-diff
-  version: 97b2266dfe4bd4ea1b81a463322f04f8b724801e
+  version: 24e2351369ec4949b2ed0dc5c477afdd4c4034e8
+  repo: https://github.com/sergi/go-diff
   subpackages:
   - diffmatchpatch
 - name: github.com/shirou/gopsutil
@@ -338,10 +343,8 @@ imports:
   - process
 - name: github.com/shirou/w32
   version: bb4de0191aa41b5507caa14b0650cdbddcd9280b
-- name: github.com/shurcooL/sanitized_anchor_name
-  version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/spf13/cobra
-  version: 6644d46b81fa1831979c4cded0106e774e0ef0ab
+  version: c6c44e6fdcc30161c7f4480754da7230d01c06e3
   subpackages:
   - doc
 - name: github.com/spf13/pflag
@@ -363,11 +366,12 @@ imports:
 - name: github.com/vaughan0/go-ini
   version: a98ad7ee00ec53921f08832bc06ecf7fd600e6a1
 - name: github.com/yudai/gojsondiff
-  version: 7b1b7adf999dab73a6eb02669c3d82dbb27a3dd6
+  version: e21612694bdd50975f93cd5eaccb457477128e28
   subpackages:
   - formatter
 - name: github.com/yudai/golcs
   version: d1c525dea8ce39ea9a783d33cf08932305373f2c
+  repo: https://github.com/yudai/golcs
 - name: golang.org/x/crypto
   version: 81e90905daefcd6fd217b62423c0908922eadb30
   subpackages:

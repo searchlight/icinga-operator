@@ -3,6 +3,7 @@ package framework
 import (
 	"github.com/appscode/go/crypto/rand"
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
+	mon_cs "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	crd_cs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
 	"k8s.io/client-go/kubernetes"
@@ -48,8 +49,8 @@ func (f *Framework) KubeClient() kubernetes.Interface {
 	return f.kubeClient
 }
 
-func (f *Framework) MonitoringClient() cs.Interface {
-	return f.extClient
+func (f *Framework) MonitoringClient() mon_cs.MonitoringV1alpha1Interface {
+	return f.extClient.MonitoringV1alpha1()
 }
 
 type Invocation struct {

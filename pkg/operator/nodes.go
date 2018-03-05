@@ -1,14 +1,15 @@
 package operator
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
-	"strings"
 
 	"github.com/appscode/go/log"
 	core_util "github.com/appscode/kutil/core/v1"
 	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/util"
 	"github.com/golang/glog"
 	core "k8s.io/api/core/v1"
@@ -26,12 +27,10 @@ func (op *Operator) initNodeWatcher() {
 		UpdateFunc: func(old interface{}, new interface{}) {
 			oldNode, ok := old.(*core.Node)
 			if !ok {
-				log.Errorln("invalid Node object")
 				return
 			}
 			newNode, ok := new.(*core.Node)
 			if !ok {
-				log.Errorln("invalid Node object")
 				return
 			}
 			if !reflect.DeepEqual(oldNode.Labels, newNode.Labels) {
@@ -56,12 +55,14 @@ func (op *Operator) reconcileNode(key string) error {
 	}
 
 	if !exists {
-		node := obj.(*core.Node)
-		// Below we will warm up our cache with a Node, so that we will see a delete for one d
-		fmt.Printf("Node %s does not exist anymore\n", key)
+		log.Debugf("Node %s does not exist anymore\n", key)
+		_, name, err := cache.SplitMetaNamespaceKey(key)
+		if err != nil {
+			return err
+		}
 
-		if err := op.EnsureNodeDeleted(node); err != nil {
-			log.Errorf("Failed to delete alert for Node %s@%s", node.Name, node.Namespace)
+		if err := op.ForceDeleteIcingaObjectsForNode(name); err != nil {
+			log.Errorf("Failed to delete alert for Node %s", name)
 		}
 	} else {
 		node := obj.(*core.Node)
@@ -77,16 +78,25 @@ func (op *Operator) EnsureNode(node *core.Node) error {
 	fmt.Printf("Sync/Add/Update for Node %s\n", node.GetName())
 
 	oldAlerts := make([]*api.NodeAlert, 0)
-	if names, ok := node.Annotations[annotationAlertsName]; ok {
-		list := strings.Split(names, ",")
-		for _, l := range list {
-			oldAlerts = append(oldAlerts, &api.NodeAlert{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      strings.Trim(l, " "),
-					Namespace: node.Namespace,
-				},
-			})
+
+	oldAlertNames := make([]string, 0)
+	if val, ok := node.Annotations[annotationAlertsName]; ok {
+		if err := json.Unmarshal([]byte(val), &oldAlertNames); err != nil {
+			return err
 		}
+	}
+	for _, l := range oldAlertNames {
+		namespace, name, err := cache.SplitMetaNamespaceKey(l)
+		if err != nil {
+			return err
+		}
+
+		oldAlerts = append(oldAlerts, &api.NodeAlert{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      name,
+				Namespace: namespace,
+			},
+		})
 	}
 
 	newAlerts, err := util.FindNodeAlert(op.naLister, node.ObjectMeta)
@@ -103,10 +113,10 @@ func (op *Operator) EnsureNode(node *core.Node) error {
 		diff[oldAlerts[i].Name] = &change{old: oldAlerts[i]}
 	}
 
-	newAlertNameList := make([]string, 0)
+	alertNames := make([]string, 0)
 
 	for i := range newAlerts {
-		newAlertNameList = append(newAlertNameList, newAlerts[i].Name)
+		alertNames = append(alertNames, fmt.Sprintf("%s/%s", newAlerts[i].Namespace, newAlerts[i].Name))
 		if ch, ok := diff[newAlerts[i].Name]; ok {
 			ch.new = newAlerts[i]
 		} else {
@@ -116,42 +126,49 @@ func (op *Operator) EnsureNode(node *core.Node) error {
 
 	for alert := range diff {
 		ch := diff[alert]
-		if ch.old == nil && ch.new != nil {
-			go op.EnsureIcingaNodeAlert(ch.new, node)
-		} else if ch.old != nil && ch.new == nil {
-			go op.EnsureIcingaNodeAlertDeleted(ch.old, node)
-		} else if ch.old != nil && ch.new != nil && !reflect.DeepEqual(ch.old.Spec, ch.new.Spec) {
-			go op.EnsureIcingaNodeAlert(ch.new, node)
+		if ch.old != nil && ch.new == nil {
+			op.EnsureIcingaNodeAlertDeleted(ch.old, node)
+		} else {
+			op.EnsureIcingaNodeAlert(ch.new, node)
 		}
 	}
 
-	_, vr, err := core_util.PatchNode(op.KubeClient, node, func(in *core.Node) *core.Node {
-		if in.Annotations == nil {
-			in.Annotations = make(map[string]string, 0)
+	_, vt, err := core_util.PatchNode(op.KubeClient, node, func(in *core.Node) *core.Node {
+		if len(newAlerts) > 0 {
+			if in.Annotations == nil {
+				in.Annotations = make(map[string]string, 0)
+			}
+			data, _ := json.Marshal(alertNames)
+			in.Annotations[annotationAlertsName] = string(data)
+		} else {
+			delete(in.Annotations, annotationAlertsName)
 		}
-		in.Annotations[annotationAlertsName] = strings.Join(newAlertNameList, ", ")
 		return in
 	})
 	if err != nil {
-		log.Errorf("Failed to %v Node %s", vr, node.Name)
+		log.Errorf("Failed to %v Node %s", vt, node.Name)
 	}
-
 	return nil
 }
 
-func (op *Operator) EnsureNodeDeleted(node *core.Node) error {
-	alerts, err := util.FindNodeAlert(op.naLister, node.ObjectMeta)
+func (op *Operator) ForceDeleteIcingaObjectsForNode(name string) error {
+	namespaceList, err := op.KubeClient.CoreV1().Namespaces().List(metav1.ListOptions{})
 	if err != nil {
-		log.Errorf("Error while searching NodeAlert for Node %s@%s.", node.Name, node.Namespace)
 		return err
-	}
-	if len(alerts) == 0 {
-		log.Errorf("No NodeAlert found for Node %s@%s.", node.Name, node.Namespace)
-		return err
-	}
-	for _, alert := range alerts {
-		go op.EnsureIcingaNodeAlertDeleted(alert, node)
 	}
 
+	for _, ns := range namespaceList.Items {
+		nh := icinga.IcingaHost{
+			ObjectName:     name,
+			Type:           icinga.TypeNode,
+			AlertNamespace: ns.Name,
+		}
+		err := op.nodeHost.ForceDeleteIcingaHost(nh)
+
+		if err != nil {
+			host, _ := nh.Name()
+			log.Errorf(`Failed to delete Icinga Host "%s" for Node %s`, host, name)
+		}
+	}
 	return nil
 }

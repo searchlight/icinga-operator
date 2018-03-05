@@ -107,3 +107,13 @@ func (f *Framework) EventuallyNodeAlertIcingaService(meta metav1.ObjectMeta, nod
 		time.Second*5,
 	)
 }
+
+func (f *Framework) CleanNodeAlert() {
+	caList, err := f.extClient.MonitoringV1alpha1().NodeAlerts(f.namespace).List(metav1.ListOptions{})
+	if err != nil {
+		return
+	}
+	for _, e := range caList.Items {
+		f.extClient.MonitoringV1alpha1().NodeAlerts(f.namespace).Delete(e.Name, &metav1.DeleteOptions{})
+	}
+}
