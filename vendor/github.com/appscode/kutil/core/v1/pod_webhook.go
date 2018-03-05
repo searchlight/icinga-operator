@@ -37,8 +37,8 @@ func NewPodWebhook(plural schema.GroupVersionResource, singular string, handler 
 	}
 }
 
-func (a *PodWebhook) Resource() (plural schema.GroupVersionResource, singular string) {
-	return plural, singular
+func (a *PodWebhook) Resource() (schema.GroupVersionResource, string) {
+	return a.plural, a.singular
 }
 
 func (a *PodWebhook) Initialize(config *rest.Config, stopCh <-chan struct{}) error {

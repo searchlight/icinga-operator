@@ -37,8 +37,8 @@ func NewReplicationControllerWebhook(plural schema.GroupVersionResource, singula
 	}
 }
 
-func (a *ReplicationControllerWebhook) Resource() (plural schema.GroupVersionResource, singular string) {
-	return plural, singular
+func (a *ReplicationControllerWebhook) Resource() (schema.GroupVersionResource, string) {
+	return a.plural, a.singular
 }
 
 func (a *ReplicationControllerWebhook) Initialize(config *rest.Config, stopCh <-chan struct{}) error {

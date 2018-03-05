@@ -39,8 +39,8 @@ func NewDaemonSetWebhook(plural schema.GroupVersionResource, singular string, ha
 	}
 }
 
-func (a *DaemonSetWebhook) Resource() (plural schema.GroupVersionResource, singular string) {
-	return plural, singular
+func (a *DaemonSetWebhook) Resource() (schema.GroupVersionResource, string) {
+	return a.plural, a.singular
 }
 
 func (a *DaemonSetWebhook) Initialize(config *rest.Config, stopCh <-chan struct{}) error {
