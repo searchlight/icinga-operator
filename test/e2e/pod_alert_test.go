@@ -5,8 +5,8 @@ import (
 
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/go/types"
-	ext_util "github.com/appscode/kutil/extensions/v1beta1"
 	kutil_core "github.com/appscode/kutil/core/v1"
+	ext_util "github.com/appscode/kutil/extensions/v1beta1"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/util"
 	"github.com/appscode/searchlight/test/e2e/framework"
@@ -289,7 +289,7 @@ var _ = Describe("PodAlert", func() {
 
 					newAlert := alert.DeepCopy()
 					newAlert.Name = newAlert.Name + "-new"
-					newAlert.Spec.Selector.MatchLabels["app"] = newAlert.Spec.Selector.MatchLabels["app"]+"-new"
+					newAlert.Spec.Selector.MatchLabels["app"] = newAlert.Spec.Selector.MatchLabels["app"] + "-new"
 
 					By("Create podalert: " + newAlert.Name)
 					err = f.CreatePodAlert(newAlert)

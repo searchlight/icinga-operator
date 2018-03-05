@@ -89,7 +89,6 @@ var _ = BeforeSuite(func() {
 		Expect(err).NotTo(HaveOccurred())
 		root.EventuallyServiceLoadBalancer(slService.ObjectMeta, "icinga").Should(BeTrue())
 
-
 	} else {
 		parts := strings.Split(providedIcinga, "@")
 		om := metav1.ObjectMeta{
@@ -106,7 +105,7 @@ var _ = BeforeSuite(func() {
 	// Icinga Config
 	cfg := &icinga.Config{
 		Endpoint: fmt.Sprintf("https://%v/v1", endpoint),
-		CACert: nil,
+		CACert:   nil,
 	}
 
 	cfg.BasicAuth.Username = e2e.ICINGA_API_USER
@@ -127,7 +126,7 @@ var _ = BeforeSuite(func() {
 	// Controller
 	op = operator.New(kubeClient, apiExtKubeClient, extClient, icingaClient, operator.Options{
 		MaxNumRequeues: 3,
-		NumThreads: 3,
+		NumThreads:     3,
 	})
 	err = op.Setup()
 	Expect(err).NotTo(HaveOccurred())
