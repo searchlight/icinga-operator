@@ -42,9 +42,9 @@ The following tables lists the configurable parameters of the Searchlight chart 
 | Parameter                 | Description                                                       | Default                |
 |---------------------------|-------------------------------------------------------------------|------------------------|
 | `operator.image`          | operator container image                                          | `appscode/searchlight` |
-| `operator.tag`            | operator image tag                                                | `6.0.0-alpha.0`                |
+| `operator.tag`            | operator image tag                                                | `6.0.0-alpha.0`        |
 | `icinga.image`            | icinga container image                                            | `appscode/icinga`      |
-| `icinga.tag`              | icinga container image tag                                        | `6.0.0-alpha.0-k8s`            |
+| `icinga.tag`              | icinga container image tag                                        | `6.0.0-alpha.0-k8s`    |
 | `ido.image`               | ido container image                                               | `appscode/postgress`   |
 | `ido.tag`                 | ido container image tag                                           | `9.5-alpine`           |
 | `imagePullSecrets`        | Specify image pull secrets                                        | `nil` (does not add image pull secrets to deployed pods) |
@@ -52,8 +52,10 @@ The following tables lists the configurable parameters of the Searchlight chart 
 | `criticalAddon`           | If true, installs Searchlight operator as critical addon          | `false`                |
 | `logLevel`                | Log level for operator                                            | `3`                    |
 | `nodeSelector`            | Node labels for pod assignment                                    | `{}`                   |
-| `rbac.create`             | install required rbac service account, roles and rolebindings     | `false`                |
-| `rbac.serviceAccountName` | ServiceAccount Searchlight will use (ignored if rbac.create=true) | `default`              |
+| `rbac.create`             | If `true`, create and use RBAC resources                          | `true`                 |
+| `serviceAccount.create`   | If `true`, create a new service account                           | `true`                 |
+| `serviceAccount.name`     | Service account to be used. If not set and `serviceAccount.create` is `true`, a name is generated using the fullname template | `` |
+
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:
 

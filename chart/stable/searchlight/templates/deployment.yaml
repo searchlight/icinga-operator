@@ -19,7 +19,7 @@ spec:
         scheduler.alpha.kubernetes.io/critical-pod: ''
 {{- end }}
     spec:
-      serviceAccountName: {{ if .Values.rbac.create }}{{ template "searchlight.fullname" . }}{{ else }}"{{ .Values.rbac.serviceAccountName }}"{{ end }}
+      serviceAccountName: {{ template "searchlight.serviceAccountName" . }}
       containers:
       - name: operator
         image: {{ .Values.operator.image }}:{{ .Values.operator.tag }}
