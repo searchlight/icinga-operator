@@ -30,21 +30,18 @@ searchlight.sh [options]
 options:
 -h, --help                         show brief help
 -n, --namespace=NAMESPACE          specify namespace (default: kube-system)
-    --rbac                         create RBAC roles and bindings
+    --rbac                         create RBAC roles and bindings (default: true)
     --docker-registry              docker registry used to pull searchlight images (default: appscode)
     --image-pull-secret            name of secret used to pull searchlight operator images
     --run-on-master                run searchlight operator on master
     --enable-admission-webhook     configure admission webhook for searchlight CRDs
     --uninstall                    uninstall searchlight
 
-# install without RBAC roles
 $ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh \
     | bash
-
-# Install with RBAC roles
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh \
-    | bash -s -- --rbac
 ```
+
+### Customizing Installer
 
 If you would like to run Searchlight operator pod in `master` instances, pass the `--run-on-master` flag:
 

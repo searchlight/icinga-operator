@@ -5,29 +5,34 @@ echo "checking kubeconfig context"
 kubectl config current-context || { echo "Set a context (kubectl use-context <context>) out of the following:"; echo; kubectl config get-contexts; exit 1; }
 echo ""
 
-# ref: https://stackoverflow.com/a/27776822/244009
-case "$(uname -s)" in
-    Darwin)
-        curl -fsSL -o onessl https://github.com/appscode/onessl/releases/download/0.1.0/onessl-darwin-amd64
-        chmod +x onessl
-        export ONESSL=./onessl
-        ;;
+# https://stackoverflow.com/a/677212/244009
+if [ -x "$(command -v onessl >/dev/null 2>&1)" ]; then
+    export ONESSL=onessl
+else
+    # ref: https://stackoverflow.com/a/27776822/244009
+    case "$(uname -s)" in
+        Darwin)
+            curl -fsSL -o onessl https://github.com/kubepack/onessl/releases/download/0.1.0/onessl-darwin-amd64
+            chmod +x onessl
+            export ONESSL=./onessl
+            ;;
 
-    Linux)
-        curl -fsSL -o onessl https://github.com/appscode/onessl/releases/download/0.1.0/onessl-linux-amd64
-        chmod +x onessl
-        export ONESSL=./onessl
-        ;;
+        Linux)
+            curl -fsSL -o onessl https://github.com/kubepack/onessl/releases/download/0.1.0/onessl-linux-amd64
+            chmod +x onessl
+            export ONESSL=./onessl
+            ;;
 
-    CYGWIN*|MINGW32*|MSYS*)
-        curl -fsSL -o onessl.exe https://github.com/appscode/onessl/releases/download/0.1.0/onessl-windows-amd64.exe
-        chmod +x onessl.exe
-        export ONESSL=./onessl.exe
-        ;;
-    *)
-        echo 'other OS'
-        ;;
-esac
+        CYGWIN*|MINGW32*|MSYS*)
+            curl -fsSL -o onessl.exe https://github.com/kubepack/onessl/releases/download/0.1.0/onessl-windows-amd64.exe
+            chmod +x onessl.exe
+            export ONESSL=./onessl.exe
+            ;;
+        *)
+            echo 'other OS'
+            ;;
+    esac
+fi
 
 # http://redsymbol.net/articles/bash-exit-traps/
 function cleanup {
@@ -40,8 +45,8 @@ trap cleanup EXIT
 # ref: http://tldp.org/LDP/abs/html/comparison-ops.html
 
 export SEARCHLIGHT_NAMESPACE=kube-system
-export SEARCHLIGHT_SERVICE_ACCOUNT=default
-export SEARCHLIGHT_ENABLE_RBAC=false
+export SEARCHLIGHT_SERVICE_ACCOUNT=searchlight-operator
+export SEARCHLIGHT_ENABLE_RBAC=true
 export SEARCHLIGHT_RUN_ON_MASTER=0
 export SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK=false
 export SEARCHLIGHT_DOCKER_REGISTRY=appscode
@@ -61,7 +66,7 @@ show_help() {
     echo "options:"
     echo "-h, --help                         show brief help"
     echo "-n, --namespace=NAMESPACE          specify namespace (default: kube-system)"
-    echo "    --rbac                         create RBAC roles and bindings"
+    echo "    --rbac                         create RBAC roles and bindings (default: true)"
     echo "    --docker-registry              docker registry used to pull searchlight images (default: appscode)"
     echo "    --image-pull-secret            name of secret used to pull searchlight operator images"
     echo "    --run-on-master                run searchlight operator on master"
@@ -107,9 +112,12 @@ while test $# -gt 0; do
             fi
             shift
             ;;
-        --rbac)
-            export SEARCHLIGHT_SERVICE_ACCOUNT=searchlight-operator
-            export SEARCHLIGHT_ENABLE_RBAC=true
+        --rbac*)
+            val=`echo $1 | sed -e 's/^[^=]*=//g'`
+            if [ "$val" = "false" ]; then
+                export SEARCHLIGHT_SERVICE_ACCOUNT=default
+                export SEARCHLIGHT_ENABLE_RBAC=false
+            fi
             shift
             ;;
         --run-on-master)
@@ -175,3 +183,6 @@ fi
 if [ "$SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK" = true ]; then
     curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/admission.yaml | $ONESSL envsubst | kubectl apply -f -
 fi
+
+echo
+echo "Successfully installed Searchlight!"
