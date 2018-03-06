@@ -53,10 +53,10 @@ func (op *Operator) initNodeAlertWatcher() {
 			// DeepEqual old & new
 			// DeepEqual MapperConfiguration of old & new
 			// Patch PodAlert with necessary annotation
-			newAlert, err := op.processNodeAlertUpdate(oldAlert, newAlert)
+			newAlert, proceed, err := op.processNodeAlertUpdate(oldAlert, newAlert)
 			if err != nil {
 				log.Error(err)
-			} else {
+			} else if proceed {
 				queue.Enqueue(op.naQueue.GetQueue(), newAlert)
 			}
 		},
@@ -226,11 +226,11 @@ func (op *Operator) EnsureIcingaNodeAlertDeleted(alert *api.NodeAlert, node *cor
 	return
 }
 
-func (op *Operator) processNodeAlertUpdate(oldAlert, newAlert *api.NodeAlert) (*api.NodeAlert, error) {
+func (op *Operator) processNodeAlertUpdate(oldAlert, newAlert *api.NodeAlert) (*api.NodeAlert, bool, error) {
 	// Check for changes in Spec
 	if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
 		if !op.validateNodeAlert(newAlert) {
-			return nil, errors.Errorf(`Invalid NodeAlert "%s@%s"`, newAlert.Name, newAlert.Namespace)
+			return nil, false, errors.Errorf(`Invalid NodeAlert "%s@%s"`, newAlert.Name, newAlert.Namespace)
 		}
 
 		// We need Selector/NodeName from oldAlert while processing this update operation.
@@ -264,14 +264,17 @@ func (op *Operator) processNodeAlertUpdate(oldAlert, newAlert *api.NodeAlert) (*
 					`Reason: %v`,
 					err,
 				)
-				return nil, errors.WithMessage(err,
+				return nil, false, errors.WithMessage(err,
 					fmt.Sprintf(`Failed to patch PodAlert "%s@%s"`, newAlert.Name, newAlert.Namespace),
 				)
 			}
 		}
+		return newAlert, true, nil
+	} else if newAlert.DeletionTimestamp != nil {
+		return newAlert, true, nil
 	}
 
-	return newAlert, nil
+	return newAlert, false, nil
 }
 
 func (op *Operator) getMappedNodeList(namespace string, mc *naMapperConf) (map[string]*core.Node, error) {

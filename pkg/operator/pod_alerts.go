@@ -53,10 +53,10 @@ func (op *Operator) initPodAlertWatcher() {
 			// DeepEqual old & new
 			// DeepEqual MapperConfiguration of old & new
 			// Patch PodAlert with necessary annotation
-			newAlert, err := op.processPodAlertUpdate(oldAlert, newAlert)
+			newAlert, proceed, err := op.processPodAlertUpdate(oldAlert, newAlert)
 			if err != nil {
 				log.Error(err)
-			} else {
+			} else if proceed {
 				queue.Enqueue(op.paQueue.GetQueue(), newAlert)
 			}
 		},
@@ -232,11 +232,11 @@ func (op *Operator) EnsureIcingaPodAlertDeleted(alert *api.PodAlert, pod *core.P
 	return err
 }
 
-func (op *Operator) processPodAlertUpdate(oldAlert, newAlert *api.PodAlert) (*api.PodAlert, error) {
+func (op *Operator) processPodAlertUpdate(oldAlert, newAlert *api.PodAlert) (*api.PodAlert, bool, error) {
 	// Check for changes in Spec
 	if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
 		if !op.validatePodAlert(newAlert) {
-			return nil, errors.Errorf(`Invalid PodAlert "%s@%s"`, newAlert.Name, newAlert.Namespace)
+			return nil, false, errors.Errorf(`Invalid PodAlert "%s@%s"`, newAlert.Name, newAlert.Namespace)
 		}
 
 		// We need Selector/PodName from oldAlert while processing this update operation.
@@ -273,14 +273,17 @@ func (op *Operator) processPodAlertUpdate(oldAlert, newAlert *api.PodAlert) (*ap
 					`Reason: %v`,
 					err,
 				)
-				return nil, errors.WithMessage(err,
+				return nil, false, errors.WithMessage(err,
 					fmt.Sprintf(`Failed to patch PodAlert "%s@%s"`, newAlert.Name, newAlert.Namespace),
 				)
 			}
 		}
+		return newAlert, true, nil
+	} else if newAlert.DeletionTimestamp != nil {
+		return newAlert, true, nil
 	}
 
-	return newAlert, nil
+	return newAlert, false, nil
 }
 
 func (op *Operator) getMappedPodList(namespace string, mc *paMapperConf) (map[string]*core.Pod, error) {

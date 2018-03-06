@@ -43,10 +43,10 @@ func (op *Operator) initClusterAlertWatcher() {
 			// DeepEqual old & new
 			// DeepEqual MapperConfiguration of old & new
 			// Patch PodAlert with necessary annotation
-			newAlert, err := op.processClusterAlertUpdate(oldAlert, newAlert)
+			newAlert, proceed, err := op.processClusterAlertUpdate(oldAlert, newAlert)
 			if err != nil {
 				log.Error(err)
-			} else {
+			} else if proceed {
 				queue.Enqueue(op.caQueue.GetQueue(), newAlert)
 			}
 		},
@@ -153,15 +153,18 @@ func (op *Operator) EnsureIcingaClusterAlertDeleted(alert *api.ClusterAlert) (er
 	return err
 }
 
-func (op *Operator) processClusterAlertUpdate(oldAlert, newAlert *api.ClusterAlert) (*api.ClusterAlert, error) {
+func (op *Operator) processClusterAlertUpdate(oldAlert, newAlert *api.ClusterAlert) (*api.ClusterAlert, bool, error) {
 	// Check for changes in Spec
 	if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
 		if !op.validateClusterAlert(newAlert) {
-			return nil, errors.Errorf(`Invalid ClusterAlert "%s@%s"`, newAlert.Name, newAlert.Namespace)
+			return nil, false, errors.Errorf(`Invalid ClusterAlert "%s@%s"`, newAlert.Name, newAlert.Namespace)
 		}
+		return newAlert, true, nil
+	} else if newAlert.DeletionTimestamp != nil {
+		return newAlert, true, nil
 	}
 
-	return newAlert, nil
+	return newAlert, false, nil
 }
 
 func (op *Operator) validateClusterAlert(alert *api.ClusterAlert) bool {
