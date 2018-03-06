@@ -58,7 +58,7 @@ func (h *commonHost) DeleteIcingaHost(kh IcingaHost) error {
 		return errors.WithMessage(err, "Can't get Icinga service")
 	}
 
-	if len(respService.Results) < 1 {
+	if len(respService.Results) == 0 {
 		resp := h.IcingaClient.Objects().Hosts("").Delete([]string{}, in).Params(param).Do()
 		if resp.Err != nil {
 			return errors.WithMessage(err, "Can't delete Icinga host")
