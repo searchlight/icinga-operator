@@ -134,7 +134,8 @@ func (a *ReplicaSetWebhook) Admit(req *admission.AdmissionRequest) *admission.Ad
 func convert_to_extensions_replicaset(gv schema.GroupVersion, raw []byte) (*extensions.ReplicaSet, runtime.Object, error) {
 	switch gv {
 	case v1.SchemeGroupVersion:
-		v1Obj, err := meta.UnmarshalToJSON(raw, v1.SchemeGroupVersion)
+		v1Obj := &v1.ReplicaSet{}
+		err := json.Unmarshal(raw, v1Obj)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -147,7 +148,8 @@ func convert_to_extensions_replicaset(gv schema.GroupVersion, raw []byte) (*exte
 		return extObj, v1Obj, nil
 
 	case v1beta2.SchemeGroupVersion:
-		v1beta2Obj, err := meta.UnmarshalToJSON(raw, v1beta2.SchemeGroupVersion)
+		v1beta2Obj := &v1beta2.ReplicaSet{}
+		err := json.Unmarshal(raw, v1beta2Obj)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -160,11 +162,12 @@ func convert_to_extensions_replicaset(gv schema.GroupVersion, raw []byte) (*exte
 		return extObj, v1beta2Obj, nil
 
 	case extensions.SchemeGroupVersion:
-		extObj, err := meta.UnmarshalToJSON(raw, extensions.SchemeGroupVersion)
+		extObj := &extensions.ReplicaSet{}
+		err := json.Unmarshal(raw, extObj)
 		if err != nil {
 			return nil, nil, err
 		}
-		return extObj.(*extensions.ReplicaSet), extObj, nil
+		return extObj, extObj, nil
 	}
 	return nil, nil, kutil.ErrUnknown
 }

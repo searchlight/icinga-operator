@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/appscode/searchlight/pkg/registry/admissionreview"
+	admissionreview "github.com/appscode/kutil/registry/admissionreview/v1beta1"
 	admission "k8s.io/api/admission/v1beta1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/apimachinery"

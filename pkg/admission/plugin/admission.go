@@ -2,11 +2,10 @@ package plugin
 
 import (
 	"encoding/json"
-	"net/http"
 
+	hookapi "github.com/appscode/kutil/admission/api"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	admission "k8s.io/api/admission/v1beta1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/client-go/rest"
@@ -41,61 +40,31 @@ func (a *AdmissionHook) Admit(req *admission.AdmissionRequest) *admission.Admiss
 		obj := &api.ClusterAlert{}
 		err := json.Unmarshal(req.Object.Raw, obj)
 		if err != nil {
-			status.Allowed = false
-			status.Result = &metav1.Status{
-				Status: metav1.StatusFailure, Code: http.StatusBadRequest, Reason: metav1.StatusReasonBadRequest,
-				Message: err.Error(),
-			}
-			return status
+			return hookapi.StatusBadRequest(err)
 		}
 		_, err = obj.IsValid()
 		if err != nil {
-			status.Allowed = false
-			status.Result = &metav1.Status{
-				Status: metav1.StatusFailure, Code: http.StatusForbidden, Reason: metav1.StatusReasonForbidden,
-				Message: err.Error(),
-			}
-			return status
+			return hookapi.StatusForbidden(err)
 		}
 	case api.ResourceKindNodeAlert:
 		obj := &api.NodeAlert{}
 		err := json.Unmarshal(req.Object.Raw, obj)
 		if err != nil {
-			status.Allowed = false
-			status.Result = &metav1.Status{
-				Status: metav1.StatusFailure, Code: http.StatusBadRequest, Reason: metav1.StatusReasonBadRequest,
-				Message: err.Error(),
-			}
-			return status
+			return hookapi.StatusBadRequest(err)
 		}
 		_, err = obj.IsValid()
 		if err != nil {
-			status.Allowed = false
-			status.Result = &metav1.Status{
-				Status: metav1.StatusFailure, Code: http.StatusForbidden, Reason: metav1.StatusReasonForbidden,
-				Message: err.Error(),
-			}
-			return status
+			return hookapi.StatusForbidden(err)
 		}
 	case api.ResourceKindPodAlert:
 		obj := &api.PodAlert{}
 		err := json.Unmarshal(req.Object.Raw, obj)
 		if err != nil {
-			status.Allowed = false
-			status.Result = &metav1.Status{
-				Status: metav1.StatusFailure, Code: http.StatusBadRequest, Reason: metav1.StatusReasonBadRequest,
-				Message: err.Error(),
-			}
-			return status
+			return hookapi.StatusBadRequest(err)
 		}
 		_, err = obj.IsValid()
 		if err != nil {
-			status.Allowed = false
-			status.Result = &metav1.Status{
-				Status: metav1.StatusFailure, Code: http.StatusForbidden, Reason: metav1.StatusReasonForbidden,
-				Message: err.Error(),
-			}
-			return status
+			return hookapi.StatusForbidden(err)
 		}
 	}
 
@@ -103,6 +72,6 @@ func (a *AdmissionHook) Admit(req *admission.AdmissionRequest) *admission.Admiss
 	return status
 }
 
-func (a *AdmissionHook) Initialize(kubeClientConfig *rest.Config, stopCh <-chan struct{}) error {
+func (a *AdmissionHook) Initialize(cfg *rest.Config, stopCh <-chan struct{}) error {
 	return nil
 }

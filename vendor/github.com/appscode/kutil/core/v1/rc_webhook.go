@@ -132,11 +132,12 @@ func (a *ReplicationControllerWebhook) Admit(req *admission.AdmissionRequest) *a
 func convert_to_v1_rc(gv schema.GroupVersion, raw []byte) (*v1.ReplicationController, runtime.Object, error) {
 	switch gv {
 	case v1.SchemeGroupVersion:
-		v1Obj, err := meta.UnmarshalToJSON(raw, v1.SchemeGroupVersion)
+		v1Obj := &v1.ReplicationController{}
+		err := json.Unmarshal(raw, v1Obj)
 		if err != nil {
 			return nil, nil, err
 		}
-		return v1Obj.(*v1.ReplicationController), v1Obj, nil
+		return v1Obj, v1Obj, nil
 	}
 	return nil, nil, kutil.ErrUnknown
 }
