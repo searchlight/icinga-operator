@@ -22,6 +22,15 @@ section_menu_id: setup
 Searchlight can be installed via installer script included in the [/hack/deploy](https://github.com/appscode/searchlight/tree/6.0.0-alpha.0/hack/deploy) folder.
 
 ```console
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh \
+    | bash
+```
+
+### Customizing Installer
+
+You can see the full list of flags available to installer using `-h` flag.
+
+```console
 $ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh | bash -s -- -h
 searchlight.sh - install searchlight operator
 
@@ -36,12 +45,7 @@ options:
     --run-on-master                run searchlight operator on master
     --enable-admission-webhook     configure admission webhook for searchlight CRDs
     --uninstall                    uninstall searchlight
-
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh \
-    | bash
 ```
-
-### Customizing Installer
 
 If you would like to run Searchlight operator pod in `master` instances, pass the `--run-on-master` flag:
 
