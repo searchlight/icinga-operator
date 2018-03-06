@@ -2,17 +2,17 @@
 title: Acknowledgement | Searchlight
 description: Acknowledgement
 menu:
-  product_searchlight_5.1.0:
+  product_searchlight_5.1.1:
     identifier: acknowledgement-searchlight
     name: Acknowledgement
     parent: welcome
     weight: 20
 product_name: searchlight
-menu_name: product_searchlight_5.1.0
+menu_name: product_searchlight_5.1.1
 section_menu_id: welcome
-url: /products/searchlight/5.1.0/welcome/acknowledgement/
+url: /products/searchlight/5.1.1/welcome/acknowledgement/
 aliases:
-  - /products/searchlight/5.1.0/acknowledgement/
+  - /products/searchlight/5.1.1/acknowledgement/
 ---
 
 # Acknowledgement

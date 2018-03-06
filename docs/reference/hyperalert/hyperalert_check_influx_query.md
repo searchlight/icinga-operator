@@ -1,13 +1,13 @@
 ---
 title: Check Influx Query
 menu:
-  product_searchlight_5.1.0:
+  product_searchlight_5.1.1:
     identifier: hyperalert-check-influx-query
     name: Check Influx Query
     parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_5.1.0
+menu_name: product_searchlight_5.1.1
 ---
 ## hyperalert check_influx_query
 

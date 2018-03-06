@@ -2,13 +2,13 @@
 title: Overview | Developer Guide
 description: Developer Guide Overview
 menu:
-  product_searchlight_5.1.0:
+  product_searchlight_5.1.1:
     identifier: developer-guide-readme
     name: Overview
     parent: developer-guide
     weight: 15
 product_name: searchlight
-menu_name: product_searchlight_5.1.0
+menu_name: product_searchlight_5.1.1
 section_menu_id: setup
 ---
 

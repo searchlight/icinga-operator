@@ -2,13 +2,13 @@
 title: Certificate
 description: Generate self-signed SSL certificates
 menu:
-  product_searchlight_5.1.0:
+  product_searchlight_5.1.1:
     identifier: certificate-searchlight
     name: Generate Certificate
     parent: setup
     weight: 20
 product_name: searchlight
-menu_name: product_searchlight_5.1.0
+menu_name: product_searchlight_5.1.1
 section_menu_id: setup
 ---
 

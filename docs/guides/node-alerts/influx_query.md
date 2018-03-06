@@ -1,13 +1,13 @@
 ---
 title: Influx Query
 menu:
-  product_searchlight_5.1.0:
+  product_searchlight_5.1.1:
     identifier: node-influx-query
     name: Influx Query
     parent: node-alert
     weight: 20
 product_name: searchlight
-menu_name: product_searchlight_5.1.0
+menu_name: product_searchlight_5.1.1
 section_menu_id: guides
 ---
 

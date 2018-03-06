@@ -1,13 +1,13 @@
 ---
 title: Pod Exists
 menu:
-  product_searchlight_5.1.0:
+  product_searchlight_5.1.1:
     identifier: guides-pod-exists
     name: Pod Exists
     parent: cluster-alert
     weight: 15
 product_name: searchlight
-menu_name: product_searchlight_5.1.0
+menu_name: product_searchlight_5.1.1
 section_menu_id: guides
 ---
 

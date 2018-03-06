@@ -2,18 +2,18 @@
 title: Weclome | Searchlight
 description: Welcome to Searchlight
 menu:
-  product_searchlight_5.1.0:
+  product_searchlight_5.1.1:
     identifier: readme-searchlight
     name: Readme
     parent: welcome
     weight: -1
 product_name: searchlight
-menu_name: product_searchlight_5.1.0
+menu_name: product_searchlight_5.1.1
 section_menu_id: welcome
-url: /products/searchlight/5.1.0/welcome/
+url: /products/searchlight/5.1.1/welcome/
 aliases:
-  - /products/searchlight/5.1.0/
-  - /products/searchlight/5.1.0/README/
+  - /products/searchlight/5.1.1/
+  - /products/searchlight/5.1.1/README/
 ---
 # Searchlight
 
