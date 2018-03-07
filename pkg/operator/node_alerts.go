@@ -33,7 +33,7 @@ func (op *Operator) initNodeAlertWatcher() {
 		AddFunc: func(obj interface{}) {
 			alert := obj.(*api.NodeAlert)
 			if op.validateAlert(alert) {
-				queue.Enqueue(op.caQueue.GetQueue(), obj)
+				queue.Enqueue(op.naQueue.GetQueue(), obj)
 			}
 		},
 		UpdateFunc: func(oldObj interface{}, newObj interface{}) {

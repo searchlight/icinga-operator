@@ -77,10 +77,10 @@ func run(opt operator.Options) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
 	icingaClient := icinga.NewClient(*cfg)
 	for {
-		r := icingaClient.Check().Get(nil).Do()
-		if r.Status == 200 {
+		if icingaClient.Check().Get(nil).Do().Status == 200 {
 			log.Infoln("connected to icinga api")
 			break
 		}
