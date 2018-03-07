@@ -11,21 +11,9 @@ func (op *Operator) initNamespaceWatcher() {
 	op.nsInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		DeleteFunc: func(obj interface{}) {
 			if ns, ok := obj.(*core.Namespace); ok {
-				if alerts, err := op.ExtClient.MonitoringV1alpha1().ClusterAlerts(ns.Name).List(metav1.ListOptions{}); err == nil {
-					for _, alert := range alerts.Items {
-						op.ExtClient.MonitoringV1alpha1().ClusterAlerts(alert.Namespace).Delete(alert.Name, &metav1.DeleteOptions{})
-					}
-				}
-				if alerts, err := op.ExtClient.MonitoringV1alpha1().NodeAlerts(ns.Name).List(metav1.ListOptions{}); err == nil {
-					for _, alert := range alerts.Items {
-						op.ExtClient.MonitoringV1alpha1().NodeAlerts(alert.Namespace).Delete(alert.Name, &metav1.DeleteOptions{})
-					}
-				}
-				if alerts, err := op.ExtClient.MonitoringV1alpha1().PodAlerts(ns.Name).List(metav1.ListOptions{}); err == nil {
-					for _, alert := range alerts.Items {
-						op.ExtClient.MonitoringV1alpha1().PodAlerts(alert.Namespace).Delete(alert.Name, &metav1.DeleteOptions{})
-					}
-				}
+				op.ExtClient.MonitoringV1alpha1().ClusterAlerts(ns.Name).DeleteCollection(&metav1.DeleteOptions{}, metav1.ListOptions{})
+				op.ExtClient.MonitoringV1alpha1().NodeAlerts(ns.Name).DeleteCollection(&metav1.DeleteOptions{}, metav1.ListOptions{})
+				op.ExtClient.MonitoringV1alpha1().PodAlerts(ns.Name).DeleteCollection(&metav1.DeleteOptions{}, metav1.ListOptions{})
 			}
 		},
 	})
