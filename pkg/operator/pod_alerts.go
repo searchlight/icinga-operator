@@ -255,17 +255,18 @@ func (op *Operator) getMappedPodList(namespace string, mc *paMapperConf) (map[st
 		return nil, err
 	}
 	if mc.PodName != "" {
-		if pod, err := op.KubeClient.CoreV1().Pods(namespace).Get(mc.PodName, metav1.GetOptions{}); err == nil {
+		if pod, err := op.pLister.Pods(namespace).Get(mc.PodName); err == nil {
 			if sel.Matches(labels.Set(pod.Labels)) {
 				mappedPodList[pod.Name] = pod
 			}
 		}
 	} else {
-		if podList, err := op.KubeClient.CoreV1().Pods(namespace).List(metav1.ListOptions{LabelSelector: sel.String()}); err != nil {
+		if podList, err := op.pLister.Pods(namespace).List(sel); err != nil {
 			return nil, err
 		} else {
-			for i, pod := range podList.Items {
-				mappedPodList[pod.Name] = &podList.Items[i]
+			for i := range podList {
+				pod := podList[i]
+				mappedPodList[pod.Name] = pod
 			}
 		}
 	}

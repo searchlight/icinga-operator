@@ -16,7 +16,6 @@ import (
 	"github.com/golang/glog"
 	"github.com/pkg/errors"
 	core "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/tools/cache"
 )
@@ -164,7 +163,6 @@ func (op *Operator) EnsureIcingaNodeAlert(alert *api.NodeAlert, node *core.Node)
 			`Reason: %v`,
 			err,
 		)
-		return
 	}
 	return
 }
@@ -244,17 +242,18 @@ func (op *Operator) getMappedNodeList(namespace string, mc *naMapperConf) (map[s
 	sel := labels.SelectorFromSet(mc.Selector)
 
 	if mc.NodeName != "" {
-		if node, err := op.KubeClient.CoreV1().Nodes().Get(mc.NodeName, metav1.GetOptions{}); err == nil {
+		if node, err := op.nLister.Get(mc.NodeName); err == nil {
 			if sel.Matches(labels.Set(node.Labels)) {
 				mappedPodList[node.Name] = node
 			}
 		}
 	} else {
-		if nodeList, err := op.KubeClient.CoreV1().Nodes().List(metav1.ListOptions{LabelSelector: sel.String()}); err != nil {
+		if nodeList, err := op.nLister.List(sel); err != nil {
 			return nil, err
 		} else {
-			for i, node := range nodeList.Items {
-				mappedPodList[node.Name] = &nodeList.Items[i]
+			for i := range nodeList {
+				node := nodeList[i]
+				mappedPodList[node.Name] = node
 			}
 		}
 	}
