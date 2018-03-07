@@ -20,7 +20,7 @@ func (op *Operator) initNodeAlertWatcher() {
 	op.naInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			alert := obj.(*api.NodeAlert)
-			if op.isValid(alert) {
+			if err := op.isValid(alert); err == nil {
 				queue.Enqueue(op.naQueue.GetQueue(), obj)
 			}
 		},
@@ -28,7 +28,7 @@ func (op *Operator) initNodeAlertWatcher() {
 			old := oldObj.(*api.NodeAlert)
 			nu := newObj.(*api.NodeAlert)
 
-			if !op.isValid(nu) {
+			if err := op.isValid(nu); err != nil {
 				return
 			}
 			if !equalNodeAlert(old, nu) {

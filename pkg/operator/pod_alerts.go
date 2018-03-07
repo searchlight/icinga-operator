@@ -21,7 +21,7 @@ func (op *Operator) initPodAlertWatcher() {
 	op.paInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			alert := obj.(*api.PodAlert)
-			if op.isValid(alert) {
+			if err := op.isValid(alert); err == nil {
 				queue.Enqueue(op.paQueue.GetQueue(), obj)
 			}
 		},
@@ -29,7 +29,7 @@ func (op *Operator) initPodAlertWatcher() {
 			old := oldObj.(*api.PodAlert)
 			nu := newObj.(*api.PodAlert)
 
-			if !op.isValid(nu) {
+			if err := op.isValid(nu); err != nil {
 				return
 			}
 			if !equalPodAlert(old, nu) {

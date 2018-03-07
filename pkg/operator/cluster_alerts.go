@@ -20,7 +20,7 @@ func (op *Operator) initClusterAlertWatcher() {
 	op.caInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			alert := obj.(*api.ClusterAlert)
-			if op.isValid(alert) {
+			if err := op.isValid(alert); err == nil {
 				queue.Enqueue(op.caQueue.GetQueue(), obj)
 			}
 		},
@@ -44,8 +44,10 @@ func (op *Operator) processClusterAlertUpdate(old, nu *api.ClusterAlert) bool {
 	if nu.DeletionTimestamp != nil && core_util.HasFinalizer(nu.ObjectMeta, monitoring.GroupName) {
 		return true
 	}
-	if !reflect.DeepEqual(old.Spec, nu.Spec) && op.isValid(nu) {
-		return true
+	if !reflect.DeepEqual(old.Spec, nu.Spec) {
+		if err := op.isValid(nu); err == nil {
+			return true
+		}
 	}
 	return false
 }

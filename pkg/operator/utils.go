@@ -11,10 +11,11 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func (op *Operator) isValid(alert api.Alert) bool {
+func (op *Operator) isValid(alert api.Alert) error {
 	// Validate IcingaCommand & it's variables.
 	// And also check supported IcingaState
-	if ok, err := alert.IsValid(op.KubeClient); !ok {
+	err := alert.IsValid(op.KubeClient)
+	if err != nil {
 		op.recorder.Eventf(
 			alert.ObjectReference(),
 			core.EventTypeWarning,
@@ -22,9 +23,8 @@ func (op *Operator) isValid(alert api.Alert) bool {
 			`Reason: %v`,
 			err,
 		)
-		return false
 	}
-	return true
+	return err
 }
 
 func findPodAlert(kc kubernetes.Interface, lister mon_listers.PodAlertLister, obj metav1.ObjectMeta) ([]*api.PodAlert, error) {
@@ -36,7 +36,7 @@ func findPodAlert(kc kubernetes.Interface, lister mon_listers.PodAlertLister, ob
 	result := make([]*api.PodAlert, 0)
 	for i := range alerts {
 		alert := alerts[i]
-		if ok, _ := alert.IsValid(kc); !ok {
+		if err := alert.IsValid(kc); err != nil {
 			continue
 		}
 
@@ -64,7 +64,7 @@ func findNodeAlert(kc kubernetes.Interface, lister mon_listers.NodeAlertLister, 
 	result := make([]*api.NodeAlert, 0)
 	for i := range alerts {
 		alert := alerts[i]
-		if ok, _ := alert.IsValid(kc); !ok {
+		if err := alert.IsValid(kc); err != nil {
 			continue
 		}
 

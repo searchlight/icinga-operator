@@ -36,21 +36,21 @@ func (a PodAlert) GetAlertInterval() time.Duration {
 	return a.Spec.AlertInterval.Duration
 }
 
-func (a PodAlert) IsValid(kc kubernetes.Interface) (bool, error) {
+func (a PodAlert) IsValid(kc kubernetes.Interface) error {
 	if a.Spec.PodName != nil && a.Spec.Selector != nil {
-		return false, fmt.Errorf("can't specify both pod name and selector")
+		return fmt.Errorf("can't specify both pod name and selector")
 	}
 	if a.Spec.PodName == nil && a.Spec.Selector == nil {
-		return false, fmt.Errorf("specify either pod name or selector")
+		return fmt.Errorf("specify either pod name or selector")
 	}
 
 	cmd, ok := PodCommands[a.Spec.Check]
 	if !ok {
-		return false, fmt.Errorf("%s is not a valid pod check command", a.Spec.Check)
+		return fmt.Errorf("%s is not a valid pod check command", a.Spec.Check)
 	}
 	for k := range a.Spec.Vars {
 		if _, ok := cmd.Vars[k]; !ok {
-			return false, fmt.Errorf("var %s is unsupported for check command %s", k, a.Spec.Check)
+			return fmt.Errorf("var %s is unsupported for check command %s", k, a.Spec.Check)
 		}
 	}
 	for _, rcv := range a.Spec.Receivers {
@@ -62,12 +62,11 @@ func (a PodAlert) IsValid(kc kubernetes.Interface) (bool, error) {
 			}
 		}
 		if !found {
-			return false, fmt.Errorf("state %s is unsupported for check command %s", rcv.State, a.Spec.Check)
+			return fmt.Errorf("state %s is unsupported for check command %s", rcv.State, a.Spec.Check)
 		}
 	}
 
-	err := checkNotifiers(kc, a)
-	return err == nil, err
+	return checkNotifiers(kc, a)
 }
 
 func (a PodAlert) GetNotifierSecretName() string {

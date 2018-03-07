@@ -13,7 +13,7 @@ type Alert interface {
 	Command() string
 	GetCheckInterval() time.Duration
 	GetAlertInterval() time.Duration
-	IsValid(kc kubernetes.Interface) (bool, error)
+	IsValid(kc kubernetes.Interface) error
 	GetNotifierSecretName() string
 	GetReceivers() []Receiver
 	ObjectReference() *core.ObjectReference

@@ -73,7 +73,7 @@ func (a *AdmissionHook) Admit(req *admission.AdmissionRequest) *admission.Admiss
 	if err != nil {
 		return hookapi.StatusBadRequest(err)
 	}
-	_, err = alert.IsValid(a.client)
+	err = alert.IsValid(a.client)
 	if err != nil {
 		return hookapi.StatusForbidden(err)
 	}
