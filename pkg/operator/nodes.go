@@ -2,7 +2,6 @@ package operator
 
 import (
 	"encoding/json"
-	"fmt"
 	"reflect"
 
 	"github.com/appscode/go/log"
@@ -14,6 +13,8 @@ import (
 	"github.com/golang/glog"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/client-go/tools/cache"
 )
 
@@ -24,17 +25,11 @@ func (op *Operator) initNodeWatcher() {
 		AddFunc: func(obj interface{}) {
 			queue.Enqueue(op.nQueue.GetQueue(), obj)
 		},
-		UpdateFunc: func(old interface{}, new interface{}) {
-			oldNode, ok := old.(*core.Node)
-			if !ok {
-				return
-			}
-			newNode, ok := new.(*core.Node)
-			if !ok {
-				return
-			}
-			if !reflect.DeepEqual(oldNode.Labels, newNode.Labels) {
-				queue.Enqueue(op.nQueue.GetQueue(), new)
+		UpdateFunc: func(oldObj interface{}, newObj interface{}) {
+			old := oldObj.(*core.Node)
+			nu := newObj.(*core.Node)
+			if !reflect.DeepEqual(old.Labels, nu.Labels) {
+				queue.Enqueue(op.nQueue.GetQueue(), newObj)
 			}
 		},
 		DeleteFunc: func(obj interface{}) {
@@ -44,9 +39,6 @@ func (op *Operator) initNodeWatcher() {
 	op.nLister = op.kubeInformerFactory.Core().V1().Nodes().Lister()
 }
 
-// syncToStdout is the business logic of the controller. In this controller it simply prints
-// information about the deployment to stdout. In case an error happened, it has to simply return the error.
-// The retry logic should not be part of the business logic.
 func (op *Operator) reconcileNode(key string) error {
 	obj, exists, err := op.nInformer.GetIndexer().GetByKey(key)
 	if err != nil {
@@ -65,8 +57,9 @@ func (op *Operator) reconcileNode(key string) error {
 			log.Errorf("Failed to delete alert for Node %s", name)
 		}
 	} else {
+		log.Infof("Sync/Add/Update for Node %s\n", key)
+
 		node := obj.(*core.Node)
-		log.Infof("Sync/Add/Update for Node %s\n", node.GetName())
 		if err := op.EnsureNode(node); err != nil {
 			log.Errorf("Failed to patch alert for Node %s@%s", node.Name, node.Namespace)
 		}
@@ -77,68 +70,53 @@ func (op *Operator) reconcileNode(key string) error {
 func (op *Operator) EnsureNode(node *core.Node) error {
 	log.Infof("Sync/Add/Update for Node %s\n", node.GetName())
 
-	oldAlerts := make([]*api.NodeAlert, 0)
-
-	oldAlertNames := make([]string, 0)
+	oldAlerts := sets.NewString()
 	if val, ok := node.Annotations[annotationAlertsName]; ok {
-		if err := json.Unmarshal([]byte(val), &oldAlertNames); err != nil {
+		names := make([]string, 0)
+		if err := json.Unmarshal([]byte(val), &names); err != nil {
 			return err
 		}
-	}
-	for _, l := range oldAlertNames {
-		namespace, name, err := cache.SplitMetaNamespaceKey(l)
-		if err != nil {
-			return err
-		}
-
-		oldAlerts = append(oldAlerts, &api.NodeAlert{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      name,
-				Namespace: namespace,
-			},
-		})
+		oldAlerts.Insert(names...)
 	}
 
 	newAlerts, err := util.FindNodeAlert(op.naLister, node.ObjectMeta)
 	if err != nil {
 		return err
 	}
-
-	type change struct {
-		old *api.NodeAlert
-		new *api.NodeAlert
-	}
-	diff := make(map[string]*change)
-	for i := range oldAlerts {
-		diff[oldAlerts[i].Name] = &change{old: oldAlerts[i]}
-	}
-
-	alertNames := make([]string, 0)
-
+	newKeys := make([]string, len(newAlerts))
 	for i := range newAlerts {
-		alertNames = append(alertNames, fmt.Sprintf("%s/%s", newAlerts[i].Namespace, newAlerts[i].Name))
-		if ch, ok := diff[newAlerts[i].Name]; ok {
-			ch.new = newAlerts[i]
-		} else {
-			diff[newAlerts[i].Name] = &change{new: newAlerts[i]}
+		alert := newAlerts[i]
+		op.EnsureIcingaNodeAlert(alert, node)
+
+		key, err := cache.MetaNamespaceKeyFunc(alert)
+		if err != nil {
+			return err
+		}
+		newKeys[i] = key
+		if oldAlerts.Has(key) {
+			oldAlerts.Delete(key)
 		}
 	}
 
-	for alert := range diff {
-		ch := diff[alert]
-		if ch.old != nil && ch.new == nil {
-			op.EnsureIcingaNodeAlertDeleted(ch.old, node)
-		} else {
-			op.EnsureIcingaNodeAlert(ch.new, node)
+	for _, key := range oldAlerts.List() {
+		namespace, name, err := cache.SplitMetaNamespaceKey(key)
+		if err != nil {
+			return err
 		}
+		op.EnsureIcingaNodeAlertDeleted(&api.NodeAlert{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      name,
+				Namespace: namespace,
+			},
+		}, node)
 	}
 
 	_, vt, err := core_util.PatchNode(op.KubeClient, node, func(in *core.Node) *core.Node {
-		if len(newAlerts) > 0 {
-			if in.Annotations == nil {
-				in.Annotations = make(map[string]string, 0)
-			}
-			data, _ := json.Marshal(alertNames)
+		if in.Annotations == nil {
+			in.Annotations = make(map[string]string, 0)
+		}
+		if len(newKeys) > 0 {
+			data, _ := json.Marshal(newKeys)
 			in.Annotations[annotationAlertsName] = string(data)
 		} else {
 			delete(in.Annotations, annotationAlertsName)
@@ -148,25 +126,23 @@ func (op *Operator) EnsureNode(node *core.Node) error {
 	if err != nil {
 		log.Errorf("Failed to %v Node %s", vt, node.Name)
 	}
-	return nil
+	return err
 }
 
 func (op *Operator) ForceDeleteIcingaObjectsForNode(name string) error {
-	namespaceList, err := op.KubeClient.CoreV1().Namespaces().List(metav1.ListOptions{})
+	namespaces, err := op.nsLister.List(labels.Everything())
 	if err != nil {
 		return err
 	}
-
-	for _, ns := range namespaceList.Items {
-		nh := icinga.IcingaHost{
+	for _, ns := range namespaces {
+		h := icinga.IcingaHost{
 			ObjectName:     name,
 			Type:           icinga.TypeNode,
 			AlertNamespace: ns.Name,
 		}
-		err := op.nodeHost.ForceDeleteIcingaHost(nh)
-
+		err := op.nodeHost.ForceDeleteIcingaHost(h)
 		if err != nil {
-			host, _ := nh.Name()
+			host, _ := h.Name()
 			log.Errorf(`Failed to delete Icinga Host "%s" for Node %s`, host, name)
 		}
 	}

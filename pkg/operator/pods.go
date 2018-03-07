@@ -21,27 +21,18 @@ func (op *Operator) initPodWatcher() {
 	op.pQueue = queue.New("Pod", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcilePod)
 	op.pInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
-			if pod, ok := obj.(*core.Pod); ok {
-				if pod.Status.PodIP == "" {
-					log.Warningf("Skipping pod %s@%s, since it has no IP", pod.Name, pod.Namespace)
-					return
-				}
+			pod := obj.(*core.Pod)
+			if pod.Status.PodIP != "" {
+				log.Warningf("Skipping pod %s/%s, since it has no IP", pod.Namespace, pod.Name)
+				return
 			}
 			queue.Enqueue(op.pQueue.GetQueue(), obj)
 		},
-		UpdateFunc: func(old interface{}, new interface{}) {
-			oldPod, ok := old.(*core.Pod)
-			if !ok {
-				log.Errorln("invalid Pod object")
-				return
-			}
-			newPod, ok := new.(*core.Pod)
-			if !ok {
-				log.Errorln("invalid Pod object")
-				return
-			}
-			if !reflect.DeepEqual(oldPod.Labels, newPod.Labels) || oldPod.Status.PodIP != newPod.Status.PodIP {
-				queue.Enqueue(op.pQueue.GetQueue(), new)
+		UpdateFunc: func(oldObj interface{}, newObj interface{}) {
+			old := oldObj.(*core.Pod)
+			nu := newObj.(*core.Pod)
+			if !reflect.DeepEqual(old.Labels, nu.Labels) || old.Status.PodIP != nu.Status.PodIP {
+				queue.Enqueue(op.pQueue.GetQueue(), newObj)
 			}
 		},
 		DeleteFunc: func(obj interface{}) {
@@ -51,9 +42,6 @@ func (op *Operator) initPodWatcher() {
 	op.pLister = op.kubeInformerFactory.Core().V1().Pods().Lister()
 }
 
-// syncToStdout is the business logic of the controller. In this controller it simply prints
-// information about the deployment to stdout. In case an error happened, it has to simply return the error.
-// The retry logic should not be part of the business logic.
 func (op *Operator) reconcilePod(key string) error {
 	obj, exists, err := op.pInformer.GetIndexer().GetByKey(key)
 	if err != nil {
@@ -68,11 +56,17 @@ func (op *Operator) reconcilePod(key string) error {
 		if err != nil {
 			return err
 		}
-
-		if err := op.ForceDeleteIcingaObjectsForPod(namespace, name); err != nil {
+		err = op.podHost.ForceDeleteIcingaHost(icinga.IcingaHost{
+			Type:           icinga.TypePod,
+			AlertNamespace: namespace,
+			ObjectName:     name,
+		})
+		if err != nil {
 			log.Errorf("Failed to delete alert for Pod %s@%s", name, namespace)
 		}
 	} else {
+		log.Infof("Sync/Add/Update for Pod %s\n", key)
+
 		pod := obj.(*core.Pod)
 		if err := op.EnsurePod(pod); err != nil {
 			log.Errorf("Failed to patch alert for Pod %s@%s", pod.Name, pod.Namespace)
@@ -82,8 +76,6 @@ func (op *Operator) reconcilePod(key string) error {
 }
 
 func (op *Operator) EnsurePod(pod *core.Pod) error {
-	log.Infof("Sync/Add/Update for Pod %s\n", pod.GetName())
-
 	oldAlerts := make([]*api.PodAlert, 0)
 
 	oldAlertNames := make([]string, 0)
@@ -153,20 +145,4 @@ func (op *Operator) EnsurePod(pod *core.Pod) error {
 	}
 
 	return nil
-}
-
-func (op *Operator) ForceDeleteIcingaObjectsForPod(namespace, name string) (err error) {
-	defer func() {
-		if err != nil {
-			log.Errorln(err)
-			return
-		}
-	}()
-
-	err = op.podHost.ForceDeleteIcingaHost(icinga.IcingaHost{
-		Type:           icinga.TypePod,
-		AlertNamespace: namespace,
-		ObjectName:     name,
-	})
-	return
 }

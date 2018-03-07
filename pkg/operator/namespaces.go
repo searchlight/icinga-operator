@@ -17,4 +17,5 @@ func (op *Operator) initNamespaceWatcher() {
 			}
 		},
 	})
+	op.nsLister = op.kubeInformerFactory.Core().V1().Namespaces().Lister()
 }

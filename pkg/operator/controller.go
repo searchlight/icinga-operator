@@ -56,6 +56,7 @@ type Operator struct {
 
 	// Namespace
 	nsInformer cache.SharedIndexInformer
+	nsLister   core_listers.NamespaceLister
 
 	// Node
 	nQueue    *queue.Worker
