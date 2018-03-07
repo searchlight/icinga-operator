@@ -66,7 +66,7 @@ func (op *Operator) reconcileNode(key string) error {
 		}
 	} else {
 		node := obj.(*core.Node)
-		fmt.Printf("Sync/Add/Update for Node %s\n", node.GetName())
+		log.Infof("Sync/Add/Update for Node %s\n", node.GetName())
 		if err := op.EnsureNode(node); err != nil {
 			log.Errorf("Failed to patch alert for Node %s@%s", node.Name, node.Namespace)
 		}
@@ -75,7 +75,7 @@ func (op *Operator) reconcileNode(key string) error {
 }
 
 func (op *Operator) EnsureNode(node *core.Node) error {
-	fmt.Printf("Sync/Add/Update for Node %s\n", node.GetName())
+	log.Infof("Sync/Add/Update for Node %s\n", node.GetName())
 
 	oldAlerts := make([]*api.NodeAlert, 0)
 

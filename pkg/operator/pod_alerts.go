@@ -13,7 +13,6 @@ import (
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	mon_util "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/util"
 	"github.com/appscode/searchlight/pkg/eventer"
-	"github.com/appscode/searchlight/pkg/util"
 	"github.com/golang/glog"
 	"github.com/pkg/errors"
 	core "k8s.io/api/core/v1"
@@ -33,31 +32,23 @@ func (op *Operator) initPodAlertWatcher() {
 	op.paQueue = queue.New("PodAlert", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcilePodAlert)
 	op.paInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
-			if alert, ok := obj.(*api.PodAlert); ok {
-				if !op.validatePodAlert(alert) {
-					log.Errorf(`Invalid PodAlert "%s@%s"`, alert.Name, alert.Namespace)
-					return
-				}
-				queue.Enqueue(op.paQueue.GetQueue(), obj)
+			alert := obj.(*api.PodAlert)
+			if op.validateAlert(alert) {
+				queue.Enqueue(op.caQueue.GetQueue(), obj)
 			}
 		},
 		UpdateFunc: func(oldObj interface{}, newObj interface{}) {
-			oldAlert, ok := oldObj.(*api.PodAlert)
-			if !ok {
-				return
-			}
-			newAlert, ok := newObj.(*api.PodAlert)
-			if !ok {
-				return
-			}
+			old := oldObj.(*api.PodAlert)
+			nu := newObj.(*api.PodAlert)
+
 			// DeepEqual old & new
 			// DeepEqual MapperConfiguration of old & new
 			// Patch PodAlert with necessary annotation
-			newAlert, proceed, err := op.processPodAlertUpdate(oldAlert, newAlert)
+			nu, proceed, err := op.processPodAlertUpdate(old, nu)
 			if err != nil {
 				log.Error(err)
 			} else if proceed {
-				queue.Enqueue(op.paQueue.GetQueue(), newAlert)
+				queue.Enqueue(op.paQueue.GetQueue(), nu)
 			}
 		},
 		DeleteFunc: func(obj interface{}) {
@@ -67,9 +58,6 @@ func (op *Operator) initPodAlertWatcher() {
 	op.paLister = op.monInformerFactory.Monitoring().V1alpha1().PodAlerts().Lister()
 }
 
-// syncToStdout is the business logic of the controller. In this controller it simply prints
-// information about the deployment to stdout. In case an error happened, it has to simply return the error.
-// The retry logic should not be part of the business logic.
 func (op *Operator) reconcilePodAlert(key string) error {
 	obj, exists, err := op.paInformer.GetIndexer().GetByKey(key)
 	if err != nil {
@@ -96,7 +84,7 @@ func (op *Operator) reconcilePodAlert(key string) error {
 				return err
 			}
 		} else {
-			fmt.Printf("Sync/Add/Update for PodAlert %s\n", alert.GetName())
+			log.Infof("Sync/Add/Update for PodAlert %s\n", alert.GetName())
 
 			// Patch PodAlert to add Finalizer
 			alert, _, _ = mon_util.PatchPodAlert(op.ExtClient.MonitoringV1alpha1(), alert, func(in *api.PodAlert) *api.PodAlert {
@@ -172,70 +160,39 @@ func (op *Operator) EnsurePodAlertDeleted(alert *api.PodAlert) error {
 }
 
 func (op *Operator) EnsureIcingaPodAlert(alert *api.PodAlert, pod *core.Pod) (err error) {
-	defer func() {
-		if err == nil {
-			op.recorder.Eventf(
-				alert.ObjectReference(),
-				core.EventTypeNormal,
-				eventer.EventReasonSuccessfulSync,
-				`Applied PodAlert: "%v"`,
-				alert.Name,
-			)
-			return
-		} else {
-			op.recorder.Eventf(
-				alert.ObjectReference(),
-				core.EventTypeWarning,
-				eventer.EventReasonFailedToSync,
-				`Fail to be apply PodAlert: "%v". Reason: %v`,
-				alert.Name,
-				err,
-			)
-			log.Errorln(err)
-			return
-		}
-	}()
 	err = op.podHost.Reconcile(alert.DeepCopy(), pod.DeepCopy())
+	if err != nil {
+		op.recorder.Eventf(
+			alert.ObjectReference(),
+			core.EventTypeWarning,
+			eventer.EventReasonFailedToSync,
+			`Reason: %v`,
+			alert.Name,
+			err,
+		)
+	}
 	return err
 }
 
 func (op *Operator) EnsureIcingaPodAlertDeleted(alert *api.PodAlert, pod *core.Pod) (err error) {
-	defer func() {
-		if err == nil {
-			if alert != nil {
-				op.recorder.Eventf(
-					alert.ObjectReference(),
-					core.EventTypeNormal,
-					eventer.EventReasonSuccessfulDelete,
-					`Deleted Icinga objects of PodAlert "%s@%s" for Pod "%s@%s"`,
-					alert.Name, alert.Namespace, pod.Name, pod.Namespace,
-				)
-			}
-			return
-		} else {
-			if alert != nil {
-				op.recorder.Eventf(
-					alert.ObjectReference(),
-					core.EventTypeWarning,
-					eventer.EventReasonFailedToDelete,
-					`Fail to delete Icinga objects of PodAlert "%s@%s" for Pod "%s@%s". Reason: %v`,
-					alert.Name, alert.Namespace, pod.Name, pod.Namespace,
-					err,
-				)
-			}
-			log.Errorln(err)
-			return
-		}
-	}()
-
 	err = op.podHost.Delete(alert, pod)
+	if err != nil && alert != nil {
+		op.recorder.Eventf(
+			alert.ObjectReference(),
+			core.EventTypeWarning,
+			eventer.EventReasonFailedToDelete,
+			`Fail to delete Icinga objects of PodAlert "%s@%s" for Pod "%s@%s". Reason: %v`,
+			alert.Name, alert.Namespace, pod.Name, pod.Namespace,
+			err,
+		)
+	}
 	return err
 }
 
 func (op *Operator) processPodAlertUpdate(oldAlert, newAlert *api.PodAlert) (*api.PodAlert, bool, error) {
 	// Check for changes in Spec
 	if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
-		if !op.validatePodAlert(newAlert) {
+		if !op.validateAlert(newAlert) {
 			return nil, false, errors.Errorf(`Invalid PodAlert "%s@%s"`, newAlert.Name, newAlert.Namespace)
 		}
 
@@ -339,34 +296,4 @@ func (op *Operator) setPodAlertNamesInAnnotation(pod *core.Pod, alert *api.PodAl
 	if err != nil {
 		log.Errorf("Failed to patch Pod %s@%s.", pod.Name, pod.Namespace)
 	}
-}
-
-func (op *Operator) validatePodAlert(alert *api.PodAlert) bool {
-	// Validate IcingaCommand & it's variables.
-	// And also check supported IcingaState
-	if ok, err := alert.IsValid(); !ok {
-		op.recorder.Eventf(
-			alert.ObjectReference(),
-			core.EventTypeWarning,
-			eventer.EventReasonFailedToCreate,
-			`Reason: %v`,
-			err,
-		)
-		return false
-	}
-
-	// Validate Notifiers configurations
-	if err := util.CheckNotifiers(op.KubeClient, alert); err != nil {
-		op.recorder.Eventf(
-			alert.ObjectReference(),
-			core.EventTypeWarning,
-			eventer.EventReasonBadNotifier,
-			`Bad notifier config for PodAlert: "%s@%s". Reason: %v`,
-			alert.Name, alert.Namespace,
-			err,
-		)
-		return false
-	}
-
-	return true
 }

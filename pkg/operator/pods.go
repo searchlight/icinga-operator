@@ -2,7 +2,6 @@ package operator
 
 import (
 	"encoding/json"
-	"fmt"
 	"reflect"
 
 	"github.com/appscode/go/log"
@@ -83,7 +82,7 @@ func (op *Operator) reconcilePod(key string) error {
 }
 
 func (op *Operator) EnsurePod(pod *core.Pod) error {
-	fmt.Printf("Sync/Add/Update for Pod %s\n", pod.GetName())
+	log.Infof("Sync/Add/Update for Pod %s\n", pod.GetName())
 
 	oldAlerts := make([]*api.PodAlert, 0)
 
