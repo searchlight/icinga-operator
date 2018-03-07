@@ -82,7 +82,7 @@ func (op *Operator) EnsurePod(pod *core.Pod) error {
 		oldAlerts.Insert(names...)
 	}
 
-	newAlerts, err := FindPodAlert(op.paLister, pod.ObjectMeta)
+	newAlerts, err := findPodAlert(op.KubeClient, op.paLister, pod.ObjectMeta)
 	if err != nil {
 		return err
 	}

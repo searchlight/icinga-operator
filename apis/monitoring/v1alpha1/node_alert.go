@@ -5,6 +5,7 @@ import (
 	"time"
 
 	core "k8s.io/api/core/v1"
+	"k8s.io/client-go/kubernetes"
 )
 
 const (
@@ -35,7 +36,7 @@ func (a NodeAlert) GetAlertInterval() time.Duration {
 	return a.Spec.AlertInterval.Duration
 }
 
-func (a NodeAlert) IsValid() (bool, error) {
+func (a NodeAlert) IsValid(kc kubernetes.Interface) (bool, error) {
 	if a.Spec.NodeName != nil && len(a.Spec.Selector) > 0 {
 		return false, fmt.Errorf("can't specify both node name and selector")
 	}
@@ -61,7 +62,9 @@ func (a NodeAlert) IsValid() (bool, error) {
 			return false, fmt.Errorf("state %s is unsupported for check command %s", rcv.State, a.Spec.Check)
 		}
 	}
-	return true, nil
+
+	err := checkNotifiers(kc, a)
+	return err == nil, err
 }
 
 func (a NodeAlert) GetNotifierSecretName() string {

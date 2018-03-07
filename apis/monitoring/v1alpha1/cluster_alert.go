@@ -5,6 +5,7 @@ import (
 	"time"
 
 	core "k8s.io/api/core/v1"
+	"k8s.io/client-go/kubernetes"
 )
 
 const (
@@ -35,7 +36,7 @@ func (a ClusterAlert) GetAlertInterval() time.Duration {
 	return a.Spec.AlertInterval.Duration
 }
 
-func (a ClusterAlert) IsValid() (bool, error) {
+func (a ClusterAlert) IsValid(kc kubernetes.Interface) (bool, error) {
 	cmd, ok := ClusterCommands[a.Spec.Check]
 	if !ok {
 		return false, fmt.Errorf("'%s' is not a valid cluster check command", a.Spec.Check)
@@ -57,7 +58,9 @@ func (a ClusterAlert) IsValid() (bool, error) {
 			return false, fmt.Errorf("state '%s' is unsupported for check command %s", rcv.State, a.Spec.Check)
 		}
 	}
-	return true, nil
+
+	err := checkNotifiers(kc, a)
+	return err == nil, err
 }
 
 func (a ClusterAlert) GetNotifierSecretName() string {

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	core "k8s.io/api/core/v1"
+	"k8s.io/client-go/kubernetes"
 )
 
 const (
@@ -35,7 +36,7 @@ func (a PodAlert) GetAlertInterval() time.Duration {
 	return a.Spec.AlertInterval.Duration
 }
 
-func (a PodAlert) IsValid() (bool, error) {
+func (a PodAlert) IsValid(kc kubernetes.Interface) (bool, error) {
 	if a.Spec.PodName != nil && a.Spec.Selector != nil {
 		return false, fmt.Errorf("can't specify both pod name and selector")
 	}
@@ -64,7 +65,9 @@ func (a PodAlert) IsValid() (bool, error) {
 			return false, fmt.Errorf("state %s is unsupported for check command %s", rcv.State, a.Spec.Check)
 		}
 	}
-	return true, nil
+
+	err := checkNotifiers(kc, a)
+	return err == nil, err
 }
 
 func (a PodAlert) GetNotifierSecretName() string {

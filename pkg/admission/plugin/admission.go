@@ -2,16 +2,21 @@ package plugin
 
 import (
 	"encoding/json"
+	"sync"
 
 	hookapi "github.com/appscode/kutil/admission/api"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	admission "k8s.io/api/admission/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/sets"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )
 
 type AdmissionHook struct {
+	client      kubernetes.Interface
+	lock        sync.RWMutex
+	initialized bool
 }
 
 func (a *AdmissionHook) Resource() (plural schema.GroupVersionResource, singular string) {
@@ -21,6 +26,19 @@ func (a *AdmissionHook) Resource() (plural schema.GroupVersionResource, singular
 			Resource: "admissionreviews",
 		},
 		"admissionreview"
+}
+
+func (a *AdmissionHook) Initialize(config *rest.Config, stopCh <-chan struct{}) error {
+	a.lock.Lock()
+	defer a.lock.Unlock()
+
+	a.initialized = true
+
+	var err error
+	if a.client, err = kubernetes.NewForConfig(config); err != nil {
+		return err
+	}
+	return err
 }
 
 func (a *AdmissionHook) Admit(req *admission.AdmissionRequest) *admission.AdmissionResponse {
@@ -35,43 +53,31 @@ func (a *AdmissionHook) Admit(req *admission.AdmissionRequest) *admission.Admiss
 		return status
 	}
 
+	a.lock.RLock()
+	defer a.lock.RUnlock()
+	if !a.initialized {
+		return hookapi.StatusUninitialized()
+	}
+
+	var alert api.Alert
 	switch req.Kind.Kind {
 	case api.ResourceKindClusterAlert:
-		obj := &api.ClusterAlert{}
-		err := json.Unmarshal(req.Object.Raw, obj)
-		if err != nil {
-			return hookapi.StatusBadRequest(err)
-		}
-		_, err = obj.IsValid()
-		if err != nil {
-			return hookapi.StatusForbidden(err)
-		}
+		alert = &api.ClusterAlert{}
 	case api.ResourceKindNodeAlert:
-		obj := &api.NodeAlert{}
-		err := json.Unmarshal(req.Object.Raw, obj)
-		if err != nil {
-			return hookapi.StatusBadRequest(err)
-		}
-		_, err = obj.IsValid()
-		if err != nil {
-			return hookapi.StatusForbidden(err)
-		}
+		alert = &api.NodeAlert{}
 	case api.ResourceKindPodAlert:
-		obj := &api.PodAlert{}
-		err := json.Unmarshal(req.Object.Raw, obj)
-		if err != nil {
-			return hookapi.StatusBadRequest(err)
-		}
-		_, err = obj.IsValid()
-		if err != nil {
-			return hookapi.StatusForbidden(err)
-		}
+		alert = &api.PodAlert{}
+	}
+
+	err := json.Unmarshal(req.Object.Raw, alert)
+	if err != nil {
+		return hookapi.StatusBadRequest(err)
+	}
+	_, err = alert.IsValid(a.client)
+	if err != nil {
+		return hookapi.StatusForbidden(err)
 	}
 
 	status.Allowed = true
 	return status
-}
-
-func (a *AdmissionHook) Initialize(cfg *rest.Config, stopCh <-chan struct{}) error {
-	return nil
 }

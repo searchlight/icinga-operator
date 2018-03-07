@@ -32,7 +32,7 @@ func (op *Operator) initPodAlertWatcher() {
 			if !op.isValid(nu) {
 				return
 			}
-			if !PodAlertEqual(old, nu) {
+			if !equalPodAlert(old, nu) {
 				queue.Enqueue(op.paQueue.GetQueue(), nu)
 			}
 		},

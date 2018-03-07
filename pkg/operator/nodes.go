@@ -73,7 +73,7 @@ func (op *Operator) EnsureNode(node *core.Node) error {
 		oldAlerts.Insert(keys...)
 	}
 
-	newAlerts, err := FindNodeAlert(op.naLister, node.ObjectMeta)
+	newAlerts, err := findNodeAlert(op.KubeClient, op.naLister, node.ObjectMeta)
 	if err != nil {
 		return err
 	}

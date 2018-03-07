@@ -1,7 +1,6 @@
 package operator
 
 import (
-	"github.com/appscode/go-notify/unified"
 	"github.com/appscode/kutil/meta"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	mon_listers "github.com/appscode/searchlight/client/listers/monitoring/v1alpha1"
@@ -15,7 +14,7 @@ import (
 func (op *Operator) isValid(alert api.Alert) bool {
 	// Validate IcingaCommand & it's variables.
 	// And also check supported IcingaState
-	if ok, err := alert.IsValid(); !ok {
+	if ok, err := alert.IsValid(op.KubeClient); !ok {
 		op.recorder.Eventf(
 			alert.ObjectReference(),
 			core.EventTypeWarning,
@@ -25,46 +24,10 @@ func (op *Operator) isValid(alert api.Alert) bool {
 		)
 		return false
 	}
-
-	// Validate Notifiers configurations
-	if err := CheckNotifiers(op.KubeClient, alert); err != nil {
-		op.recorder.Eventf(
-			alert.ObjectReference(),
-			core.EventTypeWarning,
-			eventer.EventReasonAlertInvalid,
-			`Bad notifier config for NodeAlert: "%s@%s". Reason: %v`,
-			alert.GetName(), alert.GetNamespace(),
-			err,
-		)
-		return false
-	}
-
 	return true
 }
 
-func CheckNotifiers(client kubernetes.Interface, alert api.Alert) error {
-	if alert.GetNotifierSecretName() == "" && len(alert.GetReceivers()) == 0 {
-		return nil
-	}
-	secret, err := client.CoreV1().Secrets(alert.GetNamespace()).Get(alert.GetNotifierSecretName(), metav1.GetOptions{})
-	if err != nil {
-		return err
-	}
-	for _, r := range alert.GetReceivers() {
-		_, err = unified.LoadVia(r.Notifier, func(key string) (value string, found bool) {
-			var bytes []byte
-			bytes, found = secret.Data[key]
-			value = string(bytes)
-			return
-		})
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func FindPodAlert(lister mon_listers.PodAlertLister, obj metav1.ObjectMeta) ([]*api.PodAlert, error) {
+func findPodAlert(kc kubernetes.Interface, lister mon_listers.PodAlertLister, obj metav1.ObjectMeta) ([]*api.PodAlert, error) {
 	alerts, err := lister.PodAlerts(obj.Namespace).List(labels.Everything())
 	if err != nil {
 		return nil, err
@@ -73,7 +36,7 @@ func FindPodAlert(lister mon_listers.PodAlertLister, obj metav1.ObjectMeta) ([]*
 	result := make([]*api.PodAlert, 0)
 	for i := range alerts {
 		alert := alerts[i]
-		if ok, _ := alert.IsValid(); !ok {
+		if ok, _ := alert.IsValid(kc); !ok {
 			continue
 		}
 
@@ -92,7 +55,7 @@ func FindPodAlert(lister mon_listers.PodAlertLister, obj metav1.ObjectMeta) ([]*
 	return result, nil
 }
 
-func FindNodeAlert(lister mon_listers.NodeAlertLister, obj metav1.ObjectMeta) ([]*api.NodeAlert, error) {
+func findNodeAlert(kc kubernetes.Interface, lister mon_listers.NodeAlertLister, obj metav1.ObjectMeta) ([]*api.NodeAlert, error) {
 	alerts, err := lister.NodeAlerts(obj.Namespace).List(labels.Everything())
 	if err != nil {
 		return nil, err
@@ -101,7 +64,7 @@ func FindNodeAlert(lister mon_listers.NodeAlertLister, obj metav1.ObjectMeta) ([
 	result := make([]*api.NodeAlert, 0)
 	for i := range alerts {
 		alert := alerts[i]
-		if ok, _ := alert.IsValid(); !ok {
+		if ok, _ := alert.IsValid(kc); !ok {
 			continue
 		}
 
@@ -119,7 +82,7 @@ func FindNodeAlert(lister mon_listers.NodeAlertLister, obj metav1.ObjectMeta) ([
 	return result, nil
 }
 
-func NodeAlertEqual(old, new *api.NodeAlert) bool {
+func equalNodeAlert(old, new *api.NodeAlert) bool {
 	var oldSpec, newSpec *api.NodeAlertSpec
 	if old != nil {
 		oldSpec = &old.Spec
@@ -130,7 +93,7 @@ func NodeAlertEqual(old, new *api.NodeAlert) bool {
 	return meta.Equal(oldSpec, newSpec)
 }
 
-func PodAlertEqual(old, new *api.PodAlert) bool {
+func equalPodAlert(old, new *api.PodAlert) bool {
 	var oldSpec, newSpec *api.PodAlertSpec
 	if old != nil {
 		oldSpec = &old.Spec

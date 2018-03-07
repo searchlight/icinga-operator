@@ -31,7 +31,7 @@ func (op *Operator) initNodeAlertWatcher() {
 			if !op.isValid(nu) {
 				return
 			}
-			if !NodeAlertEqual(old, nu) {
+			if !equalNodeAlert(old, nu) {
 				queue.Enqueue(op.naQueue.GetQueue(), nu)
 			}
 		},

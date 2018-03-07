@@ -3,8 +3,11 @@ package v1alpha1
 import (
 	"fmt"
 
+	"github.com/appscode/go-notify/unified"
 	"github.com/appscode/go/log"
 	"github.com/appscode/searchlight/data"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 )
 
 type CheckPod string
@@ -145,4 +148,26 @@ func init() {
 			States: cmd.States,
 		}
 	}
+}
+
+func checkNotifiers(kc kubernetes.Interface, alert Alert) error {
+	if alert.GetNotifierSecretName() == "" && len(alert.GetReceivers()) == 0 {
+		return nil
+	}
+	secret, err := kc.CoreV1().Secrets(alert.GetNamespace()).Get(alert.GetNotifierSecretName(), metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+	for _, r := range alert.GetReceivers() {
+		_, err = unified.LoadVia(r.Notifier, func(key string) (value string, found bool) {
+			var bytes []byte
+			bytes, found = secret.Data[key]
+			value = string(bytes)
+			return
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
