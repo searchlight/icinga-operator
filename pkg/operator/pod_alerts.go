@@ -134,7 +134,7 @@ func (op *Operator) EnsurePodAlertDeleted(alertNamespace, alertName string) erro
 }
 
 func (op *Operator) EnsureIcingaPodAlert(alert *api.PodAlert, pod *core.Pod) (err error) {
-	err = op.podHost.Reconcile(alert.DeepCopy(), pod.DeepCopy())
+	err = op.podHost.Reconcile(alert, pod)
 	if err != nil {
 		op.recorder.Eventf(
 			alert.ObjectReference(),
