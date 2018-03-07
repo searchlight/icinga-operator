@@ -24,7 +24,7 @@ func (h *ClusterHost) getHost(namespace string) IcingaHost {
 	}
 }
 
-func (h *ClusterHost) Reconcile(alert *api.ClusterAlert) error {
+func (h *ClusterHost) Apply(alert *api.ClusterAlert) error {
 	alertSpec := alert.Spec
 	kh := h.getHost(alert.Namespace)
 

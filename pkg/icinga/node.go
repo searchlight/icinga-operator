@@ -69,7 +69,7 @@ func (h *NodeHost) expandVars(alertSpec api.NodeAlertSpec, kh IcingaHost, attrs 
 }
 
 // set Alert in Icinga LocalHost
-func (h *NodeHost) Reconcile(alert *api.NodeAlert, node *core.Node) error {
+func (h *NodeHost) Apply(alert *api.NodeAlert, node *core.Node) error {
 	alertSpec := alert.Spec
 	kh := h.getHost(alert.Namespace, node)
 

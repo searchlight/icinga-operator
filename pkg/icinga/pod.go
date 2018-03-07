@@ -60,7 +60,7 @@ func (h *PodHost) expandVars(alertSpec api.PodAlertSpec, kh IcingaHost, attrs ma
 	return nil
 }
 
-func (h *PodHost) Reconcile(alert *api.PodAlert, pod *core.Pod) error {
+func (h *PodHost) Apply(alert *api.PodAlert, pod *core.Pod) error {
 	alertSpec := alert.Spec
 	kh := h.getHost(alert.Namespace, pod)
 

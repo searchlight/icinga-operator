@@ -59,7 +59,7 @@ func (op *Operator) reconcileClusterAlert(key string) error {
 	alert := obj.(*api.ClusterAlert).DeepCopy()
 	log.Infof("Sync/Add/Update for ClusterAlert %s\n", alert.GetName())
 
-	err = op.clusterHost.Reconcile(alert)
+	err = op.clusterHost.Apply(alert)
 	if err != nil {
 		op.recorder.Eventf(
 			alert.ObjectReference(),

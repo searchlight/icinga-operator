@@ -5,12 +5,9 @@ import (
 	"strings"
 
 	"github.com/appscode/go/log"
-	"github.com/appscode/go/sets"
 	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/golang/glog"
-	core "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/tools/cache"
 )
@@ -57,18 +54,18 @@ func (op *Operator) reconcileNodeAlert(key string) error {
 		if err != nil {
 			return err
 		}
-		return op.EnsureNodeAlertDeleted(namespace, name)
+		return op.ensureNodeAlertDeleted(namespace, name)
 	}
 
 	alert := obj.(*api.NodeAlert).DeepCopy()
 	log.Infof("Sync/Add/Update for NodeAlert %s\n", key)
 
-	op.EnsureNodeAlert(alert)
-	op.EnsureNodeAlertDeleted(alert.Namespace, alert.Name)
+	op.ensureNodeAlert(alert)
+	op.ensureNodeAlertDeleted(alert.Namespace, alert.Name)
 	return nil
 }
 
-func (op *Operator) EnsureNodeAlert(alert *api.NodeAlert) error {
+func (op *Operator) ensureNodeAlert(alert *api.NodeAlert) error {
 	if alert.Spec.NodeName != nil {
 		node, err := op.nodeLister.Get(*alert.Spec.NodeName)
 		if err != nil {
@@ -78,6 +75,7 @@ func (op *Operator) EnsureNodeAlert(alert *api.NodeAlert) error {
 		if err == nil {
 			op.nodeQueue.GetQueue().Add(key)
 		}
+		return nil
 	}
 
 	sel := labels.SelectorFromSet(alert.Spec.Selector)
@@ -101,12 +99,16 @@ func alertAppliedToNode(a map[string]string, key string) bool {
 	}
 	if val, ok := a[api.AnnotationKeyAlerts]; ok {
 		names := strings.Split(val, ",")
-		return sets.NewString(names...).Has(key)
+		for _, name := range names {
+			if name == key {
+				return true
+			}
+		}
 	}
 	return false
 }
 
-func (op *Operator) EnsureNodeAlertDeleted(alertNamespace, alertName string) error {
+func (op *Operator) ensureNodeAlertDeleted(alertNamespace, alertName string) error {
 	nodes, err := op.nodeLister.List(labels.Everything())
 	if err != nil {
 		return err
@@ -121,34 +123,4 @@ func (op *Operator) EnsureNodeAlertDeleted(alertNamespace, alertName string) err
 		}
 	}
 	return nil
-}
-
-func (op *Operator) EnsureIcingaNodeAlert(alert *api.NodeAlert, node *core.Node) (err error) {
-	err = op.nodeHost.Reconcile(alert, node)
-	if err != nil {
-		op.recorder.Eventf(
-			alert.ObjectReference(),
-			core.EventTypeWarning,
-			eventer.EventReasonFailedToSync,
-			`Reason: %v`,
-			err,
-		)
-	}
-	return
-}
-
-func (op *Operator) EnsureIcingaNodeAlertDeleted(alertNamespace, alertName string, node *core.Node) (err error) {
-	err = op.nodeHost.Delete(alertNamespace, alertName, node)
-	if err != nil {
-		if alert, e2 := op.naLister.NodeAlerts(alertNamespace).Get(alertName); e2 == nil {
-			op.recorder.Eventf(
-				alert.ObjectReference(),
-				core.EventTypeWarning,
-				eventer.EventReasonFailedToDelete,
-				`Reason: %v`,
-				err,
-			)
-		}
-	}
-	return
 }

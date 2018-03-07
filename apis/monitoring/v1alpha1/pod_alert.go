@@ -5,12 +5,12 @@ import (
 	"time"
 
 	core "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 )
 
 const (
 	ResourceKindPodAlert = "PodAlert"
-	ResourceNamePodAlert = "pod-alert"
 	ResourceTypePodAlert = "podalerts"
 )
 
@@ -42,6 +42,12 @@ func (a PodAlert) IsValid(kc kubernetes.Interface) error {
 	}
 	if a.Spec.PodName == nil && a.Spec.Selector == nil {
 		return fmt.Errorf("specify either pod name or selector")
+	}
+	if a.Spec.Selector != nil {
+		_, err := metav1.LabelSelectorAsSelector(a.Spec.Selector)
+		if err != nil {
+			return err
+		}
 	}
 
 	cmd, ok := PodCommands[a.Spec.Check]

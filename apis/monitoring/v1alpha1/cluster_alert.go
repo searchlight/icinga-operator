@@ -10,7 +10,6 @@ import (
 
 const (
 	ResourceKindClusterAlert = "ClusterAlert"
-	ResourceNameClusterAlert = "cluster-alert"
 	ResourceTypeClusterAlert = "clusteralerts"
 )
 

@@ -5,9 +5,11 @@ import (
 	"strings"
 
 	"github.com/appscode/go/log"
+	utilerrors "github.com/appscode/go/util/errors"
 	core_util "github.com/appscode/kutil/core/v1"
 	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/golang/glog"
 	core "k8s.io/api/core/v1"
@@ -51,19 +53,22 @@ func (op *Operator) reconcileNode(key string) error {
 			return err
 		}
 
-		return op.ForceDeleteIcingaObjectsForNode(name)
+		return op.forceDeleteIcingaObjectsForNode(name)
 	}
 
 	log.Infof("Sync/Add/Update for Node %s\n", key)
 
 	node := obj.(*core.Node).DeepCopy()
-	if err := op.EnsureNode(node); err != nil {
-		log.Errorf("Failed to patch alert for Node %s@%s", node.Name, node.Namespace)
+	err = op.ensureNode(node)
+	if err != nil {
+		log.Errorf("failed to reconcile alert for node %s. reason: %s", key, err)
 	}
-	return nil
+	return err
 }
 
-func (op *Operator) EnsureNode(node *core.Node) error {
+func (op *Operator) ensureNode(node *core.Node) error {
+	var errlist []error
+
 	oldAlerts := sets.NewString()
 	if val, ok := node.Annotations[api.AnnotationKeyAlerts]; ok {
 		keys := strings.Split(val, ",")
@@ -77,12 +82,20 @@ func (op *Operator) EnsureNode(node *core.Node) error {
 	newKeys := make([]string, len(newAlerts))
 	for i := range newAlerts {
 		alert := newAlerts[i]
-		op.EnsureIcingaNodeAlert(alert, node)
 
-		key, err := cache.MetaNamespaceKeyFunc(alert)
+		err = op.nodeHost.Apply(alert, node)
 		if err != nil {
-			return err
+			op.recorder.Eventf(
+				alert.ObjectReference(),
+				core.EventTypeWarning,
+				eventer.EventReasonFailedToSync,
+				`failed to apply to node %s. Reason: %v`,
+				node.Name, err,
+			)
+			errlist = append(errlist, err)
 		}
+
+		key, _ := cache.MetaNamespaceKeyFunc(alert)
 		newKeys[i] = key
 		if oldAlerts.Has(key) {
 			oldAlerts.Delete(key)
@@ -92,12 +105,26 @@ func (op *Operator) EnsureNode(node *core.Node) error {
 	for _, key := range oldAlerts.List() {
 		namespace, name, err := cache.SplitMetaNamespaceKey(key)
 		if err != nil {
-			return err
+			// ignore
+			continue
 		}
-		op.EnsureIcingaNodeAlertDeleted(namespace, name, node)
+
+		err = op.nodeHost.Delete(namespace, name, node)
+		if err != nil {
+			if alert, e2 := op.naLister.NodeAlerts(namespace).Get(name); e2 == nil {
+				op.recorder.Eventf(
+					alert.ObjectReference(),
+					core.EventTypeWarning,
+					eventer.EventReasonFailedToDelete,
+					`failed to delete for node %s. Reason: %s`,
+					node.Name, err,
+				)
+			}
+			errlist = append(errlist, err)
+		}
 	}
 
-	_, vt, err := core_util.PatchNode(op.KubeClient, node, func(in *core.Node) *core.Node {
+	_, _, err = core_util.PatchNode(op.KubeClient, node, func(in *core.Node) *core.Node {
 		if in.Annotations == nil {
 			in.Annotations = make(map[string]string, 0)
 		}
@@ -109,23 +136,27 @@ func (op *Operator) EnsureNode(node *core.Node) error {
 		return in
 	})
 	if err != nil {
-		log.Errorf("Failed to %v Node %s", vt, node.Name)
+		errlist = append(errlist, err)
 	}
-	return err
+	return utilerrors.NewAggregate(errlist)
 }
 
-func (op *Operator) ForceDeleteIcingaObjectsForNode(name string) error {
+func (op *Operator) forceDeleteIcingaObjectsForNode(name string) error {
 	namespaces, err := op.nsLister.List(labels.Everything())
 	if err != nil {
 		return err
 	}
+
+	var errlist []error
 	for _, ns := range namespaces {
 		h := icinga.IcingaHost{
 			ObjectName:     name,
 			Type:           icinga.TypeNode,
 			AlertNamespace: ns.Name,
 		}
-		return op.nodeHost.ForceDeleteIcingaHost(h)
+		if err := op.nodeHost.ForceDeleteIcingaHost(h); err != nil {
+			errlist = append(errlist, err)
+		}
 	}
-	return nil
+	return utilerrors.NewAggregate(errlist)
 }

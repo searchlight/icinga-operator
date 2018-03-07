@@ -5,9 +5,11 @@ import (
 	"strings"
 
 	"github.com/appscode/go/log"
+	utilerrors "github.com/appscode/go/util/errors"
 	core_util "github.com/appscode/kutil/core/v1"
 	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/golang/glog"
 	core "k8s.io/api/core/v1"
@@ -64,10 +66,16 @@ func (op *Operator) reconcilePod(key string) error {
 
 	log.Infof("Sync/Add/Update for Pod %s\n", key)
 	pod := obj.(*core.Pod).DeepCopy()
-	return op.EnsurePod(pod)
+	err = op.ensurePod(pod)
+	if err != nil {
+		log.Errorf("failed to reconcile alert for pod %s. reason: %s", key, err)
+	}
+	return err
 }
 
-func (op *Operator) EnsurePod(pod *core.Pod) error {
+func (op *Operator) ensurePod(pod *core.Pod) error {
+	var errlist []error
+
 	oldAlerts := sets.NewString()
 	if val, ok := pod.Annotations[api.AnnotationKeyAlerts]; ok {
 		names := strings.Split(val, ",")
@@ -81,7 +89,18 @@ func (op *Operator) EnsurePod(pod *core.Pod) error {
 	newNames := make([]string, len(newAlerts))
 	for i := range newAlerts {
 		alert := newAlerts[i]
-		op.EnsureIcingaPodAlert(alert, pod)
+
+		err = op.podHost.Apply(alert, pod)
+		if err != nil {
+			op.recorder.Eventf(
+				alert.ObjectReference(),
+				core.EventTypeWarning,
+				eventer.EventReasonFailedToSync,
+				`failed to  apply to pod %s/%s. Reason: %s`,
+				pod.Namespace, pod.Name, err,
+			)
+			errlist = append(errlist, err)
+		}
 
 		newNames[i] = alert.Name
 		if oldAlerts.Has(alert.Name) {
@@ -90,10 +109,22 @@ func (op *Operator) EnsurePod(pod *core.Pod) error {
 	}
 
 	for _, name := range oldAlerts.List() {
-		op.EnsureIcingaPodAlertDeleted(pod.Namespace, name, pod)
+		err = op.podHost.Delete(pod.Namespace, name, pod)
+		if err != nil {
+			if alert, e2 := op.paLister.PodAlerts(pod.Namespace).Get(name); e2 == nil {
+				op.recorder.Eventf(
+					alert.ObjectReference(),
+					core.EventTypeWarning,
+					eventer.EventReasonFailedToDelete,
+					`failed to  delete for pod %s/%s. Reason: %s`,
+					pod.Namespace, pod.Name, err,
+				)
+			}
+			errlist = append(errlist, err)
+		}
 	}
 
-	_, vr, err := core_util.PatchPod(op.KubeClient, pod, func(in *core.Pod) *core.Pod {
+	_, _, err = core_util.PatchPod(op.KubeClient, pod, func(in *core.Pod) *core.Pod {
 		if in.Annotations == nil {
 			in.Annotations = make(map[string]string, 0)
 		}
@@ -105,8 +136,7 @@ func (op *Operator) EnsurePod(pod *core.Pod) error {
 		return in
 	})
 	if err != nil {
-		log.Errorf("Failed to %v Pod %s@%s.", vr, pod.Name, pod.Namespace)
+		errlist = append(errlist, err)
 	}
-
-	return nil
+	return utilerrors.NewAggregate(errlist)
 }

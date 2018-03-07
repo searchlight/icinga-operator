@@ -5,12 +5,9 @@ import (
 	"strings"
 
 	"github.com/appscode/go/log"
-	"github.com/appscode/go/sets"
 	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/golang/glog"
-	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/tools/cache"
@@ -58,18 +55,18 @@ func (op *Operator) reconcilePodAlert(key string) error {
 		if err != nil {
 			return err
 		}
-		return op.EnsurePodAlertDeleted(namespace, name)
+		return op.ensurePodAlertDeleted(namespace, name)
 	}
 
 	alert := obj.(*api.PodAlert).DeepCopy()
 	log.Infof("Sync/Add/Update for PodAlert %s\n", alert.GetName())
 
-	op.EnsurePodAlert(alert)
-	op.EnsurePodAlertDeleted(alert.Namespace, alert.Name)
+	op.ensurePodAlert(alert)
+	op.ensurePodAlertDeleted(alert.Namespace, alert.Name)
 	return nil
 }
 
-func (op *Operator) EnsurePodAlert(alert *api.PodAlert) error {
+func (op *Operator) ensurePodAlert(alert *api.PodAlert) error {
 	if alert.Spec.PodName != nil {
 		pod, err := op.podLister.Pods(alert.Namespace).Get(*alert.Spec.PodName)
 		if err != nil {
@@ -79,17 +76,11 @@ func (op *Operator) EnsurePodAlert(alert *api.PodAlert) error {
 		if err == nil {
 			op.podQueue.GetQueue().Add(key)
 		}
+		return nil
 	}
 
 	sel, err := metav1.LabelSelectorAsSelector(alert.Spec.Selector)
 	if err != nil {
-		op.recorder.Eventf(
-			alert.ObjectReference(),
-			core.EventTypeWarning,
-			eventer.EventReasonAlertInvalid,
-			"Reason: %s",
-			err.Error(),
-		)
 		return err
 	}
 	pods, err := op.podLister.Pods(alert.Namespace).List(sel)
@@ -112,12 +103,16 @@ func alertAppliedToPod(a map[string]string, key string) bool {
 	}
 	if val, ok := a[api.AnnotationKeyAlerts]; ok {
 		names := strings.Split(val, ",")
-		return sets.NewString(names...).Has(key)
+		for _, name := range names {
+			if name == key {
+				return true
+			}
+		}
 	}
 	return false
 }
 
-func (op *Operator) EnsurePodAlertDeleted(alertNamespace, alertName string) error {
+func (op *Operator) ensurePodAlertDeleted(alertNamespace, alertName string) error {
 	pods, err := op.podLister.Pods(alertNamespace).List(labels.Everything())
 	if err != nil {
 		return err
@@ -131,36 +126,4 @@ func (op *Operator) EnsurePodAlertDeleted(alertNamespace, alertName string) erro
 		}
 	}
 	return nil
-}
-
-func (op *Operator) EnsureIcingaPodAlert(alert *api.PodAlert, pod *core.Pod) (err error) {
-	err = op.podHost.Reconcile(alert, pod)
-	if err != nil {
-		op.recorder.Eventf(
-			alert.ObjectReference(),
-			core.EventTypeWarning,
-			eventer.EventReasonFailedToSync,
-			`Reason: %v`,
-			alert.Name,
-			err,
-		)
-	}
-	return err
-}
-
-func (op *Operator) EnsureIcingaPodAlertDeleted(alertNamespace, alertName string, pod *core.Pod) (err error) {
-	err = op.podHost.Delete(alertNamespace, alertName, pod)
-	if err != nil {
-		if alert, e2 := op.paLister.PodAlerts(alertNamespace).Get(alertName); e2 == nil {
-			op.recorder.Eventf(
-				alert.ObjectReference(),
-				core.EventTypeWarning,
-				eventer.EventReasonFailedToDelete,
-				`Fail to delete Icinga objects of PodAlert "%s@%s" for Pod "%s@%s". Reason: %v`,
-				alert.Name, alert.Namespace, pod.Name, pod.Namespace,
-				err,
-			)
-		}
-	}
-	return err
 }
