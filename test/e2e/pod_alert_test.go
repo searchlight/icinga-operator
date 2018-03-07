@@ -253,6 +253,7 @@ var _ = Describe("PodAlert", func() {
 			Context("PodName", func() {
 				BeforeEach(func() {
 					alert.Spec.PodName = &pod.Name
+					alert.Spec.Selector = nil
 				})
 
 				It("should manage icinga service for Alert.Spec.PodName", shouldManageIcingaServiceForPodName)
