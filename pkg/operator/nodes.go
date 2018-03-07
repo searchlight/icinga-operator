@@ -1,8 +1,8 @@
 package operator
 
 import (
-	"encoding/json"
 	"reflect"
+	"strings"
 
 	"github.com/appscode/go/log"
 	core_util "github.com/appscode/kutil/core/v1"
@@ -70,11 +70,8 @@ func (op *Operator) reconcileNode(key string) error {
 func (op *Operator) EnsureNode(node *core.Node) error {
 	oldAlerts := sets.NewString()
 	if val, ok := node.Annotations[annotationAlertsName]; ok {
-		names := make([]string, 0)
-		if err := json.Unmarshal([]byte(val), &names); err != nil {
-			return err
-		}
-		oldAlerts.Insert(names...)
+		keys := strings.Split(val, ",")
+		oldAlerts.Insert(keys...)
 	}
 
 	newAlerts, err := util.FindNodeAlert(op.naLister, node.ObjectMeta)
@@ -114,8 +111,7 @@ func (op *Operator) EnsureNode(node *core.Node) error {
 			in.Annotations = make(map[string]string, 0)
 		}
 		if len(newKeys) > 0 {
-			data, _ := json.Marshal(newKeys)
-			in.Annotations[annotationAlertsName] = string(data)
+			in.Annotations[annotationAlertsName] = strings.Join(newKeys, ",")
 		} else {
 			delete(in.Annotations, annotationAlertsName)
 		}

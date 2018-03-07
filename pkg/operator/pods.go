@@ -1,8 +1,8 @@
 package operator
 
 import (
-	"encoding/json"
 	"reflect"
+	"strings"
 
 	"github.com/appscode/go/log"
 	core_util "github.com/appscode/kutil/core/v1"
@@ -79,10 +79,7 @@ func (op *Operator) reconcilePod(key string) error {
 func (op *Operator) EnsurePod(pod *core.Pod) error {
 	oldAlerts := sets.NewString()
 	if val, ok := pod.Annotations[annotationAlertsName]; ok {
-		names := make([]string, 0)
-		if err := json.Unmarshal([]byte(val), &names); err != nil {
-			return err
-		}
+		names := strings.Split(val, ",")
 		oldAlerts.Insert(names...)
 	}
 
@@ -115,8 +112,7 @@ func (op *Operator) EnsurePod(pod *core.Pod) error {
 			in.Annotations = make(map[string]string, 0)
 		}
 		if len(newNames) > 0 {
-			data, _ := json.Marshal(newNames)
-			in.Annotations[annotationAlertsName] = string(data)
+			in.Annotations[annotationAlertsName] = strings.Join(newNames, ",")
 		} else {
 			delete(in.Annotations, annotationAlertsName)
 		}
