@@ -99,17 +99,17 @@ func (op *Operator) EnsurePodAlert(alert *api.PodAlert) error {
 		pod := pods[i]
 		key, err := cache.MetaNamespaceKeyFunc(pod)
 		if err == nil {
-			op.nodeQueue.GetQueue().Add(key)
+			op.podQueue.GetQueue().Add(key)
 		}
 	}
 	return nil
 }
 
-func GetAppliedPodAlerts(a map[string]string, key string) bool {
+func alertAppliedToPod(a map[string]string, key string) bool {
 	if a == nil {
 		return false
 	}
-	if val, ok := a[annotationAlertsName]; ok {
+	if val, ok := a[api.AnnotationKeyAlerts]; ok {
 		names := strings.Split(val, ",")
 		return sets.NewString(names...).Has(key)
 	}
@@ -122,7 +122,7 @@ func (op *Operator) EnsurePodAlertDeleted(alertNamespace, alertName string) erro
 		return err
 	}
 	for _, pod := range pods {
-		if GetAppliedNodeAlerts(pod.Annotations, alertName) {
+		if alertAppliedToPod(pod.Annotations, alertName) {
 			key, err := cache.MetaNamespaceKeyFunc(pod)
 			if err == nil {
 				op.podQueue.GetQueue().Add(key)

@@ -77,7 +77,7 @@ func (op *Operator) reconcilePod(key string) error {
 
 func (op *Operator) EnsurePod(pod *core.Pod) error {
 	oldAlerts := sets.NewString()
-	if val, ok := pod.Annotations[annotationAlertsName]; ok {
+	if val, ok := pod.Annotations[api.AnnotationKeyAlerts]; ok {
 		names := strings.Split(val, ",")
 		oldAlerts.Insert(names...)
 	}
@@ -111,9 +111,9 @@ func (op *Operator) EnsurePod(pod *core.Pod) error {
 			in.Annotations = make(map[string]string, 0)
 		}
 		if len(newNames) > 0 {
-			in.Annotations[annotationAlertsName] = strings.Join(newNames, ",")
+			in.Annotations[api.AnnotationKeyAlerts] = strings.Join(newNames, ",")
 		} else {
-			delete(in.Annotations, annotationAlertsName)
+			delete(in.Annotations, api.AnnotationKeyAlerts)
 		}
 		return in
 	})

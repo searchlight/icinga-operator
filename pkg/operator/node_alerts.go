@@ -94,11 +94,11 @@ func (op *Operator) EnsureNodeAlert(alert *api.NodeAlert) error {
 	return nil
 }
 
-func GetAppliedNodeAlerts(a map[string]string, key string) bool {
+func alertAppliedToNode(a map[string]string, key string) bool {
 	if a == nil {
 		return false
 	}
-	if val, ok := a[annotationAlertsName]; ok {
+	if val, ok := a[api.AnnotationKeyAlerts]; ok {
 		names := strings.Split(val, ",")
 		return sets.NewString(names...).Has(key)
 	}
@@ -112,7 +112,7 @@ func (op *Operator) EnsureNodeAlertDeleted(alertNamespace, alertName string) err
 	}
 	alertKey := alertNamespace + "/" + alertName
 	for _, node := range nodes {
-		if GetAppliedNodeAlerts(node.Annotations, alertKey) {
+		if alertAppliedToNode(node.Annotations, alertKey) {
 			key, err := cache.MetaNamespaceKeyFunc(node)
 			if err == nil {
 				op.nodeQueue.GetQueue().Add(key)
@@ -138,7 +138,7 @@ func (op *Operator) EnsureIcingaNodeAlert(alert *api.NodeAlert, node *core.Node)
 
 func (op *Operator) EnsureIcingaNodeAlertDeleted(alert *api.NodeAlert, node *core.Node) (err error) {
 	err = op.nodeHost.Delete(alert, node)
-	if err != nil && alert != nil {
+	if err != nil {
 		op.recorder.Eventf(
 			alert.ObjectReference(),
 			core.EventTypeWarning,

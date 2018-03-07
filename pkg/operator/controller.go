@@ -84,9 +84,6 @@ type Operator struct {
 	paLister   mon_listers.PodAlertLister
 }
 
-const annotationAlertsName = "monitoring.appscode.com/alerts"
-const annotationLastConfiguration = "monitoring.appscode.com/last-configuration"
-
 func New(kubeClient kubernetes.Interface, crdClient ecs.ApiextensionsV1beta1Interface, extClient cs.Interface, icingaClient *icinga.Client, opt Options) *Operator {
 	return &Operator{
 		KubeClient:          kubeClient,

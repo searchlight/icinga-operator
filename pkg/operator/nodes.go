@@ -68,7 +68,7 @@ func (op *Operator) reconcileNode(key string) error {
 
 func (op *Operator) EnsureNode(node *core.Node) error {
 	oldAlerts := sets.NewString()
-	if val, ok := node.Annotations[annotationAlertsName]; ok {
+	if val, ok := node.Annotations[api.AnnotationKeyAlerts]; ok {
 		keys := strings.Split(val, ",")
 		oldAlerts.Insert(keys...)
 	}
@@ -110,9 +110,9 @@ func (op *Operator) EnsureNode(node *core.Node) error {
 			in.Annotations = make(map[string]string, 0)
 		}
 		if len(newKeys) > 0 {
-			in.Annotations[annotationAlertsName] = strings.Join(newKeys, ",")
+			in.Annotations[api.AnnotationKeyAlerts] = strings.Join(newKeys, ",")
 		} else {
-			delete(in.Annotations, annotationAlertsName)
+			delete(in.Annotations, api.AnnotationKeyAlerts)
 		}
 		return in
 	})
