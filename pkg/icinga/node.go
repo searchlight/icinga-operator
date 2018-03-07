@@ -104,10 +104,10 @@ func (h *NodeHost) Reconcile(alert *api.NodeAlert, node *core.Node) error {
 	return h.ReconcileIcingaNotification(alert, kh)
 }
 
-func (h *NodeHost) Delete(alert *api.NodeAlert, node *core.Node) error {
-	kh := h.getHost(alert.Namespace, node)
+func (h *NodeHost) Delete(alertNamespace, alertName string, node *core.Node) error {
+	kh := h.getHost(alertNamespace, node)
 
-	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
+	if err := h.DeleteIcingaService(alertName, kh); err != nil {
 		return err
 	}
 	return h.DeleteIcingaHost(kh)

@@ -95,10 +95,10 @@ func (h *PodHost) Reconcile(alert *api.PodAlert, pod *core.Pod) error {
 	return h.ReconcileIcingaNotification(alert, kh)
 }
 
-func (h *PodHost) Delete(alert *api.PodAlert, pod *core.Pod) error {
-	kh := h.getHost(alert.Namespace, pod)
+func (h *PodHost) Delete(alertNamespace, alertName string, pod *core.Pod) error {
+	kh := h.getHost(alertNamespace, pod)
 
-	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
+	if err := h.DeleteIcingaService(alertName, kh); err != nil {
 		return err
 	}
 	return h.DeleteIcingaHost(kh)

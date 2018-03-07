@@ -1,6 +1,7 @@
 package operator
 
 import (
+	"reflect"
 	"strings"
 
 	"github.com/appscode/go/log"
@@ -21,7 +22,7 @@ func (op *Operator) initPodAlertWatcher() {
 	op.paInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			alert := obj.(*api.PodAlert)
-			if err := op.isValid(alert); err == nil {
+			if op.isValid(alert) {
 				queue.Enqueue(op.paQueue.GetQueue(), obj)
 			}
 		},
@@ -29,10 +30,10 @@ func (op *Operator) initPodAlertWatcher() {
 			old := oldObj.(*api.PodAlert)
 			nu := newObj.(*api.PodAlert)
 
-			if err := op.isValid(nu); err != nil {
+			if reflect.DeepEqual(old.Spec, nu.Spec) {
 				return
 			}
-			if !equalPodAlert(old, nu) {
+			if op.isValid(nu) {
 				queue.Enqueue(op.paQueue.GetQueue(), nu)
 			}
 		},
@@ -60,7 +61,7 @@ func (op *Operator) reconcilePodAlert(key string) error {
 		return op.EnsurePodAlertDeleted(namespace, name)
 	}
 
-	alert := obj.(*api.PodAlert)
+	alert := obj.(*api.PodAlert).DeepCopy()
 	log.Infof("Sync/Add/Update for PodAlert %s\n", alert.GetName())
 
 	op.EnsurePodAlert(alert)
@@ -147,17 +148,19 @@ func (op *Operator) EnsureIcingaPodAlert(alert *api.PodAlert, pod *core.Pod) (er
 	return err
 }
 
-func (op *Operator) EnsureIcingaPodAlertDeleted(alert *api.PodAlert, pod *core.Pod) (err error) {
-	err = op.podHost.Delete(alert, pod)
-	if err != nil && alert != nil {
-		op.recorder.Eventf(
-			alert.ObjectReference(),
-			core.EventTypeWarning,
-			eventer.EventReasonFailedToDelete,
-			`Fail to delete Icinga objects of PodAlert "%s@%s" for Pod "%s@%s". Reason: %v`,
-			alert.Name, alert.Namespace, pod.Name, pod.Namespace,
-			err,
-		)
+func (op *Operator) EnsureIcingaPodAlertDeleted(alertNamespace, alertName string, pod *core.Pod) (err error) {
+	err = op.podHost.Delete(alertNamespace, alertName, pod)
+	if err != nil {
+		if alert, e2 := op.paLister.PodAlerts(alertNamespace).Get(alertName); e2 == nil {
+			op.recorder.Eventf(
+				alert.ObjectReference(),
+				core.EventTypeWarning,
+				eventer.EventReasonFailedToDelete,
+				`Fail to delete Icinga objects of PodAlert "%s@%s" for Pod "%s@%s". Reason: %v`,
+				alert.Name, alert.Namespace, pod.Name, pod.Namespace,
+				err,
+			)
+		}
 	}
 	return err
 }

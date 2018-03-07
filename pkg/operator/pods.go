@@ -11,7 +11,6 @@ import (
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/golang/glog"
 	core "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/client-go/tools/cache"
 )
@@ -56,23 +55,16 @@ func (op *Operator) reconcilePod(key string) error {
 		if err != nil {
 			return err
 		}
-		err = op.podHost.ForceDeleteIcingaHost(icinga.IcingaHost{
+		return op.podHost.ForceDeleteIcingaHost(icinga.IcingaHost{
 			Type:           icinga.TypePod,
 			AlertNamespace: namespace,
 			ObjectName:     name,
 		})
-		if err != nil {
-			log.Errorf("Failed to delete alert for Pod %s@%s", name, namespace)
-		}
-	} else {
-		log.Infof("Sync/Add/Update for Pod %s\n", key)
-
-		pod := obj.(*core.Pod)
-		if err := op.EnsurePod(pod); err != nil {
-			log.Errorf("Failed to patch alert for Pod %s@%s", pod.Name, pod.Namespace)
-		}
 	}
-	return nil
+
+	log.Infof("Sync/Add/Update for Pod %s\n", key)
+	pod := obj.(*core.Pod).DeepCopy()
+	return op.EnsurePod(pod)
 }
 
 func (op *Operator) EnsurePod(pod *core.Pod) error {
@@ -98,12 +90,7 @@ func (op *Operator) EnsurePod(pod *core.Pod) error {
 	}
 
 	for _, name := range oldAlerts.List() {
-		op.EnsureIcingaPodAlertDeleted(&api.PodAlert{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      name,
-				Namespace: pod.Namespace,
-			},
-		}, pod)
+		op.EnsureIcingaPodAlertDeleted(pod.Namespace, name, pod)
 	}
 
 	_, vr, err := core_util.PatchPod(op.KubeClient, pod, func(in *core.Pod) *core.Pod {

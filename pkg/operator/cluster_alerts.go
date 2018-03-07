@@ -4,9 +4,7 @@ import (
 	"reflect"
 
 	"github.com/appscode/go/log"
-	core_util "github.com/appscode/kutil/core/v1"
 	"github.com/appscode/kutil/tools/queue"
-	"github.com/appscode/searchlight/apis/monitoring"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/golang/glog"
@@ -20,7 +18,7 @@ func (op *Operator) initClusterAlertWatcher() {
 	op.caInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			alert := obj.(*api.ClusterAlert)
-			if err := op.isValid(alert); err == nil {
+			if op.isValid(alert) {
 				queue.Enqueue(op.caQueue.GetQueue(), obj)
 			}
 		},
@@ -28,9 +26,11 @@ func (op *Operator) initClusterAlertWatcher() {
 			old := oldObj.(*api.ClusterAlert)
 			nu := newObj.(*api.ClusterAlert)
 
-			if op.processClusterAlertUpdate(old, nu) {
-				queue.Enqueue(op.caQueue.GetQueue(), nu)
+			if reflect.DeepEqual(old.Spec, nu.Spec) {
 				return
+			}
+			if op.isValid(nu) {
+				queue.Enqueue(op.caQueue.GetQueue(), nu)
 			}
 		},
 		DeleteFunc: func(obj interface{}) {
@@ -38,18 +38,6 @@ func (op *Operator) initClusterAlertWatcher() {
 		},
 	})
 	op.caLister = op.monInformerFactory.Monitoring().V1alpha1().ClusterAlerts().Lister()
-}
-
-func (op *Operator) processClusterAlertUpdate(old, nu *api.ClusterAlert) bool {
-	if nu.DeletionTimestamp != nil && core_util.HasFinalizer(nu.ObjectMeta, monitoring.GroupName) {
-		return true
-	}
-	if !reflect.DeepEqual(old.Spec, nu.Spec) {
-		if err := op.isValid(nu); err == nil {
-			return true
-		}
-	}
-	return false
 }
 
 func (op *Operator) reconcileClusterAlert(key string) error {
@@ -68,10 +56,10 @@ func (op *Operator) reconcileClusterAlert(key string) error {
 		return op.clusterHost.Delete(namespace, name)
 	}
 
-	alert := obj.(*api.ClusterAlert)
+	alert := obj.(*api.ClusterAlert).DeepCopy()
 	log.Infof("Sync/Add/Update for ClusterAlert %s\n", alert.GetName())
 
-	err = op.clusterHost.Reconcile(alert.DeepCopy())
+	err = op.clusterHost.Reconcile(alert)
 	if err != nil {
 		op.recorder.Eventf(
 			alert.ObjectReference(),

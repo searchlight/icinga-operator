@@ -1,7 +1,6 @@
 package operator
 
 import (
-	"github.com/appscode/kutil/meta"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	mon_listers "github.com/appscode/searchlight/client/listers/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/eventer"
@@ -11,7 +10,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func (op *Operator) isValid(alert api.Alert) error {
+func (op *Operator) isValid(alert api.Alert) bool {
 	// Validate IcingaCommand & it's variables.
 	// And also check supported IcingaState
 	err := alert.IsValid(op.KubeClient)
@@ -24,7 +23,7 @@ func (op *Operator) isValid(alert api.Alert) error {
 			err,
 		)
 	}
-	return err
+	return err == nil
 }
 
 func findPodAlert(kc kubernetes.Interface, lister mon_listers.PodAlertLister, obj metav1.ObjectMeta) ([]*api.PodAlert, error) {
@@ -80,26 +79,4 @@ func findNodeAlert(kc kubernetes.Interface, lister mon_listers.NodeAlertLister, 
 		}
 	}
 	return result, nil
-}
-
-func equalNodeAlert(old, new *api.NodeAlert) bool {
-	var oldSpec, newSpec *api.NodeAlertSpec
-	if old != nil {
-		oldSpec = &old.Spec
-	}
-	if new != nil {
-		newSpec = &new.Spec
-	}
-	return meta.Equal(oldSpec, newSpec)
-}
-
-func equalPodAlert(old, new *api.PodAlert) bool {
-	var oldSpec, newSpec *api.PodAlertSpec
-	if old != nil {
-		oldSpec = &old.Spec
-	}
-	if new != nil {
-		newSpec = &new.Spec
-	}
-	return meta.Equal(oldSpec, newSpec)
 }

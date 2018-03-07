@@ -11,7 +11,6 @@ import (
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/golang/glog"
 	core "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/client-go/tools/cache"
@@ -52,16 +51,14 @@ func (op *Operator) reconcileNode(key string) error {
 			return err
 		}
 
-		if err := op.ForceDeleteIcingaObjectsForNode(name); err != nil {
-			log.Errorf("Failed to delete alert for Node %s", name)
-		}
-	} else {
-		log.Infof("Sync/Add/Update for Node %s\n", key)
+		return op.ForceDeleteIcingaObjectsForNode(name)
+	}
 
-		node := obj.(*core.Node)
-		if err := op.EnsureNode(node); err != nil {
-			log.Errorf("Failed to patch alert for Node %s@%s", node.Name, node.Namespace)
-		}
+	log.Infof("Sync/Add/Update for Node %s\n", key)
+
+	node := obj.(*core.Node).DeepCopy()
+	if err := op.EnsureNode(node); err != nil {
+		log.Errorf("Failed to patch alert for Node %s@%s", node.Name, node.Namespace)
 	}
 	return nil
 }
@@ -97,12 +94,7 @@ func (op *Operator) EnsureNode(node *core.Node) error {
 		if err != nil {
 			return err
 		}
-		op.EnsureIcingaNodeAlertDeleted(&api.NodeAlert{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      name,
-				Namespace: namespace,
-			},
-		}, node)
+		op.EnsureIcingaNodeAlertDeleted(namespace, name, node)
 	}
 
 	_, vt, err := core_util.PatchNode(op.KubeClient, node, func(in *core.Node) *core.Node {
@@ -133,11 +125,7 @@ func (op *Operator) ForceDeleteIcingaObjectsForNode(name string) error {
 			Type:           icinga.TypeNode,
 			AlertNamespace: ns.Name,
 		}
-		err := op.nodeHost.ForceDeleteIcingaHost(h)
-		if err != nil {
-			host, _ := h.Name()
-			log.Errorf(`Failed to delete Icinga Host "%s" for Node %s`, host, name)
-		}
+		return op.nodeHost.ForceDeleteIcingaHost(h)
 	}
 	return nil
 }

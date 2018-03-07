@@ -1,6 +1,7 @@
 package operator
 
 import (
+	"reflect"
 	"strings"
 
 	"github.com/appscode/go/log"
@@ -20,7 +21,7 @@ func (op *Operator) initNodeAlertWatcher() {
 	op.naInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			alert := obj.(*api.NodeAlert)
-			if err := op.isValid(alert); err == nil {
+			if op.isValid(alert) {
 				queue.Enqueue(op.naQueue.GetQueue(), obj)
 			}
 		},
@@ -28,10 +29,10 @@ func (op *Operator) initNodeAlertWatcher() {
 			old := oldObj.(*api.NodeAlert)
 			nu := newObj.(*api.NodeAlert)
 
-			if err := op.isValid(nu); err != nil {
+			if reflect.DeepEqual(old.Spec, nu.Spec) {
 				return
 			}
-			if !equalNodeAlert(old, nu) {
+			if op.isValid(nu) {
 				queue.Enqueue(op.naQueue.GetQueue(), nu)
 			}
 		},
@@ -59,7 +60,7 @@ func (op *Operator) reconcileNodeAlert(key string) error {
 		return op.EnsureNodeAlertDeleted(namespace, name)
 	}
 
-	alert := obj.(*api.NodeAlert)
+	alert := obj.(*api.NodeAlert).DeepCopy()
 	log.Infof("Sync/Add/Update for NodeAlert %s\n", key)
 
 	op.EnsureNodeAlert(alert)
@@ -123,7 +124,7 @@ func (op *Operator) EnsureNodeAlertDeleted(alertNamespace, alertName string) err
 }
 
 func (op *Operator) EnsureIcingaNodeAlert(alert *api.NodeAlert, node *core.Node) (err error) {
-	err = op.nodeHost.Reconcile(alert.DeepCopy(), node.DeepCopy())
+	err = op.nodeHost.Reconcile(alert, node)
 	if err != nil {
 		op.recorder.Eventf(
 			alert.ObjectReference(),
@@ -136,16 +137,18 @@ func (op *Operator) EnsureIcingaNodeAlert(alert *api.NodeAlert, node *core.Node)
 	return
 }
 
-func (op *Operator) EnsureIcingaNodeAlertDeleted(alert *api.NodeAlert, node *core.Node) (err error) {
-	err = op.nodeHost.Delete(alert, node)
+func (op *Operator) EnsureIcingaNodeAlertDeleted(alertNamespace, alertName string, node *core.Node) (err error) {
+	err = op.nodeHost.Delete(alertNamespace, alertName, node)
 	if err != nil {
-		op.recorder.Eventf(
-			alert.ObjectReference(),
-			core.EventTypeWarning,
-			eventer.EventReasonFailedToDelete,
-			`Reason: %v`,
-			err,
-		)
+		if alert, e2 := op.naLister.NodeAlerts(alertNamespace).Get(alertName); e2 == nil {
+			op.recorder.Eventf(
+				alert.ObjectReference(),
+				core.EventTypeWarning,
+				eventer.EventReasonFailedToDelete,
+				`Reason: %v`,
+				err,
+			)
+		}
 	}
 	return
 }
