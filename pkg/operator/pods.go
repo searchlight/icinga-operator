@@ -9,7 +9,6 @@ import (
 	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/pkg/util"
 	"github.com/golang/glog"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -83,7 +82,7 @@ func (op *Operator) EnsurePod(pod *core.Pod) error {
 		oldAlerts.Insert(names...)
 	}
 
-	newAlerts, err := util.FindPodAlert(op.paLister, pod.ObjectMeta)
+	newAlerts, err := FindPodAlert(op.paLister, pod.ObjectMeta)
 	if err != nil {
 		return err
 	}

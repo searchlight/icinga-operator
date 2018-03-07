@@ -1,14 +1,46 @@
-package util
+package operator
 
 import (
 	"github.com/appscode/go-notify/unified"
 	"github.com/appscode/kutil/meta"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	mon_listers "github.com/appscode/searchlight/client/listers/monitoring/v1alpha1"
+	"github.com/appscode/searchlight/pkg/eventer"
+	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 )
+
+func (op *Operator) isValid(alert api.Alert) bool {
+	// Validate IcingaCommand & it's variables.
+	// And also check supported IcingaState
+	if ok, err := alert.IsValid(); !ok {
+		op.recorder.Eventf(
+			alert.ObjectReference(),
+			core.EventTypeWarning,
+			eventer.EventReasonAlertInvalid,
+			`Reason: %v`,
+			err,
+		)
+		return false
+	}
+
+	// Validate Notifiers configurations
+	if err := CheckNotifiers(op.KubeClient, alert); err != nil {
+		op.recorder.Eventf(
+			alert.ObjectReference(),
+			core.EventTypeWarning,
+			eventer.EventReasonAlertInvalid,
+			`Bad notifier config for NodeAlert: "%s@%s". Reason: %v`,
+			alert.GetName(), alert.GetNamespace(),
+			err,
+		)
+		return false
+	}
+
+	return true
+}
 
 func CheckNotifiers(client kubernetes.Interface, alert api.Alert) error {
 	if alert.GetNotifierSecretName() == "" && len(alert.GetReceivers()) == 0 {

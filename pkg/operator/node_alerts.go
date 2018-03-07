@@ -8,7 +8,6 @@ import (
 	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/eventer"
-	"github.com/appscode/searchlight/pkg/util"
 	"github.com/golang/glog"
 	core "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -32,7 +31,7 @@ func (op *Operator) initNodeAlertWatcher() {
 			if !op.isValid(nu) {
 				return
 			}
-			if !util.NodeAlertEqual(old, nu) {
+			if !NodeAlertEqual(old, nu) {
 				queue.Enqueue(op.naQueue.GetQueue(), nu)
 			}
 		},

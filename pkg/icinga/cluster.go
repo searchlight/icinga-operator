@@ -62,9 +62,9 @@ func (h *ClusterHost) Reconcile(alert *api.ClusterAlert) error {
 	return h.ReconcileIcingaNotification(alert, kh)
 }
 
-func (h *ClusterHost) Delete(alert *api.ClusterAlert) error {
-	kh := h.getHost(alert.Namespace)
-	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
+func (h *ClusterHost) Delete(namespace, name string) error {
+	kh := h.getHost(namespace)
+	if err := h.DeleteIcingaService(name, kh); err != nil {
 		return err
 	}
 	return h.DeleteIcingaHost(kh)

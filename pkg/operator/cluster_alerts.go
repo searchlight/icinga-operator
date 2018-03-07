@@ -7,9 +7,7 @@ import (
 	core_util "github.com/appscode/kutil/core/v1"
 	"github.com/appscode/kutil/tools/queue"
 	"github.com/appscode/searchlight/apis/monitoring"
-	mon_api "github.com/appscode/searchlight/apis/monitoring"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	mon_util "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/util"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/golang/glog"
 	core "k8s.io/api/core/v1"
@@ -60,50 +58,26 @@ func (op *Operator) reconcileClusterAlert(key string) error {
 	}
 	if !exists {
 		log.Debugf("ClusterAlert %s does not exist anymore\n", key)
-		return nil
+
+		namespace, name, err := cache.SplitMetaNamespaceKey(key)
+		if err != nil {
+			return err
+		}
+		return op.clusterHost.Delete(namespace, name)
 	}
 
 	alert := obj.(*api.ClusterAlert)
-	if alert.DeletionTimestamp != nil {
-		if core_util.HasFinalizer(alert.ObjectMeta, mon_api.GroupName) {
-			// Delete all Icinga objects created for this ClusterAlert
-			err = op.clusterHost.Delete(alert.DeepCopy())
-			if err != nil {
-				op.recorder.Eventf(
-					alert.ObjectReference(),
-					core.EventTypeWarning,
-					eventer.EventReasonFailedToDelete,
-					`Reason: %v`,
-					err,
-				)
-				return err
-			}
+	log.Infof("Sync/Add/Update for ClusterAlert %s\n", alert.GetName())
 
-			_, _, err = mon_util.PatchClusterAlert(op.ExtClient.MonitoringV1alpha1(), alert, func(in *api.ClusterAlert) *api.ClusterAlert {
-				in.ObjectMeta = core_util.RemoveFinalizer(in.ObjectMeta, mon_api.GroupName)
-				return in
-			})
-			return err
-		}
-	} else {
-		log.Infof("Sync/Add/Update for ClusterAlert %s\n", alert.GetName())
-
-		alert, _, err = mon_util.PatchClusterAlert(op.ExtClient.MonitoringV1alpha1(), alert, func(in *api.ClusterAlert) *api.ClusterAlert {
-			in.ObjectMeta = core_util.AddFinalizer(in.ObjectMeta, mon_api.GroupName)
-			return in
-		})
-
-		err = op.clusterHost.Reconcile(alert.DeepCopy())
-		if err != nil {
-			op.recorder.Eventf(
-				alert.ObjectReference(),
-				core.EventTypeWarning,
-				eventer.EventReasonFailedToSync,
-				`Reason: %v`,
-				err,
-			)
-		}
-		return err
+	err = op.clusterHost.Reconcile(alert.DeepCopy())
+	if err != nil {
+		op.recorder.Eventf(
+			alert.ObjectReference(),
+			core.EventTypeWarning,
+			eventer.EventReasonFailedToSync,
+			`Reason: %v`,
+			err,
+		)
 	}
-	return nil
+	return err
 }

@@ -9,7 +9,6 @@ import (
 	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/pkg/util"
 	"github.com/golang/glog"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -74,7 +73,7 @@ func (op *Operator) EnsureNode(node *core.Node) error {
 		oldAlerts.Insert(keys...)
 	}
 
-	newAlerts, err := util.FindNodeAlert(op.naLister, node.ObjectMeta)
+	newAlerts, err := FindNodeAlert(op.naLister, node.ObjectMeta)
 	if err != nil {
 		return err
 	}
