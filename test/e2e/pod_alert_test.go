@@ -406,33 +406,5 @@ var _ = Describe("PodAlert", func() {
 
 		})
 
-		// Check "pod_exec"
-		Context("check_pod_exec", func() {
-			BeforeEach(func() {
-				alert.Spec.Check = api.CheckPodExec
-				alert.Spec.Selector = rs.Spec.Selector
-				alert.Spec.Vars["container"] = "busybox"
-				alert.Spec.Vars["cmd"] = "/bin/sh"
-
-			})
-
-			Context("exit 0", func() {
-				BeforeEach(func() {
-					alert.Spec.Vars["argv"] = "exit 0"
-				})
-
-				It("should manage icinga service for Ok State", shouldManageIcingaServiceForLabelSelector)
-			})
-
-			Context("exit 2", func() {
-				BeforeEach(func() {
-					alert.Spec.Vars["argv"] = "exit 2"
-				})
-
-				It("should handle icinga service for Critical State", shouldHandleIcingaServiceForCriticalState)
-			})
-
-		})
-
 	})
 })
