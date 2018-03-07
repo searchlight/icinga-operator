@@ -1,7 +1,6 @@
 package cmds
 
 import (
-	"fmt"
 	"net/http"
 	_ "net/http/pprof"
 	"time"
@@ -56,7 +55,7 @@ func run(opt operator.Options) {
 	}
 
 	kubeClient := kubernetes.NewForConfigOrDie(config)
-	CRDClient := crd_cs.NewForConfigOrDie(config)
+	crdClient := crd_cs.NewForConfigOrDie(config)
 	extClient := cs.NewForConfigOrDie(config)
 
 	secret, err := kubeClient.CoreV1().Secrets(meta.Namespace()).Get(opt.ConfigSecretName, metav1.GetOptions{})
@@ -81,12 +80,7 @@ func run(opt operator.Options) {
 	icingaClient := icinga.NewClient(*cfg)
 	for {
 		r := icingaClient.Check().Get(nil).Do()
-		if r.Err != nil {
-			fmt.Println(r.Err)
-			time.Sleep(2 * time.Second)
-			continue
-		}
-		if icingaClient.Check().Get(nil).Do().Status == 200 {
+		if r.Status == 200 {
 			log.Infoln("connected to icinga api")
 			break
 		}
@@ -94,7 +88,7 @@ func run(opt operator.Options) {
 		time.Sleep(2 * time.Second)
 	}
 
-	op := operator.New(kubeClient, CRDClient, extClient, icingaClient, opt)
+	op := operator.New(kubeClient, crdClient, extClient, icingaClient, opt)
 	if err := op.Setup(); err != nil {
 		log.Fatalln(err)
 	}

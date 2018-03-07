@@ -30,7 +30,7 @@ func (h *commonHost) EnsureIcingaHost(kh IcingaHost) error {
 	}
 	jsonStr, err := json.Marshal(obj)
 	if err != nil {
-		return errors.WithMessage(err, "Failed to Marshal IcingaObject")
+		return errors.Wrap(err, "Failed to Marshal IcingaObject")
 	}
 
 	resp = h.IcingaClient.Objects().Hosts(host).Create([]string{}, string(jsonStr)).Do()
@@ -38,7 +38,7 @@ func (h *commonHost) EnsureIcingaHost(kh IcingaHost) error {
 		return errors.Wrap(resp.Err, string(resp.ResponseBody))
 	}
 	if resp.Status != 200 {
-		return errors.Errorf("Can't create Icinga host. Status: %d", resp.Status)
+		return errors.Errorf("can't create Icinga host. Status: %d", resp.Status)
 	}
 	return nil
 }
@@ -55,13 +55,13 @@ func (h *commonHost) DeleteIcingaHost(kh IcingaHost) error {
 	in := fmt.Sprintf(`{"filter": "match(\"%s\",host.name)"}`, host)
 	var respService ResponseObject
 	if _, err := h.IcingaClient.Objects().Service("").Update([]string{}, in).Do().Into(&respService); err != nil {
-		return errors.WithMessage(err, "Can't get Icinga service")
+		return errors.Wrap(err, "can't get Icinga service")
 	}
 
 	if len(respService.Results) == 0 {
 		resp := h.IcingaClient.Objects().Hosts("").Delete([]string{}, in).Params(param).Do()
 		if resp.Err != nil {
-			return errors.WithMessage(err, "Can't delete Icinga host")
+			return errors.Wrap(err, "can't delete Icinga host")
 		}
 	}
 	return nil
@@ -79,12 +79,12 @@ func (h *commonHost) ForceDeleteIcingaHost(kh IcingaHost) error {
 	in := fmt.Sprintf(`{"filter": "match(\"%s\",host.name)"}`, host)
 	resp := h.IcingaClient.Objects().Hosts("").Delete([]string{}, in).Params(param).Do()
 	if resp.Err != nil {
-		return errors.WithMessage(resp.Err, "Failed to delete IcingaHost")
+		return errors.Wrap(resp.Err, "Failed to delete IcingaHost")
 	}
 	if resp.Status == 200 {
 		return nil
 	}
-	return errors.New("Can't delete Icinga host")
+	return errors.New("can't delete Icinga host")
 }
 
 // createIcingaServiceForCluster
@@ -95,7 +95,7 @@ func (h *commonHost) CreateIcingaService(svc string, kh IcingaHost, attrs map[st
 	}
 	jsonStr, err := json.Marshal(obj)
 	if err != nil {
-		return errors.WithMessage(err, "Failed to Marshal IcingaObject")
+		return errors.Wrap(err, "Failed to Marshal IcingaObject")
 	}
 	host, err := kh.Name()
 	if err != nil {
@@ -103,7 +103,7 @@ func (h *commonHost) CreateIcingaService(svc string, kh IcingaHost, attrs map[st
 	}
 	resp := h.IcingaClient.Objects().Service(host).Create([]string{svc}, string(jsonStr)).Do()
 	if resp.Err != nil {
-		return errors.WithMessage(resp.Err, "Failed to create Icinga Service")
+		return errors.Wrap(resp.Err, "Failed to create Icinga Service")
 	}
 	if resp.Status == 200 {
 		return nil
@@ -112,7 +112,7 @@ func (h *commonHost) CreateIcingaService(svc string, kh IcingaHost, attrs map[st
 		return nil
 	}
 
-	return errors.Errorf("Can't create Icinga service. Status: %d", resp.Status)
+	return errors.Errorf("can't create Icinga service. Status: %d", resp.Status)
 }
 
 func (h *commonHost) UpdateIcingaService(svc string, kh IcingaHost, attrs map[string]interface{}) error {
@@ -122,7 +122,7 @@ func (h *commonHost) UpdateIcingaService(svc string, kh IcingaHost, attrs map[st
 	}
 	jsonStr, err := json.Marshal(obj)
 	if err != nil {
-		return errors.WithMessage(err, "Failed to Marshal IcingaObject")
+		return errors.Wrap(err, "Failed to Marshal IcingaObject")
 	}
 	host, err := kh.Name()
 	if err != nil {
@@ -130,10 +130,10 @@ func (h *commonHost) UpdateIcingaService(svc string, kh IcingaHost, attrs map[st
 	}
 	resp := h.IcingaClient.Objects().Service(host).Update([]string{svc}, string(jsonStr)).Do()
 	if resp.Err != nil {
-		return errors.WithMessage(resp.Err, "Failed to update Icinga Service")
+		return errors.Wrap(resp.Err, "Failed to update Icinga Service")
 	}
 	if resp.Status != 200 {
-		return errors.Errorf("Can't update Icinga service; %d", resp.Status)
+		return errors.Errorf("can't update Icinga service; %d", resp.Status)
 	}
 	return nil
 }
@@ -146,7 +146,7 @@ func (h *commonHost) DeleteIcingaService(svc string, kh IcingaHost) error {
 
 	resp := h.IcingaClient.Objects().Service("").Delete([]string{}, in).Params(param).Do()
 	if resp.Err != nil {
-		return errors.WithMessage(resp.Err, "Failed to delete Icinga Service")
+		return errors.Wrap(resp.Err, "Failed to delete Icinga Service")
 	}
 	if resp.Status == 200 || resp.Status == 404 {
 		return nil
@@ -160,7 +160,7 @@ func (h *commonHost) CheckIcingaService(svc string, kh IcingaHost) (bool, error)
 	var respService ResponseObject
 
 	if _, err := h.IcingaClient.Objects().Service("").Get([]string{}, in).Do().Into(&respService); err != nil {
-		return true, errors.WithMessage(err, "Can't check icinga service")
+		return true, errors.Wrap(err, "can't check icinga service")
 	}
 	return len(respService.Results) > 0, nil
 }
@@ -183,12 +183,12 @@ func (h *commonHost) CheckIcingaNotification(svc string, kh IcingaHost) (bool, e
 	var respService ResponseObject
 
 	if _, err := h.IcingaClient.Objects().Service("").Get([]string{}, in).Do().Into(&respService); err != nil {
-		return true, errors.WithMessage(err, "Can't check icinga service")
+		return true, errors.Wrap(err, "can't check icinga service")
 	}
 	return len(respService.Results) > 0, nil
 }
 
-func (h *commonHost) EnsureIcingaNotification(alert api.Alert, kh IcingaHost) error {
+func (h *commonHost) ReconcileIcingaNotification(alert api.Alert, kh IcingaHost) error {
 	obj := IcingaObject{
 		Templates: []string{"icinga2-notifier-template"},
 		Attrs: map[string]interface{}{
@@ -198,7 +198,7 @@ func (h *commonHost) EnsureIcingaNotification(alert api.Alert, kh IcingaHost) er
 	}
 	jsonStr, err := json.Marshal(obj)
 	if err != nil {
-		return errors.WithMessage(err, "Failed to Marshal Icinga Object")
+		return errors.Wrap(err, "Failed to Marshal Icinga Object")
 	}
 	host, err := kh.Name()
 	if err != nil {
@@ -210,7 +210,7 @@ func (h *commonHost) EnsureIcingaNotification(alert api.Alert, kh IcingaHost) er
 	resp = h.IcingaClient.Objects().Notifications(host).Create([]string{alert.GetName(), alert.GetName()}, string(jsonStr)).Do()
 
 	if resp.Err != nil {
-		return errors.WithMessage(resp.Err, "Failed to create Icinga Notification")
+		return errors.Wrap(resp.Err, "Failed to create Icinga Notification")
 	}
 	if resp.Status == 200 {
 		return nil
@@ -223,11 +223,11 @@ func (h *commonHost) EnsureIcingaNotification(alert api.Alert, kh IcingaHost) er
 	resp = h.IcingaClient.Objects().Notifications(host).Update([]string{alert.GetName(), alert.GetName()}, string(jsonStr)).Do()
 
 	if resp.Err != nil {
-		return errors.WithMessage(resp.Err, "Failed to update Icinga Notification")
+		return errors.Wrap(resp.Err, "Failed to update Icinga Notification")
 	}
 
 	if resp.Status != 200 {
-		return errors.Errorf("Can't update Icinga notification. Status: %d", resp.Status)
+		return errors.Errorf("can't update Icinga notification. Status: %d", resp.Status)
 	}
 
 	return nil

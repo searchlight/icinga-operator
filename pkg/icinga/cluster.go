@@ -2,7 +2,6 @@ package icinga
 
 import (
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/pkg/errors"
 )
 
 type ClusterHost struct {
@@ -25,17 +24,17 @@ func (h *ClusterHost) getHost(namespace string) IcingaHost {
 	}
 }
 
-func (h *ClusterHost) Create(alert *api.ClusterAlert) error {
+func (h *ClusterHost) Reconcile(alert *api.ClusterAlert) error {
 	alertSpec := alert.Spec
 	kh := h.getHost(alert.Namespace)
 
 	if err := h.EnsureIcingaHost(kh); err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 
 	has, err := h.CheckIcingaService(alert.Name, kh)
 	if err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 
 	attrs := make(map[string]interface{})
@@ -52,21 +51,21 @@ func (h *ClusterHost) Create(alert *api.ClusterAlert) error {
 	if !has {
 		attrs["check_command"] = alertSpec.Check
 		if err := h.CreateIcingaService(alert.Name, kh, attrs); err != nil {
-			return errors.WithStack(err)
+			return err
 		}
 	} else {
 		if err := h.UpdateIcingaService(alert.Name, kh, attrs); err != nil {
-			return errors.WithStack(err)
+			return err
 		}
 	}
 
-	return h.EnsureIcingaNotification(alert, kh)
+	return h.ReconcileIcingaNotification(alert, kh)
 }
 
 func (h *ClusterHost) Delete(alert *api.ClusterAlert) error {
 	kh := h.getHost(alert.Namespace)
 	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 	return h.DeleteIcingaHost(kh)
 }

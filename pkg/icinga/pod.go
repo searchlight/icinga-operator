@@ -60,17 +60,17 @@ func (h *PodHost) expandVars(alertSpec api.PodAlertSpec, kh IcingaHost, attrs ma
 	return nil
 }
 
-func (h *PodHost) Create(alert *api.PodAlert, pod *core.Pod) error {
+func (h *PodHost) Reconcile(alert *api.PodAlert, pod *core.Pod) error {
 	alertSpec := alert.Spec
 	kh := h.getHost(alert.Namespace, pod)
 
 	if err := h.EnsureIcingaHost(kh); err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 
 	has, err := h.CheckIcingaService(alert.Name, kh)
 	if err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 
 	attrs := make(map[string]interface{})
@@ -78,28 +78,28 @@ func (h *PodHost) Create(alert *api.PodAlert, pod *core.Pod) error {
 		attrs["check_interval"] = alertSpec.CheckInterval.Seconds()
 	}
 	if err := h.expandVars(alertSpec, kh, attrs); err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 
 	if !has {
 		attrs["check_command"] = alertSpec.Check
 		if err := h.CreateIcingaService(alert.Name, kh, attrs); err != nil {
-			return errors.WithStack(err)
+			return err
 		}
 	} else {
 		if err := h.UpdateIcingaService(alert.Name, kh, attrs); err != nil {
-			return errors.WithStack(err)
+			return err
 		}
 	}
 
-	return h.EnsureIcingaNotification(alert, kh)
+	return h.ReconcileIcingaNotification(alert, kh)
 }
 
 func (h *PodHost) Delete(alert *api.PodAlert, pod *core.Pod) error {
 	kh := h.getHost(alert.Namespace, pod)
 
 	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 	return h.DeleteIcingaHost(kh)
 }

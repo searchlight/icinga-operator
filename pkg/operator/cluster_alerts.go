@@ -123,7 +123,7 @@ func (op *Operator) EnsureIcingaClusterAlert(alert *api.ClusterAlert) (err error
 			log.Errorln(err)
 		}
 	}()
-	err = op.clusterHost.Create(alert.DeepCopy())
+	err = op.clusterHost.Reconcile(alert.DeepCopy())
 	return err
 }
 

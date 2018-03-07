@@ -190,7 +190,7 @@ func (op *Operator) EnsureIcingaNodeAlert(alert *api.NodeAlert, node *core.Node)
 			return
 		}
 	}()
-	err = op.nodeHost.Create(alert.DeepCopy(), node.DeepCopy())
+	err = op.nodeHost.Reconcile(alert.DeepCopy(), node.DeepCopy())
 	return
 }
 
@@ -264,7 +264,7 @@ func (op *Operator) processNodeAlertUpdate(oldAlert, newAlert *api.NodeAlert) (*
 					`Reason: %v`,
 					err,
 				)
-				return nil, false, errors.WithMessage(err,
+				return nil, false, errors.Wrap(err,
 					fmt.Sprintf(`Failed to patch PodAlert "%s@%s"`, newAlert.Name, newAlert.Namespace),
 				)
 			}

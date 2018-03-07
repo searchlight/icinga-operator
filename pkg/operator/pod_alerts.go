@@ -195,7 +195,7 @@ func (op *Operator) EnsureIcingaPodAlert(alert *api.PodAlert, pod *core.Pod) (er
 			return
 		}
 	}()
-	err = op.podHost.Create(alert.DeepCopy(), pod.DeepCopy())
+	err = op.podHost.Reconcile(alert.DeepCopy(), pod.DeepCopy())
 	return err
 }
 
@@ -273,7 +273,7 @@ func (op *Operator) processPodAlertUpdate(oldAlert, newAlert *api.PodAlert) (*ap
 					`Reason: %v`,
 					err,
 				)
-				return nil, false, errors.WithMessage(err,
+				return nil, false, errors.Wrap(err,
 					fmt.Sprintf(`Failed to patch PodAlert "%s@%s"`, newAlert.Name, newAlert.Namespace),
 				)
 			}
