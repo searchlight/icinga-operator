@@ -13,6 +13,7 @@ import (
 	"github.com/golang/glog"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/client-go/tools/cache"
 )
 
@@ -76,68 +77,49 @@ func (op *Operator) reconcilePod(key string) error {
 }
 
 func (op *Operator) EnsurePod(pod *core.Pod) error {
-	oldAlerts := make([]*api.PodAlert, 0)
-
-	oldAlertNames := make([]string, 0)
+	oldAlerts := sets.NewString()
 	if val, ok := pod.Annotations[annotationAlertsName]; ok {
-		if err := json.Unmarshal([]byte(val), &oldAlertNames); err != nil {
+		names := make([]string, 0)
+		if err := json.Unmarshal([]byte(val), &names); err != nil {
 			return err
 		}
-	}
-	for _, l := range oldAlertNames {
-		oldAlerts = append(oldAlerts, &api.PodAlert{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      l,
-				Namespace: pod.Namespace,
-			},
-		})
+		oldAlerts.Insert(names...)
 	}
 
 	newAlerts, err := util.FindPodAlert(op.paLister, pod.ObjectMeta)
 	if err != nil {
 		return err
 	}
-
-	type change struct {
-		old *api.PodAlert
-		new *api.PodAlert
-	}
-	diff := make(map[string]*change)
-	for i := range oldAlerts {
-		diff[oldAlerts[i].Name] = &change{old: oldAlerts[i]}
-	}
-
-	alertNames := make([]string, 0)
-
+	newNames := make([]string, len(newAlerts))
 	for i := range newAlerts {
-		alertNames = append(alertNames, newAlerts[i].Name)
-		if ch, ok := diff[newAlerts[i].Name]; ok {
-			ch.new = newAlerts[i]
-		} else {
-			diff[newAlerts[i].Name] = &change{new: newAlerts[i]}
+		alert := newAlerts[i]
+		op.EnsureIcingaPodAlert(alert, pod)
+
+		newNames[i] = alert.Name
+		if oldAlerts.Has(alert.Name) {
+			oldAlerts.Delete(alert.Name)
 		}
 	}
 
-	for alert := range diff {
-		ch := diff[alert]
-		if ch.old != nil && ch.new == nil {
-			op.EnsureIcingaPodAlertDeleted(ch.old, pod)
-		} else {
-			op.EnsureIcingaPodAlert(ch.new, pod)
-		}
+	for _, name := range oldAlerts.List() {
+		op.EnsureIcingaPodAlertDeleted(&api.PodAlert{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      name,
+				Namespace: pod.Namespace,
+			},
+		}, pod)
 	}
 
 	_, vr, err := core_util.PatchPod(op.KubeClient, pod, func(in *core.Pod) *core.Pod {
-		if len(newAlerts) > 0 {
-			if in.Annotations == nil {
-				in.Annotations = make(map[string]string, 0)
-			}
-			data, _ := json.Marshal(alertNames)
+		if in.Annotations == nil {
+			in.Annotations = make(map[string]string, 0)
+		}
+		if len(newNames) > 0 {
+			data, _ := json.Marshal(newNames)
 			in.Annotations[annotationAlertsName] = string(data)
 		} else {
 			delete(in.Annotations, annotationAlertsName)
 		}
-
 		return in
 	})
 	if err != nil {

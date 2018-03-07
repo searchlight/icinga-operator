@@ -68,8 +68,6 @@ func (op *Operator) reconcileNode(key string) error {
 }
 
 func (op *Operator) EnsureNode(node *core.Node) error {
-	log.Infof("Sync/Add/Update for Node %s\n", node.GetName())
-
 	oldAlerts := sets.NewString()
 	if val, ok := node.Annotations[annotationAlertsName]; ok {
 		names := make([]string, 0)
