@@ -1,31 +1,20 @@
 package operator
 
 import (
-	"encoding/json"
-	"fmt"
-	"reflect"
+	"strings"
 
 	"github.com/appscode/go/log"
 	"github.com/appscode/go/sets"
-	core_util "github.com/appscode/kutil/core/v1"
 	"github.com/appscode/kutil/tools/queue"
-	mon_api "github.com/appscode/searchlight/apis/monitoring"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	mon_util "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/util"
 	"github.com/appscode/searchlight/pkg/eventer"
+	"github.com/appscode/searchlight/pkg/util"
 	"github.com/golang/glog"
-	"github.com/pkg/errors"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/tools/cache"
 )
-
-// PodAlertMapperConfiguration
-type paMapperConf struct {
-	Selector metav1.LabelSelector `json:"selector,omitempty"`
-	PodName  string               `json:"podName,omitempty"`
-}
 
 func (op *Operator) initPodAlertWatcher() {
 	op.paInformer = op.monInformerFactory.Monitoring().V1alpha1().PodAlerts().Informer()
@@ -33,7 +22,7 @@ func (op *Operator) initPodAlertWatcher() {
 	op.paInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			alert := obj.(*api.PodAlert)
-			if op.validateAlert(alert) {
+			if op.isValid(alert) {
 				queue.Enqueue(op.paQueue.GetQueue(), obj)
 			}
 		},
@@ -41,13 +30,10 @@ func (op *Operator) initPodAlertWatcher() {
 			old := oldObj.(*api.PodAlert)
 			nu := newObj.(*api.PodAlert)
 
-			// DeepEqual old & new
-			// DeepEqual MapperConfiguration of old & new
-			// Patch PodAlert with necessary annotation
-			nu, proceed, err := op.processPodAlertUpdate(old, nu)
-			if err != nil {
-				log.Error(err)
-			} else if proceed {
+			if !op.isValid(nu) {
+				return
+			}
+			if !util.PodAlertEqual(old, nu) {
 				queue.Enqueue(op.paQueue.GetQueue(), nu)
 			}
 		},
@@ -66,96 +52,84 @@ func (op *Operator) reconcilePodAlert(key string) error {
 	}
 
 	if !exists {
-		log.Debugf("PodAlert %s does not exist anymore\n", key)
-	} else {
-		alert := obj.(*api.PodAlert)
-		if alert.DeletionTimestamp != nil {
-			if core_util.HasFinalizer(alert.ObjectMeta, mon_api.GroupName) {
-				// Delete all Icinga objects created for this PodAlert
-				if err := op.EnsurePodAlertDeleted(alert); err != nil {
-					log.Errorf("Failed to delete PodAlert %s@%s. Reason: %v", alert.Name, alert.Namespace, err)
-					return err
-				}
-				// Remove Finalizer
-				_, _, err = mon_util.PatchPodAlert(op.ExtClient.MonitoringV1alpha1(), alert, func(in *api.PodAlert) *api.PodAlert {
-					in.ObjectMeta = core_util.RemoveFinalizer(in.ObjectMeta, mon_api.GroupName)
-					return in
-				})
-				return err
-			}
-		} else {
-			log.Infof("Sync/Add/Update for PodAlert %s\n", alert.GetName())
+		log.Warningf("PodAlert %s does not exist anymore\n", key)
 
-			// Patch PodAlert to add Finalizer
-			alert, _, _ = mon_util.PatchPodAlert(op.ExtClient.MonitoringV1alpha1(), alert, func(in *api.PodAlert) *api.PodAlert {
-				in.ObjectMeta = core_util.AddFinalizer(in.ObjectMeta, mon_api.GroupName)
-				return in
-			})
-
-			if err := op.EnsurePodAlert(alert); err != nil {
-				log.Errorf("Failed to sync PodAlert %s@%s. Reason: %v", alert.Name, alert.Namespace, err)
-				return err
-			}
+		namespace, name, err := cache.SplitMetaNamespaceKey(key)
+		if err != nil {
+			return err
 		}
+		return op.EnsurePodAlertDeleted(namespace, name)
 	}
+
+	alert := obj.(*api.PodAlert)
+	log.Infof("Sync/Add/Update for PodAlert %s\n", alert.GetName())
+
+	op.EnsurePodAlert(alert)
+	op.EnsurePodAlertDeleted(alert.Namespace, alert.Name)
 	return nil
 }
 
 func (op *Operator) EnsurePodAlert(alert *api.PodAlert) error {
-
-	var oldMc *paMapperConf
-	if val, ok := alert.Annotations[annotationLastConfiguration]; ok {
-		if err := json.Unmarshal([]byte(val), &oldMc); err != nil {
+	if alert.Spec.PodName != nil {
+		pod, err := op.podLister.Pods(alert.Namespace).Get(*alert.Spec.PodName)
+		if err != nil {
 			return err
 		}
-	}
-
-	oldMappedPod, err := op.getMappedPodList(alert.Namespace, oldMc)
-	if err != nil {
-		return err
-	}
-
-	newMC := &paMapperConf{
-		Selector: alert.Spec.Selector,
-		PodName:  alert.Spec.PodName,
-	}
-	newMappedPod, err := op.getMappedPodList(alert.Namespace, newMC)
-	if err != nil {
-		return err
-	}
-
-	for key, pod := range newMappedPod {
-		delete(oldMappedPod, pod.Name)
-		if pod.Status.PodIP == "" {
-			log.Warningf("Skipping pod %s@%s, since it has no IP", pod.Name, pod.Namespace)
+		key, err := cache.MetaNamespaceKeyFunc(pod)
+		if err == nil {
+			op.podQueue.GetQueue().Add(key)
 		}
-
-		op.setPodAlertNamesInAnnotation(pod, alert)
-
-		go op.EnsureIcingaPodAlert(alert, newMappedPod[key])
 	}
 
-	for _, pod := range oldMappedPod {
-		op.EnsureIcingaPodAlertDeleted(alert, pod)
+	sel, err := metav1.LabelSelectorAsSelector(alert.Spec.Selector)
+	if err != nil {
+		op.recorder.Eventf(
+			alert.ObjectReference(),
+			core.EventTypeWarning,
+			eventer.EventReasonAlertInvalid,
+			"Reason: %s",
+			err.Error(),
+		)
+		return err
 	}
-
+	pods, err := op.podLister.Pods(alert.Namespace).List(sel)
+	if err != nil {
+		return err
+	}
+	for i := range pods {
+		pod := pods[i]
+		key, err := cache.MetaNamespaceKeyFunc(pod)
+		if err == nil {
+			op.nodeQueue.GetQueue().Add(key)
+		}
+	}
 	return nil
 }
 
-func (op *Operator) EnsurePodAlertDeleted(alert *api.PodAlert) error {
-	mc := &paMapperConf{
-		Selector: alert.Spec.Selector,
-		PodName:  alert.Spec.PodName,
+func GetAppliedPodAlerts(a map[string]string, key string) bool {
+	if a == nil {
+		return false
 	}
-	mappedPod, err := op.getMappedPodList(alert.Namespace, mc)
+	if val, ok := a[annotationAlertsName]; ok {
+		names := strings.Split(val, ",")
+		return sets.NewString(names...).Has(key)
+	}
+	return false
+}
+
+func (op *Operator) EnsurePodAlertDeleted(alertNamespace, alertName string) error {
+	pods, err := op.podLister.Pods(alertNamespace).List(labels.Everything())
 	if err != nil {
 		return err
 	}
-
-	for _, pod := range mappedPod {
-		op.EnsureIcingaPodAlertDeleted(alert, pod)
+	for _, pod := range pods {
+		if GetAppliedNodeAlerts(pod.Annotations, alertName) {
+			key, err := cache.MetaNamespaceKeyFunc(pod)
+			if err == nil {
+				op.podQueue.GetQueue().Add(key)
+			}
+		}
 	}
-
 	return nil
 }
 
@@ -187,114 +161,4 @@ func (op *Operator) EnsureIcingaPodAlertDeleted(alert *api.PodAlert, pod *core.P
 		)
 	}
 	return err
-}
-
-func (op *Operator) processPodAlertUpdate(oldAlert, newAlert *api.PodAlert) (*api.PodAlert, bool, error) {
-	// Check for changes in Spec
-	if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
-		if !op.validateAlert(newAlert) {
-			return nil, false, errors.Errorf(`Invalid PodAlert "%s@%s"`, newAlert.Name, newAlert.Namespace)
-		}
-
-		// We need Selector/PodName from oldAlert while processing this update operation.
-		// Because we need to remove Icinga objects for oldAlert.
-		oldMC := &paMapperConf{
-			Selector: oldAlert.Spec.Selector,
-			PodName:  oldAlert.Spec.PodName,
-		}
-		newMC := &paMapperConf{
-			Selector: newAlert.Spec.Selector,
-			PodName:  newAlert.Spec.PodName,
-		}
-
-		// We will store Selector/PodName from oldAlert in annotation
-		if !reflect.DeepEqual(oldMC, newMC) {
-			var err error
-			// Patch PodAlert with Selector/PodName from oldAlert (oldMC)
-			newAlert, _, err = mon_util.PatchPodAlert(
-				op.ExtClient.MonitoringV1alpha1(),
-				newAlert,
-				func(in *api.PodAlert) *api.PodAlert {
-					if in.Annotations == nil {
-						in.Annotations = make(map[string]string, 0)
-					}
-					data, _ := json.Marshal(oldMC)
-					in.Annotations[annotationLastConfiguration] = string(data)
-					return in
-				})
-			if err != nil {
-				op.recorder.Eventf(
-					newAlert.ObjectReference(),
-					core.EventTypeWarning,
-					eventer.EventReasonFailedToUpdate,
-					`Reason: %v`,
-					err,
-				)
-				return nil, false, errors.Wrap(err,
-					fmt.Sprintf(`Failed to patch PodAlert "%s@%s"`, newAlert.Name, newAlert.Namespace),
-				)
-			}
-		}
-		return newAlert, true, nil
-	} else if newAlert.DeletionTimestamp != nil {
-		return newAlert, true, nil
-	}
-
-	return newAlert, false, nil
-}
-
-func (op *Operator) getMappedPodList(namespace string, mc *paMapperConf) (map[string]*core.Pod, error) {
-	mappedPodList := make(map[string]*core.Pod)
-
-	if mc == nil {
-		return mappedPodList, nil
-	}
-
-	sel, err := metav1.LabelSelectorAsSelector(&mc.Selector)
-	if err != nil {
-		return nil, err
-	}
-	if mc.PodName != "" {
-		if pod, err := op.pLister.Pods(namespace).Get(mc.PodName); err == nil {
-			if sel.Matches(labels.Set(pod.Labels)) {
-				mappedPodList[pod.Name] = pod
-			}
-		}
-	} else {
-		if podList, err := op.pLister.Pods(namespace).List(sel); err != nil {
-			return nil, err
-		} else {
-			for i := range podList {
-				pod := podList[i]
-				mappedPodList[pod.Name] = pod
-			}
-		}
-	}
-
-	return mappedPodList, nil
-}
-
-func (op *Operator) setPodAlertNamesInAnnotation(pod *core.Pod, alert *api.PodAlert) {
-	_, _, err := core_util.PatchPod(op.KubeClient, pod, func(in *core.Pod) *core.Pod {
-		if in.Annotations == nil {
-			in.Annotations = make(map[string]string, 0)
-		}
-
-		alertNames := make([]string, 0)
-		if val, ok := pod.Annotations[annotationAlertsName]; ok {
-			if err := json.Unmarshal([]byte(val), &alertNames); err != nil {
-				log.Errorf("Failed to patch Pod %s@%s.", pod.Name, pod.Namespace)
-			}
-		}
-		ss := sets.NewString(alertNames...)
-		ss.Insert(alert.Name)
-		alertNames = ss.List()
-		data, _ := json.Marshal(alertNames)
-		in.Annotations[annotationAlertsName] = string(data)
-		return in
-	})
-
-	if err != nil {
-		log.Errorf("Failed to patch Pod %s@%s.", pod.Name, pod.Namespace)
-	}
 }

@@ -88,7 +88,7 @@ type NodeAlertList struct {
 type NodeAlertSpec struct {
 	Selector map[string]string `json:"selector,omitempty"`
 
-	NodeName string `json:"nodeName,omitempty"`
+	NodeName *string `json:"nodeName,omitempty"`
 
 	// Icinga CheckCommand name
 	Check CheckNode `json:"check,omitempty"`
@@ -141,9 +141,9 @@ type PodAlertList struct {
 
 // PodAlertSpec describes the PodAlert the user wishes to create.
 type PodAlertSpec struct {
-	Selector metav1.LabelSelector `json:"selector,omitempty"`
+	Selector *metav1.LabelSelector `json:"selector,omitempty"`
 
-	PodName string `json:"podName,omitempty"`
+	PodName *string `json:"podName,omitempty"`
 
 	// Icinga CheckCommand name
 	Check CheckPod `json:"check,omitempty"`

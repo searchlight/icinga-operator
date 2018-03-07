@@ -59,14 +59,14 @@ type Operator struct {
 	nsLister   core_listers.NamespaceLister
 
 	// Node
-	nQueue    *queue.Worker
-	nInformer cache.SharedIndexInformer
-	nLister   core_listers.NodeLister
+	nodeQueue    *queue.Worker
+	nodeInformer cache.SharedIndexInformer
+	nodeLister   core_listers.NodeLister
 
 	// Pod
-	pQueue    *queue.Worker
-	pInformer cache.SharedIndexInformer
-	pLister   core_listers.PodLister
+	podQueue    *queue.Worker
+	podInformer cache.SharedIndexInformer
+	podLister   core_listers.PodLister
 
 	// ClusterAlert
 	caQueue    *queue.Worker
@@ -163,8 +163,8 @@ func (op *Operator) Run(stopCh chan struct{}) {
 		}
 	}
 
-	op.nQueue.Run(stopCh)
-	op.pQueue.Run(stopCh)
+	op.nodeQueue.Run(stopCh)
+	op.podQueue.Run(stopCh)
 	op.caQueue.Run(stopCh)
 	op.naQueue.Run(stopCh)
 	op.paQueue.Run(stopCh)

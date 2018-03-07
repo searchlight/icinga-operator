@@ -18,33 +18,33 @@ import (
 )
 
 func (op *Operator) initPodWatcher() {
-	op.pInformer = op.kubeInformerFactory.Core().V1().Pods().Informer()
-	op.pQueue = queue.New("Pod", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcilePod)
-	op.pInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
+	op.podInformer = op.kubeInformerFactory.Core().V1().Pods().Informer()
+	op.podQueue = queue.New("Pod", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcilePod)
+	op.podInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			pod := obj.(*core.Pod)
 			if pod.Status.PodIP != "" {
 				log.Warningf("Skipping pod %s/%s, since it has no IP", pod.Namespace, pod.Name)
 				return
 			}
-			queue.Enqueue(op.pQueue.GetQueue(), obj)
+			queue.Enqueue(op.podQueue.GetQueue(), obj)
 		},
 		UpdateFunc: func(oldObj interface{}, newObj interface{}) {
 			old := oldObj.(*core.Pod)
 			nu := newObj.(*core.Pod)
 			if !reflect.DeepEqual(old.Labels, nu.Labels) || old.Status.PodIP != nu.Status.PodIP {
-				queue.Enqueue(op.pQueue.GetQueue(), newObj)
+				queue.Enqueue(op.podQueue.GetQueue(), newObj)
 			}
 		},
 		DeleteFunc: func(obj interface{}) {
-			queue.Enqueue(op.pQueue.GetQueue(), obj)
+			queue.Enqueue(op.podQueue.GetQueue(), obj)
 		},
 	})
-	op.pLister = op.kubeInformerFactory.Core().V1().Pods().Lister()
+	op.podLister = op.kubeInformerFactory.Core().V1().Pods().Lister()
 }
 
 func (op *Operator) reconcilePod(key string) error {
-	obj, exists, err := op.pInformer.GetIndexer().GetByKey(key)
+	obj, exists, err := op.podInformer.GetIndexer().GetByKey(key)
 	if err != nil {
 		glog.Errorf("Fetching object with key %s from store failed with %v", key, err)
 		return err

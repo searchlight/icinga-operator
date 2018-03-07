@@ -19,28 +19,28 @@ import (
 )
 
 func (op *Operator) initNodeWatcher() {
-	op.nInformer = op.kubeInformerFactory.Core().V1().Nodes().Informer()
-	op.nQueue = queue.New("Node", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcileNode)
-	op.nInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
+	op.nodeInformer = op.kubeInformerFactory.Core().V1().Nodes().Informer()
+	op.nodeQueue = queue.New("Node", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcileNode)
+	op.nodeInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
-			queue.Enqueue(op.nQueue.GetQueue(), obj)
+			queue.Enqueue(op.nodeQueue.GetQueue(), obj)
 		},
 		UpdateFunc: func(oldObj interface{}, newObj interface{}) {
 			old := oldObj.(*core.Node)
 			nu := newObj.(*core.Node)
 			if !reflect.DeepEqual(old.Labels, nu.Labels) {
-				queue.Enqueue(op.nQueue.GetQueue(), newObj)
+				queue.Enqueue(op.nodeQueue.GetQueue(), newObj)
 			}
 		},
 		DeleteFunc: func(obj interface{}) {
-			queue.Enqueue(op.nQueue.GetQueue(), obj)
+			queue.Enqueue(op.nodeQueue.GetQueue(), obj)
 		},
 	})
-	op.nLister = op.kubeInformerFactory.Core().V1().Nodes().Lister()
+	op.nodeLister = op.kubeInformerFactory.Core().V1().Nodes().Lister()
 }
 
 func (op *Operator) reconcileNode(key string) error {
-	obj, exists, err := op.nInformer.GetIndexer().GetByKey(key)
+	obj, exists, err := op.nodeInformer.GetIndexer().GetByKey(key)
 	if err != nil {
 		glog.Errorf("Fetching object with key %s from store failed with %v", key, err)
 		return err

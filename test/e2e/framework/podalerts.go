@@ -21,7 +21,7 @@ func (f *Invocation) PodAlert() *api.PodAlert {
 			},
 		},
 		Spec: api.PodAlertSpec{
-			CheckInterval: metav1.Duration{time.Second * 5},
+			CheckInterval: metav1.Duration{Duration: time.Second * 5},
 			Vars:          make(map[string]string),
 		},
 	}
@@ -43,14 +43,14 @@ func (f *Framework) DeletePodAlert(meta metav1.ObjectMeta) error {
 func (f *Framework) getPodAlertObjects(meta metav1.ObjectMeta, podAlertSpec api.PodAlertSpec) ([]icinga.IcingaHost, error) {
 	names := make([]string, 0)
 
-	if podAlertSpec.PodName != "" {
-		pod, err := f.kubeClient.CoreV1().Pods(meta.Namespace).Get(podAlertSpec.PodName, metav1.GetOptions{})
+	if podAlertSpec.PodName != nil {
+		pod, err := f.kubeClient.CoreV1().Pods(meta.Namespace).Get(*podAlertSpec.PodName, metav1.GetOptions{})
 		if err != nil {
 			return nil, err
 		}
 		names = append(names, pod.Name)
-	} else {
-		sel, err := metav1.LabelSelectorAsSelector(&podAlertSpec.Selector)
+	} else if podAlertSpec.Selector != nil {
+		sel, err := metav1.LabelSelectorAsSelector(podAlertSpec.Selector)
 		if err != nil {
 			return nil, err
 		}

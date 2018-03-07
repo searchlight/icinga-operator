@@ -36,6 +36,10 @@ func (a NodeAlert) GetAlertInterval() time.Duration {
 }
 
 func (a NodeAlert) IsValid() (bool, error) {
+	if a.Spec.NodeName != nil && len(a.Spec.Selector) > 0 {
+		return false, fmt.Errorf("can't specify both node name and selector")
+	}
+
 	cmd, ok := NodeCommands[a.Spec.Check]
 	if !ok {
 		return false, fmt.Errorf("%s is not a valid node check command", a.Spec.Check)

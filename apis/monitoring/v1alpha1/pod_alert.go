@@ -36,6 +36,13 @@ func (a PodAlert) GetAlertInterval() time.Duration {
 }
 
 func (a PodAlert) IsValid() (bool, error) {
+	if a.Spec.PodName != nil && a.Spec.Selector != nil {
+		return false, fmt.Errorf("can't specify both pod name and selector")
+	}
+	if a.Spec.PodName == nil && a.Spec.Selector == nil {
+		return false, fmt.Errorf("specify either pod name or selector")
+	}
+
 	cmd, ok := PodCommands[a.Spec.Check]
 	if !ok {
 		return false, fmt.Errorf("%s is not a valid pod check command", a.Spec.Check)

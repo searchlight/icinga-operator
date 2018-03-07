@@ -7,7 +7,7 @@ import (
 	core "k8s.io/api/core/v1"
 )
 
-func (op *Operator) validateAlert(alert api.Alert) bool {
+func (op *Operator) isValid(alert api.Alert) bool {
 	// Validate IcingaCommand & it's variables.
 	// And also check supported IcingaState
 	if ok, err := alert.IsValid(); !ok {
