@@ -242,7 +242,7 @@ var _ = Describe("PodAlert", func() {
 		Context("check_pod_status", func() {
 			BeforeEach(func() {
 				alert.Spec.Check = api.CheckPodStatus
-				alert.Spec.Selector = *(rs.Spec.Selector)
+				alert.Spec.Selector = rs.Spec.Selector
 			})
 
 			It("should manage icinga service for Alert.Spec.Selector", shouldManageIcingaServiceForLabelSelector)
@@ -252,8 +252,7 @@ var _ = Describe("PodAlert", func() {
 
 			Context("PodName", func() {
 				BeforeEach(func() {
-					alert.Spec.Selector = metav1.LabelSelector{}
-					alert.Spec.PodName = pod.Name
+					alert.Spec.PodName = &pod.Name
 				})
 
 				It("should manage icinga service for Alert.Spec.PodName", shouldManageIcingaServiceForPodName)
@@ -268,7 +267,7 @@ var _ = Describe("PodAlert", func() {
 
 			Context("change labels", func() {
 				BeforeEach(func() {
-					alert.Spec.Selector = *metav1.SetAsLabelSelector(pod.Labels)
+					alert.Spec.Selector = metav1.SetAsLabelSelector(pod.Labels)
 				})
 
 				It("should manage icinga service for Pod label changed", func() {
@@ -342,7 +341,7 @@ var _ = Describe("PodAlert", func() {
 					"dd if=/dev/zero of=/source/data/data bs=1024 count=52500 && sleep 1d",
 				}
 				alert.Spec.Check = api.CheckPodVolume
-				alert.Spec.Selector = *(ss.Spec.Selector)
+				alert.Spec.Selector = ss.Spec.Selector
 				alert.Spec.Vars["volume_name"] = framework.TestSourceDataVolumeName
 			})
 
@@ -411,7 +410,7 @@ var _ = Describe("PodAlert", func() {
 		Context("check_pod_exec", func() {
 			BeforeEach(func() {
 				alert.Spec.Check = api.CheckPodExec
-				alert.Spec.Selector = *(rs.Spec.Selector)
+				alert.Spec.Selector = rs.Spec.Selector
 				alert.Spec.Vars["container"] = "busybox"
 				alert.Spec.Vars["cmd"] = "/bin/sh"
 
