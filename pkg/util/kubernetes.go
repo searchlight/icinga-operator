@@ -3,7 +3,7 @@ package util
 import (
 	"github.com/appscode/go-notify/unified"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	slite_listers "github.com/appscode/searchlight/client/listers/monitoring/v1alpha1"
+	mon_listers "github.com/appscode/searchlight/client/listers/monitoring/v1alpha1"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -32,7 +32,7 @@ func CheckNotifiers(client kubernetes.Interface, alert api.Alert) error {
 	return nil
 }
 
-func FindPodAlert(pa slite_listers.PodAlertLister, obj metav1.ObjectMeta) ([]*api.PodAlert, error) {
+func FindPodAlert(pa mon_listers.PodAlertLister, obj metav1.ObjectMeta) ([]*api.PodAlert, error) {
 	alerts, err := pa.PodAlerts(obj.Namespace).List(labels.Everything())
 	if kerr.IsNotFound(err) {
 		return nil, nil
@@ -57,7 +57,7 @@ func FindPodAlert(pa slite_listers.PodAlertLister, obj metav1.ObjectMeta) ([]*ap
 	return result, nil
 }
 
-func FindNodeAlert(na slite_listers.NodeAlertLister, obj metav1.ObjectMeta) ([]*api.NodeAlert, error) {
+func FindNodeAlert(na mon_listers.NodeAlertLister, obj metav1.ObjectMeta) ([]*api.NodeAlert, error) {
 	alerts, err := na.NodeAlerts(obj.Namespace).List(labels.Everything())
 	if kerr.IsNotFound(err) {
 		return nil, nil

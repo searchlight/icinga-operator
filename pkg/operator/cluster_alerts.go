@@ -19,7 +19,7 @@ import (
 )
 
 func (op *Operator) initClusterAlertWatcher() {
-	op.caInformer = op.searchlightInformerFactory.Monitoring().V1alpha1().ClusterAlerts().Informer()
+	op.caInformer = op.monInformerFactory.Monitoring().V1alpha1().ClusterAlerts().Informer()
 	op.caQueue = queue.New("ClusterAlert", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcileClusterAlert)
 	op.caInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
@@ -54,7 +54,7 @@ func (op *Operator) initClusterAlertWatcher() {
 			queue.Enqueue(op.caQueue.GetQueue(), obj)
 		},
 	})
-	op.caLister = op.searchlightInformerFactory.Monitoring().V1alpha1().ClusterAlerts().Lister()
+	op.caLister = op.monInformerFactory.Monitoring().V1alpha1().ClusterAlerts().Lister()
 }
 
 // syncToStdout is the business logic of the controller. In this controller it simply prints

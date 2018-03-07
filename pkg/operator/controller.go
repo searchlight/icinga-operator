@@ -11,8 +11,8 @@ import (
 	"github.com/appscode/pat"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
-	searchlightinformers "github.com/appscode/searchlight/client/informers/externalversions"
-	slite_listers "github.com/appscode/searchlight/client/listers/monitoring/v1alpha1"
+	mon_informers "github.com/appscode/searchlight/client/informers/externalversions"
+	mon_listers "github.com/appscode/searchlight/client/listers/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/golang/glog"
@@ -45,8 +45,8 @@ type Operator struct {
 	ExtClient    cs.Interface
 	IcingaClient *icinga.Client // TODO: init
 
-	kubeInformerFactory        informers.SharedInformerFactory
-	searchlightInformerFactory searchlightinformers.SharedInformerFactory
+	kubeInformerFactory informers.SharedInformerFactory
+	monInformerFactory  mon_informers.SharedInformerFactory
 
 	options     Options
 	clusterHost *icinga.ClusterHost
@@ -70,17 +70,17 @@ type Operator struct {
 	// ClusterAlert
 	caQueue    *queue.Worker
 	caInformer cache.SharedIndexInformer
-	caLister   slite_listers.ClusterAlertLister
+	caLister   mon_listers.ClusterAlertLister
 
 	// NodeAlert
 	naQueue    *queue.Worker
 	naInformer cache.SharedIndexInformer
-	naLister   slite_listers.NodeAlertLister
+	naLister   mon_listers.NodeAlertLister
 
 	// PodAlert
 	paQueue    *queue.Worker
 	paInformer cache.SharedIndexInformer
-	paLister   slite_listers.PodAlertLister
+	paLister   mon_listers.PodAlertLister
 }
 
 const annotationAlertsName = "monitoring.appscode.com/alerts"
@@ -88,17 +88,17 @@ const annotationLastConfiguration = "monitoring.appscode.com/last-configuration"
 
 func New(kubeClient kubernetes.Interface, crdClient ecs.ApiextensionsV1beta1Interface, extClient cs.Interface, icingaClient *icinga.Client, opt Options) *Operator {
 	return &Operator{
-		KubeClient:                 kubeClient,
-		kubeInformerFactory:        informers.NewSharedInformerFactory(kubeClient, opt.ResyncPeriod),
-		CRDClient:                  crdClient,
-		ExtClient:                  extClient,
-		searchlightInformerFactory: searchlightinformers.NewSharedInformerFactory(extClient, opt.ResyncPeriod),
-		IcingaClient:               icingaClient,
-		options:                    opt,
-		clusterHost:                icinga.NewClusterHost(icingaClient),
-		nodeHost:                   icinga.NewNodeHost(icingaClient),
-		podHost:                    icinga.NewPodHost(icingaClient),
-		recorder:                   eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
+		KubeClient:          kubeClient,
+		kubeInformerFactory: informers.NewSharedInformerFactory(kubeClient, opt.ResyncPeriod),
+		CRDClient:           crdClient,
+		ExtClient:           extClient,
+		monInformerFactory:  mon_informers.NewSharedInformerFactory(extClient, opt.ResyncPeriod),
+		IcingaClient:        icingaClient,
+		options:             opt,
+		clusterHost:         icinga.NewClusterHost(icingaClient),
+		nodeHost:            icinga.NewNodeHost(icingaClient),
+		podHost:             icinga.NewPodHost(icingaClient),
+		recorder:            eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
 	}
 }
 
@@ -146,7 +146,7 @@ func (op *Operator) Run(stopCh chan struct{}) {
 	glog.Info("Starting Searchlight controller")
 
 	go op.kubeInformerFactory.Start(stopCh)
-	go op.searchlightInformerFactory.Start(stopCh)
+	go op.monInformerFactory.Start(stopCh)
 
 	// Wait for all involved caches to be synced, before processing items from the queue is started
 	for _, v := range op.kubeInformerFactory.WaitForCacheSync(stopCh) {
@@ -155,7 +155,7 @@ func (op *Operator) Run(stopCh chan struct{}) {
 			return
 		}
 	}
-	for _, v := range op.searchlightInformerFactory.WaitForCacheSync(stopCh) {
+	for _, v := range op.monInformerFactory.WaitForCacheSync(stopCh) {
 		if !v {
 			runtime.HandleError(fmt.Errorf("timed out waiting for caches to sync"))
 			return

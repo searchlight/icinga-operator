@@ -29,7 +29,7 @@ type naMapperConf struct {
 }
 
 func (op *Operator) initNodeAlertWatcher() {
-	op.naInformer = op.searchlightInformerFactory.Monitoring().V1alpha1().NodeAlerts().Informer()
+	op.naInformer = op.monInformerFactory.Monitoring().V1alpha1().NodeAlerts().Informer()
 	op.naQueue = queue.New("NodeAlert", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcileNodeAlert)
 	op.naInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
@@ -64,7 +64,7 @@ func (op *Operator) initNodeAlertWatcher() {
 			queue.Enqueue(op.naQueue.GetQueue(), obj)
 		},
 	})
-	op.naLister = op.searchlightInformerFactory.Monitoring().V1alpha1().NodeAlerts().Lister()
+	op.naLister = op.monInformerFactory.Monitoring().V1alpha1().NodeAlerts().Lister()
 }
 
 // syncToStdout is the business logic of the controller. In this controller it simply prints

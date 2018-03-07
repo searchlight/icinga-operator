@@ -29,7 +29,7 @@ type paMapperConf struct {
 }
 
 func (op *Operator) initPodAlertWatcher() {
-	op.paInformer = op.searchlightInformerFactory.Monitoring().V1alpha1().PodAlerts().Informer()
+	op.paInformer = op.monInformerFactory.Monitoring().V1alpha1().PodAlerts().Informer()
 	op.paQueue = queue.New("PodAlert", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcilePodAlert)
 	op.paInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
@@ -64,7 +64,7 @@ func (op *Operator) initPodAlertWatcher() {
 			queue.Enqueue(op.paQueue.GetQueue(), obj)
 		},
 	})
-	op.paLister = op.searchlightInformerFactory.Monitoring().V1alpha1().PodAlerts().Lister()
+	op.paLister = op.monInformerFactory.Monitoring().V1alpha1().PodAlerts().Lister()
 }
 
 // syncToStdout is the business logic of the controller. In this controller it simply prints
