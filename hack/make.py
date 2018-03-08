@@ -115,7 +115,7 @@ def gen_assets():
 
 
 def gen_extpoints():
-    die(call('go generate cmd/notifier/main.go'))
+    die(call('go generate cmd/searchlight/main.go'))
 
 
 def gen():
