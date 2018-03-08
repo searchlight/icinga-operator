@@ -1,5 +1,5 @@
 hash: 83ba78bb428e3de40e49f9edae4ac82f5c2c4a1cc2a184cfc3883e6d42236bb2
-updated: 2018-03-07T03:33:16.742561564-08:00
+updated: 2018-03-08T20:32:31.348238897-08:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -37,7 +37,7 @@ imports:
 - name: github.com/appscode/jsonpatch
   version: ee757872f6aca6d412d0d80543725bd4cf48f793
 - name: github.com/appscode/kutil
-  version: f172210ba205d36800506b5f6d86a3161558481c
+  version: 01f44212cb743f96b271564c9bf53a8a32766c33
   subpackages:
   - admission/api
   - apiextensions/v1beta1
@@ -119,6 +119,11 @@ imports:
   version: 782f4967f2dc4564575ca782fe2d04090b5faca8
   subpackages:
   - spew
+- name: github.com/docker/distribution
+  version: edc3ab29cdff8694dd6feb85cfeb4b5f1b38ed9c
+  subpackages:
+  - digestset
+  - reference
 - name: github.com/docker/spdystream
   version: 449fdfce4d962303d702fec724ef0ad181c92528
   subpackages:
@@ -206,7 +211,7 @@ imports:
   - compiler
   - extensions
 - name: github.com/gorilla/websocket
-  version: 2d1e4548da234d9cb742cc3628556fef86aafbac
+  version: 6eb6ad425a89d9da7a5549bc6da8f79ba5c17844
 - name: github.com/gregjones/httpcache
   version: 787624de3eb7bd915c329cba748687a3b22666a6
   subpackages:
@@ -295,6 +300,8 @@ imports:
   - matchers/support/goraph/node
   - matchers/support/goraph/util
   - types
+- name: github.com/opencontainers/go-digest
+  version: a6d0ee40d4207ea02364bd3b9e8e77b9159ba1eb
 - name: github.com/pborman/uuid
   version: ca53cad383cad2479bbba7f7a1a05797ec1386e4
 - name: github.com/peterbourgon/diskv
@@ -497,6 +504,7 @@ imports:
   - pkg/apis/apiextensions/v1beta1
   - pkg/client/clientset/clientset/scheme
   - pkg/client/clientset/clientset/typed/apiextensions/v1beta1
+  - pkg/features
 - name: k8s.io/apimachinery
   version: 180eddb345a5be3a157cea1c624700ad5bd27b8f
   subpackages:
@@ -807,6 +815,29 @@ imports:
   - pkg/util/proto
 - name: k8s.io/kubernetes
   version: 925c127ec6b946659ad0fd596fa959be43f0cc05
+  subpackages:
+  - pkg/api/legacyscheme
+  - pkg/apis/apps
+  - pkg/apis/apps/install
+  - pkg/apis/apps/v1
+  - pkg/apis/apps/v1beta1
+  - pkg/apis/apps/v1beta2
+  - pkg/apis/autoscaling
+  - pkg/apis/batch
+  - pkg/apis/batch/install
+  - pkg/apis/batch/v1
+  - pkg/apis/batch/v1beta1
+  - pkg/apis/batch/v2alpha1
+  - pkg/apis/core
+  - pkg/apis/core/install
+  - pkg/apis/core/v1
+  - pkg/apis/extensions
+  - pkg/apis/extensions/install
+  - pkg/apis/extensions/v1beta1
+  - pkg/apis/networking
+  - pkg/features
+  - pkg/util/parsers
+  - pkg/util/pointer
 testImports:
 - name: github.com/onsi/ginkgo
   version: 9eda700730cba42af70d53180f9dcce9266bc2bc

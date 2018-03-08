@@ -3,7 +3,6 @@ package operator
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/appscode/go/log"
 	apiext_util "github.com/appscode/kutil/apiextensions/v1beta1"
@@ -16,6 +15,7 @@ import (
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/golang/glog"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	crd_api "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	ecs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
 	"k8s.io/apimachinery/pkg/util/runtime"
@@ -26,33 +26,21 @@ import (
 	"k8s.io/client-go/tools/record"
 )
 
-type Options struct {
-	Master     string
-	KubeConfig string
-
-	ConfigRoot       string
-	ConfigSecretName string
-	APIAddress       string
-	WebAddress       string
-	ResyncPeriod     time.Duration
-	MaxNumRequeues   int
-	NumThreads       int
-}
-
 type Operator struct {
-	KubeClient   kubernetes.Interface
-	CRDClient    ecs.ApiextensionsV1beta1Interface
-	ExtClient    cs.Interface
-	IcingaClient *icinga.Client // TODO: init
+	Config
 
-	kubeInformerFactory informers.SharedInformerFactory
-	monInformerFactory  mon_informers.SharedInformerFactory
+	kubeClient   kubernetes.Interface
+	crdClient    ecs.ApiextensionsV1beta1Interface
+	extClient    cs.Interface
+	icingaClient *icinga.Client // TODO: init
 
-	options     Options
 	clusterHost *icinga.ClusterHost
 	nodeHost    *icinga.NodeHost
 	podHost     *icinga.PodHost
 	recorder    record.EventRecorder
+
+	kubeInformerFactory informers.SharedInformerFactory
+	monInformerFactory  mon_informers.SharedInformerFactory
 
 	// Namespace
 	nsInformer cache.SharedIndexInformer
@@ -84,15 +72,15 @@ type Operator struct {
 	paLister   mon_listers.PodAlertLister
 }
 
-func New(kubeClient kubernetes.Interface, crdClient ecs.ApiextensionsV1beta1Interface, extClient cs.Interface, icingaClient *icinga.Client, opt Options) *Operator {
+func New(kubeClient kubernetes.Interface, crdClient ecs.ApiextensionsV1beta1Interface, extClient cs.Interface, icingaClient *icinga.Client, opt Config) *Operator {
 	return &Operator{
-		KubeClient:          kubeClient,
+		kubeClient:          kubeClient,
 		kubeInformerFactory: informers.NewSharedInformerFactory(kubeClient, opt.ResyncPeriod),
-		CRDClient:           crdClient,
-		ExtClient:           extClient,
+		crdClient:           crdClient,
+		extClient:           extClient,
 		monInformerFactory:  mon_informers.NewSharedInformerFactory(extClient, opt.ResyncPeriod),
-		IcingaClient:        icingaClient,
-		options:             opt,
+		icingaClient:        icingaClient,
+		Config:              opt,
 		clusterHost:         icinga.NewClusterHost(icingaClient),
 		nodeHost:            icinga.NewNodeHost(icingaClient),
 		podHost:             icinga.NewPodHost(icingaClient),
@@ -119,26 +107,10 @@ func (op *Operator) ensureCustomResourceDefinitions() error {
 		api.NodeAlert{}.CustomResourceDefinition(),
 		api.PodAlert{}.CustomResourceDefinition(),
 	}
-	return apiext_util.RegisterCRDs(op.CRDClient, crds)
+	return apiext_util.RegisterCRDs(op.crdClient, crds)
 }
 
-func (op *Operator) RunAPIServer() {
-	router := pat.New()
-
-	// For notification acknowledgement
-	ackPattern := fmt.Sprintf("/monitoring.appscode.com/v1alpha1/namespaces/%s/%s/%s", PathParamNamespace, PathParamType, PathParamName)
-	ackHandler := func(w http.ResponseWriter, r *http.Request) {
-		Acknowledge(op.IcingaClient, w, r)
-	}
-	router.Post(ackPattern, http.HandlerFunc(ackHandler))
-
-	router.Get("/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) }))
-
-	log.Infoln("Listening on", op.options.APIAddress)
-	log.Fatal(http.ListenAndServe(op.options.APIAddress, router))
-}
-
-func (op *Operator) Run(stopCh chan struct{}) {
+func (op *Operator) RunWatchers(stopCh <-chan struct{}) {
 	defer runtime.HandleCrash()
 
 	glog.Info("Starting Searchlight controller")
@@ -168,4 +140,14 @@ func (op *Operator) Run(stopCh chan struct{}) {
 
 	<-stopCh
 	glog.Info("Stopping Searchlight controller")
+}
+
+func (op *Operator) Run(stopCh <-chan struct{}) error {
+	go op.RunWatchers(stopCh)
+
+	m := pat.New()
+	m.Get("/metrics", promhttp.Handler())
+	http.Handle("/", m)
+	log.Infoln("Listening on", op.OpsAddress)
+	return http.ListenAndServe(op.OpsAddress, nil)
 }

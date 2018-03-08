@@ -36,6 +36,7 @@ $ cd $(go env GOPATH)/src/github.com/appscode/searchlight
 
 #### Install Dev tools
 To install various dev tools for Searchlight, run the following command:
+
 ```console
 $ ./hack/builddeps.sh
 ```
@@ -46,9 +47,19 @@ $ ./hack/make.py
 $ searchlight version
 ```
 
+#### Run Binary Locally
+```console
+$ searchlight run \
+  --secure-port=8443 \
+  --kubeconfig="$HOME/.kube/config" \
+  --authorization-kubeconfig="$HOME/.kube/config" \
+  --authentication-kubeconfig="$HOME/.kube/config" \
+  --authentication-skip-lookup
+```
+
 #### Dependency management
-Searchlight uses [Glide](https://github.com/Masterminds/glide) to manage dependencies. Dependencies are already checked in the `vendor` folder.
-If you want to update/add dependencies, run:
+Searchlight uses [Glide](https://github.com/Masterminds/glide) to manage dependencies. Dependencies are already checked in the `vendor` folder. If you want to update/add dependencies, run:
+
 ```console
 $ glide slow
 ```

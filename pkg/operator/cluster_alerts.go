@@ -14,7 +14,7 @@ import (
 
 func (op *Operator) initClusterAlertWatcher() {
 	op.caInformer = op.monInformerFactory.Monitoring().V1alpha1().ClusterAlerts().Informer()
-	op.caQueue = queue.New("ClusterAlert", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcileClusterAlert)
+	op.caQueue = queue.New("ClusterAlert", op.MaxNumRequeues, op.NumThreads, op.reconcileClusterAlert)
 	op.caInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			alert := obj.(*api.ClusterAlert)

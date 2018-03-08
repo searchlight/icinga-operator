@@ -1,6 +1,8 @@
 #!/bin/bash
 set -eou pipefail
 
+crds=(clusteralerts nodealerts podalerts)
+
 echo "checking kubeconfig context"
 kubectl config current-context || { echo "Set a context (kubectl use-context <context>) out of the following:"; echo; kubectl config get-contexts; exit 1; }
 echo ""
@@ -51,6 +53,8 @@ export SEARCHLIGHT_RUN_ON_MASTER=0
 export SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK=false
 export SEARCHLIGHT_DOCKER_REGISTRY=appscode
 export SEARCHLIGHT_IMAGE_PULL_SECRET=
+export SEARCHLIGHT_UNINSTALL=0
+export SEARCHLIGHT_PURGE=0
 
 KUBE_APISERVER_VERSION=$(kubectl version -o=json | $ONESSL jsonpath '{.serverVersion.gitVersion}')
 $ONESSL semver --check='>=1.9.0' $KUBE_APISERVER_VERSION
@@ -72,6 +76,7 @@ show_help() {
     echo "    --run-on-master                run searchlight operator on master"
     echo "    --enable-admission-webhook     configure admission webhook for searchlight CRDs"
     echo "    --uninstall                    uninstall searchlight"
+    echo "    --purge                        purges searchlight crd objects and crds"
 }
 
 while test $# -gt 0; do
@@ -128,6 +133,10 @@ while test $# -gt 0; do
             export SEARCHLIGHT_UNINSTALL=1
             shift
             ;;
+        --purge)
+            export SEARCHLIGHT_PURGE=1
+            shift
+            ;;
         *)
             show_help
             exit 1
@@ -149,8 +158,49 @@ if [ "$SEARCHLIGHT_UNINSTALL" -eq 1 ]; then
     kubectl delete rolebindings -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
     kubectl delete role -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
 
+    echo "waiting for searchlight operator pod to stop running"
+    for (( ; ; )); do
+       pods=($(kubectl get pods --all-namespaces -l app=searchlight -o jsonpath='{range .items[*]}{.metadata.name} {end}'))
+       total=${#pods[*]}
+        if [ $total -eq 0 ] ; then
+            break
+        fi
+       sleep 2
+    done
+
+    # https://github.com/kubernetes/kubernetes/issues/60538
+    if [ "$SEARCHLIGHT_PURGE" -eq 1 ]; then
+        for crd in "${crds[@]}"; do
+            pairs=($(kubectl get ${crd}.searchlight.appscode.com --all-namespaces -o jsonpath='{range .items[*]}{.metadata.name} {.metadata.namespace} {end}' || true))
+            total=${#pairs[*]}
+
+            # save objects
+            if [ $total -gt 0 ]; then
+                echo "dumping ${crd} objects into ${crd}.yaml"
+                kubectl get ${crd}.searchlight.appscode.com --all-namespaces -o yaml > ${crd}.yaml
+            fi
+
+            for (( i=0; i<$total; i+=2 )); do
+                name=${pairs[$i]}
+                namespace=${pairs[$i + 1]}
+                # delete crd object
+                echo "deleting ${crd} $namespace/$name"
+                kubectl delete ${crd}.searchlight.appscode.com $name -n $namespace
+            done
+
+            # delete crd
+            kubectl delete crd ${crd}.searchlight.appscode.com || true
+        done
+    fi
+
+    echo
+    echo "Successfully uninstalled Searchlight!"
     exit 0
 fi
+
+echo "checking whether extended apiserver feature is enabled"
+$ONESSL has-keys configmap --namespace=kube-system --keys=requestheader-client-ca-file extension-apiserver-authentication || { echo "Set --requestheader-client-ca-file flag on Kubernetes apiserver"; exit 1; }
+echo ""
 
 env | sort | grep SEARCHLIGHT*
 echo ""
@@ -183,6 +233,18 @@ fi
 if [ "$SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK" = true ]; then
     curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/admission.yaml | $ONESSL envsubst | kubectl apply -f -
 fi
+
+echo
+echo "waiting until searchlight operator deployment is ready"
+$ONESSL wait-until-ready deployment searchlight-operator --namespace $SEARCHLIGHT_NAMESPACE || { echo "Searchlight operator deployment failed to be ready"; exit 1; }
+
+echo "waiting until searchlight apiservice is available"
+$ONESSL wait-until-ready apiservice v1alpha1.admission.searchlight.appscode.com || { echo "Searchlight apiservice failed to be ready"; exit 1; }
+
+echo "waiting until searchlight crds are ready"
+for crd in "${crds[@]}"; do
+    $ONESSL wait-until-ready crd ${crd}.searchlight.appscode.com || { echo "$crd crd failed to be ready"; exit 1; }
+done
 
 echo
 echo "Successfully installed Searchlight!"

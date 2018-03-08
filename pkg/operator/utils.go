@@ -13,7 +13,7 @@ import (
 func (op *Operator) isValid(alert api.Alert) bool {
 	// Validate IcingaCommand & it's variables.
 	// And also check supported IcingaState
-	err := alert.IsValid(op.KubeClient)
+	err := alert.IsValid(op.kubeClient)
 	if err != nil {
 		op.recorder.Eventf(
 			alert.ObjectReference(),

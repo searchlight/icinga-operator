@@ -124,13 +124,13 @@ var _ = BeforeSuite(func() {
 	fmt.Println()
 
 	// Controller
-	op = operator.New(kubeClient, apiExtKubeClient, extClient, icingaClient, operator.Options{
+	op = operator.New(kubeClient, apiExtKubeClient, extClient, icingaClient, operator.Config{
 		MaxNumRequeues: 3,
 		NumThreads:     3,
 	})
 	err = op.Setup()
 	Expect(err).NotTo(HaveOccurred())
-	go op.Run(nil)
+	go op.RunWatchers(nil)
 })
 
 var _ = AfterSuite(func() {

@@ -35,28 +35,30 @@ spec:
         - --v=3
         - --config-dir=/srv
         - --config-secret-name=searchlight-operator
-        - --api.address=:8080
-        - --web.address=:56790
+        - --ops-address=:56790
+        - --secure-port=8443
+        - --audit-log-path=-
+        - --tls-cert-file=/var/serving-cert/tls.crt
+        - --tls-private-key-file=/var/serving-cert/tls.key
         ports:
-        - name: api
-          containerPort: 8080
-          protocol: TCP
-        - name: web
-          containerPort: 56790
-          protocol: TCP
+        - containerPort: 8443
+        - containerPort: 56790
         volumeMounts:
-        - name: data
-          mountPath: /srv
+        - mountPath: /srv
+          name: data
+        - mountPath: /var/serving-cert
+          name: serving-cert
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8443
+            scheme: HTTPS
       - name: icinga
         image: ${SEARCHLIGHT_DOCKER_REGISTRY}/icinga:6.0.0-alpha.0-k8s
         imagePullPolicy: IfNotPresent
         ports:
-        - name: icinga
-          containerPort: 5665
-          protocol: TCP
-        - name: ui
-          containerPort: 60006
-          protocol: TCP
+        - containerPort: 5665
+        - containerPort: 60006
         livenessProbe:
           httpGet:
             scheme: HTTPS
@@ -77,38 +79,17 @@ spec:
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
         ports:
-        - name: ido
-          containerPort: 5432
-          protocol: TCP
+        - containerPort: 5432
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
-      - name: webhook
-        args:
-        - apiserver
-        - --secure-port=8443
-        - --audit-log-path=-
-        - --tls-cert-file=/var/serving-cert/tls.crt
-        - --tls-private-key-file=/var/serving-cert/tls.key
-        - --v=3
-        image: ${SEARCHLIGHT_DOCKER_REGISTRY}/searchlight:6.0.0-alpha.0
-        ports:
-        - containerPort: 8443
-        volumeMounts:
-        - mountPath: /var/serving-cert
-          name: serving-cert
-        readinessProbe:
-          httpGet:
-            path: /healthz
-            port: 8443
-            scheme: HTTPS
       volumes:
       - name: data
         emptyDir: {}
       - name: serving-cert
         secret:
           defaultMode: 420
-          secretName: searchlight-apiserver-cert
+          secretName: searchlight-server-cert
       tolerations:
       - key: CriticalAddonsOnly
         operator: Exists
@@ -117,7 +98,7 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: searchlight-apiserver-cert
+  name: searchlight-server-cert
   namespace: ${SEARCHLIGHT_NAMESPACE}
   labels:
     app: searchlight
@@ -138,23 +119,20 @@ spec:
   ports:
   - name: ui
     port: 80
-    targetPort: ui
-  - name: admission
+    targetPort: 60006
+  - name: api
     port: 443
     targetPort: 8443
   - name: icinga
     port: 5665
-    targetPort: icinga
-  - name: api
-    port: 8080
-    targetPort: api
-  - name: web
+    targetPort: 5665
+  - name: ops
     port: 56790
-    targetPort: web
+    targetPort: 56790
   selector:
     app: searchlight
 ---
-# register as aggregated apiserver
+# register as aggregated server
 apiVersion: apiregistration.k8s.io/v1beta1
 kind: APIService
 metadata:

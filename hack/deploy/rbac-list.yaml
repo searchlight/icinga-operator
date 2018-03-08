@@ -61,14 +61,14 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: searchlight-apiserver-extension-server-authentication-reader
+  name: searchlight-server-extension-server-authentication-reader
   namespace: kube-system
   labels:
     app: searchlight
 roleRef:
   kind: Role
   apiGroup: rbac.authorization.k8s.io
-  name: extension-apiserver-authentication-reader
+  name: extension-server-authentication-reader
 subjects:
 - kind: ServiceAccount
   name: ${SEARCHLIGHT_SERVICE_ACCOUNT}
@@ -78,7 +78,7 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: searchlight-apiserver-auth-delegator
+  name: searchlight-server-auth-delegator
   labels:
     app: searchlight
 roleRef:

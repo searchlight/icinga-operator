@@ -32,7 +32,7 @@ Searchlight by AppsCode - Alerts for Kubernetes
   -h, --help                                         help for searchlight
       --log_backtrace_at traceLocation               when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                               If non-empty, write log files in this directory
-      --logtostderr                                  log to standard error instead of files (default true)
+      --logtostderr                                  log to standard error instead of files
       --stderrthreshold severity                     logs at or above this threshold go to stderr
   -v, --v Level                                      log level for V logs
       --vmodule moduleSpec                           comma-separated list of pattern=N settings for file-filtered logging
@@ -40,9 +40,8 @@ Searchlight by AppsCode - Alerts for Kubernetes
 
 ### SEE ALSO
 
-* [searchlight apiserver](/docs/reference/searchlight/searchlight_apiserver.md)	 - Launch Searchlight API server
 * [searchlight configure](/docs/reference/searchlight/searchlight_configure.md)	 - Generate icinga configuration
-* [searchlight run](/docs/reference/searchlight/searchlight_run.md)	 - Run operator
+* [searchlight run](/docs/reference/searchlight/searchlight_run.md)	 - Launch Searchlight operator
 * [searchlight version](/docs/reference/searchlight/searchlight_version.md)	 - Prints binary version number.
 
 

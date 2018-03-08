@@ -2,6 +2,7 @@ package cmds
 
 import (
 	"flag"
+	"io"
 	"log"
 	"os"
 	"strings"
@@ -9,6 +10,8 @@ import (
 	v "github.com/appscode/go/version"
 	"github.com/appscode/kutil/tools/analytics"
 	"github.com/appscode/searchlight/client/clientset/versioned/scheme"
+	"github.com/appscode/searchlight/pkg/cmds/server"
+	"github.com/golang/glog"
 	"github.com/jpillora/go-ogle-analytics"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -46,13 +49,39 @@ func NewCmdSearchlight() *cobra.Command {
 	flag.CommandLine.Parse([]string{})
 	rootCmd.PersistentFlags().BoolVar(&enableAnalytics, "analytics", enableAnalytics, "Send analytical events to Google Analytics")
 
-	rootCmd.AddCommand(NewCmdOperator())
+	stopCh := genericapiserver.SetupSignalHandler()
+	rootCmd.AddCommand(NewCmdRun(os.Stdout, os.Stderr, stopCh))
 	rootCmd.AddCommand(NewCmdConfigure())
 	rootCmd.AddCommand(v.NewCmdVersion())
 
-	stopCh := genericapiserver.SetupSignalHandler()
-	cmd := NewCommandStartAPIServer(os.Stdout, os.Stderr, stopCh)
-	rootCmd.AddCommand(cmd)
-
 	return rootCmd
+}
+
+func NewCmdRun(out, errOut io.Writer, stopCh <-chan struct{}) *cobra.Command {
+	o := server.NewSearchlightOptions(out, errOut)
+
+	cmd := &cobra.Command{
+		Use:               "run",
+		Short:             "Launch Searchlight operator",
+		Long:              "Launch Searchlight operator",
+		DisableAutoGenTag: true,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			glog.Infof("Starting operator version %s+%s ...", v.Version.Version, v.Version.CommitHash)
+
+			if err := o.Complete(); err != nil {
+				return err
+			}
+			if err := o.Validate(args); err != nil {
+				return err
+			}
+			if err := o.Run(stopCh); err != nil {
+				return err
+			}
+			return nil
+		},
+	}
+
+	o.AddFlags(cmd.Flags())
+
+	return cmd
 }

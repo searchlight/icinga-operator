@@ -33,18 +33,24 @@ spec:
         - --v={{ .Values.logLevel }}
         - --config-dir=/srv
         - --config-secret-name={{ template "searchlight.fullname" . }}
-        - --api.address=:8080
-        - --web.address=:56790
+        - --ops-address=:56790
+        - --secure-port=8443
+        - --audit-log-path=-
+        - --tls-cert-file=/var/serving-cert/tls.crt
+        - --tls-private-key-file=/var/serving-cert/tls.key
         ports:
-        - name: api
-          containerPort: 8080
-          protocol: TCP
-        - name: web
-          containerPort: 56790
-          protocol: TCP
+        - containerPort: 8443
+        - containerPort: 56790
         volumeMounts:
-        - name: data
-          mountPath: /srv
+        - mountPath: /srv
+          name: data
+        - mountPath: /var/serving-cert
+          name: serving-cert
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8443
+            scheme: HTTPS
       - name: icinga
         image: {{ .Values.icinga.image }}:{{ .Values.icinga.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
@@ -53,12 +59,8 @@ spec:
 {{ toYaml .Values.imagePullSecrets | indent 8 }}
         {{- end }}
         ports:
-        - name: icinga
-          containerPort: 5665
-          protocol: TCP
-        - name: ui
-          containerPort: 60006
-          protocol: TCP
+        - containerPort: 5665
+        - containerPort: 60006
         livenessProbe:
           httpGet:
             scheme: HTTPS
@@ -83,15 +85,17 @@ spec:
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
         ports:
-        - name: ido
-          containerPort: 5432
-          protocol: TCP
+        - containerPort: 5432
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
       volumes:
       - name: data
         emptyDir: {}
+      - name: serving-cert
+        secret:
+          defaultMode: 420
+          secretName: searchlight-server-cert
 {{- if and .Values.criticalAddon (eq .Release.Namespace "kube-system") }}
       tolerations:
       - key: "CriticalAddonsOnly"

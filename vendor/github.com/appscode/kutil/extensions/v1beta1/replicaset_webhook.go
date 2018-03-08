@@ -17,6 +17,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
+	"k8s.io/kubernetes/pkg/api/legacyscheme"
 )
 
 type ReplicaSetWebhook struct {
@@ -180,6 +181,7 @@ func create_replicaset_patch(gv schema.GroupVersion, originalObj, extMod interfa
 		if err != nil {
 			return nil, err
 		}
+		legacyscheme.Scheme.Default(v1Mod)
 		return meta.CreateJSONPatch(originalObj.(runtime.Object), v1Mod)
 
 	case v1beta2.SchemeGroupVersion:
@@ -188,10 +190,13 @@ func create_replicaset_patch(gv schema.GroupVersion, originalObj, extMod interfa
 		if err != nil {
 			return nil, err
 		}
+		legacyscheme.Scheme.Default(v1beta2Mod)
 		return meta.CreateJSONPatch(originalObj.(runtime.Object), v1beta2Mod)
 
 	case extensions.SchemeGroupVersion:
-		return meta.CreateJSONPatch(originalObj.(runtime.Object), extMod.(runtime.Object))
+		extObj := extMod.(runtime.Object)
+		legacyscheme.Scheme.Default(extObj)
+		return meta.CreateJSONPatch(originalObj.(runtime.Object), extObj)
 	}
 	return nil, kutil.ErrUnknown
 }

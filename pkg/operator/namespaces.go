@@ -11,9 +11,9 @@ func (op *Operator) initNamespaceWatcher() {
 	op.nsInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		DeleteFunc: func(obj interface{}) {
 			if ns, ok := obj.(*core.Namespace); ok {
-				op.ExtClient.MonitoringV1alpha1().ClusterAlerts(ns.Name).DeleteCollection(&metav1.DeleteOptions{}, metav1.ListOptions{})
-				op.ExtClient.MonitoringV1alpha1().NodeAlerts(ns.Name).DeleteCollection(&metav1.DeleteOptions{}, metav1.ListOptions{})
-				op.ExtClient.MonitoringV1alpha1().PodAlerts(ns.Name).DeleteCollection(&metav1.DeleteOptions{}, metav1.ListOptions{})
+				op.extClient.MonitoringV1alpha1().ClusterAlerts(ns.Name).DeleteCollection(&metav1.DeleteOptions{}, metav1.ListOptions{})
+				op.extClient.MonitoringV1alpha1().NodeAlerts(ns.Name).DeleteCollection(&metav1.DeleteOptions{}, metav1.ListOptions{})
+				op.extClient.MonitoringV1alpha1().PodAlerts(ns.Name).DeleteCollection(&metav1.DeleteOptions{}, metav1.ListOptions{})
 			}
 		},
 	})

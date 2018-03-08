@@ -13,13 +13,13 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-type AdmissionHook struct {
+type CRDValidator struct {
 	client      kubernetes.Interface
 	lock        sync.RWMutex
 	initialized bool
 }
 
-func (a *AdmissionHook) Resource() (plural schema.GroupVersionResource, singular string) {
+func (a *CRDValidator) Resource() (plural schema.GroupVersionResource, singular string) {
 	return schema.GroupVersionResource{
 			Group:    "admission.monitoring.appscode.com",
 			Version:  "v1alpha1",
@@ -28,7 +28,7 @@ func (a *AdmissionHook) Resource() (plural schema.GroupVersionResource, singular
 		"admissionreview"
 }
 
-func (a *AdmissionHook) Initialize(config *rest.Config, stopCh <-chan struct{}) error {
+func (a *CRDValidator) Initialize(config *rest.Config, stopCh <-chan struct{}) error {
 	a.lock.Lock()
 	defer a.lock.Unlock()
 
@@ -41,7 +41,7 @@ func (a *AdmissionHook) Initialize(config *rest.Config, stopCh <-chan struct{}) 
 	return err
 }
 
-func (a *AdmissionHook) Admit(req *admission.AdmissionRequest) *admission.AdmissionResponse {
+func (a *CRDValidator) Admit(req *admission.AdmissionRequest) *admission.AdmissionResponse {
 	status := &admission.AdmissionResponse{}
 	supportedKinds := sets.NewString(api.ResourceKindClusterAlert, api.ResourceKindNodeAlert, api.ResourceKindPodAlert)
 

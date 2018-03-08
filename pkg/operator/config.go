@@ -1,0 +1,69 @@
+package operator
+
+import (
+	"time"
+
+	hookapi "github.com/appscode/kutil/admission/api"
+	cs "github.com/appscode/searchlight/client/clientset/versioned"
+	mon_informers "github.com/appscode/searchlight/client/informers/externalversions"
+	"github.com/appscode/searchlight/pkg/eventer"
+	"github.com/appscode/searchlight/pkg/icinga"
+	crd_cs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
+	"k8s.io/client-go/informers"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+)
+
+type Config struct {
+	ConfigRoot       string
+	ConfigSecretName string
+	OpsAddress       string
+	ResyncPeriod     time.Duration
+	MaxNumRequeues   int
+	NumThreads       int
+}
+
+type OperatorConfig struct {
+	Config
+
+	ClientConfig   *rest.Config
+	KubeClient     kubernetes.Interface
+	ExtClient      cs.Interface
+	CRDClient      crd_cs.ApiextensionsV1beta1Interface
+	IcingaClient   *icinga.Client // TODO: init
+	AdmissionHooks []hookapi.AdmissionHook
+}
+
+func NewOperatorConfig(clientConfig *rest.Config) *OperatorConfig {
+	return &OperatorConfig{
+		ClientConfig: clientConfig,
+	}
+}
+
+func (c *OperatorConfig) New() (*Operator, error) {
+	op := &Operator{
+		Config:              c.Config,
+		kubeClient:          c.KubeClient,
+		kubeInformerFactory: informers.NewSharedInformerFactory(c.KubeClient, c.ResyncPeriod),
+		crdClient:           c.CRDClient,
+		extClient:           c.ExtClient,
+		monInformerFactory:  mon_informers.NewSharedInformerFactory(c.ExtClient, c.ResyncPeriod),
+		icingaClient:        c.IcingaClient,
+		clusterHost:         icinga.NewClusterHost(c.IcingaClient),
+		nodeHost:            icinga.NewNodeHost(c.IcingaClient),
+		podHost:             icinga.NewPodHost(c.IcingaClient),
+		recorder:            eventer.NewEventRecorder(c.KubeClient, "Searchlight operator"),
+	}
+
+	if err := op.ensureCustomResourceDefinitions(); err != nil {
+		return nil, err
+	}
+	op.initNamespaceWatcher()
+	op.initNodeWatcher()
+	op.initPodWatcher()
+	op.initClusterAlertWatcher()
+	op.initNodeAlertWatcher()
+	op.initPodAlertWatcher()
+
+	return op, nil
+}

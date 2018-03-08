@@ -16,19 +16,27 @@ section_menu_id: setup
 
 # Installation Guide
 
-## Using YAML
+Searchlight operator can be installed via a script or as a Helm chart.
 [![Install Searchlight](https://img.youtube.com/vi/Po4yXrQuHtQ/0.jpg)](https://www.youtube-nocookie.com/embed/Po4yXrQuHtQ)
 
-Searchlight can be installed via installer script included in the [/hack/deploy](https://github.com/appscode/searchlight/tree/6.0.0-alpha.0/hack/deploy) folder.
+## Using Script
+
+To install Searchlight in your Kubernetes cluster, run the following command:
 
 ```console
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh \
-    | bash
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh | bash
+```
+
+After successful installation, you should have a `searchlight-operator-***` pod running in the `kube-system` namespace.
+
+```console
+$ kubectl get pods -n kube-system | grep searchlight-operator
+searchlight-operator-6945bcd777-4jdv7   3/3       Running   0          2m
 ```
 
 ### Customizing Installer
 
-You can see the full list of flags available to installer using `-h` flag.
+The installer script and associated yaml files can be found in the [/hack/deploy](https://github.com/appscode/searchlight/tree/6.0.0-alpha.0/hack/deploy) folder. You can see the full list of flags available to installer using `-h` flag.
 
 ```console
 $ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/searchlight.sh | bash -s -- -h
@@ -45,6 +53,7 @@ options:
     --run-on-master                run searchlight operator on master
     --enable-admission-webhook     configure admission webhook for searchlight CRDs
     --uninstall                    uninstall searchlight
+    --purge                        purges searchlight crd objects and crds
 ```
 
 If you would like to run Searchlight operator pod in `master` instances, pass the `--run-on-master` flag:
@@ -153,7 +162,6 @@ $ kubectl delete pods -n kube-system searchlight-operator-1987091405-ghj5b
 pod "searchlight-operator-1987091405-ghj5b" deleted
 ```
 
-
 ## Using kubectl
 ```console
 # List all Searchlight objects
@@ -172,7 +180,6 @@ $ kubectl get poa -n <namespace> <name> -o yaml
 $ kubectl describe podalert -n <namespace> <name>
 $ kubectl describe poa -n <namespace> <name>
 ```
-
 
 ## Detect Searchlight version
 To detect Searchlight version, exec into the operator pod and run `searchlight version` command.

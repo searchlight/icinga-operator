@@ -20,7 +20,7 @@ import (
 
 func (op *Operator) initNodeWatcher() {
 	op.nodeInformer = op.kubeInformerFactory.Core().V1().Nodes().Informer()
-	op.nodeQueue = queue.New("Node", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcileNode)
+	op.nodeQueue = queue.New("Node", op.MaxNumRequeues, op.NumThreads, op.reconcileNode)
 	op.nodeInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			queue.Enqueue(op.nodeQueue.GetQueue(), obj)
@@ -75,7 +75,7 @@ func (op *Operator) ensureNode(node *core.Node) error {
 		oldAlerts.Insert(keys...)
 	}
 
-	newAlerts, err := findNodeAlert(op.KubeClient, op.naLister, node.ObjectMeta)
+	newAlerts, err := findNodeAlert(op.kubeClient, op.naLister, node.ObjectMeta)
 	if err != nil {
 		return err
 	}
@@ -124,7 +124,7 @@ func (op *Operator) ensureNode(node *core.Node) error {
 		}
 	}
 
-	_, _, err = core_util.PatchNode(op.KubeClient, node, func(in *core.Node) *core.Node {
+	_, _, err = core_util.PatchNode(op.kubeClient, node, func(in *core.Node) *core.Node {
 		if in.Annotations == nil {
 			in.Annotations = make(map[string]string, 0)
 		}

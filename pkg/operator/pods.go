@@ -19,7 +19,7 @@ import (
 
 func (op *Operator) initPodWatcher() {
 	op.podInformer = op.kubeInformerFactory.Core().V1().Pods().Informer()
-	op.podQueue = queue.New("Pod", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcilePod)
+	op.podQueue = queue.New("Pod", op.MaxNumRequeues, op.NumThreads, op.reconcilePod)
 	op.podInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			pod := obj.(*core.Pod)
@@ -82,7 +82,7 @@ func (op *Operator) ensurePod(pod *core.Pod) error {
 		oldAlerts.Insert(names...)
 	}
 
-	newAlerts, err := findPodAlert(op.KubeClient, op.paLister, pod.ObjectMeta)
+	newAlerts, err := findPodAlert(op.kubeClient, op.paLister, pod.ObjectMeta)
 	if err != nil {
 		return err
 	}
@@ -124,7 +124,7 @@ func (op *Operator) ensurePod(pod *core.Pod) error {
 		}
 	}
 
-	_, _, err = core_util.PatchPod(op.KubeClient, pod, func(in *core.Pod) *core.Pod {
+	_, _, err = core_util.PatchPod(op.kubeClient, pod, func(in *core.Pod) *core.Pod {
 		if in.Annotations == nil {
 			in.Annotations = make(map[string]string, 0)
 		}

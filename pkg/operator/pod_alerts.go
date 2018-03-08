@@ -15,7 +15,7 @@ import (
 
 func (op *Operator) initPodAlertWatcher() {
 	op.paInformer = op.monInformerFactory.Monitoring().V1alpha1().PodAlerts().Informer()
-	op.paQueue = queue.New("PodAlert", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcilePodAlert)
+	op.paQueue = queue.New("PodAlert", op.MaxNumRequeues, op.NumThreads, op.reconcilePodAlert)
 	op.paInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			alert := obj.(*api.PodAlert)

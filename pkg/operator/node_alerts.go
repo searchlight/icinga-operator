@@ -14,7 +14,7 @@ import (
 
 func (op *Operator) initNodeAlertWatcher() {
 	op.naInformer = op.monInformerFactory.Monitoring().V1alpha1().NodeAlerts().Informer()
-	op.naQueue = queue.New("NodeAlert", op.options.MaxNumRequeues, op.options.NumThreads, op.reconcileNodeAlert)
+	op.naQueue = queue.New("NodeAlert", op.MaxNumRequeues, op.NumThreads, op.reconcileNodeAlert)
 	op.naInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			alert := obj.(*api.NodeAlert)
