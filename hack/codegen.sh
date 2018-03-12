@@ -29,7 +29,7 @@ docker run --rm -ti -u $(id -u):$(id -g) \
   github.com/appscode/searchlight/client \
   github.com/appscode/searchlight/apis \
   github.com/appscode/searchlight/apis \
-  incident:v1alpha1 \
+  incidents:v1alpha1 \
   --go-header-file "$DOCKER_REPO_ROOT/hack/gengo/boilerplate.go.txt"
 
 popd

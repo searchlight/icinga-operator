@@ -148,3 +148,20 @@ spec:
     name: searchlight-operator
     namespace: ${SEARCHLIGHT_NAMESPACE}
   version: v1alpha1
+---
+# register as aggregated server
+apiVersion: apiregistration.k8s.io/v1beta1
+kind: APIService
+metadata:
+  name: v1alpha1.incident.monitoring.appscode.com
+  labels:
+    app: searchlight
+spec:
+  caBundle: ${SERVICE_SERVING_CERT_CA}
+  group: incident.monitoring.appscode.com
+  groupPriorityMinimum: 1000
+  versionPriority: 15
+  service:
+    name: searchlight-operator
+    namespace: ${SEARCHLIGHT_NAMESPACE}
+  version: v1alpha1

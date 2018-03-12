@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Kubepack Authors.
+Copyright 2018 The Searchlight Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package incident
+package incidents
 
 import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-const GroupName = "incident.monitoring.appscode.com"
+const GroupName = "incidents.monitoring.appscode.com"
 
 // SchemeGroupVersion is group version used to register these objects
 var SchemeGroupVersion = schema.GroupVersion{Group: GroupName, Version: runtime.APIVersionInternal}

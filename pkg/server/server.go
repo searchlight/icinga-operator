@@ -6,10 +6,16 @@ import (
 
 	hookapi "github.com/appscode/kutil/admission/api"
 	admissionreview "github.com/appscode/kutil/registry/admissionreview/v1beta1"
+	"github.com/appscode/searchlight/apis/incidents"
+	"github.com/appscode/searchlight/apis/incidents/install"
+	"github.com/appscode/searchlight/apis/incidents/v1alpha1"
 	"github.com/appscode/searchlight/pkg/operator"
+	ackregistry "github.com/appscode/searchlight/pkg/registry/acknowledgement/v1alpha1"
 	admission "k8s.io/api/admission/v1beta1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/apimachinery"
+	"k8s.io/apimachinery/pkg/apimachinery/announced"
+	"k8s.io/apimachinery/pkg/apimachinery/registered"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -20,11 +26,14 @@ import (
 )
 
 var (
-	Scheme = runtime.NewScheme()
-	Codecs = serializer.NewCodecFactory(Scheme)
+	groupFactoryRegistry = make(announced.APIGroupFactoryRegistry)
+	registry             = registered.NewOrDie("")
+	Scheme               = runtime.NewScheme()
+	Codecs               = serializer.NewCodecFactory(Scheme)
 )
 
 func init() {
+	install.Install(groupFactoryRegistry, registry, Scheme)
 	admission.AddToScheme(Scheme)
 
 	// we need to add the options to empty v1
@@ -179,6 +188,18 @@ func (c completedConfig) New() (*SearchlightServer, error) {
 				return admissionHook.Initialize(c.OperatorConfig.ClientConfig, context.StopCh)
 			},
 		)
+	}
+
+	{
+		apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(incidents.GroupName, registry, Scheme, metav1.ParameterCodec, Codecs)
+		apiGroupInfo.GroupMeta.GroupVersion = v1alpha1.SchemeGroupVersion
+		v1alpha1storage := map[string]rest.Storage{}
+		v1alpha1storage["acknowledgements"] = ackregistry.NewREST(nil)
+		apiGroupInfo.VersionedResourcesStorageMap["v1alpha1"] = v1alpha1storage
+
+		if err := s.GenericAPIServer.InstallAPIGroup(&apiGroupInfo); err != nil {
+			return nil, err
+		}
 	}
 
 	return s, nil

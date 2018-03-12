@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Kubepack Authors.
+Copyright 2018 The Searchlight Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,14 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package install
+package v1alpha1
 
-import (
-	"testing"
+import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	roundtrip "k8s.io/apimachinery/pkg/api/testing/roundtrip"
-)
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-func TestRoundTripTypes(t *testing.T) {
-	roundtrip.RoundTripTestForAPIGroup(t, Install, nil)
+type Acknowledgement struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	// Comment by user
+	Comment *string `json:"comment,omitempty"`
+
+	// Skip sending notification
+	SkipNotify bool `json:"skipNotify,omitempty"`
 }

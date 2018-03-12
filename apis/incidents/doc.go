@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Kubepack Authors.
+Copyright 2018 The Searchlight Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@ limitations under the License.
 */
 
 // +k8s:deepcopy-gen=package
-// +k8s:conversion-gen=github.com/appscode/searchlight/apis/incident
 
-// Package v1alpha1 is the v1alpha1 version of the API.
-// +groupName=incident.monitoring.appscode.com
-package v1alpha1
+// Package api is the internal version of the API.
+// +groupName=incidents.monitoring.appscode.com
+package incidents

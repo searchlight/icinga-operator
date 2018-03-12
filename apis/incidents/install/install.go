@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Kubepack Authors.
+Copyright 2018 The Searchlight Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@ limitations under the License.
 package install
 
 import (
-	"github.com/appscode/searchlight/apis/incident"
-	"github.com/appscode/searchlight/apis/incident/v1alpha1"
+	"github.com/appscode/searchlight/apis/incidents"
+	"github.com/appscode/searchlight/apis/incidents/v1alpha1"
 	"k8s.io/apimachinery/pkg/apimachinery/announced"
 	"k8s.io/apimachinery/pkg/apimachinery/registered"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -29,10 +29,10 @@ import (
 func Install(groupFactoryRegistry announced.APIGroupFactoryRegistry, registry *registered.APIRegistrationManager, scheme *runtime.Scheme) {
 	if err := announced.NewGroupMetaFactory(
 		&announced.GroupMetaFactoryArgs{
-			GroupName:                  incident.GroupName,
+			GroupName:                  incidents.GroupName,
 			RootScopedKinds:            sets.NewString("Acknowledgement"),
 			VersionPreferenceOrder:     []string{v1alpha1.SchemeGroupVersion.Version},
-			AddInternalObjectsToScheme: incident.AddToScheme,
+			AddInternalObjectsToScheme: incidents.AddToScheme,
 		},
 		announced.VersionToSchemeFunc{
 			v1alpha1.SchemeGroupVersion.Version: v1alpha1.AddToScheme,
