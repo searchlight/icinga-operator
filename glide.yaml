@@ -56,6 +56,8 @@ import:
   version: master
 - package: github.com/nlopes/slack
   version: v0.2.0
+- package: github.com/ghodss/yaml
+  version: master
 testImport:
 - package: github.com/onsi/ginkgo
   version: v1.4.0

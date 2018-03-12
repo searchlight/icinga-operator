@@ -3,7 +3,7 @@ package operator
 import (
 	"time"
 
-	hookapi "github.com/appscode/kutil/admission/api"
+	hooks "github.com/appscode/kutil/admission/api"
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	mon_informers "github.com/appscode/searchlight/client/informers/externalversions"
 	"github.com/appscode/searchlight/pkg/eventer"
@@ -31,7 +31,7 @@ type OperatorConfig struct {
 	ExtClient      cs.Interface
 	CRDClient      crd_cs.ApiextensionsV1beta1Interface
 	IcingaClient   *icinga.Client // TODO: init
-	AdmissionHooks []hookapi.AdmissionHook
+	AdmissionHooks []hooks.AdmissionHook
 }
 
 func NewOperatorConfig(clientConfig *rest.Config) *OperatorConfig {

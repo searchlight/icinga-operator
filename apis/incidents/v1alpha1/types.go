@@ -24,9 +24,20 @@ type Acknowledgement struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
+	Request  *AcknowledgementRequest  `json:"request,omitempty"`
+	Response *AcknowledgementResponse `json:"response,omitempty"`
+}
+
+type AcknowledgementRequest struct {
 	// Comment by user
 	Comment *string `json:"comment,omitempty"`
 
 	// Skip sending notification
 	SkipNotify bool `json:"skipNotify,omitempty"`
+}
+
+type AcknowledgementResponse struct {
+	// The time at which the acknowledgement was done.
+	// +optional
+	Timestamp metav1.Time `json:"timestamp,omitempty"`
 }

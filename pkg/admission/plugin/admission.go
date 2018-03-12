@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"sync"
 
-	hookapi "github.com/appscode/kutil/admission/api"
+	hooks "github.com/appscode/kutil/admission/api"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	admission "k8s.io/api/admission/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -56,7 +56,7 @@ func (a *CRDValidator) Admit(req *admission.AdmissionRequest) *admission.Admissi
 	a.lock.RLock()
 	defer a.lock.RUnlock()
 	if !a.initialized {
-		return hookapi.StatusUninitialized()
+		return hooks.StatusUninitialized()
 	}
 
 	var alert api.Alert
@@ -71,11 +71,11 @@ func (a *CRDValidator) Admit(req *admission.AdmissionRequest) *admission.Admissi
 
 	err := json.Unmarshal(req.Object.Raw, alert)
 	if err != nil {
-		return hookapi.StatusBadRequest(err)
+		return hooks.StatusBadRequest(err)
 	}
 	err = alert.IsValid(a.client)
 	if err != nil {
-		return hookapi.StatusForbidden(err)
+		return hooks.StatusForbidden(err)
 	}
 
 	status.Allowed = true
