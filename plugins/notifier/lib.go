@@ -21,6 +21,13 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
+const (
+	EventTypeProblem         = "PROBLEM"
+	EventTypeAcknowledgement = "ACKNOWLEDGEMENT"
+	EventTypeRecovery        = "RECOVERY"
+	EventTypeCustom          = "CUSTOM"
+)
+
 type Request struct {
 	masterURL      string
 	kubeconfigPath string

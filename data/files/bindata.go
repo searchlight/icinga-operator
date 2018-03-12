@@ -204,9 +204,9 @@ func AssetNames() []string {
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
 	"cluster_checks.json": cluster_checksJson,
-	"icinga.gen.json":     icingaGenJson,
-	"node_checks.json":    node_checksJson,
-	"pod_checks.json":     pod_checksJson,
+	"icinga.gen.json": icingaGenJson,
+	"node_checks.json": node_checksJson,
+	"pod_checks.json": pod_checksJson,
 }
 
 // AssetDir returns the file names below a certain
@@ -248,12 +248,11 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
-
 var _bintree = &bintree{nil, map[string]*bintree{
-	"cluster_checks.json": {cluster_checksJson, map[string]*bintree{}},
-	"icinga.gen.json":     {icingaGenJson, map[string]*bintree{}},
-	"node_checks.json":    {node_checksJson, map[string]*bintree{}},
-	"pod_checks.json":     {pod_checksJson, map[string]*bintree{}},
+	"cluster_checks.json": &bintree{cluster_checksJson, map[string]*bintree{}},
+	"icinga.gen.json": &bintree{icingaGenJson, map[string]*bintree{}},
+	"node_checks.json": &bintree{node_checksJson, map[string]*bintree{}},
+	"pod_checks.json": &bintree{pod_checksJson, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory
@@ -302,3 +301,4 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+

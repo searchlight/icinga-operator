@@ -12,10 +12,10 @@ import (
 )
 
 var incidentTypeMap = map[string]api.IncidentNotificationType{
-	"PROBLEM":         api.NotificationProblem,
-	"ACKNOWLEDGEMENT": api.NotificationAcknowledgement,
-	"RECOVERY":        api.NotificationRecovery,
-	"CUSTOM":          api.NotificationCustom,
+	EventTypeProblem:         api.NotificationProblem,
+	EventTypeAcknowledgement: api.NotificationAcknowledgement,
+	EventTypeRecovery:        api.NotificationRecovery,
+	EventTypeCustom:          api.NotificationCustom,
 }
 
 func appendIncidentNotification(notifications []api.IncidentNotification, req *Request) []api.IncidentNotification {
@@ -95,7 +95,7 @@ func reconcileIncident(client *cs.MonitoringV1alpha1Client, req *Request) error 
 
 	if incident != nil {
 		notifications := incident.Status.Notifications
-		if req.Type == "CUSTOM" {
+		if req.Type == EventTypeCustom {
 			notifications = appendIncidentNotification(notifications, req)
 		} else {
 			updated := false
@@ -118,7 +118,7 @@ func reconcileIncident(client *cs.MonitoringV1alpha1Client, req *Request) error 
 		incident.Status.LastNotificationType = req.Type
 		incident.Status.Notifications = notifications
 
-		if req.Type == "RECOVERY" {
+		if req.Type == EventTypeRecovery {
 			incident.Labels[api.LabelKeyProblemRecovered] = "true"
 		}
 
