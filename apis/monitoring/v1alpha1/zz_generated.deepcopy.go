@@ -154,7 +154,7 @@ func (in *IncidentList) DeepCopyInto(out *IncidentList) {
 	out.ListMeta = in.ListMeta
 	if in.Items != nil {
 		in, out := &in.Items, &out.Items
-		*out = make([]PodAlert, len(*in))
+		*out = make([]Incident, len(*in))
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}

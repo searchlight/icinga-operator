@@ -21,7 +21,7 @@ func TestRenderMail(t *testing.T) {
 			CheckInterval:      metav1.Duration{Duration: 1 * time.Minute},
 			AlertInterval:      metav1.Duration{Duration: 5 * time.Minute},
 			NotifierSecretName: "notifier-conf",
-			Vars: map[string]interface{}{
+			Vars: map[string]string{
 				"name": "busybox",
 			},
 		},
@@ -32,7 +32,7 @@ func TestRenderMail(t *testing.T) {
 		Type:      "WHAT_IS_THE_CORRECT_VAL?",
 		State:     "WARNING",
 		Output:    "Check command output",
-		Time:      time.Now().Unix(),
+		Time:      time.Now(),
 		Author:    "<searchight-user>",
 		Comment:   "This is a test",
 	}

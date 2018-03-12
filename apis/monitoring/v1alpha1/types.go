@@ -243,5 +243,5 @@ type IncidentList struct {
 	metav1.ListMeta `json:"metadata,omitempty"`
 
 	// Items is the list of Incident.
-	Items []PodAlert `json:"items"`
+	Items []Incident `json:"items"`
 }

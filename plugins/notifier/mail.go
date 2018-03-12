@@ -52,7 +52,7 @@ func RenderMail(alert api.Alert, req *Request) (string, error) {
 		IcingaType:         req.Type,
 		IcingaState:        strings.ToUpper(req.State),
 		IcingaOutput:       req.Output,
-		IcingaTime:         time.Unix(req.Time, 0),
+		IcingaTime:         req.Time,
 	}
 
 	var buf bytes.Buffer

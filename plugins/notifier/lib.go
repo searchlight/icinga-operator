@@ -32,7 +32,7 @@ type Request struct {
 	Output    string
 	// The time object is used in icinga to send request. This
 	// indicates detection time from icinga.
-	Time    int64
+	Time    time.Time
 	Author  string
 	Comment string
 }
@@ -79,7 +79,9 @@ func sendNotification(req *Request) {
 		log.Fatalln(err)
 	}
 
-	alert, err := getAlert(host, cs.NewForConfigOrDie(config), req.AlertName)
+	client := cs.NewForConfigOrDie(config)
+
+	alert, err := getAlert(host, client, req.AlertName)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -134,6 +136,10 @@ func sendNotification(req *Request) {
 			log.Infof("Notification sent using %s", receiver.Notifier)
 		}
 	}
+
+	if err := reconcileIncident(client, req); err != nil {
+		log.Errorln(err)
+	}
 }
 
 func NewCmd() *cobra.Command {
@@ -151,7 +157,7 @@ func NewCmd() *cobra.Command {
 				os.Exit(1)
 
 			}
-			req.Time = t.Unix()
+			req.Time = t
 			sendNotification(&req)
 		},
 	}
