@@ -30,6 +30,10 @@ func (c *FakeMonitoringV1alpha1) ClusterAlerts(namespace string) v1alpha1.Cluste
 	return &FakeClusterAlerts{c, namespace}
 }
 
+func (c *FakeMonitoringV1alpha1) Incidents(namespace string) v1alpha1.IncidentInterface {
+	return &FakeIncidents{c, namespace}
+}
+
 func (c *FakeMonitoringV1alpha1) NodeAlerts(namespace string) v1alpha1.NodeAlertInterface {
 	return &FakeNodeAlerts{c, namespace}
 }
