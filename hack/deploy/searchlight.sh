@@ -2,6 +2,7 @@
 set -eou pipefail
 
 crds=(clusteralerts nodealerts podalerts incidents)
+apiversions=(v1alpha1.admission v1alpha1.incidents)
 
 echo "checking kubeconfig context"
 kubectl config current-context || { echo "Set a context (kubectl use-context <context>) out of the following:"; echo; kubectl config get-contexts; exit 1; }
@@ -238,7 +239,9 @@ echo "waiting until searchlight operator deployment is ready"
 $ONESSL wait-until-ready deployment searchlight-operator --namespace $SEARCHLIGHT_NAMESPACE || { echo "Searchlight operator deployment failed to be ready"; exit 1; }
 
 echo "waiting until searchlight apiservice is available"
-$ONESSL wait-until-ready apiservice v1alpha1.admission.searchlight.appscode.com || { echo "Searchlight apiservice failed to be ready"; exit 1; }
+for gv in "${apiversions[@]}"; do
+    $ONESSL wait-until-ready apiservice ${gv}.monitoring.appscode.com || { echo "${gv}.monitoring.appscode.com apiservice failed to be ready"; exit 1; }
+done
 
 echo "waiting until searchlight crds are ready"
 for crd in "${crds[@]}"; do
