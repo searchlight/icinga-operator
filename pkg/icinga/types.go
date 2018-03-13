@@ -26,6 +26,14 @@ type IcingaHost struct {
 	IP             string
 }
 
+func IsValidHostType(t string) bool {
+	switch t {
+	case TypePod, TypeNode, TypeCluster:
+		return true
+	}
+	return false
+}
+
 func (kh IcingaHost) Name() (string, error) {
 	switch kh.Type {
 	case TypePod:

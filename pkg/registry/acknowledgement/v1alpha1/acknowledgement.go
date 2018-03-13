@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	incidents "github.com/appscode/searchlight/apis/incidents/v1alpha1"
-	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	monitoring "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/client/clientset/versioned"
 	"github.com/appscode/searchlight/pkg/icinga"
@@ -60,6 +59,8 @@ func (r *REST) Create(ctx apirequest.Context, obj runtime.Object, _ rest.Validat
 	alertType, ok := in.Annotations[monitoring.LabelKeyAlertType]
 	if !ok {
 		return nil, errors.Errorf("incident %s/%s is missing annotation %s", req.Namespace, req.Name, monitoring.LabelKeyAlertType)
+	} else if !icinga.IsValidHostType(alertType) {
+		return nil, errors.Errorf("incident %s/%s has invalid value %s for annotation %s", req.Namespace, req.Name, alertType, monitoring.LabelKeyAlertType)
 	}
 	objName, ok := in.Annotations[monitoring.LabelKeyObjectName]
 	if !ok {
@@ -67,19 +68,10 @@ func (r *REST) Create(ctx apirequest.Context, obj runtime.Object, _ rest.Validat
 	}
 
 	host := &icinga.IcingaHost{
+		Type:           alertType,
 		ObjectName:     objName,
 		AlertNamespace: req.Namespace,
 	}
-
-	switch alertType {
-	case api.ResourceTypePodAlert:
-		host.Type = icinga.TypePod
-	case api.ResourceTypeNodeAlert:
-		host.Type = icinga.TypeNode
-	case api.ResourceTypeClusterAlert:
-		host.Type = icinga.TypeCluster
-	}
-
 	hostName, err := host.Name()
 	if err != nil {
 		return nil, err
