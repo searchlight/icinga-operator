@@ -1,0 +1,76 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: searchlight
+  name: searchlight-operator
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: searchlight
+  template:
+    metadata:
+      labels:
+        app: searchlight
+    spec:
+      containers:
+      - image: appscode/icinga:incident-k8s
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            httpHeaders:
+            - name: Authorization
+              value: Basic c3RhdHVzdXNlcjpzdGF0dXNwYXNz
+            path: /v1/status
+            port: 5665
+            scheme: HTTPS
+          initialDelaySeconds: 300
+          periodSeconds: 120
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: icinga
+        ports:
+        - containerPort: 5665
+          name: icinga
+          protocol: TCP
+        - containerPort: 60006
+          name: ui
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /srv
+          name: data
+      - env:
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        image: appscode/postgres:9.5-alpine
+        imagePullPolicy: IfNotPresent
+        name: ido
+        ports:
+        - containerPort: 5432
+          name: ido
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: data
+      - command:
+        - /bin/sh
+        - -c
+        - cp -rf /var/searchlight /srv/searchlight && sleep 1d
+        image: busybox
+        imagePullPolicy: Always
+        name: busybox
+        volumeMounts:
+        - mountPath: /srv
+          name: data
+        - mountPath: /var/
+          name: icingaconfig
+      volumes:
+      - emptyDir: {}
+        name: data
+      - gitRepo:
+          directory: .
+          repository: https://github.com/appscode/icinga-testconfig.git
+        name: icingaconfig
