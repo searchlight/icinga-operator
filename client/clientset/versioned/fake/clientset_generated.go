@@ -18,6 +18,8 @@ package fake
 
 import (
 	clientset "github.com/appscode/searchlight/client/clientset/versioned"
+	incidentsv1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/typed/incidents/v1alpha1"
+	fakeincidentsv1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/typed/incidents/v1alpha1/fake"
 	monitoringv1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
 	fakemonitoringv1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -59,6 +61,16 @@ func (c *Clientset) Discovery() discovery.DiscoveryInterface {
 }
 
 var _ clientset.Interface = &Clientset{}
+
+// IncidentsV1alpha1 retrieves the IncidentsV1alpha1Client
+func (c *Clientset) IncidentsV1alpha1() incidentsv1alpha1.IncidentsV1alpha1Interface {
+	return &fakeincidentsv1alpha1.FakeIncidentsV1alpha1{Fake: &c.Fake}
+}
+
+// Incidents retrieves the IncidentsV1alpha1Client
+func (c *Clientset) Incidents() incidentsv1alpha1.IncidentsV1alpha1Interface {
+	return &fakeincidentsv1alpha1.FakeIncidentsV1alpha1{Fake: &c.Fake}
+}
 
 // MonitoringV1alpha1 retrieves the MonitoringV1alpha1Client
 func (c *Clientset) MonitoringV1alpha1() monitoringv1alpha1.MonitoringV1alpha1Interface {

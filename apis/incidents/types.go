@@ -16,7 +16,9 @@ limitations under the License.
 
 package incidents
 
-import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+import (
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
@@ -24,15 +26,16 @@ type Acknowledgement struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Request  *AcknowledgementRequest  `json:"request,omitempty"`
-	Response *AcknowledgementResponse `json:"response,omitempty"`
+	Request  AcknowledgementRequest  `json:"request"`
+	Response AcknowledgementResponse `json:"response,omitempty"`
 }
 
 type AcknowledgementRequest struct {
 	// Comment by user
-	Comment *string `json:"comment,omitempty"`
+	Comment string `json:"comment"`
 
 	// Skip sending notification
+	// +optional
 	SkipNotify bool `json:"skipNotify,omitempty"`
 }
 

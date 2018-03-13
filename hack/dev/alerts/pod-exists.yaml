@@ -1,0 +1,17 @@
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: ClusterAlert
+metadata:
+  name: pod-exists
+  namespace: demo
+spec:
+  check: pod_exists
+  vars:
+    selector: app=nginx
+    count: '2'
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: Mailgun
+    state: CRITICAL
+    to: ["tamal@appscode.com"]

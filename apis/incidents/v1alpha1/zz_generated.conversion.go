@@ -21,8 +21,6 @@ limitations under the License.
 package v1alpha1
 
 import (
-	unsafe "unsafe"
-
 	incidents "github.com/appscode/searchlight/apis/incidents"
 	conversion "k8s.io/apimachinery/pkg/conversion"
 	runtime "k8s.io/apimachinery/pkg/runtime"
@@ -47,8 +45,12 @@ func RegisterConversions(scheme *runtime.Scheme) error {
 
 func autoConvert_v1alpha1_Acknowledgement_To_incidents_Acknowledgement(in *Acknowledgement, out *incidents.Acknowledgement, s conversion.Scope) error {
 	out.ObjectMeta = in.ObjectMeta
-	out.Request = (*incidents.AcknowledgementRequest)(unsafe.Pointer(in.Request))
-	out.Response = (*incidents.AcknowledgementResponse)(unsafe.Pointer(in.Response))
+	if err := Convert_v1alpha1_AcknowledgementRequest_To_incidents_AcknowledgementRequest(&in.Request, &out.Request, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_AcknowledgementResponse_To_incidents_AcknowledgementResponse(&in.Response, &out.Response, s); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -59,8 +61,12 @@ func Convert_v1alpha1_Acknowledgement_To_incidents_Acknowledgement(in *Acknowled
 
 func autoConvert_incidents_Acknowledgement_To_v1alpha1_Acknowledgement(in *incidents.Acknowledgement, out *Acknowledgement, s conversion.Scope) error {
 	out.ObjectMeta = in.ObjectMeta
-	out.Request = (*AcknowledgementRequest)(unsafe.Pointer(in.Request))
-	out.Response = (*AcknowledgementResponse)(unsafe.Pointer(in.Response))
+	if err := Convert_incidents_AcknowledgementRequest_To_v1alpha1_AcknowledgementRequest(&in.Request, &out.Request, s); err != nil {
+		return err
+	}
+	if err := Convert_incidents_AcknowledgementResponse_To_v1alpha1_AcknowledgementResponse(&in.Response, &out.Response, s); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -70,7 +76,7 @@ func Convert_incidents_Acknowledgement_To_v1alpha1_Acknowledgement(in *incidents
 }
 
 func autoConvert_v1alpha1_AcknowledgementRequest_To_incidents_AcknowledgementRequest(in *AcknowledgementRequest, out *incidents.AcknowledgementRequest, s conversion.Scope) error {
-	out.Comment = (*string)(unsafe.Pointer(in.Comment))
+	out.Comment = in.Comment
 	out.SkipNotify = in.SkipNotify
 	return nil
 }
@@ -81,7 +87,7 @@ func Convert_v1alpha1_AcknowledgementRequest_To_incidents_AcknowledgementRequest
 }
 
 func autoConvert_incidents_AcknowledgementRequest_To_v1alpha1_AcknowledgementRequest(in *incidents.AcknowledgementRequest, out *AcknowledgementRequest, s conversion.Scope) error {
-	out.Comment = (*string)(unsafe.Pointer(in.Comment))
+	out.Comment = in.Comment
 	out.SkipNotify = in.SkipNotify
 	return nil
 }

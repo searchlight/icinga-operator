@@ -6,6 +6,7 @@ import (
 
 	v "github.com/appscode/go/version"
 	"github.com/appscode/kutil/tools/analytics"
+	"github.com/appscode/searchlight/client/clientset/versioned/scheme"
 	"github.com/appscode/searchlight/plugins/check_ca_cert"
 	"github.com/appscode/searchlight/plugins/check_component_status"
 	"github.com/appscode/searchlight/plugins/check_env"
@@ -21,6 +22,7 @@ import (
 	"github.com/appscode/searchlight/plugins/notifier"
 	"github.com/jpillora/go-ogle-analytics"
 	"github.com/spf13/cobra"
+	clientsetscheme "k8s.io/client-go/kubernetes/scheme"
 )
 
 const (
@@ -42,6 +44,7 @@ func NewCmd() *cobra.Command {
 					client.Send(ga.NewEvent(parts[0], strings.Join(parts[1:], "/")).Label(v.Version.Version))
 				}
 			}
+			scheme.AddToScheme(clientsetscheme.Scheme)
 		},
 		Run: func(c *cobra.Command, args []string) {
 			c.Help()
@@ -74,6 +77,8 @@ func NewCmd() *cobra.Command {
 
 	// Notifier
 	cmd.AddCommand(notifier.NewCmd())
+
+	cmd.AddCommand(v.NewCmdVersion())
 
 	return cmd
 }

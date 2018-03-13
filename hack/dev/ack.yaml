@@ -1,0 +1,5 @@
+apiVersion: incidents.monitoring.appscode.com/v1alpha1
+kind: Acknowledgement
+metadata:
+  name: cluster.pod-exists-demo-0.20060102-1504
+  namespace: demo

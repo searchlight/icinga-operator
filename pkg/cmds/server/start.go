@@ -5,10 +5,13 @@ import (
 	"io"
 	"net"
 
+	incidentsv1alpha1 "github.com/appscode/searchlight/apis/incidents/v1alpha1"
 	"github.com/appscode/searchlight/pkg/operator"
 	"github.com/appscode/searchlight/pkg/server"
+	_ "github.com/go-openapi/loads"
 	"github.com/spf13/pflag"
 	admissionv1beta1 "k8s.io/api/admission/v1beta1"
+	_ "k8s.io/apimachinery/pkg/apis/meta/v1"
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	genericoptions "k8s.io/apiserver/pkg/server/options"
 )
@@ -59,6 +62,15 @@ func (o SearchlightOptions) Config() (*server.SearchlightConfig, error) {
 	if err := o.RecommendedOptions.ApplyTo(serverConfig); err != nil {
 		return nil, err
 	}
+	serverConfig.OpenAPIConfig = genericapiserver.DefaultOpenAPIConfig(incidentsv1alpha1.GetOpenAPIDefinitions, server.Scheme)
+	serverConfig.OpenAPIConfig.Info.Title = "searchlight-server"
+	serverConfig.OpenAPIConfig.Info.Version = incidentsv1alpha1.SchemeGroupVersion.Version
+	serverConfig.OpenAPIConfig.IgnorePrefixes = []string{
+		"/swaggerapi",
+		"/apis/admission.monitoring.appscode.com/v1alpha1/admissionreviews",
+	}
+	serverConfig.SwaggerConfig = genericapiserver.DefaultSwaggerConfig()
+	serverConfig.EnableMetrics = true
 
 	controllerConfig := operator.NewOperatorConfig(serverConfig.ClientConfig)
 	if err := o.OperatorOptions.ApplyTo(controllerConfig); err != nil {

@@ -37,3 +37,5 @@ dist/
 .vscode/
 
 apiserver.local.config/
+hack/dev/testconfig/searchlight/pki/
+hack/dev/notifier/MAILGUN_API_KEY

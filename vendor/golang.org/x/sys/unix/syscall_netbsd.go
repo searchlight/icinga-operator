@@ -422,6 +422,7 @@ func sendfile(outfd int, infd int, offset *int64, count int) (written int, err e
 // ntp_adjtime
 // pmc_control
 // pmc_get_info
+// poll
 // pollts
 // preadv
 // profil

@@ -106,6 +106,7 @@ func (op *Operator) ensureCustomResourceDefinitions() error {
 		api.ClusterAlert{}.CustomResourceDefinition(),
 		api.NodeAlert{}.CustomResourceDefinition(),
 		api.PodAlert{}.CustomResourceDefinition(),
+		api.Incident{}.CustomResourceDefinition(),
 	}
 	return apiext_util.RegisterCRDs(op.crdClient, crds)
 }

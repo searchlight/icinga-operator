@@ -30,7 +30,7 @@ func Install(groupFactoryRegistry announced.APIGroupFactoryRegistry, registry *r
 	if err := announced.NewGroupMetaFactory(
 		&announced.GroupMetaFactoryArgs{
 			GroupName:                  incidents.GroupName,
-			RootScopedKinds:            sets.NewString("Acknowledgement"),
+			RootScopedKinds:            sets.NewString(),
 			VersionPreferenceOrder:     []string{v1alpha1.SchemeGroupVersion.Version},
 			AddInternalObjectsToScheme: incidents.AddToScheme,
 		},

@@ -1,44 +1,69 @@
-metadata:
-  name: podalerts.monitoring.appscode.com
-  labels:
-    app: searchlight
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
-spec:
-  group: monitoring.appscode.com
-  names:
-    kind: PodAlert
-    plural: podalerts
-    shortNames: ["poa"]
-  scope: Namespaced
-  version: v1alpha1
----
 metadata:
-  name: nodealerts.monitoring.appscode.com
   labels:
     app: searchlight
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-spec:
-  group: monitoring.appscode.com
-  names:
-    kind: NodeAlert
-    plural: nodealerts
-    shortNames: ["noa"]
-  scope: Namespaced
-  version: v1alpha1
----
-metadata:
   name: clusteralerts.monitoring.appscode.com
-  labels:
-    app: searchlight
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
 spec:
   group: monitoring.appscode.com
   names:
     kind: ClusterAlert
+    listKind: ClusterAlertList
     plural: clusteralerts
-    shortNames: ["ca"]
+    shortNames:
+    - ca
+    singular: clusteralert
+  scope: Namespaced
+  version: v1alpha1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  labels:
+    app: searchlight
+  name: incidents.monitoring.appscode.com
+spec:
+  group: monitoring.appscode.com
+  names:
+    kind: Incident
+    listKind: IncidentList
+    plural: incidents
+    singular: incident
+  scope: Namespaced
+  version: v1alpha1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  labels:
+    app: searchlight
+  name: nodealerts.monitoring.appscode.com
+spec:
+  group: monitoring.appscode.com
+  names:
+    kind: NodeAlert
+    listKind: NodeAlertList
+    plural: nodealerts
+    shortNames:
+    - noa
+    singular: nodealert
+  scope: Namespaced
+  version: v1alpha1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  labels:
+    app: searchlight
+  name: podalerts.monitoring.appscode.com
+spec:
+  group: monitoring.appscode.com
+  names:
+    kind: PodAlert
+    listKind: PodAlertList
+    plural: podalerts
+    shortNames:
+    - poa
+    singular: podalert
   scope: Namespaced
   version: v1alpha1

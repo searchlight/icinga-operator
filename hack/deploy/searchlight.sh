@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eou pipefail
 
-crds=(clusteralerts nodealerts podalerts)
+crds=(clusteralerts nodealerts podalerts incidents)
 
 echo "checking kubeconfig context"
 kubectl config current-context || { echo "Set a context (kubectl use-context <context>) out of the following:"; echo; kubectl config get-contexts; exit 1; }
@@ -214,7 +214,6 @@ export SERVICE_SERVING_CERT_CA=$(cat ca.crt | $ONESSL base64)
 export TLS_SERVING_CERT=$(cat server.crt | $ONESSL base64)
 export TLS_SERVING_KEY=$(cat server.key | $ONESSL base64)
 export KUBE_CA=$($ONESSL get kube-ca | $ONESSL base64)
-rm -rf $ONESSL ca.crt ca.key server.crt server.key
 
 curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/operator.yaml | $ONESSL envsubst | kubectl apply -f -
 

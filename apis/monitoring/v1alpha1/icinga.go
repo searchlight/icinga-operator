@@ -2,6 +2,7 @@ package v1alpha1
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/appscode/go-notify/unified"
 	"github.com/appscode/go/log"
@@ -170,4 +171,17 @@ func checkNotifiers(kc kubernetes.Interface, alert Alert) error {
 		}
 	}
 	return nil
+}
+
+func AlertType(t string) IncidentNotificationType {
+	switch strings.ToUpper(t) {
+	case "PROBLEM":
+		return NotificationProblem
+	case "ACKNOWLEDGEMENT":
+		return NotificationAcknowledgement
+	case "RECOVERY":
+		return NotificationRecovery
+	default:
+		return NotificationCustom
+	}
 }

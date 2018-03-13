@@ -194,7 +194,7 @@ func (c completedConfig) New() (*SearchlightServer, error) {
 		apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(incidents.GroupName, registry, Scheme, metav1.ParameterCodec, Codecs)
 		apiGroupInfo.GroupMeta.GroupVersion = v1alpha1.SchemeGroupVersion
 		v1alpha1storage := map[string]rest.Storage{}
-		v1alpha1storage["acknowledgements"] = ackregistry.NewREST(c.OperatorConfig.ClientConfig, c.OperatorConfig.IcingaClient)
+		v1alpha1storage[v1alpha1.ResourcePluralAcknowledgement] = ackregistry.NewREST(c.OperatorConfig.ClientConfig, c.OperatorConfig.IcingaClient)
 		apiGroupInfo.VersionedResourcesStorageMap["v1alpha1"] = v1alpha1storage
 
 		if err := s.GenericAPIServer.InstallAPIGroup(&apiGroupInfo); err != nil {

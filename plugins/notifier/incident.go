@@ -11,16 +11,9 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 )
 
-var incidentTypeMap = map[string]api.IncidentNotificationType{
-	EventTypeProblem:         api.NotificationProblem,
-	EventTypeAcknowledgement: api.NotificationAcknowledgement,
-	EventTypeRecovery:        api.NotificationRecovery,
-	EventTypeCustom:          api.NotificationCustom,
-}
-
 func appendIncidentNotification(notifications []api.IncidentNotification, req *Request) []api.IncidentNotification {
 	notification := api.IncidentNotification{
-		Type:           incidentTypeMap[req.Type],
+		Type:           api.AlertType(req.Type),
 		CheckOutput:    req.Output,
 		Author:         &req.Author,
 		Comment:        &req.Comment,
@@ -62,9 +55,9 @@ func generateIncidentName(req *Request) (string, error) {
 
 	switch host.Type {
 	case icinga.TypePod, icinga.TypeNode:
-		return host.Type + ":" + host.ObjectName + ":" + req.AlertName + ":" + t, nil
+		return host.Type + "." + host.ObjectName + "." + req.AlertName + "." + t, nil
 	case icinga.TypeCluster:
-		return host.Type + ":" + req.AlertName + ":" + t, nil
+		return host.Type + "." + req.AlertName + "." + t, nil
 	}
 
 	return "", fmt.Errorf("unknown host type %s", host.Type)
@@ -95,7 +88,7 @@ func reconcileIncident(client *cs.MonitoringV1alpha1Client, req *Request) error 
 
 	if incident != nil {
 		notifications := incident.Status.Notifications
-		if req.Type == EventTypeCustom {
+		if api.AlertType(req.Type) == api.NotificationCustom {
 			notifications = appendIncidentNotification(notifications, req)
 		} else {
 			updated := false
@@ -104,7 +97,7 @@ func reconcileIncident(client *cs.MonitoringV1alpha1Client, req *Request) error 
 				if notification.Type == api.NotificationAcknowledgement {
 					continue
 				}
-				if notification.Type == incidentTypeMap[req.Type] {
+				if api.AlertType(req.Type) == notification.Type {
 					notifications[i] = updateIncidentNotification(notification, req)
 					updated = true
 					break
@@ -115,10 +108,10 @@ func reconcileIncident(client *cs.MonitoringV1alpha1Client, req *Request) error 
 			}
 		}
 
-		incident.Status.LastNotificationType = req.Type
+		incident.Status.LastNotificationType = api.AlertType(req.Type)
 		incident.Status.Notifications = notifications
 
-		if req.Type == EventTypeRecovery {
+		if api.AlertType(req.Type) == api.NotificationRecovery {
 			incident.Labels[api.LabelKeyProblemRecovered] = "true"
 		}
 
@@ -138,7 +131,7 @@ func reconcileIncident(client *cs.MonitoringV1alpha1Client, req *Request) error 
 				Labels:    getLabel(req, host),
 			},
 			Status: api.IncidentStatus{
-				LastNotificationType: req.Type,
+				LastNotificationType: api.AlertType(req.Type),
 				Notifications:        appendIncidentNotification(make([]api.IncidentNotification, 0), req),
 			},
 		}

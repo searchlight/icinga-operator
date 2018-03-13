@@ -5,13 +5,70 @@ import (
 	"time"
 
 	core "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 )
 
 const (
-	ResourceKindNodeAlert = "NodeAlert"
-	ResourceTypeNodeAlert = "nodealerts"
+	ResourceKindNodeAlert     = "NodeAlert"
+	ResourcePluralNodeAlert   = "nodealerts"
+	ResourceSingularNodeAlert = "nodealert"
 )
+
+// +genclient
+// +genclient:skipVerbs=updateStatus
+// +k8s:openapi-gen=true
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+type NodeAlert struct {
+	metav1.TypeMeta `json:",inline"`
+	// Standard object's metadata.
+	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#metadata
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	// Spec is the desired state of the NodeAlert.
+	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#spec-and-status
+	Spec NodeAlertSpec `json:"spec,omitempty"`
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// NodeAlertList is a collection of NodeAlert.
+type NodeAlertList struct {
+	metav1.TypeMeta `json:",inline"`
+	// Standard object's metadata.
+	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#metadata
+	metav1.ListMeta `json:"metadata,omitempty"`
+
+	// Items is the list of NodeAlert.
+	Items []NodeAlert `json:"items"`
+}
+
+// NodeAlertSpec describes the NodeAlert the user wishes to create.
+type NodeAlertSpec struct {
+	Selector map[string]string `json:"selector,omitempty"`
+
+	NodeName *string `json:"nodeName,omitempty"`
+
+	// Icinga CheckCommand name
+	Check CheckNode `json:"check,omitempty"`
+
+	// How frequently Icinga Service will be checked
+	CheckInterval metav1.Duration `json:"checkInterval,omitempty"`
+
+	// How frequently notifications will be send
+	AlertInterval metav1.Duration `json:"alertInterval,omitempty"`
+
+	// Secret containing notifier credentials
+	NotifierSecretName string `json:"notifierSecretName,omitempty"`
+
+	// NotifierParams contains information to send notifications for Incident
+	// State, UserUid, Method
+	Receivers []Receiver `json:"receivers,omitempty"`
+
+	// Vars contains Icinga Service variables to be used in CheckCommand
+	Vars map[string]string `json:"vars,omitempty"`
+}
 
 var _ Alert = &NodeAlert{}
 

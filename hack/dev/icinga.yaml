@@ -1,3 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: searchlight-operator
+  namespace: demo
+type: Opaque
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -74,3 +86,29 @@ spec:
           directory: .
           repository: https://github.com/appscode/icinga-testconfig.git
         name: icingaconfig
+---
+# to be able to expose TSB inside the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: searchlight-operator
+  namespace: demo
+  labels:
+    app: searchlight
+spec:
+  type: NodePort
+  ports:
+  - name: ui
+    port: 80
+    targetPort: 60006
+  - name: api
+    port: 443
+    targetPort: 8443
+  - name: icinga
+    port: 5665
+    targetPort: 5665
+  - name: ops
+    port: 56790
+    targetPort: 56790
+  selector:
+    app: searchlight

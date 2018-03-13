@@ -1,0 +1,5 @@
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: Incident
+metadata:
+  name: test.abc
+  namespace: demo
