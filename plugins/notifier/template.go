@@ -188,6 +188,20 @@ text-decoration: none;
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top"><pre>{{ .IcingaOutput }}</pre></td>
                             </tr>
                             {{ end }}
+
+                            {{ if .Author }}
+                            <tr>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Author</td>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top"><pre>{{ .Author }}</pre></td>
+                            </tr>
+                            {{ end }}
+
+                            {{ if .Comment }}
+                            <tr>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">Comment</td>
+                                <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top"><pre>{{ .Comment }}</pre></td>
+                            </tr>
+                            {{ end }}
                         </table>
                     </div>
                     <h2 style="font-size: 14px; color: #484f64; font-weight: 400; margin: 10px 0 0; padding: 4px 0;"> Reported at <span style="border-bottom-width: 1px; border-bottom-color: #3bb778; border-bottom-style: dotted; margin: 0px;">{{ .IcingaTime }}</span></h2>

@@ -33,6 +33,8 @@ type TemplateData struct {
 	IcingaType         string
 	IcingaState        string
 	IcingaOutput       string
+	Author             string
+	Comment            string
 	IcingaTime         time.Time
 }
 
@@ -52,6 +54,8 @@ func RenderMail(alert api.Alert, req *Request) (string, error) {
 		IcingaType:         req.Type,
 		IcingaState:        strings.ToUpper(req.State),
 		IcingaOutput:       req.Output,
+		Author:             req.Author,
+		Comment:            req.Comment,
 		IcingaTime:         req.Time,
 	}
 
