@@ -134,7 +134,7 @@ func reconcileIncident(client *cs.MonitoringV1alpha1Client, req *Request) error 
 		incident := &api.Incident{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      name,
-				Namespace: req.AlertName,
+				Namespace: host.AlertNamespace,
 				Labels:    getLabel(req, host),
 			},
 			Status: api.IncidentStatus{
