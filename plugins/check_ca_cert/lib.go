@@ -26,7 +26,7 @@ func loadCACert() (*x509.Certificate, error) {
 
 	block, _ := pem.Decode(data)
 	if block == nil {
-		return nil, errors.New("Failed to parse certificate")
+		return nil, errors.New("failed to parse certificate")
 	}
 	return x509.ParseCertificate(block.Bytes)
 }

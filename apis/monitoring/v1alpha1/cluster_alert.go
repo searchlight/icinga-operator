@@ -2,6 +2,7 @@ package v1alpha1
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	core "k8s.io/api/core/v1"
@@ -101,7 +102,7 @@ func (a ClusterAlert) IsValid(kc kubernetes.Interface) error {
 	for _, rcv := range a.Spec.Receivers {
 		found := false
 		for _, state := range cmd.States {
-			if state == rcv.State {
+			if strings.EqualFold(state, rcv.State) {
 				found = true
 				break
 			}

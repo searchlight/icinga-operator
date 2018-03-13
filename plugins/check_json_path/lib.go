@@ -139,7 +139,7 @@ func checkResult(response, query string) (bool, error) {
 		return false, err
 	}
 	if reflect.TypeOf(result).Kind() != reflect.Bool {
-		return false, fmt.Errorf("Invalid check query: %v", query)
+		return false, fmt.Errorf("invalid check query: %v", query)
 	}
 	return result.(bool), nil
 }
