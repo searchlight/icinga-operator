@@ -15,7 +15,7 @@ section_menu_id: guides
 
 # Check pod_exec
 
-Check command `pod_exec` is used to check status of a command run inside Kubernetes pods. Returns OK if exit code is zero, otherwise, returns CRITICAL.
+Check command `pod_exec` is used to check status of a command run inside Kubernetes pods. Returns OK if exit code is zero, otherwise, returns Critical.
 
 
 ## Spec
@@ -28,8 +28,8 @@ Check command `pod_exec` is used to check status of a command run inside Kuberne
 Execution of this command can result in following states:
 
 - OK
-- CRITICAL
-- UNKNOWN
+- Critical
+- Unknown
 
 
 ## Tutorial
@@ -75,7 +75,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]
 ```
 ```console
@@ -125,7 +125,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]
 ```
 ```console

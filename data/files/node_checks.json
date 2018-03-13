@@ -127,9 +127,9 @@
       ],
       "states": [
       "OK",
-      "WARNING",
-      "CRITICAL",
-      "UNKNOWN"
+      "Warning",
+      "Critical",
+      "Unknown"
     ]
     },
     {
@@ -144,8 +144,8 @@
       ],
       "states": [
         "OK",
-        "CRITICAL",
-        "UNKNOWN"
+        "Critical",
+        "Unknown"
       ]
     },
     {
@@ -209,8 +209,8 @@
       ],
       "states": [
         "OK",
-        "CRITICAL",
-        "UNKNOWN"
+        "Critical",
+        "Unknown"
       ]
     }
   ]

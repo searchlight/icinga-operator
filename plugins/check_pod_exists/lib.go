@@ -36,7 +36,7 @@ type serviceOutput struct {
 func CheckPodExists(req *Request, isCountSet bool) (icinga.State, interface{}) {
 	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 	kubeClient := kubernetes.NewForConfigOrDie(config)
 
@@ -44,7 +44,7 @@ func CheckPodExists(req *Request, isCountSet bool) (icinga.State, interface{}) {
 	if req.PodName != "" {
 		_, err := kubeClient.CoreV1().Pods(req.Namespace).Get(req.PodName, metav1.GetOptions{})
 		if err != nil {
-			return icinga.UNKNOWN, err
+			return icinga.Unknown, err
 		}
 		total_pod = 1
 	} else {
@@ -52,20 +52,20 @@ func CheckPodExists(req *Request, isCountSet bool) (icinga.State, interface{}) {
 			LabelSelector: req.Selector,
 		})
 		if err != nil {
-			return icinga.UNKNOWN, err
+			return icinga.Unknown, err
 		}
 		total_pod = len(podList.Items)
 	}
 
 	if isCountSet {
 		if req.Count != total_pod {
-			return icinga.CRITICAL, fmt.Sprintf("Found %d pod(s) instead of %d", total_pod, req.Count)
+			return icinga.Critical, fmt.Sprintf("Found %d pod(s) instead of %d", total_pod, req.Count)
 		} else {
 			return icinga.OK, "Found all pods"
 		}
 	} else {
 		if total_pod == 0 {
-			return icinga.CRITICAL, "No pod found"
+			return icinga.Critical, "No pod found"
 		} else {
 			return icinga.OK, fmt.Sprintf("Found %d pods(s)", total_pod)
 		}
@@ -84,11 +84,11 @@ func NewCmd() *cobra.Command {
 
 			host, err := icinga.ParseHost(icingaHost)
 			if err != nil {
-				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
+				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host.name")
 				os.Exit(3)
 			}
 			if host.Type != icinga.TypeCluster {
-				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host type")
+				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host type")
 				os.Exit(3)
 			}
 			req.Namespace = host.AlertNamespace

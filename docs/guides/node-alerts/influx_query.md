@@ -37,9 +37,9 @@ Here `A`, `B`, `C`, `D`, `E` are processed as a GO template generating the final
 Execution of this command can result in following states:
 
 - OK
-- WARNING
-- CRITICAL
-- UNKNOWN
+- Warning
+- Critical
+- Unknown
 
 
 ## Next Steps

@@ -165,12 +165,12 @@ text-decoration: none;
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">State</td>
                                 <td style="text-align: left; vertical-align: top; color: #006400; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{ .IcingaState }}</td>
                             </tr>
-                            {{ else if eq .IcingaState "CRITICAL" }}
+                            {{ else if eq .IcingaState "Critical" }}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">State</td>
                                 <td style="text-align: left; vertical-align: top; color: #FF0000; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{ .IcingaState }}</td>
                             </tr>
-                            {{ else if eq .IcingaState "WARNING" }}
+                            {{ else if eq .IcingaState "Warning" }}
                             <tr>
                                 <td style="text-align: left; vertical-align: top; color: #575757; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">State</td>
                                 <td style="text-align: left; vertical-align: top; color: #FF7F50; font-size: 12px; padding: 6px; border: 1px solid #f0f0f0;" align="left" valign="top">{{ .IcingaState }}</td>

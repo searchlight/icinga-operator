@@ -28,8 +28,8 @@ Check command `pod_exists` is used to check existence of pods in a Kubernetes cl
 Execution of this command can result in following states:
 
 - OK
-- CRITICAL
-- UNKNOWN
+- Critical
+- Unknown
 
 
 ## Tutorial
@@ -74,7 +74,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]
 ```
 ```console
@@ -118,7 +118,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]
 ```
 ```console

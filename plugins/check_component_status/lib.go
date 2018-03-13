@@ -33,7 +33,7 @@ type serviceOutput struct {
 func CheckComponentStatus(req *Request) (icinga.State, interface{}) {
 	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 	kubeClient := kubernetes.NewForConfigOrDie(config)
 
@@ -41,7 +41,7 @@ func CheckComponentStatus(req *Request) (icinga.State, interface{}) {
 	if req.ComponentName != "" {
 		comp, err := kubeClient.CoreV1().ComponentStatuses().Get(req.ComponentName, metav1.GetOptions{})
 		if err != nil {
-			return icinga.UNKNOWN, err
+			return icinga.Unknown, err
 		}
 		components = []core.ComponentStatus{*comp}
 	} else {
@@ -49,7 +49,7 @@ func CheckComponentStatus(req *Request) (icinga.State, interface{}) {
 			LabelSelector: req.Selector,
 		})
 		if err != nil {
-			return icinga.UNKNOWN, err
+			return icinga.Unknown, err
 		}
 		components = comps.Items
 	}
@@ -77,9 +77,9 @@ func CheckComponentStatus(req *Request) (icinga.State, interface{}) {
 		}
 		outputByte, err := json.MarshalIndent(output, "", "  ")
 		if err != nil {
-			return icinga.UNKNOWN, err
+			return icinga.Unknown, err
 		}
-		return icinga.CRITICAL, outputByte
+		return icinga.Critical, outputByte
 	}
 }
 

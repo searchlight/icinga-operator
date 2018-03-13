@@ -37,13 +37,13 @@ func newStringReader(ss []string) io.Reader {
 func CheckKubeExec(req *Request) (icinga.State, interface{}) {
 	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 	kubeClient := kubernetes.NewForConfigOrDie(config)
 
 	pod, err := kubeClient.CoreV1().Pods(req.Namespace).Get(req.Pod, metav1.GetOptions{})
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 
 	if req.Container != "" {
@@ -55,7 +55,7 @@ func CheckKubeExec(req *Request) (icinga.State, interface{}) {
 			}
 		}
 		if notFound {
-			return icinga.UNKNOWN, fmt.Sprintf(`Container "%v" not found`, req.Container)
+			return icinga.Unknown, fmt.Sprintf(`Container "%v" not found`, req.Container)
 		}
 	}
 
@@ -73,7 +73,7 @@ func CheckKubeExec(req *Request) (icinga.State, interface{}) {
 
 	exec, err := remotecommand.NewSPDYExecutor(config, "POST", execRequest.URL())
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 
 	stdIn := newStringReader([]string{"-c", req.Arg})
@@ -94,7 +94,7 @@ func CheckKubeExec(req *Request) (icinga.State, interface{}) {
 		if exitErr, ok := err.(utilexec.ExitError); ok && exitErr.Exited() {
 			exitCode = exitErr.ExitStatus()
 		} else {
-			return icinga.UNKNOWN, "Failed to find exit code."
+			return icinga.Unknown, "Failed to find exit code."
 		}
 	}
 
@@ -130,11 +130,11 @@ func NewCmd() *cobra.Command {
 
 			host, err := icinga.ParseHost(icingaHost)
 			if err != nil {
-				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
+				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host.name")
 				os.Exit(3)
 			}
 			if host.Type != icinga.TypePod {
-				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host type")
+				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host type")
 				os.Exit(3)
 			}
 			req.Namespace = host.AlertNamespace

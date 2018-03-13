@@ -195,10 +195,10 @@ func getStats(au *AuthInfo, hostIP, path string) (*usageStat, error) {
 
 func checkResult(field string, warning, critical, result float64) (icinga.State, interface{}) {
 	if result >= critical {
-		return icinga.CRITICAL, fmt.Sprintf("%v used more than %v%%", field, critical)
+		return icinga.Critical, fmt.Sprintf("%v used more than %v%%", field, critical)
 	}
 	if result >= warning {
-		return icinga.WARNING, fmt.Sprintf("%v used more than %v%%", field, warning)
+		return icinga.Warning, fmt.Sprintf("%v used more than %v%%", field, warning)
 	}
 	return icinga.OK, "(Disk & Inodes)"
 }
@@ -206,11 +206,11 @@ func checkResult(field string, warning, critical, result float64) (icinga.State,
 func checkVolume(kubeClient kubernetes.Interface, req *Request, namespace, ip, path string) (icinga.State, interface{}) {
 	authInfo, err := getAuthInfo(kubeClient, req.SecretName, namespace)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 	usage, err := getStats(authInfo, ip, path)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 
 	warning := req.Warning
@@ -226,24 +226,24 @@ func checkVolume(kubeClient kubernetes.Interface, req *Request, namespace, ip, p
 func checkNodeVolume(req *Request) (icinga.State, interface{}) {
 	host, err := icinga.ParseHost(req.Host)
 	if err != nil {
-		return icinga.UNKNOWN, "Invalid icinga host.name"
+		return icinga.Unknown, "Invalid icinga host.name"
 	}
 	if host.Type != icinga.TypeNode {
-		return icinga.UNKNOWN, "Invalid icinga host type"
+		return icinga.Unknown, "Invalid icinga host type"
 	}
 
 	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 	kubeClient := kubernetes.NewForConfigOrDie(config)
 	node, err := kubeClient.CoreV1().Nodes().Get(host.ObjectName, metav1.GetOptions{})
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 
 	if node == nil {
-		return icinga.UNKNOWN, "Node not found"
+		return icinga.Unknown, "Node not found"
 	}
 
 	hostIP := ""
@@ -254,7 +254,7 @@ func checkNodeVolume(req *Request) (icinga.State, interface{}) {
 	}
 
 	if hostIP == "" {
-		return icinga.UNKNOWN, "Node InternalIP not found"
+		return icinga.Unknown, "Node InternalIP not found"
 	}
 	return checkVolume(kubeClient, req, host.AlertNamespace, hostIP, req.VolumeName)
 }
@@ -262,21 +262,21 @@ func checkNodeVolume(req *Request) (icinga.State, interface{}) {
 func checkPodVolume(req *Request) (icinga.State, interface{}) {
 	host, err := icinga.ParseHost(req.Host)
 	if err != nil {
-		return icinga.UNKNOWN, "Invalid icinga host.name"
+		return icinga.Unknown, "Invalid icinga host.name"
 	}
 	if host.Type != icinga.TypePod {
-		return icinga.UNKNOWN, "Invalid icinga host type"
+		return icinga.Unknown, "Invalid icinga host type"
 	}
 
 	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 	kubeClient := kubernetes.NewForConfigOrDie(config)
 
 	pod, err := kubeClient.CoreV1().Pods(host.AlertNamespace).Get(host.ObjectName, metav1.GetOptions{})
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 
 	for _, volume := range pod.Spec.Volumes {
@@ -284,18 +284,18 @@ func checkPodVolume(req *Request) (icinga.State, interface{}) {
 			if volume.PersistentVolumeClaim != nil {
 				claim, err := kubeClient.CoreV1().PersistentVolumeClaims(host.AlertNamespace).Get(volume.PersistentVolumeClaim.ClaimName, metav1.GetOptions{})
 				if err != nil {
-					return icinga.UNKNOWN, err
+					return icinga.Unknown, err
 				}
 				volume, err := kubeClient.CoreV1().PersistentVolumes().Get(claim.Spec.VolumeName, metav1.GetOptions{})
 				if err != nil {
-					return icinga.UNKNOWN, err
+					return icinga.Unknown, err
 				}
 				volumePluginName := getPersistentVolumePluginName(&volume.Spec.PersistentVolumeSource)
 				if volumePluginName == hostPathPluginName {
 					if claim.Spec.StorageClassName != nil {
 						class, err := kubeClient.StorageV1beta1().StorageClasses().Get(*claim.Spec.StorageClassName, metav1.GetOptions{})
 						if err != nil {
-							return icinga.UNKNOWN, err
+							return icinga.Unknown, err
 						}
 						if class.Provisioner == "k8s.io/minikube-hostpath" {
 							path := fmt.Sprintf("/tmp/hostpath-provisioner/%s", volume.Name)
@@ -312,7 +312,7 @@ func checkPodVolume(req *Request) (icinga.State, interface{}) {
 			break
 		}
 	}
-	return icinga.UNKNOWN, errors.New("Invalid volume source")
+	return icinga.Unknown, errors.New("Invalid volume source")
 }
 
 func NewCmd() *cobra.Command {

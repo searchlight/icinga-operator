@@ -40,8 +40,8 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: mailgun
-    state: WARNING
+    state: Warning
     to: ["ops@example.com"]
   - notifier: mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]

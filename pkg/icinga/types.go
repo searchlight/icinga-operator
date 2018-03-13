@@ -112,9 +112,9 @@ type State int32
 
 const (
 	OK       State = iota // 0
-	WARNING               // 1
-	CRITICAL              // 2
-	UNKNOWN               // 3
+	Warning               // 1
+	Critical              // 2
+	Unknown               // 3
 )
 
 func Output(s State, message interface{}) {

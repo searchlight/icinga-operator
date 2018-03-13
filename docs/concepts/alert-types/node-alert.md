@@ -39,10 +39,10 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: WARNING
+    state: Warning
     to: ["ops@example.com"]
   - notifier: Twilio
-    state: CRITICAL
+    state: Critical
     to: ["+1-234-567-8901"]
 ```
 
@@ -52,8 +52,8 @@ This object will do the followings:
 - Check command `node_volume` will be used.
 - Icinga will check for volume size every 5m.
 - Notifications will be sent every 3m if any problem is detected, until acknowledged.
-- When the disk is 70% full, it will reach `WARNING` state and emails will be sent to _ops@example.com_ via Mailgun as notification.
-- When the disk is 95% full, it will reach `CRITICAL` state and SMSes will be sent to _+1-234-567-8901_ via Twilio as notification.
+- When the disk is 70% full, it will reach `Warning` state and emails will be sent to _ops@example.com_ via Mailgun as notification.
+- When the disk is 95% full, it will reach `Critical` state and SMSes will be sent to _+1-234-567-8901_ via Twilio as notification.
 
 Any NodeAlert object has 3 main sections:
 

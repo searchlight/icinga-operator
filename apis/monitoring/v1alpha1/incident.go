@@ -27,7 +27,7 @@ type Incident struct {
 }
 
 type IncidentStatus struct {
-	// state of incident, such as CRITICAL, WARNING, OK
+	// state of incident, such as Critical, Warning, OK
 	LastNotificationType IncidentNotificationType `json:"lastNotificationType"`
 
 	// Notifications for the incident, such as problem or acknowledge.
@@ -63,7 +63,7 @@ type IncidentNotification struct {
 	// The time at which the most recent occurrence of this notification was recorded.
 	// +optional
 	LastTimestamp metav1.Time `json:"lastTimestamp,omitempty"`
-	// state of incident, such as CRITICAL, WARNING, OK, UNKNOWN
+	// state of incident, such as Critical, Warning, OK, Unknown
 	LastState string `json:"state"`
 }
 

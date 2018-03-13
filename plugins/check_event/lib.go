@@ -33,7 +33,7 @@ type serviceOutput struct {
 func CheckKubeEvent(req *Request) (icinga.State, interface{}) {
 	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 	kubeClient := kubernetes.NewForConfigOrDie(config)
 
@@ -61,7 +61,7 @@ func CheckKubeEvent(req *Request) (icinga.State, interface{}) {
 		FieldSelector: fs.String(),
 	})
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 
 	for _, event := range eventList.Items {
@@ -88,9 +88,9 @@ func CheckKubeEvent(req *Request) (icinga.State, interface{}) {
 		}
 		outputByte, err := json.MarshalIndent(output, "", "  ")
 		if err != nil {
-			return icinga.UNKNOWN, err
+			return icinga.Unknown, err
 		}
-		return icinga.WARNING, string(outputByte)
+		return icinga.Warning, string(outputByte)
 	}
 }
 
@@ -122,11 +122,11 @@ func NewCmd() *cobra.Command {
 
 			host, err := icinga.ParseHost(icingaHost)
 			if err != nil {
-				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
+				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host.name")
 				os.Exit(3)
 			}
 			if host.Type != icinga.TypeCluster {
-				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host type")
+				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host type")
 				os.Exit(3)
 			}
 			req.Namespace = host.AlertNamespace

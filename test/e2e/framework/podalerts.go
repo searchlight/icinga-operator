@@ -101,7 +101,7 @@ func (f *Framework) EventuallyPodAlertIcingaService(meta metav1.ObjectMeta, podA
 			var icingaServiceState matcher.IcingaServiceState
 			for _, service := range respService.Results {
 				if service.Attrs.LastState == 0.0 {
-					icingaServiceState.Ok++
+					icingaServiceState.OK++
 				}
 				if service.Attrs.LastState == 1.0 {
 					icingaServiceState.Warning++

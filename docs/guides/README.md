@@ -33,7 +33,7 @@ Guides show you how to perform tasks with Searchlight.
 
 - Pod Alerts
   - [influx_query](/docs/guides/pod-alerts/influx_query.md) - To check InfluxDB query result.
-  - [pod_exec](/docs/guides/pod-alerts/pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
+  - [pod_exec](/docs/guides/pod-alerts/pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns Critical
   - [pod_status](/docs/guides/pod-alerts/pod_status.md) - To check Kubernetes pod status.
   - [pod_volume](/docs/guides/pod-alerts/pod_volume.md) - To check Pod volume stat.
 

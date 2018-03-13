@@ -69,7 +69,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Hipchat
-    state: CRITICAL
+    state: Critical
     to: ["ops-alerts"]
 ```
 
@@ -135,7 +135,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops-alerts@example.com"]
 ```
 
@@ -200,7 +200,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: SMTP
-    state: CRITICAL
+    state: Critical
     to: ["ops-alerts@example.com"]
 ```
 
@@ -263,7 +263,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Twilio
-    state: CRITICAL
+    state: Critical
     to: ["1-999-888-1234"]
 ```
 
@@ -317,7 +317,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Slack
-    state: CRITICAL
+    state: Critical
     to: ["#ops-alerts"]
 ```
 
@@ -379,7 +379,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Plivo
-    state: CRITICAL
+    state: Critical
     to: ["1-999-888-1234"]
 ```
 
@@ -458,7 +458,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Pushover
-    state: CRITICAL
+    state: Critical
     to: ["my-phone"]
 ```
 
@@ -521,7 +521,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Telegram
-    state: CRITICAL
+    state: Critical
     to: ["@my-channel"]
 ```
 
@@ -557,7 +557,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Telegram
-    state: CRITICAL
+    state: Critical
     to: ["-1001210429328"]
 ```
 
@@ -624,7 +624,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Webhook
-    state: CRITICAL
+    state: Critical
     to: ["ops-alerts"]
 ```
 
@@ -665,10 +665,10 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: WARNING
+    state: Warning
     to: ["ops-alerts@example.com"]
   - notifier: Slack
-    state: CRITICAL
+    state: Critical
     to: ["#ops-alerts"]
 ```
 

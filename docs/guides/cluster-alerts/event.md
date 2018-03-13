@@ -30,8 +30,8 @@ Check command `event` is used to check Kubernetes events. This plugin checks for
 Execution of this command can result in following states:
 
 - OK
-- WARNING
-- UNKNOWN
+- Warning
+- Unknown
 
 
 ## Tutorial
@@ -73,7 +73,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: WARNING
+    state: Warning
     to: ["ops@example.com"]
 ```
 ```console
@@ -126,7 +126,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: WARNING
+    state: Warning
     to: ["ops@example.com"]
 ```
 ```console

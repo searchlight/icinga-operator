@@ -28,9 +28,9 @@ Check command `node_volume` is used to check percentage of available space in Ku
 Execution of this command can result in following states:
 
 - OK
-- WARNING
-- CRITICAL
-- UNKNOWN
+- Warning
+- Critical
+- Unknown
 
 
 ## Tutorial
@@ -75,7 +75,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]
 ```
 ```console
@@ -121,7 +121,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]
 ```
 ```console
@@ -163,7 +163,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]
 ```
 

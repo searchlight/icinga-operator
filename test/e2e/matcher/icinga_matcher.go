@@ -7,7 +7,7 @@ import (
 )
 
 type IcingaServiceState struct {
-	Ok       int32
+	OK       int32
 	Warning  int32
 	Critical int32
 	Unknown  int32
@@ -26,7 +26,7 @@ type icingaObjectMatcher struct {
 func (matcher *icingaObjectMatcher) Match(actual interface{}) (success bool, err error) {
 	switch obj := actual.(type) {
 	case IcingaServiceState:
-		if obj.Ok != matcher.expected.Ok {
+		if obj.OK != matcher.expected.OK {
 			return false, nil
 		}
 		if obj.Warning != matcher.expected.Warning {

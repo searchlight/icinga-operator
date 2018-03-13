@@ -4,7 +4,7 @@ package icinga
 
 import "strconv"
 
-const _State_name = "OKWARNINGCRITICALUNKNOWN"
+const _State_name = "OKWarningCriticalUnknown"
 
 var _State_index = [...]uint8{0, 2, 9, 17, 24}
 

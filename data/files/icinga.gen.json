@@ -27,7 +27,7 @@
           "type": "STRING"
         },
         {
-          "description": "Required Percentage strength below which a WARNING status will result. Defaults to 50.",
+          "description": "Required Percentage strength below which a Warning status will result. Defaults to 50.",
           "flag": {
             "long": "warning",
             "short": "w"
@@ -37,7 +37,7 @@
           "type": "INTEGER"
         },
         {
-          "description": "Required Percentage strength below which a WARNING status will result. Defaults to 20.",
+          "description": "Required Percentage strength below which a Warning status will result. Defaults to 20.",
           "flag": {
             "long": "critical",
             "short": "c"
@@ -1160,7 +1160,7 @@
     },
     {
       "description": "The [check_http](https://www.monitoring-plugins.org/doc/man/check_http.html) plugin tests the HTTP service on the specified host. It can test normal (http) and secure (https) servers, follow redirects, search for strings and regular expressions, check connection times, and report on certificate expiration times.",
-      "examples": "CHECK CONTENT: check_http -w 5 -c 10 --ssl -H www.verisign.com\n\n When the 'www.verisign.com' server returns its content within 5 seconds,\n a STATE_OK will be returned. When the server returns its content but exceeds\n the 5-second threshold, a STATE_WARNING will be returned. When an error occurs,\n a STATE_CRITICAL will be returned.\n\n CHECK CERTIFICATE: check_http -H www.verisign.com -C 14\n\n When the certificate of 'www.verisign.com' is valid for more than 14 days,\n a STATE_OK is returned. When the certificate is still valid, but for less than\n 14 days, a STATE_WARNING is returned. A STATE_CRITICAL will be returned when\n the certificate is expired.\n\n CHECK CERTIFICATE: check_http -H www.verisign.com -C 30,14\n\n When the certificate of 'www.verisign.com' is valid for more than 30 days,\n a STATE_OK is returned. When the certificate is still valid, but for less than\n 30 days, but more than 14 days, a STATE_WARNING is returned.\n A STATE_CRITICAL will be returned when certificate expires in less than 14 days\n CHECK SSL WEBSERVER CONTENT VIA PROXY USING HTTP 1.1 CONNECT:\n\n check_http -I 192.168.100.35 -p 80 -u https://www.verisign.com/ -S -j CONNECT -H www.verisign.com \n all these options are needed: -I &lt;proxy&gt; -p &lt;proxy-port&gt; -u &lt;check-url&gt; -S(sl) -j CONNECT -H &lt;webserver&gt;\n a STATE_OK will be returned. When the server returns its content but exceeds\n the 5-second threshold, a STATE_WARNING will be returned. When an error occurs,\n a STATE_CRITICAL will be returned.",
+      "examples": "CHECK CONTENT: check_http -w 5 -c 10 --ssl -H www.verisign.com\n\n When the 'www.verisign.com' server returns its content within 5 seconds,\n a STATE_OK will be returned. When the server returns its content but exceeds\n the 5-second threshold, a STATE_Warning will be returned. When an error occurs,\n a STATE_Critical will be returned.\n\n CHECK CERTIFICATE: check_http -H www.verisign.com -C 14\n\n When the certificate of 'www.verisign.com' is valid for more than 14 days,\n a STATE_OK is returned. When the certificate is still valid, but for less than\n 14 days, a STATE_Warning is returned. A STATE_Critical will be returned when\n the certificate is expired.\n\n CHECK CERTIFICATE: check_http -H www.verisign.com -C 30,14\n\n When the certificate of 'www.verisign.com' is valid for more than 30 days,\n a STATE_OK is returned. When the certificate is still valid, but for less than\n 30 days, but more than 14 days, a STATE_Warning is returned.\n A STATE_Critical will be returned when certificate expires in less than 14 days\n CHECK SSL WEBSERVER CONTENT VIA PROXY USING HTTP 1.1 CONNECT:\n\n check_http -I 192.168.100.35 -p 80 -u https://www.verisign.com/ -S -j CONNECT -H www.verisign.com \n all these options are needed: -I &lt;proxy&gt; -p &lt;proxy-port&gt; -u &lt;check-url&gt; -S(sl) -j CONNECT -H &lt;webserver&gt;\n a STATE_OK will be returned. When the server returns its content but exceeds\n the 5-second threshold, a STATE_Warning will be returned. When an error occurs,\n a STATE_Critical will be returned.",
       "name": "http",
       "vars": [
         {
@@ -1355,7 +1355,7 @@
           "type": "STRING"
         },
         {
-          "description": "Changes behaviour of http_expect_body_regex and http_expect_body_eregi to return CRITICAL if found, OK if not.",
+          "description": "Changes behaviour of http_expect_body_regex and http_expect_body_eregi to return Critical if found, OK if not.",
           "name": "http_invertregex",
           "optional": true
         },
@@ -2047,12 +2047,12 @@
           "optional": true
         },
         {
-          "description": "Exit with WARNING status if slave server is more than INTEGER seconds behind master.",
+          "description": "Exit with Warning status if slave server is more than INTEGER seconds behind master.",
           "name": "mysql_warning",
           "optional": true
         },
         {
-          "description": "Exit with CRITICAL status if slave server is more then INTEGER seconds behind master.",
+          "description": "Exit with Critical status if slave server is more then INTEGER seconds behind master.",
           "name": "mysql_critical",
           "optional": true
         },
@@ -2199,7 +2199,7 @@
           "type": "STRING"
         },
         {
-          "description": "Exit with WARNING status if query is outside of the range (format: start:end).",
+          "description": "Exit with Warning status if query is outside of the range (format: start:end).",
           "flag": {
             "long": "warning",
             "short": "w"
@@ -2210,7 +2210,7 @@
           "type": "STRING"
         },
         {
-          "description": "Exit with CRITICAL status if query is outside of the range.",
+          "description": "Exit with Critical status if query is outside of the range.",
           "flag": {
             "long": "critical",
             "short": "c"
@@ -2243,7 +2243,7 @@
           "type": "INTEGER"
         },
         {
-          "description": "Returns UNKNOWN instead of CRITICAL if offset cannot be found.",
+          "description": "Returns Unknown instead of Critical if offset cannot be found.",
           "name": "ntp_quiet",
           "optional": true
         },
@@ -2729,7 +2729,7 @@
       ]
     },
     {
-      "description": "The [check_procs](https://www.monitoring-plugins.org/doc/man/check_procs.html) plugin checks all processes and generates WARNING or CRITICAL states if the specified metric is outside the required threshold ranges. The metric defaults to number of processes. Search filters can be applied to limit the processes to check.",
+      "description": "The [check_procs](https://www.monitoring-plugins.org/doc/man/check_procs.html) plugin checks all processes and generates Warning or Critical states if the specified metric is outside the required threshold ranges. The metric defaults to number of processes. Search filters can be applied to limit the processes to check.",
       "examples": "check_procs -w 2:2 -c 2:1024 -C portsentry\n  Warning if not two processes with command name portsentry.\n  Critical if &lt; 2 or &gt; 1024 processes\n\n check_procs -w 10 -a '/usr/local/bin/perl' -u root\n  Warning alert if &gt; 10 processes with command arguments containing\n  '/usr/local/bin/perl' and owned by root\n\n check_procs -w 50000 -c 100000 --metric=VSZ\n  Alert if VSZ of any processes over 50K or 100K\n\n check_procs -w 10 -c 20 --metric=CPU\n  Alert if CPU of any processes over 10%% or 20%%",
       "name": "procs",
       "vars": [
@@ -3312,7 +3312,7 @@
           "type": "STRING"
         },
         {
-          "description": "Invert search result and return CRITICAL state if found",
+          "description": "Invert search result and return Critical state if found",
           "name": "snmp_invert_search",
           "optional": true
         },

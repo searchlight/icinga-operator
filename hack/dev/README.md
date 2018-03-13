@@ -38,7 +38,7 @@ $ docker cp ./dist/hyperalert/hyperalert-alpine-amd64 e98c464a619b:/usr/lib/moni
 ```
 docker exec -it <icinga-container-id> sh
 
-/usr/lib/monitoring-plugins/hyperalert notifier --alert=pod-exists-demo-0 --type=Problem --state=CRITICAL --host=demo@cluster --output="test" --time="2006-01-02 15:04:05 +0000" -v=10
+/usr/lib/monitoring-plugins/hyperalert notifier --alert=pod-exists-demo-0 --type=Problem --state=Critical --host=demo@cluster --output="test" --time="2006-01-02 15:04:05 +0000" -v=10
 ```
 
 ### Delete test incident

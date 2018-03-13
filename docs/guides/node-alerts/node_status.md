@@ -15,14 +15,14 @@ section_menu_id: guides
 
 # Check node_status
 
-Check command `node_status` is used to check status of Kubernetes Nodes. Returns OK if a node is `Ready`, otherwise, returns CRITICAL.
+Check command `node_status` is used to check status of Kubernetes Nodes. Returns OK if a node is `Ready`, otherwise, returns Critical.
 
 ## Spec
 `node_status` check command has no variables. Execution of this command can result in following states:
 
 - OK
-- CRITICAL
-- UNKNOWN
+- Critical
+- Unknown
 
 
 ## Tutorial
@@ -63,7 +63,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]
 ```
 ```console
@@ -105,7 +105,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]
 ```
 ```console
@@ -143,7 +143,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]
 ```
 

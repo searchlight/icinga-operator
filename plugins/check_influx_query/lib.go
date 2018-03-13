@@ -74,7 +74,7 @@ func getValue(con *client.Client, db string, req *Request) (map[string]interface
 
 	defer func() {
 		if e := recover(); e != nil {
-			fmt.Fprintln(os.Stdout, icinga.WARNING, e)
+			fmt.Fprintln(os.Stdout, icinga.Warning, e)
 			os.Exit(3)
 		}
 	}()
@@ -142,52 +142,52 @@ func checkResult(checkQuery string, valueMap map[string]interface{}) (bool, erro
 func CheckInfluxQuery(req *Request) (icinga.State, interface{}) {
 	authData, err := GetInfluxDBSecretData(req, req.SecretName, req.Namespace)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 
 	if req.Host != "" {
 		authData.Host = req.Host
 	}
 	if authData.Host == "" {
-		return icinga.UNKNOWN, "No InfluxDB host found"
+		return icinga.Unknown, "No InfluxDB host found"
 	}
 	client, err := getInfluxDBClient(authData)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 
 	valMap, err := getValue(client, authData.Database, req)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 
 	expression, err := govaluate.NewEvaluableExpression(req.R)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 
 	if valMap["R"], err = expression.Evaluate(valMap); err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 	valMap["R"] = trunc(valMap["R"].(float64))
 
 	if req.Critical != "" {
 		isCritical, err := checkResult(req.Critical, valMap)
 		if err != nil {
-			return icinga.UNKNOWN, err.Error()
+			return icinga.Unknown, err.Error()
 		}
 		if isCritical {
-			return icinga.CRITICAL, nil
+			return icinga.Critical, nil
 		}
 	}
 
 	if req.Warning != "" {
 		isWarning, err := checkResult(req.Warning, valMap)
 		if err != nil {
-			return icinga.UNKNOWN, err
+			return icinga.Unknown, err
 		}
 		if isWarning {
-			return icinga.WARNING, nil
+			return icinga.Warning, nil
 		}
 	}
 
@@ -208,7 +208,7 @@ func NewCmd() *cobra.Command {
 
 			host, err := icinga.ParseHost(icingaHost)
 			if err != nil {
-				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
+				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host.name")
 				os.Exit(3)
 			}
 			req.Namespace = host.AlertNamespace

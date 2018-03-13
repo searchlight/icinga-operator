@@ -50,10 +50,10 @@ var _ = Describe("ClusterAlert", func() {
 		Context("check_component_status", func() {
 			BeforeEach(func() {
 				alert.Spec.Check = api.CheckComponentStatus
-				icingaServiceState = IcingaServiceState{Ok: 1}
+				icingaServiceState = IcingaServiceState{OK: 1}
 			})
 
-			It("should manage icinga service for Ok State", shouldManageIcingaService)
+			It("should manage icinga service for OK State", shouldManageIcingaService)
 		})
 
 		Context("check_node_exists", func() {
@@ -65,10 +65,10 @@ var _ = Describe("ClusterAlert", func() {
 			Context("State OK", func() {
 				BeforeEach(func() {
 					alert.Spec.Vars["count"] = strconv.Itoa(int(totalNode))
-					icingaServiceState = IcingaServiceState{Ok: 1}
+					icingaServiceState = IcingaServiceState{OK: 1}
 				})
 
-				It("should manage icinga service for Ok State", shouldManageIcingaService)
+				It("should manage icinga service for OK State", shouldManageIcingaService)
 			})
 
 			Context("State Critical", func() {
@@ -122,10 +122,10 @@ var _ = Describe("ClusterAlert", func() {
 			Context("State OK", func() {
 				BeforeEach(func() {
 					alert.Spec.Vars["count"] = strconv.Itoa(int(*rs.Spec.Replicas))
-					icingaServiceState = IcingaServiceState{Ok: 1}
+					icingaServiceState = IcingaServiceState{OK: 1}
 				})
 
-				It("should manage icinga service for Ok State", shouldManageIcingaService)
+				It("should manage icinga service for OK State", shouldManageIcingaService)
 			})
 
 			Context("State Critical", func() {

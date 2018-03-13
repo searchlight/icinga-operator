@@ -15,7 +15,7 @@ section_menu_id: guides
 
 # Check component_status
 
-Check command `component_status` is used to check status of Kubernetes components. Returns OK if components are `Healthy`, otherwise, returns CRITICAL.
+Check command `component_status` is used to check status of Kubernetes components. Returns OK if components are `Healthy`, otherwise, returns Critical.
 
 
 ## Spec
@@ -27,8 +27,8 @@ Check command `component_status` is used to check status of Kubernetes component
 Execution of this command can result in following states:
 
 - OK
-- CRITICAL
-- UNKNOWN
+- Critical
+- Unknown
 
 
 ## Tutorial
@@ -69,7 +69,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]
 ```
 ```console
@@ -111,7 +111,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]
 ```
 

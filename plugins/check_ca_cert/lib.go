@@ -34,17 +34,17 @@ func loadCACert() (*x509.Certificate, error) {
 func checkCertificate(req *request) (icinga.State, string) {
 	crt, err := loadCACert()
 	if err != nil {
-		return icinga.UNKNOWN, err.Error()
+		return icinga.Unknown, err.Error()
 	}
 
 	remaining := crt.NotAfter.Sub(time.Now())
 
 	if remaining.Seconds() < req.critical.Seconds() {
-		return icinga.CRITICAL, fmt.Sprintf("Certificate will be expired within %v hours", remaining.Hours())
+		return icinga.Critical, fmt.Sprintf("Certificate will be expired within %v hours", remaining.Hours())
 	}
 
 	if remaining.Seconds() < req.warning.Seconds() {
-		return icinga.WARNING, fmt.Sprintf("Certificate will be expired within %v hours", remaining.Hours())
+		return icinga.Warning, fmt.Sprintf("Certificate will be expired within %v hours", remaining.Hours())
 	}
 
 	return icinga.OK, fmt.Sprintf("Certificate is valid more than %v days", remaining.Hours()/24.0)

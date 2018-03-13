@@ -54,11 +54,11 @@ var _ = Describe("NodeAlert", func() {
 	Describe("Test", func() {
 		Context("check_node_status", func() {
 			BeforeEach(func() {
-				icingaServiceState = IcingaServiceState{Ok: totalNode}
+				icingaServiceState = IcingaServiceState{OK: totalNode}
 				alert.Spec.Check = api.CheckNodeStatus
 			})
 
-			It("should manage icinga service for Ok State", shouldManageIcingaService)
+			It("should manage icinga service for OK State", shouldManageIcingaService)
 		})
 
 		// Check "node_volume"
@@ -72,11 +72,11 @@ var _ = Describe("NodeAlert", func() {
 
 			Context("State OK", func() {
 				BeforeEach(func() {
-					icingaServiceState = IcingaServiceState{Ok: totalNode}
+					icingaServiceState = IcingaServiceState{OK: totalNode}
 					alert.Spec.Vars["warning"] = "100.0"
 				})
 
-				It("should manage icinga service for Ok State", shouldManageIcingaService)
+				It("should manage icinga service for OK State", shouldManageIcingaService)
 			})
 
 			Context("State Warning", func() {

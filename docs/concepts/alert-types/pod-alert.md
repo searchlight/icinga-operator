@@ -41,10 +41,10 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: WARNING
+    state: Warning
     to: ["ops@example.com"]
   - notifier: Twilio
-    state: CRITICAL
+    state: Critical
     to: ["+1-234-567-8901"]
 ```
 
@@ -54,8 +54,8 @@ This object will do the followings:
 - Check command `pod_volume` will be applied on volume named `webstore`.
 - Icinga will check for volume size every 5m.
 - Notifications will be sent every 3m if any problem is detected, until acknowledged.
-- When the disk is 70% full, it will reach `WARNING` state and emails will be sent to _ops@example.com_ via Mailgun as notification.
-- When the disk is 95% full, it will reach `CRITICAL` state and SMSes will be sent to _+1-234-567-8901_ via Twilio as notification.
+- When the disk is 70% full, it will reach `Warning` state and emails will be sent to _ops@example.com_ via Mailgun as notification.
+- When the disk is 95% full, it will reach `Critical` state and SMSes will be sent to _+1-234-567-8901_ via Twilio as notification.
 
 Any PodAlert object has 3 main sections:
 
@@ -69,7 +69,7 @@ Any PodAlert can specify pods in 2 ways:
 ### Check Command
 Check commands are used by Icinga to periodically test some condition. If the test return positive appropriate notifications are sent. The following check commands are supported for pods:
 - [influx_query](/docs/guides/pod-alerts/influx_query.md) - To check InfluxDB query result.
-- [pod_exec](/docs/guides/pod-alerts/pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
+- [pod_exec](/docs/guides/pod-alerts/pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns Critical
 - [pod_status](/docs/guides/pod-alerts/pod_status.md) - To check Kubernetes pod status.
 - [pod_volume](/docs/guides/pod-alerts/pod_volume.md) - To check Pod volume usage stat.
 
@@ -92,7 +92,7 @@ You can skip this section if you are unfamiliar with how Icinga works. Searchlig
 ## Next Steps
  - Visit the links below to learn about the available check commands for pods:
     - [influx_query](/docs/guides/pod-alerts/influx_query.md) - To check InfluxDB query result.
-    - [pod_exec](/docs/guides/pod-alerts/pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL
+    - [pod_exec](/docs/guides/pod-alerts/pod_exec.md) - To check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns Critical
     - [pod_status](/docs/guides/pod-alerts/pod_status.md) - To check Kubernetes pod status.
     - [pod_volume](/docs/guides/pod-alerts/pod_volume.md) - To check Pod volume stat.
  - To periodically run various checks on a Kubernetes cluster, use [ClusterAlerts](/docs/concepts/alert-types/cluster-alert.md).

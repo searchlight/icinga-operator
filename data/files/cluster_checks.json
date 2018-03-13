@@ -37,8 +37,8 @@
       ],
        "states": [
          "OK",
-         "CRITICAL",
-         "UNKNOWN"
+         "Critical",
+         "Unknown"
        ]
      },
     {
@@ -113,9 +113,9 @@
       ],
       "states": [
         "OK",
-        "WARNING",
-        "CRITICAL",
-        "UNKNOWN"
+        "Warning",
+        "Critical",
+        "Unknown"
       ]
     },
     {
@@ -168,8 +168,8 @@
       ],
       "states": [
         "OK",
-        "CRITICAL",
-        "UNKNOWN"
+        "Critical",
+        "Unknown"
       ]
     },
     {
@@ -221,8 +221,8 @@
       ],
       "states": [
         "OK",
-        "CRITICAL",
-        "UNKNOWN"
+        "Critical",
+        "Unknown"
       ]
     },
     {
@@ -294,8 +294,8 @@
       ],
       "states": [
         "OK",
-        "WARNING",
-        "UNKNOWN"
+        "Warning",
+        "Unknown"
       ]
     },
     {
@@ -336,9 +336,9 @@
       ],
       "states": [
         "OK",
-        "WARNING",
-        "CRITICAL",
-        "UNKNOWN"
+        "Warning",
+        "Critical",
+        "Unknown"
       ]
     },
     {
@@ -352,9 +352,9 @@
       ],
       "states": [
         "OK",
-        "WARNING",
-        "CRITICAL",
-        "UNKNOWN"
+        "Warning",
+        "Critical",
+        "Unknown"
       ]
     },
     {
@@ -573,7 +573,7 @@
           "type": "STRING"
         },
         {
-          "description": "Changes behaviour of httpExpectBodyRegex and httpExpectBodyEregi to return CRITICAL if found, OK if not.",
+          "description": "Changes behaviour of httpExpectBodyRegex and httpExpectBodyEregi to return Critical if found, OK if not.",
           "name": "httpInvertregex",
           "optional": true
         },

@@ -30,7 +30,7 @@ func TestRenderMail(t *testing.T) {
 		HostName:  "demo@cluster",
 		AlertName: alert.Name,
 		Type:      "WHAT_IS_THE_CORRECT_VAL?",
-		State:     "WARNING",
+		State:     "Warning",
 		Output:    "Check command output",
 		Time:      time.Now(),
 		Author:    "<searchight-user>",

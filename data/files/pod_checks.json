@@ -127,9 +127,9 @@
       ],
       "states": [
       "OK",
-      "WARNING",
-      "CRITICAL",
-      "UNKNOWN"
+      "Warning",
+      "Critical",
+      "Unknown"
     ]
     },
     {
@@ -143,8 +143,8 @@
       ],
       "states": [
         "OK",
-        "CRITICAL",
-        "UNKNOWN"
+        "Critical",
+        "Unknown"
       ]
     },
     {
@@ -208,12 +208,12 @@
       ],
       "states": [
         "OK",
-        "CRITICAL",
-        "UNKNOWN"
+        "Critical",
+        "Unknown"
       ]
     },
     {
-      "description": "This is used to check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns CRITICAL",
+      "description": "This is used to check Kubernetes exec command. Returns OK if exit code is zero, otherwise, returns Critical",
       "name": "pod_exec",
       "envs": [
         "onebox",
@@ -261,8 +261,8 @@
       ],
       "states": [
         "OK",
-        "CRITICAL",
-        "UNKNOWN"
+        "Critical",
+        "Unknown"
       ]
     }
   ]

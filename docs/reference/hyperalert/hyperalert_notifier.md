@@ -32,7 +32,7 @@ hyperalert notifier [flags]
       --kubeconfig string   Path to kubeconfig file with authorization information (the master location is set by the master flag).
       --master string       The address of the Kubernetes API server (overrides any value in kubeconfig)
       --output string       Service output
-      --state string        Service state (OK | WARNING | CRITICAL)
+      --state string        Service state (OK | Warning | Critical)
       --time string         Event time
       --type string         Notification type (PROBLEM | ACKNOWLEDGEMENT | RECOVERY)
 ```

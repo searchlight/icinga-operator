@@ -29,5 +29,5 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: WARNING
+    state: Warning
     to: ["ops@example.com"]

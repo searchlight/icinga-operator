@@ -34,27 +34,27 @@ type serviceOutput struct {
 func CheckPodStatus(req *Request) (icinga.State, interface{}) {
 	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 	kubeClient := kubernetes.NewForConfigOrDie(config)
 
 	host, err := icinga.ParseHost(req.Host)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
+		fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host.name")
 		os.Exit(3)
 	}
 	if host.Type != icinga.TypePod {
-		fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host type")
+		fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host type")
 		os.Exit(3)
 	}
 
 	pod, err := kubeClient.CoreV1().Pods(host.AlertNamespace).Get(host.ObjectName, metav1.GetOptions{})
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 
 	if ok, err := PodRunningAndReady(*pod); !ok {
-		return icinga.CRITICAL, err
+		return icinga.Critical, err
 	}
 	return icinga.OK, pod.Status.Phase
 }

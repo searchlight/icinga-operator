@@ -147,25 +147,25 @@ func checkResult(response, query string) (bool, error) {
 func CheckJsonPath(req *Request) (icinga.State, interface{}) {
 	jsonData, err := getData(req)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 
 	if req.Critical != "" {
 		isCritical, err := checkResult(jsonData, req.Critical)
 		if err != nil {
-			return icinga.UNKNOWN, err
+			return icinga.Unknown, err
 		}
 		if isCritical {
-			return icinga.CRITICAL, fmt.Sprintf("%v", req.Critical)
+			return icinga.Critical, fmt.Sprintf("%v", req.Critical)
 		}
 	}
 	if req.Warning != "" {
 		isWarning, err := checkResult(jsonData, req.Warning)
 		if err != nil {
-			return icinga.UNKNOWN, err
+			return icinga.Unknown, err
 		}
 		if isWarning {
-			return icinga.WARNING, fmt.Sprintf("%v", req.Warning)
+			return icinga.Warning, fmt.Sprintf("%v", req.Warning)
 		}
 	}
 	return icinga.OK, "Response looks good"
@@ -185,7 +185,7 @@ func NewCmd() *cobra.Command {
 
 			host, err := icinga.ParseHost(icingaHost)
 			if err != nil {
-				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
+				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host.name")
 				os.Exit(3)
 			}
 			req.Namespace = host.AlertNamespace

@@ -23,22 +23,22 @@ type Request struct {
 func CheckNodeStatus(req *Request) (icinga.State, interface{}) {
 	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 	kubeClient := kubernetes.NewForConfigOrDie(config)
 
 	node, err := kubeClient.CoreV1().Nodes().Get(req.Name, metav1.GetOptions{})
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 
 	if node == nil {
-		return icinga.CRITICAL, "Node not found"
+		return icinga.Critical, "Node not found"
 	}
 
 	for _, condition := range node.Status.Conditions {
 		if condition.Type == core.NodeReady && condition.Status == core.ConditionFalse {
-			return icinga.CRITICAL, "Node is not Ready"
+			return icinga.Critical, "Node is not Ready"
 		}
 	}
 
@@ -58,11 +58,11 @@ func NewCmd() *cobra.Command {
 
 			host, err := icinga.ParseHost(icingaHost)
 			if err != nil {
-				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host.name")
+				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host.name")
 				os.Exit(3)
 			}
 			if host.Type != icinga.TypeNode {
-				fmt.Fprintln(os.Stdout, icinga.WARNING, "Invalid icinga host type")
+				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host type")
 				os.Exit(3)
 			}
 			req.Name = host.ObjectName

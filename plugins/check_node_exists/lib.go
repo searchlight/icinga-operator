@@ -23,7 +23,7 @@ type Request struct {
 func CheckNodeExists(req *Request, isCountSet bool) (icinga.State, interface{}) {
 	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
-		return icinga.UNKNOWN, err
+		return icinga.Unknown, err
 	}
 	kubeClient := kubernetes.NewForConfigOrDie(config)
 
@@ -31,7 +31,7 @@ func CheckNodeExists(req *Request, isCountSet bool) (icinga.State, interface{}) 
 	if req.NodeName != "" {
 		node, err := kubeClient.CoreV1().Nodes().Get(req.NodeName, metav1.GetOptions{})
 		if err != nil {
-			return icinga.UNKNOWN, err
+			return icinga.Unknown, err
 		}
 		if node != nil {
 			total_node = 1
@@ -42,7 +42,7 @@ func CheckNodeExists(req *Request, isCountSet bool) (icinga.State, interface{}) 
 		},
 		)
 		if err != nil {
-			return icinga.UNKNOWN, err
+			return icinga.Unknown, err
 		}
 
 		total_node = len(nodeList.Items)
@@ -50,13 +50,13 @@ func CheckNodeExists(req *Request, isCountSet bool) (icinga.State, interface{}) 
 
 	if isCountSet {
 		if req.Count != total_node {
-			return icinga.CRITICAL, fmt.Sprintf("Found %d node(s) instead of %d", total_node, req.Count)
+			return icinga.Critical, fmt.Sprintf("Found %d node(s) instead of %d", total_node, req.Count)
 		} else {
 			return icinga.OK, "Found all nodes"
 		}
 	} else {
 		if total_node == 0 {
-			return icinga.CRITICAL, "No node found"
+			return icinga.Critical, "No node found"
 		} else {
 			return icinga.OK, fmt.Sprintf("Found %d node(s)", total_node)
 		}

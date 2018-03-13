@@ -168,7 +168,7 @@ func NewCmd() *cobra.Command {
 	c.Flags().StringVarP(&req.HostName, "host", "H", "", "Icinga host name")
 	c.Flags().StringVarP(&req.AlertName, "alert", "A", "", "Kubernetes alert object name")
 	c.Flags().StringVar(&req.Type, "type", "", "Notification type (PROBLEM | ACKNOWLEDGEMENT | RECOVERY)")
-	c.Flags().StringVar(&req.State, "state", "", "Service state (OK | WARNING | CRITICAL)")
+	c.Flags().StringVar(&req.State, "state", "", "Service state (OK | Warning | Critical)")
 	c.Flags().StringVar(&req.Output, "output", "", "Service output")
 	c.Flags().StringVar(&eventTime, "time", "", "Event time")
 	c.Flags().StringVarP(&req.Author, "author", "a", "", "Event author name")

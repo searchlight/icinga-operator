@@ -54,7 +54,7 @@ var _ = Describe("PodAlert", func() {
 
 			By("Check icinga services")
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
-				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
+				Should(HaveIcingaObject(IcingaServiceState{OK: *rs.Spec.Replicas}))
 
 			By("Delete podalert")
 			err = f.DeletePodAlert(alert.ObjectMeta)
@@ -79,7 +79,7 @@ var _ = Describe("PodAlert", func() {
 
 			By("Check icinga services")
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
-				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
+				Should(HaveIcingaObject(IcingaServiceState{OK: *rs.Spec.Replicas}))
 
 			By("Increase replica")
 			rs, _, err := ext_util.PatchReplicaSet(f.KubeClient(), rs, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
@@ -93,7 +93,7 @@ var _ = Describe("PodAlert", func() {
 
 			By("Check icinga services")
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
-				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
+				Should(HaveIcingaObject(IcingaServiceState{OK: *rs.Spec.Replicas}))
 
 			By("Delete podalert")
 			err = f.DeletePodAlert(alert.ObjectMeta)
@@ -118,7 +118,7 @@ var _ = Describe("PodAlert", func() {
 
 			By("Check icinga services")
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
-				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
+				Should(HaveIcingaObject(IcingaServiceState{OK: *rs.Spec.Replicas}))
 
 			By("Decreate replica")
 			rs, _, err := ext_util.PatchReplicaSet(f.KubeClient(), rs, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
@@ -129,7 +129,7 @@ var _ = Describe("PodAlert", func() {
 
 			By("Check icinga services")
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
-				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
+				Should(HaveIcingaObject(IcingaServiceState{OK: *rs.Spec.Replicas}))
 
 			By("Delete podalert")
 			err = f.DeletePodAlert(alert.ObjectMeta)
@@ -154,7 +154,7 @@ var _ = Describe("PodAlert", func() {
 
 			By("Check icinga services")
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
-				Should(HaveIcingaObject(IcingaServiceState{Ok: *rs.Spec.Replicas}))
+				Should(HaveIcingaObject(IcingaServiceState{OK: *rs.Spec.Replicas}))
 
 			alert, err = f.GetPodAlert(alert.ObjectMeta)
 			Expect(err).NotTo(HaveOccurred())
@@ -195,7 +195,7 @@ var _ = Describe("PodAlert", func() {
 
 			By("Check icinga services")
 			f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
-				Should(HaveIcingaObject(IcingaServiceState{Ok: 1}))
+				Should(HaveIcingaObject(IcingaServiceState{OK: 1}))
 
 			By("Delete podalert")
 			err = f.DeletePodAlert(alert.ObjectMeta)
@@ -285,7 +285,7 @@ var _ = Describe("PodAlert", func() {
 
 					By("Check icinga services")
 					f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
-						Should(HaveIcingaObject(IcingaServiceState{Ok: 1}))
+						Should(HaveIcingaObject(IcingaServiceState{OK: 1}))
 
 					newAlert := alert.DeepCopy()
 					newAlert.Name = newAlert.Name + "-new"
@@ -304,7 +304,7 @@ var _ = Describe("PodAlert", func() {
 
 					By("Check icinga services " + newAlert.Name)
 					f.EventuallyPodAlertIcingaService(newAlert.ObjectMeta, newAlert.Spec).
-						Should(HaveIcingaObject(IcingaServiceState{Ok: 1}))
+						Should(HaveIcingaObject(IcingaServiceState{OK: 1}))
 
 					By("Wait for icinga services to be deleted " + alert.Name)
 					f.EventuallyPodAlertIcingaService(alert.ObjectMeta, alert.Spec).
@@ -380,11 +380,11 @@ var _ = Describe("PodAlert", func() {
 
 			Context("State OK", func() {
 				BeforeEach(func() {
-					icingaServiceState = IcingaServiceState{Ok: *ss.Spec.Replicas}
+					icingaServiceState = IcingaServiceState{OK: *ss.Spec.Replicas}
 					alert.Spec.Vars["warning"] = "100.0"
 				})
 
-				It("should manage icinga service for Ok State", forStatefulSet)
+				It("should manage icinga service for OK State", forStatefulSet)
 			})
 
 			Context("State Warning", func() {

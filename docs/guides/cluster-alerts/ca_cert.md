@@ -26,9 +26,9 @@ Check command `ca_cert` checks the expiration timestamp of Kubernetes api server
 Execution of this command can result in following states:
 
 - OK
-- WARNING
-- CRITICAL
-- UNKNOWN
+- Warning
+- Critical
+- Unknown
 
 
 ## Tutorial
@@ -72,7 +72,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]
 ```
 ```console

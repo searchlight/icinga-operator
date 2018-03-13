@@ -15,15 +15,15 @@ section_menu_id: guides
 
 # Check pod_status
 
-Check command `pod_status` is used to check status of Kubernetes pods. Returns OK if `status.phase` of a pod is `Succeeded` or `Running`, otherwise, returns CRITICAL.
+Check command `pod_status` is used to check status of Kubernetes pods. Returns OK if `status.phase` of a pod is `Succeeded` or `Running`, otherwise, returns Critical.
 
 
 ## Spec
 `pod_status` check command has no variables. Execution of this command can result in following states:
 
 - OK
-- CRITICAL
-- UNKNOWN
+- Critical
+- Unknown
 
 
 ## Tutorial
@@ -67,7 +67,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]
 ```
 ```console
@@ -115,7 +115,7 @@ spec:
   notifierSecretName: notifier-config
   receivers:
   - notifier: Mailgun
-    state: CRITICAL
+    state: Critical
     to: ["ops@example.com"]
 ```
 ```console
