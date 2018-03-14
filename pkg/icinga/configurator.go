@@ -1,7 +1,6 @@
 package icinga
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -19,6 +18,7 @@ import (
 	"github.com/cloudflare/cfssl/csr"
 	"github.com/cloudflare/cfssl/initca"
 	"github.com/cloudflare/cfssl/signer"
+	"github.com/pkg/errors"
 	"gopkg.in/ini.v1"
 )
 
@@ -225,7 +225,7 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 				return nil, err
 			}
 		} else {
-			return nil, errors.New("Only some certs were provided.")
+			return nil, errors.New("only some certs were provided")
 		}
 		sec.NewKey(ICINGA_CA_CERT, c.certFile("ca"))
 		sec.NewKey(ICINGA_SERVER_CERT, c.certFile("icinga"))
@@ -272,7 +272,7 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 	sec := cfg.Section("")
 	for key, required := range icingaKeys {
 		if required && !sec.HasKey(key) {
-			return nil, fmt.Errorf("No Icinga config found for key %s", key)
+			return nil, fmt.Errorf("no Icinga config found for key %s", key)
 		}
 	}
 
