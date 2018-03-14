@@ -11,6 +11,7 @@ import (
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/spf13/cobra"
 	core "k8s.io/api/core/v1"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -28,6 +29,20 @@ type request struct {
 
 	warning  time.Duration
 	critical time.Duration
+}
+
+type Context struct {
+	corev1.SecretInterface
+}
+
+func NewContext(req *request) (*Context, error) {
+	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
+	if err != nil {
+		return nil, err
+	}
+	kubeClient := kubernetes.NewForConfigOrDie(config)
+
+	return &Context{} kubeClient.CoreV1().Secrets(req.Namespace)
 }
 
 func getCertSecrets(req *request) (*core.SecretList, error) {
