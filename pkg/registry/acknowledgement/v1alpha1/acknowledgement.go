@@ -27,6 +27,7 @@ type REST struct {
 }
 
 var _ rest.Creater = &REST{}
+var _ rest.Deleter = &REST{}
 var _ rest.GroupVersionKindProvider = &REST{}
 
 func NewREST(config *restconfig.Config, ic *icinga.Client) *REST {
@@ -124,4 +125,76 @@ func validate(o *api.Acknowledgement) field.ErrorList {
 
 	// perform validation here and add to errlist using field.Invalid
 	return errs
+}
+
+func (r *REST) Delete(ctx apirequest.Context, name string) (runtime.Object, error) {
+	namespace, ok := apirequest.NamespaceFrom(ctx)
+	if !ok {
+		return nil, apierrors.NewBadRequest("namespace missing")
+	}
+
+	incident, err := r.client.MonitoringV1alpha1().Incidents(namespace).Get(name, metav1.GetOptions{})
+	if err != nil {
+		if kerr.IsNotFound(err) {
+			return nil, errors.Errorf("incident %s/%s not found", namespace, name)
+		}
+		return nil, errors.Wrapf(err, "failed to determine incident %s/%s", namespace, name)
+	}
+
+	host := &icinga.IcingaHost{AlertNamespace: namespace}
+
+	alertName, ok := incident.Labels[monitoring.LabelKeyAlert]
+	if !ok {
+		return nil, errors.Errorf("incident %s/%s is missing label %s", namespace, name, monitoring.LabelKeyAlert)
+	}
+	host.Type, ok = incident.Labels[monitoring.LabelKeyAlertType]
+	if !ok {
+		return nil, errors.Errorf("incident %s/%s is missing label %s", namespace, name, monitoring.LabelKeyAlertType)
+	} else if !icinga.IsValidHostType(host.Type) {
+		return nil, errors.Errorf("incident %s/%s has invalid value %s for label %s", namespace, name, host.Type, monitoring.LabelKeyAlertType)
+	}
+	if host.Type != icinga.TypeCluster {
+		host.ObjectName, ok = incident.Labels[monitoring.LabelKeyObjectName]
+		if !ok {
+			return nil, errors.Errorf("incident %s/%s is missing label %s", namespace, name, monitoring.LabelKeyObjectName)
+		}
+	}
+	hostName, err := host.Name()
+	if err != nil {
+		return nil, err
+	}
+
+	mp := make(map[string]interface{})
+	mp["type"] = "Service"
+	mp["filter"] = fmt.Sprintf(`service.name == "%s" && host.name == "%s"`, alertName, hostName)
+
+	ack, err := json.Marshal(mp)
+	if err != nil {
+		return nil, err
+	}
+
+	response := r.ic.Actions("remove-acknowledgement").Update([]string{}, string(ack)).Do()
+	if response.Err != nil {
+		return nil, response.Err
+	}
+	var icingaResp icinga.APIResponse
+	status, err := response.Into(&icingaResp)
+	if err != nil {
+		return nil, err
+	}
+	if status != 200 {
+		return nil, errors.New(string(icingaResp.ResponseBody))
+	}
+
+	resp := &api.Acknowledgement{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+		},
+		Response: api.AcknowledgementResponse{
+			Timestamp: metav1.Now(),
+		},
+	}
+
+	return resp, nil
 }
