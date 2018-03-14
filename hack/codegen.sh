@@ -13,12 +13,23 @@ pushd $REPO_ROOT
 ## Generate ugorji stuff
 rm "$REPO_ROOT"/apis/monitoring/v1alpha1/*.generated.go
 
+# for EAS types
 docker run --rm -ti -u $(id -u):$(id -g) \
   -v "$REPO_ROOT":"$DOCKER_REPO_ROOT" \
   -w "$DOCKER_REPO_ROOT" \
-  appscode/gengo:release-1.9 "$DOCKER_CODEGEN_PKG"/generate-internal-groups.sh all \
+  appscode/gengo:release-1.9 "$DOCKER_CODEGEN_PKG"/generate-internal-groups.sh "deepcopy,defaulter,conversion" \
   github.com/appscode/searchlight/client \
   github.com/appscode/searchlight/apis \
+  github.com/appscode/searchlight/apis \
+  incidents:v1alpha1 \
+  --go-header-file "$DOCKER_REPO_ROOT/hack/gengo/boilerplate.go.txt"
+
+# for both CRD and EAS types
+docker run --rm -ti -u $(id -u):$(id -g) \
+  -v "$REPO_ROOT":"$DOCKER_REPO_ROOT" \
+  -w "$DOCKER_REPO_ROOT" \
+  appscode/gengo:release-1.9 "$DOCKER_CODEGEN_PKG"/generate-groups.sh all \
+  github.com/appscode/searchlight/client \
   github.com/appscode/searchlight/apis \
   "incidents:v1alpha1 monitoring:v1alpha1" \
   --go-header-file "$DOCKER_REPO_ROOT/hack/gengo/boilerplate.go.txt"
@@ -34,6 +45,3 @@ docker run --rm -ti -u $(id -u):$(id -g) \
     --output-package "$PACKAGE_NAME/apis/incidents/v1alpha1"
 
 popd
-
-
-
