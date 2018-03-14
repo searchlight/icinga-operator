@@ -15,3 +15,36 @@ limitations under the License.
 */
 
 package fake
+
+import (
+	internalversion "github.com/appscode/searchlight/client/clientset/internalversion/typed/monitoring/internalversion"
+	rest "k8s.io/client-go/rest"
+	testing "k8s.io/client-go/testing"
+)
+
+type FakeMonitoring struct {
+	*testing.Fake
+}
+
+func (c *FakeMonitoring) ClusterAlerts(namespace string) internalversion.ClusterAlertInterface {
+	return &FakeClusterAlerts{c, namespace}
+}
+
+func (c *FakeMonitoring) Incidents(namespace string) internalversion.IncidentInterface {
+	return &FakeIncidents{c, namespace}
+}
+
+func (c *FakeMonitoring) NodeAlerts(namespace string) internalversion.NodeAlertInterface {
+	return &FakeNodeAlerts{c, namespace}
+}
+
+func (c *FakeMonitoring) PodAlerts(namespace string) internalversion.PodAlertInterface {
+	return &FakePodAlerts{c, namespace}
+}
+
+// RESTClient returns a RESTClient that is used to communicate
+// with API server by this client implementation.
+func (c *FakeMonitoring) RESTClient() rest.Interface {
+	var ret *rest.RESTClient
+	return ret
+}

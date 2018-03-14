@@ -15,3 +15,11 @@ limitations under the License.
 */
 
 package internalversion
+
+type ClusterAlertExpansion interface{}
+
+type IncidentExpansion interface{}
+
+type NodeAlertExpansion interface{}
+
+type PodAlertExpansion interface{}
