@@ -69,6 +69,10 @@ type NodeAlertSpec struct {
 
 	// Vars contains Icinga Service variables to be used in CheckCommand
 	Vars map[string]string `json:"vars,omitempty"`
+
+	// Indicates that Check is paused
+	// Icinga Services are removed
+	Paused bool `json:"paused,omitempty"`
 }
 
 var _ Alert = &NodeAlert{}

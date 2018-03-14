@@ -37,6 +37,15 @@ func (h *ClusterHost) Apply(alert *api.ClusterAlert) error {
 		return err
 	}
 
+	if alertSpec.Paused {
+		if has {
+			if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
 	attrs := make(map[string]interface{})
 	if alertSpec.CheckInterval.Seconds() > 0 {
 		attrs["check_interval"] = alertSpec.CheckInterval.Seconds()

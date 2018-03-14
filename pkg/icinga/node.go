@@ -82,6 +82,15 @@ func (h *NodeHost) Apply(alert *api.NodeAlert, node *core.Node) error {
 		return err
 	}
 
+	if alertSpec.Paused {
+		if has {
+			if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
 	attrs := make(map[string]interface{})
 	if alertSpec.CheckInterval.Seconds() > 0 {
 		attrs["check_interval"] = alertSpec.CheckInterval.Seconds()
