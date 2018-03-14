@@ -1,4 +1,7 @@
+[![Build Status](https://travis-ci.org/appscode/searchlight.svg?branch=master)](https://travis-ci.org/appscode/searchlight)
+[![codecov](https://codecov.io/gh/appscode/searchlight/branch/master/graph/badge.svg)](https://codecov.io/gh/appscode/searchlight)
 [![Go Report Card](https://goreportcard.com/badge/github.com/appscode/searchlight)](https://goreportcard.com/report/github.com/appscode/searchlight)
+![Docker Pulls](https://img.shields.io/docker/pulls/appscode/searchlight.svg)
 
 # Searchlight
 
