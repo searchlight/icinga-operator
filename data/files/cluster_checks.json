@@ -358,6 +358,101 @@
       ]
     },
     {
+      "description": "This is used to check Certificate expiration date using Secret",
+      "examples": "hyperalert check_any_cert",
+      "name": "any_cert",
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ],
+      "vars": [
+        {
+          "description": "Selector (label query) to filter on, supports '=', '==', and '!='.",
+          "flag": {
+            "short": "l",
+            "long": "selector"
+          },
+          "name": "selector",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        },
+        {
+          "description": "Name of the Secret where certificate is stored",
+          "flag": {
+            "short": "s",
+            "long": "secretName"
+          },
+          "name": "secretName",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        },
+        {
+          "description": "Comma separated Secret keys",
+          "flag": {
+            "short": "k",
+            "long": "secretKey"
+          },
+          "name": "secretKey",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        },
+        {
+          "description": "Warning level value (usage duration defaults to 360h)",
+          "flag": {
+            "short": "w",
+            "long": "warning"
+          },
+          "name": "warning",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        },
+        {
+          "description": "Critical level value (usage duration defaults to 120h)",
+          "flag": {
+            "short": "c",
+            "long": "critical"
+          },
+          "name": "critical",
+          "type": "STRING",
+          "parameterized": false,
+          "visibility": true,
+          "optional": true
+        }
+      ],
+      "states": [
+        "OK",
+        "Warning",
+        "Critical",
+        "Unknown"
+      ]
+    },
+    {
+      "description": "This is used to test various stuff",
+      "name": "env",
+      "envs": [
+        "onebox",
+        "prod",
+        "qa",
+        "dev"
+      ],
+      "states": [
+        "OK",
+        "Warning",
+        "Critical",
+        "Unknown"
+      ]
+    },
+    {
       "description": "The [check_dummy](https://www.monitoring-plugins.org/doc/man/check_dummy.html) plugin will simply return the state corresponding to the numeric value of the `dummy_state` argument with optional text.",
       "name": "dummy",
       "envs": [

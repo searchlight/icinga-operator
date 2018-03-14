@@ -7,6 +7,7 @@ import (
 	v "github.com/appscode/go/version"
 	"github.com/appscode/kutil/tools/analytics"
 	"github.com/appscode/searchlight/client/clientset/versioned/scheme"
+	"github.com/appscode/searchlight/plugins/check_any_cert"
 	"github.com/appscode/searchlight/plugins/check_ca_cert"
 	"github.com/appscode/searchlight/plugins/check_component_status"
 	"github.com/appscode/searchlight/plugins/check_env"
@@ -62,6 +63,7 @@ func NewCmd() *cobra.Command {
 	cmd.AddCommand(check_pod_exists.NewCmd())
 	cmd.AddCommand(check_event.NewCmd())
 	cmd.AddCommand(check_ca_cert.NewCmd())
+	cmd.AddCommand(check_any_cert.NewCmd())
 	cmd.AddCommand(check_env.NewCmd())
 
 	// CheckNode
