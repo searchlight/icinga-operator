@@ -11,9 +11,9 @@ import (
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/spf13/cobra"
 	core "k8s.io/api/core/v1"
-	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
@@ -31,45 +31,36 @@ type request struct {
 	critical time.Duration
 }
 
-type Context struct {
-	corev1.SecretInterface
+type CertContext struct {
+	client corev1.SecretInterface
 }
 
-func NewContext(req *request) (*Context, error) {
+func NewCertContext(req *request) (*CertContext, error) {
 	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
 		return nil, err
 	}
-	kubeClient := kubernetes.NewForConfigOrDie(config)
-
-	return &Context{} kubeClient.CoreV1().Secrets(req.Namespace)
+	return &CertContext{
+		client: kubernetes.NewForConfigOrDie(config).CoreV1().Secrets(req.Namespace),
+	}, nil
 }
 
-func getCertSecrets(req *request) (*core.SecretList, error) {
-	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
-	if err != nil {
-		return nil, err
-	}
-
-	kubeClient := kubernetes.NewForConfigOrDie(config)
-
-	secretList := &core.SecretList{}
-
+func (cc *CertContext) getCertSecrets(req *request) (secretList *core.SecretList, err error) {
 	if req.SecretName != "" {
-		secret, err := kubeClient.CoreV1().Secrets(req.Namespace).Get(req.SecretName, metav1.GetOptions{})
+		secret, err := cc.client.Get(req.SecretName, metav1.GetOptions{})
 		if err != nil {
-			return nil, err
+			return
 		}
 		secretList.Items = append(secretList.Items, *secret)
 	} else {
-		secretList, err = kubeClient.CoreV1().Secrets(req.Namespace).List(metav1.ListOptions{
+		secretList, err = cc.client.List(metav1.ListOptions{
 			LabelSelector: req.Selector,
 		})
 		if err != nil {
-			return nil, err
+			return
 		}
 	}
-	return secretList, nil
+	return
 }
 
 func checkNotAfter(cert *x509.Certificate, req *request) (icinga.State, time.Duration, bool) {
@@ -138,8 +129,8 @@ func checkCertPerSecretKey(secret *core.Secret, req *request) (icinga.State, err
 	return icinga.OK, nil
 }
 
-func checkAnyCert(req *request) (icinga.State, interface{}) {
-	secretList, err := getCertSecrets(req)
+func (cc *CertContext) CheckAnyCert(req *request) (icinga.State, interface{}) {
+	secretList, err := cc.getCertSecrets(req)
 	if err != nil {
 		return icinga.Unknown, err
 	}
@@ -154,7 +145,7 @@ func checkAnyCert(req *request) (icinga.State, interface{}) {
 }
 
 func NewCmd() *cobra.Command {
-	var req request
+	var req *request
 	var icingaHost string
 	var commaSeparatedKeys string
 
@@ -180,7 +171,12 @@ func NewCmd() *cobra.Command {
 			for _, key := range keys {
 				req.SecretKey = append(req.SecretKey, strings.Trim(key, " "))
 			}
-			icinga.Output(checkAnyCert(&req))
+
+			context, err := NewCertContext(req)
+			if err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			icinga.Output(context.CheckAnyCert(req))
 		},
 	}
 
