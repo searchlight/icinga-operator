@@ -2,8 +2,9 @@ package icinga
 
 import (
 	"bytes"
-	"errors"
 	"net/http"
+
+	"github.com/pkg/errors"
 )
 
 type Config struct {

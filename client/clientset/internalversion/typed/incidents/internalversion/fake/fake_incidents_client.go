@@ -15,3 +15,24 @@ limitations under the License.
 */
 
 package fake
+
+import (
+	internalversion "github.com/appscode/searchlight/client/clientset/internalversion/typed/incidents/internalversion"
+	rest "k8s.io/client-go/rest"
+	testing "k8s.io/client-go/testing"
+)
+
+type FakeIncidents struct {
+	*testing.Fake
+}
+
+func (c *FakeIncidents) Acknowledgements(namespace string) internalversion.AcknowledgementInterface {
+	return &FakeAcknowledgements{c, namespace}
+}
+
+// RESTClient returns a RESTClient that is used to communicate
+// with API server by this client implementation.
+func (c *FakeIncidents) RESTClient() rest.Interface {
+	var ret *rest.RESTClient
+	return ret
+}
