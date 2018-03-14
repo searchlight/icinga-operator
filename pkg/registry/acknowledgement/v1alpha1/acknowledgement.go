@@ -52,7 +52,7 @@ func (r *REST) Create(ctx apirequest.Context, obj runtime.Object, _ rest.Validat
 		return nil, apierrors.NewInvalid(schema.GroupKind{Group: api.GroupName, Kind: api.ResourceKindAcknowledgement}, req.Name, errs)
 	}
 
-	host, service, err := r.getIcingaObjectNames(req.Namespace, req.Name)
+	host, service, err := r.getIcingaObjects(req.Namespace, req.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ func (r *REST) Delete(ctx apirequest.Context, name string) (runtime.Object, erro
 		return nil, apierrors.NewBadRequest("namespace missing")
 	}
 
-	host, service, err := r.getIcingaObjectNames(namespace, name)
+	host, service, err := r.getIcingaObjects(namespace, name)
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func (r *REST) Delete(ctx apirequest.Context, name string) (runtime.Object, erro
 	return resp, nil
 }
 
-func (r *REST) getIcingaObjectNames(namespace, name string) (host string, service string, err error) {
+func (r *REST) getIcingaObjects(namespace, name string) (host string, service string, err error) {
 	incident, err := r.client.MonitoringV1alpha1().Incidents(namespace).Get(name, metav1.GetOptions{})
 	if err != nil {
 		if kerr.IsNotFound(err) {
