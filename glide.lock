@@ -1,5 +1,5 @@
-hash: 484a0871a56ee7c27ba9394fa56b00cd530708f8a25dcb0c2a595d9b6aefcbea
-updated: 2018-03-13T22:25:15.621484352-07:00
+hash: 236c8732c4c722312a9de905d4e93c8ae4c9418e810a8aff2436a90701366c54
+updated: 2018-03-14T09:05:36.609398581-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -15,8 +15,10 @@ imports:
   - homedir
   - log
   - log/golog
+  - net
   - net/httpclient
   - runtime
+  - sets
   - types
   - util/errors
   - version
@@ -37,7 +39,7 @@ imports:
 - name: github.com/appscode/jsonpatch
   version: ee757872f6aca6d412d0d80543725bd4cf48f793
 - name: github.com/appscode/kutil
-  version: 12b13fb456a4d1ac4a0a3d160b4251557e8723c2
+  version: 985c87c4359c8372b334e9d5697425b3b13ce84c
   subpackages:
   - admission/api
   - apiextensions/v1beta1
@@ -47,6 +49,7 @@ imports:
   - meta
   - registry/admissionreview/v1beta1
   - tools/analytics
+  - tools/certstore
   - tools/queue
 - name: github.com/appscode/mergo
   version: e3000cb3d28c72b837601cac94debd91032d19fe
@@ -58,32 +61,6 @@ imports:
   - quantile
 - name: github.com/cenkalti/backoff
   version: 61153c768f31ee5f130071d08fc82b85208528de
-- name: github.com/cloudflare/cfssl
-  version: b53da94cf51de120a50cbae533152fb3935375e0
-  subpackages:
-  - api
-  - api/client
-  - auth
-  - certdb
-  - certdb/dbconf
-  - certdb/sql
-  - cli
-  - cli/genkey
-  - cli/sign
-  - config
-  - crypto/pkcs7
-  - csr
-  - errors
-  - helpers
-  - helpers/derhelpers
-  - info
-  - initca
-  - log
-  - ocsp/config
-  - signer
-  - signer/local
-  - signer/remote
-  - signer/universal
 - name: github.com/codegangsta/inject
   version: 33e0aa1cb7c019ccc3fbe049a8262a6403d30504
 - name: github.com/codeskyblue/go-sh
@@ -139,7 +116,7 @@ imports:
 - name: github.com/evanphx/json-patch
   version: 944e07253867aacae43c04b2e6a239005443f33a
 - name: github.com/ghodss/yaml
-  version: 0ca9ea5df5451ffdf184b4428c902747c2c11cd7
+  version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
 - name: github.com/go-macaron/auth
   version: 884c0e6c9b92ceebf12101d6cf1417fe0f61bcac
 - name: github.com/go-macaron/inject
@@ -185,14 +162,6 @@ imports:
   - ptypes/timestamp
 - name: github.com/google/btree
   version: 7d79101e329e5a3adf994758c578dab82b90c017
-- name: github.com/google/certificate-transparency
-  version: 05502e09183232d2345db9a3a008076eff9a530c
-  subpackages:
-  - go
-  - go/asn1
-  - go/client
-  - go/x509
-  - go/x509/pkix
 - name: github.com/google/go-cmp
   version: 0c93777250bd58222171888d1651979319d8b381
   subpackages:
@@ -243,27 +212,19 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: e37afaf09bdd91fab4713536c7bdbdc549ee7dc6
+  version: 6ac835404e7e64ea7299a6eebcce1ab1ef15fe3c
   subpackages:
   - client
   - models
   - pkg/escape
 - name: github.com/jaytaylor/html2text
   version: 190166da35878a77103b951ae035a473531c1fc2
-- name: github.com/jmoiron/sqlx
-  version: 398dd5876282499cdfd4cb8ea0f31a672abe9495
-  repo: https://github.com/jmoiron/sqlx
-  subpackages:
-  - reflectx
 - name: github.com/jpillora/go-ogle-analytics
   version: 14b04e0594ef6a9fd943363b135656f0ec8c9d0e
 - name: github.com/json-iterator/go
   version: 36b14963da70d11297d313183d7e6388c8510e1e
 - name: github.com/juju/ratelimit
   version: 5b9ff866471762aa2ab2dced63c9fb6f53921342
-- name: github.com/kisielk/sqlstruct
-  version: 648daed35d49dac24a4bff253b190a80da3ab6a5
-  repo: https://github.com/kisielk/sqlstruct
 - name: github.com/Knetic/govaluate
   version: d216395917cc49052c7c7094cf57f09657ca08a8
 - name: github.com/mailgun/mailgun-go
@@ -291,7 +252,7 @@ imports:
 - name: github.com/olekukonko/tablewriter
   version: cca8bbc0798408af109aaaa239cbd2634846b340
 - name: github.com/onsi/gomega
-  version: c893efa28eb45626cdaa76c9f653b62488858837
+  version: 003f63b7f4cff3fc95357005358af2de0f5fe152
   subpackages:
   - format
   - internal/assertion
@@ -342,7 +303,7 @@ imports:
   subpackages:
   - diffmatchpatch
 - name: github.com/shirou/gopsutil
-  version: c432be29ccce470088d07eea25b3ea7e68a8afbb
+  version: 5776ff9c7c5d063d574ef53d740f75c68b448e53
   subpackages:
   - cpu
   - disk
@@ -356,6 +317,10 @@ imports:
   version: bb4de0191aa41b5507caa14b0650cdbddcd9280b
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
+- name: github.com/spf13/afero
+  version: bb8f1927f2a9d3ab41c9340aa034f6b803f4359c
+  subpackages:
+  - mem
 - name: github.com/spf13/cobra
   version: c6c44e6fdcc30161c7f4480754da7230d01c06e3
   subpackages:
@@ -388,8 +353,6 @@ imports:
   version: 81e90905daefcd6fd217b62423c0908922eadb30
   subpackages:
   - pbkdf2
-  - pkcs12
-  - pkcs12/internal/rc2
   - ssh/terminal
 - name: golang.org/x/net
   version: 1c05540f6879653db88113bc4a2b70aec4bd491f
@@ -462,9 +425,9 @@ imports:
 - name: gopkg.in/inf.v0
   version: 3887ee99ecf07df5b447e9b00d9c0b2adaa9f3e4
 - name: gopkg.in/ini.v1
-  version: 20b96f641a5ea98f2f8619ff4f3e061cff4833bd
+  version: 6333e38ac20b8949a8dd68baa3650f4dee8f39f0
 - name: gopkg.in/macaron.v1
-  version: 97f995df0bf34ca1a77c00704c9278476275566b
+  version: c1be95e6d21e769e44e1ec33cec9da5837861c10
 - name: gopkg.in/natefinch/lumberjack.v2
   version: 20b71e5b60d756d3d2f80def009790325acc2b23
 - name: gopkg.in/yaml.v2
@@ -574,7 +537,7 @@ imports:
   - third_party/forked/golang/netutil
   - third_party/forked/golang/reflect
 - name: k8s.io/apiserver
-  version: 1270e9f1ad9eaf6127691df90af0836f7e152495
+  version: 91e14f394e4796abf5a994a349a222e7081d86b6
   subpackages:
   - pkg/admission
   - pkg/admission/configuration
@@ -653,7 +616,6 @@ imports:
   - pkg/util/feature
   - pkg/util/flag
   - pkg/util/flushwriter
-  - pkg/util/logs
   - pkg/util/trace
   - pkg/util/webhook
   - pkg/util/wsstream
@@ -814,7 +776,7 @@ imports:
   - util/integer
   - util/workqueue
 - name: k8s.io/kube-openapi
-  version: 39a7bf85c140f972372c2a0d1ee40adbf0c8bfe1
+  version: 50ae88d24ede7b8bad68e23c805b5d3da5c8abaf
   subpackages:
   - pkg/builder
   - pkg/common
@@ -872,6 +834,6 @@ testImports:
   subpackages:
   - difflib
 - name: github.com/stretchr/testify
-  version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
+  version: 12b6f73e6084dad08a7c6e575284b177ecafbc71
   subpackages:
   - assert
