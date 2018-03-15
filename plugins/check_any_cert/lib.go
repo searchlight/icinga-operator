@@ -2,7 +2,6 @@ package check_any_cert
 
 import (
 	"crypto/x509"
-	"encoding/pem"
 	"fmt"
 	"os"
 	"strings"
@@ -15,9 +14,10 @@ import (
 	"k8s.io/client-go/kubernetes"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/util/cert"
 )
 
-type request struct {
+type Request struct {
 	masterURL      string
 	kubeconfigPath string
 
@@ -25,67 +25,60 @@ type request struct {
 	Selector   string
 	SecretName string
 	SecretKey  []string
-	Count      int
 
-	warning  time.Duration
-	critical time.Duration
+	Warning  time.Duration
+	Critical time.Duration
 }
 
 type CertContext struct {
-	client corev1.SecretInterface
+	Client corev1.SecretInterface
 }
 
-func NewCertContext(req *request) (*CertContext, error) {
+func NewCertContext(req *Request) (*CertContext, error) {
 	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
 	if err != nil {
 		return nil, err
 	}
 	return &CertContext{
-		client: kubernetes.NewForConfigOrDie(config).CoreV1().Secrets(req.Namespace),
+		Client: kubernetes.NewForConfigOrDie(config).CoreV1().Secrets(req.Namespace),
 	}, nil
 }
 
-func (cc *CertContext) getCertSecrets(req *request) (secretList *core.SecretList, err error) {
+func (cc *CertContext) getCertSecrets(req *Request) ([]core.Secret, error) {
 	if req.SecretName != "" {
-		secret, err := cc.client.Get(req.SecretName, metav1.GetOptions{})
+		var secret *core.Secret
+		secret, err := cc.Client.Get(req.SecretName, metav1.GetOptions{})
 		if err != nil {
-			return
+			return nil, err
 		}
-		secretList.Items = append(secretList.Items, *secret)
+		return []core.Secret{*secret}, nil
 	} else {
-		secretList, err = cc.client.List(metav1.ListOptions{
+		secretList, err := cc.Client.List(metav1.ListOptions{
 			LabelSelector: req.Selector,
 		})
 		if err != nil {
-			return
+			return nil, err
 		}
+		return secretList.Items, nil
 	}
-	return
+	return nil, nil
 }
 
-func checkNotAfter(cert *x509.Certificate, req *request) (icinga.State, time.Duration, bool) {
+func checkNotAfter(cert *x509.Certificate, req *Request) (icinga.State, time.Duration, bool) {
 	remaining := cert.NotAfter.Sub(time.Now())
-
-	if remaining.Seconds() < req.critical.Seconds() {
+	if remaining.Seconds() < req.Critical.Seconds() {
 		return icinga.Critical, remaining, false
 	}
 
-	if remaining.Seconds() < req.warning.Seconds() {
+	if remaining.Seconds() < req.Warning.Seconds() {
 		return icinga.Warning, remaining, false
 	}
 
 	return icinga.OK, remaining, true
 }
 
-func checkCert(data []byte, secret *core.Secret, key string, req *request) (icinga.State, error) {
-	block, _ := pem.Decode(data)
-	if block == nil {
-		return icinga.Unknown, fmt.Errorf(
-			`failed to parse certificate for key "%s" in Secret "%s/%s"`,
-			key, secret.Namespace, secret.Name,
-		)
-	}
-	cert, err := x509.ParseCertificate(block.Bytes)
+func checkCert(data []byte, secret *core.Secret, key string, req *Request) (icinga.State, error) {
+	certs, err := cert.ParseCertsPEM(data)
 	if err != nil {
 		return icinga.Unknown, fmt.Errorf(
 			`failed to parse certificate for key "%s" in Secret "%s/%s"`,
@@ -93,17 +86,18 @@ func checkCert(data []byte, secret *core.Secret, key string, req *request) (icin
 		)
 	}
 
-	if state, remaining, ok := checkNotAfter(cert, req); !ok {
-		return state, fmt.Errorf(
-			`certificate for key "%s" in Secret "%s/%s" will be expired within %v hours`,
-			key, secret.Namespace, secret.Name, remaining.Hours(),
-		)
+	for _, cert := range certs {
+		if state, remaining, ok := checkNotAfter(cert, req); !ok {
+			return state, fmt.Errorf(
+				`certificate for key "%s" in Secret "%s/%s" will be expired within %v hours`,
+				key, secret.Namespace, secret.Name, remaining.Hours(),
+			)
+		}
 	}
-
 	return icinga.OK, nil
 }
 
-func checkCertPerSecretKey(secret *core.Secret, req *request) (icinga.State, error) {
+func checkCertPerSecretKey(secret *core.Secret, req *Request) (icinga.State, error) {
 	for _, key := range req.SecretKey {
 		data, ok := secret.Data[key]
 		if !ok {
@@ -129,13 +123,13 @@ func checkCertPerSecretKey(secret *core.Secret, req *request) (icinga.State, err
 	return icinga.OK, nil
 }
 
-func (cc *CertContext) CheckAnyCert(req *request) (icinga.State, interface{}) {
+func (cc *CertContext) CheckAnyCert(req *Request) (icinga.State, interface{}) {
 	secretList, err := cc.getCertSecrets(req)
 	if err != nil {
 		return icinga.Unknown, err
 	}
 
-	for _, secret := range secretList.Items {
+	for _, secret := range secretList {
 		if state, err := checkCertPerSecretKey(&secret, req); err != nil {
 			return state, err
 		}
@@ -145,7 +139,7 @@ func (cc *CertContext) CheckAnyCert(req *request) (icinga.State, interface{}) {
 }
 
 func NewCmd() *cobra.Command {
-	var req *request
+	var req *Request
 	var icingaHost string
 	var commaSeparatedKeys string
 
@@ -186,7 +180,7 @@ func NewCmd() *cobra.Command {
 	cmd.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='")
 	cmd.Flags().StringVarP(&req.SecretName, "secretName", "s", "", "Name of secret from where certificates are checked")
 	cmd.Flags().StringVarP(&commaSeparatedKeys, "secretKey", "k", "", "Name of secret key where certificates are kept")
-	cmd.Flags().DurationVarP(&req.warning, "warning", "w", time.Hour*360, `Remaining duration for warning state. [Default: 360h]`)
-	cmd.Flags().DurationVarP(&req.critical, "critical", "c", time.Hour*120, `Remaining duration for critical state. [Default: 120h]`)
+	cmd.Flags().DurationVarP(&req.Warning, "warning", "w", time.Hour*360, `Remaining duration for Warning state. [Default: 360h]`)
+	cmd.Flags().DurationVarP(&req.Critical, "critical", "c", time.Hour*120, `Remaining duration for Critical state. [Default: 120h]`)
 	return cmd
 }
