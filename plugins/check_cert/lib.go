@@ -85,18 +85,18 @@ func (p *plugin) getCertSecrets() ([]core.Secret, error) {
 	return nil, nil
 }
 
-func (p *plugin) checkNotAfter(cert *x509.Certificate) (icinga.State, time.Duration, bool) {
+func (p *plugin) checkNotAfter(cert *x509.Certificate) (icinga.State, time.Duration) {
 	option := p.option
 	remaining := cert.NotAfter.Sub(time.Now())
 	if remaining.Seconds() < option.Critical.Seconds() {
-		return icinga.Critical, remaining, false
+		return icinga.Critical, remaining
 	}
 
 	if remaining.Seconds() < option.Warning.Seconds() {
-		return icinga.Warning, remaining, false
+		return icinga.Warning, remaining
 	}
 
-	return icinga.OK, remaining, true
+	return icinga.OK, remaining
 }
 
 func (p *plugin) checkCert(data []byte, secret *core.Secret, key string) (icinga.State, error) {
@@ -109,7 +109,7 @@ func (p *plugin) checkCert(data []byte, secret *core.Secret, key string) (icinga
 	}
 
 	for _, cert := range certs {
-		if state, remaining, ok := p.checkNotAfter(cert); !ok {
+		if state, remaining := p.checkNotAfter(cert); state != icinga.OK {
 			return state, fmt.Errorf(
 				`certificate for key "%s" in Secret "%s/%s" will be expired within %v hours`,
 				key, secret.Namespace, secret.Name, remaining.Hours(),
@@ -173,9 +173,9 @@ func NewCmd() *cobra.Command {
 			option.validate()
 			plugin, err := newPluginFromConfig(option)
 			if err != nil {
-				icinga.Output(icinga.Unknown, err)
+				plugins.Output(icinga.Unknown, err)
 			}
-			icinga.Output(plugin.Check())
+			plugins.Output(plugin.Check())
 		},
 	}
 
