@@ -173,9 +173,9 @@ func NewCmd() *cobra.Command {
 			option.validate()
 			plugin, err := newPluginFromConfig(option)
 			if err != nil {
-				plugins.Output(icinga.Unknown, err)
+				icinga.Output(icinga.Unknown, err)
 			}
-			plugins.Output(plugin.Check())
+			icinga.Output(plugin.Check())
 		},
 	}
 
