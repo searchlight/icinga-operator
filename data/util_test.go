@@ -1,6 +1,7 @@
 package data_test
 
 import (
+	"fmt"
 	"log"
 	"testing"
 
@@ -8,22 +9,32 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIcingaData(t *testing.T) {
+func TestLoadClusterChecks(t *testing.T) {
 	ic, err := LoadClusterChecks()
 	if err != nil {
 		log.Fatal(err)
 	}
 	assert.NotZero(t, len(ic.Command), "No check agent found")
+	fmt.Println(ic.Command[0].Name)
+	fmt.Println(ic.Command[0].Description)
+}
 
-	in, err := LoadNodeChecks()
+func TestLoadNodeChecks(t *testing.T) {
+	ic, err := LoadNodeChecks()
 	if err != nil {
 		log.Fatal(err)
 	}
-	assert.NotZero(t, len(in.Command), "No check agent found")
+	assert.NotZero(t, len(ic.Command), "No check agent found")
+	fmt.Println(ic.Command[0].Name)
+	fmt.Println(ic.Command[0].Description)
+}
 
-	ip, err := LoadPodChecks()
+func TestLoadPodChecks(t *testing.T) {
+	ic, err := LoadPodChecks()
 	if err != nil {
 		log.Fatal(err)
 	}
-	assert.NotZero(t, len(ip.Command), "No check agent found")
+	assert.NotZero(t, len(ic.Command), "No check agent found")
+	fmt.Println(ic.Command[0].Name)
+	fmt.Println(ic.Command[0].Description)
 }
