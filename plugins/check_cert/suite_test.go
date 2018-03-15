@@ -16,10 +16,10 @@ var (
 )
 
 const (
-	TIMEOUT = 1 * time.Minute
+	TIMEOUT = 2 * time.Minute
 )
 
-func TestCertContext_CheckAnyCert(t *testing.T) {
+func TestPlugin_Check(t *testing.T) {
 	RegisterFailHandler(Fail)
 	SetDefaultEventuallyTimeout(TIMEOUT)
 	RunSpecsWithDefaultAndCustomReporters(t, "check_cert Suite", []Reporter{})
@@ -30,6 +30,4 @@ var _ = BeforeSuite(func() {
 	cs = fake.NewSimpleClientset()
 })
 
-var _ = AfterSuite(func() {
-
-})
+var _ = AfterSuite(func() {})
