@@ -40,13 +40,14 @@ func newPluginFromConfig(option *Option) (*plugin, error) {
 type Option struct {
 	masterURL      string
 	kubeconfigPath string
-	hostname       string
-
+	// Icinga host name
+	hostname string
+	// Options for Secret
 	Namespace  string
 	Selector   string
 	SecretName string
 	SecretKey  []string
-
+	// Certificate expirity duration
 	Warning  time.Duration
 	Critical time.Duration
 }
