@@ -18,17 +18,17 @@ import (
 )
 
 type plugin struct {
-	client corev1.SecretInterface
-	option *Option
+	client  corev1.SecretInterface
+	options options
 }
 
 var _ plugins.PluginInterface = &plugin{}
 
-func NewPlugin(client corev1.SecretInterface, option *Option) *plugin {
+func NewPlugin(client corev1.SecretInterface, option options) *plugin {
 	return &plugin{client, option}
 }
 
-func newPluginFromConfig(option *Option) (*plugin, error) {
+func newPluginFromConfig(option options) (*plugin, error) {
 	config, err := clientcmd.BuildConfigFromFlags(option.masterURL, option.kubeconfigPath)
 	if err != nil {
 		return nil, err
@@ -37,12 +37,12 @@ func newPluginFromConfig(option *Option) (*plugin, error) {
 	return NewPlugin(client, option), nil
 }
 
-type Option struct {
+type options struct {
 	masterURL      string
 	kubeconfigPath string
 	// Icinga host name
 	hostname string
-	// Options for Secret
+	// options for Secret
 	Namespace  string
 	Selector   string
 	SecretName string
@@ -52,7 +52,7 @@ type Option struct {
 	Critical time.Duration
 }
 
-func (o *Option) validate() {
+func (o *options) validate() {
 	host, err := icinga.ParseHost(o.hostname)
 	if err != nil {
 		fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host.name")
@@ -66,7 +66,7 @@ func (o *Option) validate() {
 }
 
 func (p *plugin) getCertSecrets() ([]core.Secret, error) {
-	option := p.option
+	option := p.options
 	if option.SecretName != "" {
 		var secret *core.Secret
 		secret, err := p.client.Get(option.SecretName, metav1.GetOptions{})
@@ -87,7 +87,7 @@ func (p *plugin) getCertSecrets() ([]core.Secret, error) {
 }
 
 func (p *plugin) checkNotAfter(cert *x509.Certificate) (icinga.State, time.Duration) {
-	option := p.option
+	option := p.options
 	remaining := cert.NotAfter.Sub(time.Now())
 	if remaining.Seconds() < option.Critical.Seconds() {
 		return icinga.Critical, remaining
@@ -121,7 +121,7 @@ func (p *plugin) checkCert(data []byte, secret *core.Secret, key string) (icinga
 }
 
 func (p *plugin) checkCertPerSecretKey(secret *core.Secret) (icinga.State, error) {
-	option := p.option
+	option := p.options
 	for _, key := range option.SecretKey {
 		data, ok := secret.Data[key]
 		if !ok {
@@ -164,15 +164,15 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 }
 
 func NewCmd() *cobra.Command {
-	var option *Option
+	var opts options
 
 	cmd := &cobra.Command{
 		Use:   "check_cert",
 		Short: "Check Certificate expire date",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			option.validate()
-			plugin, err := newPluginFromConfig(option)
+			opts.validate()
+			plugin, err := newPluginFromConfig(opts)
 			if err != nil {
 				icinga.Output(icinga.Unknown, err)
 			}
@@ -180,13 +180,13 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&option.masterURL, "master", option.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
-	cmd.Flags().StringVar(&option.kubeconfigPath, "kubeconfig", option.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
-	cmd.Flags().StringVarP(&option.hostname, "host", "H", "", "Icinga host name")
-	cmd.Flags().StringVarP(&option.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='")
-	cmd.Flags().StringVarP(&option.SecretName, "secretName", "s", "", "Name of secret from where certificates are checked")
-	cmd.Flags().StringSliceVarP(&option.SecretKey, "secretKey", "k", nil, "Name of secret key where certificates are kept")
-	cmd.Flags().DurationVarP(&option.Warning, "warning", "w", time.Hour*360, `Remaining duration for Warning state. [Default: 360h]`)
-	cmd.Flags().DurationVarP(&option.Critical, "critical", "c", time.Hour*120, `Remaining duration for Critical state. [Default: 120h]`)
+	cmd.Flags().StringVar(&opts.masterURL, "master", opts.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
+	cmd.Flags().StringVar(&opts.kubeconfigPath, "kubeconfig", opts.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
+	cmd.Flags().StringVarP(&opts.hostname, "host", "H", "", "Icinga host name")
+	cmd.Flags().StringVarP(&opts.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='")
+	cmd.Flags().StringVarP(&opts.SecretName, "secretName", "s", "", "Name of secret from where certificates are checked")
+	cmd.Flags().StringSliceVarP(&opts.SecretKey, "secretKey", "k", nil, "Name of secret key where certificates are kept")
+	cmd.Flags().DurationVarP(&opts.Warning, "warning", "w", time.Hour*360, `Remaining duration for Warning state. [Default: 360h]`)
+	cmd.Flags().DurationVarP(&opts.Critical, "critical", "c", time.Hour*120, `Remaining duration for Critical state. [Default: 120h]`)
 	return cmd
 }

@@ -1,33 +1,31 @@
 ---
-title: Check Node Status
+title: Version
 menu:
   product_searchlight_6.0.0-alpha.0:
-    identifier: hyperalert-check-node-status
-    name: Check Node Status
+    identifier: hyperalert-version
+    name: Version
     parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_6.0.0-alpha.0
 ---
-## hyperalert check_node_status
+## hyperalert version
 
-Check Kubernetes Node
+Prints binary version number.
 
 ### Synopsis
 
-Check Kubernetes Node
+Prints binary version number.
 
 ```
-hyperalert check_node_status [flags]
+hyperalert version [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help                help for check_node_status
-  -H, --host string         Icinga host name
-      --kubeconfig string   Path to kubeconfig file with authorization information (the master location is set by the master flag).
-      --master string       The address of the Kubernetes API server (overrides any value in kubeconfig)
+  -h, --help    help for version
+      --short   Print just the version number.
 ```
 
 ### Options inherited from parent commands
@@ -46,5 +44,4 @@ hyperalert check_node_status [flags]
 ### SEE ALSO
 
 * [hyperalert](/docs/reference/hyperalert/hyperalert.md)	 - AppsCode Icinga2 plugin
-
 

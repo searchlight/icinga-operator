@@ -1,4 +1,4 @@
-package check_cert_test
+package check_cert
 
 import (
 	"crypto/rand"
@@ -11,7 +11,6 @@ import (
 	. "github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins"
-	. "github.com/appscode/searchlight/plugins/check_cert"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	core "k8s.io/api/core/v1"
@@ -52,7 +51,7 @@ var _ = Describe("check_cert", func() {
 	var secret, secret2 *core.Secret
 	var client corev1.SecretInterface
 	var plugin plugins.PluginInterface
-	var option *Option
+	var opts options
 
 	BeforeEach(func() {
 		secret = &core.Secret{
@@ -73,14 +72,14 @@ var _ = Describe("check_cert", func() {
 
 	Describe("when there is a valid certificate", func() {
 		JustBeforeEach(func() {
-			client = cs.CoreV1().Secrets(secret.Namespace)
-			option = &Option{
+			client = client.CoreV1().Secrets(secret.Namespace)
+			opts = options{
 				Namespace:  secret.Namespace,
 				SecretName: secret.Name,
 				Warning:    time.Hour * 7 * 24,
 				Critical:   time.Hour * 5 * 24,
 			}
-			plugin = NewPlugin(client, option)
+			plugin = NewPlugin(client, opts)
 		})
 		Context("with nearly expire", func() {
 			It("with in 4 days", func() {
@@ -89,7 +88,7 @@ var _ = Describe("check_cert", func() {
 				secret.Data["client.cert"] = cert
 				_, err = client.Create(secret)
 				Expect(err).ShouldNot(HaveOccurred())
-				option.SecretKey = []string{"client.cert"}
+				opts.SecretKey = []string{"client.cert"}
 
 				state, _ := plugin.Check()
 				Expect(state).Should(BeIdenticalTo(icinga.Critical))
@@ -100,7 +99,7 @@ var _ = Describe("check_cert", func() {
 				secret.Data["client.cert"] = cert
 				_, err = client.Create(secret)
 				Expect(err).ShouldNot(HaveOccurred())
-				option.SecretKey = []string{"client.cert"}
+				opts.SecretKey = []string{"client.cert"}
 
 				state, _ := plugin.Check()
 				Expect(state).Should(BeIdenticalTo(icinga.Warning))
@@ -111,7 +110,7 @@ var _ = Describe("check_cert", func() {
 				secret.Data["client.cert"] = cert
 				_, err = client.Create(secret)
 				Expect(err).ShouldNot(HaveOccurred())
-				option.SecretKey = []string{"client.cert"}
+				opts.SecretKey = []string{"client.cert"}
 
 				state, _ := plugin.Check()
 				Expect(state).Should(BeIdenticalTo(icinga.OK))
@@ -121,8 +120,8 @@ var _ = Describe("check_cert", func() {
 		Context("with label", func() {
 			JustBeforeEach(func() {
 				secret.Labels["app/searchlight"] = "cert"
-				option.SecretName = ""
-				option.Selector = labels.SelectorFromSet(secret.Labels).String()
+				opts.SecretName = ""
+				opts.Selector = labels.SelectorFromSet(secret.Labels).String()
 			})
 			It("with in 10 days", func() {
 				cert, err := generateCertificate(time.Hour * 10 * 24)
@@ -130,7 +129,7 @@ var _ = Describe("check_cert", func() {
 				secret.Data["client.cert"] = cert
 				_, err = client.Create(secret)
 				Expect(err).ShouldNot(HaveOccurred())
-				option.SecretKey = []string{"client.cert"}
+				opts.SecretKey = []string{"client.cert"}
 
 				state, _ := plugin.Check()
 				Expect(state).Should(BeIdenticalTo(icinga.OK))
@@ -139,8 +138,8 @@ var _ = Describe("check_cert", func() {
 			Context("for multiple secret", func() {
 				JustBeforeEach(func() {
 					secret.Labels["app/searchlight"] = "cert"
-					option.SecretName = ""
-					option.Selector = labels.SelectorFromSet(secret.Labels).String()
+					opts.SecretName = ""
+					opts.Selector = labels.SelectorFromSet(secret.Labels).String()
 
 					// Another Secret
 					secret2 = &core.Secret{
@@ -170,7 +169,7 @@ var _ = Describe("check_cert", func() {
 					_, err = client.Create(secret2)
 					Expect(err).ShouldNot(HaveOccurred())
 
-					option.SecretKey = []string{"client.cert"}
+					opts.SecretKey = []string{"client.cert"}
 
 					state, _ := plugin.Check()
 					Expect(state).Should(BeIdenticalTo(icinga.OK))
@@ -189,7 +188,7 @@ var _ = Describe("check_cert", func() {
 					_, err = client.Create(secret2)
 					Expect(err).ShouldNot(HaveOccurred())
 
-					option.SecretKey = []string{"client.cert"}
+					opts.SecretKey = []string{"client.cert"}
 
 					state, _ := plugin.Check()
 					Expect(state).Should(BeIdenticalTo(icinga.Critical))
@@ -200,12 +199,12 @@ var _ = Describe("check_cert", func() {
 
 	Describe("when there is an invalid secret", func() {
 		JustBeforeEach(func() {
-			client = cs.CoreV1().Secrets(secret.Namespace)
-			option = &Option{
+			client = client.CoreV1().Secrets(secret.Namespace)
+			opts = options{
 				Namespace:  secret.Namespace,
 				SecretName: secret.Name,
 			}
-			plugin = NewPlugin(client, option)
+			plugin = NewPlugin(client, opts)
 		})
 		Context("with invalid certificate", func() {
 			It("should be Unknown", func() {
@@ -215,7 +214,7 @@ var _ = Describe("check_cert", func() {
 				secret.Data["client.cert"] = cert
 				_, err = client.Create(secret)
 				Expect(err).ShouldNot(HaveOccurred())
-				option.SecretKey = []string{"client.cert"}
+				opts.SecretKey = []string{"client.cert"}
 
 				state, _ := plugin.Check()
 				Expect(state).Should(BeIdenticalTo(icinga.Unknown))
@@ -225,7 +224,7 @@ var _ = Describe("check_cert", func() {
 			It("should be Warning", func() {
 				_, err := client.Create(secret)
 				Expect(err).ShouldNot(HaveOccurred())
-				option.SecretKey = []string{"unknown.cert"}
+				opts.SecretKey = []string{"unknown.cert"}
 
 				state, _ := plugin.Check()
 				Expect(state).Should(BeIdenticalTo(icinga.Warning))
@@ -235,13 +234,13 @@ var _ = Describe("check_cert", func() {
 
 	Describe("when there is a tls secret", func() {
 		JustBeforeEach(func() {
-			client = cs.CoreV1().Secrets(secret.Namespace)
+			client = client.CoreV1().Secrets(secret.Namespace)
 			secret.Type = core.SecretTypeTLS
-			option = &Option{
+			opts = options{
 				Namespace:  secret.Namespace,
 				SecretName: secret.Name,
 			}
-			plugin = NewPlugin(client, option)
+			plugin = NewPlugin(client, opts)
 		})
 		Context("with valid certificate", func() {
 			It("with key", func() {
@@ -250,7 +249,7 @@ var _ = Describe("check_cert", func() {
 				secret.Data["tls.crt"] = cert
 				_, err = client.Create(secret)
 				Expect(err).ShouldNot(HaveOccurred())
-				option.SecretKey = []string{"tls.crt"}
+				opts.SecretKey = []string{"tls.crt"}
 
 				state, _ := plugin.Check()
 				Expect(state).Should(BeIdenticalTo(icinga.OK))

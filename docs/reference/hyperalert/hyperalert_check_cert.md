@@ -1,33 +1,38 @@
 ---
-title: Check Node Status
+title: Check Cert
 menu:
   product_searchlight_6.0.0-alpha.0:
-    identifier: hyperalert-check-node-status
-    name: Check Node Status
+    identifier: hyperalert-check-cert
+    name: Check Cert
     parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_6.0.0-alpha.0
 ---
-## hyperalert check_node_status
+## hyperalert check_cert
 
-Check Kubernetes Node
+Check Certificate expire date
 
 ### Synopsis
 
-Check Kubernetes Node
+Check Certificate expire date
 
 ```
-hyperalert check_node_status [flags]
+hyperalert check_cert [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help                help for check_node_status
-  -H, --host string         Icinga host name
-      --kubeconfig string   Path to kubeconfig file with authorization information (the master location is set by the master flag).
-      --master string       The address of the Kubernetes API server (overrides any value in kubeconfig)
+  -c, --critical duration       Remaining duration for Critical state. [Default: 120h] (default 120h0m0s)
+  -h, --help                    help for check_cert
+  -H, --host string             Icinga host name
+      --kubeconfig string       Path to kubeconfig file with authorization information (the master location is set by the master flag).
+      --master string           The address of the Kubernetes API server (overrides any value in kubeconfig)
+  -k, --secretKey stringSlice   Name of secret key where certificates are kept
+  -s, --secretName string       Name of secret from where certificates are checked
+  -l, --selector string         Selector (label query) to filter on, supports '=', '==', and '!='
+  -w, --warning duration        Remaining duration for Warning state. [Default: 360h] (default 360h0m0s)
 ```
 
 ### Options inherited from parent commands

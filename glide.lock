@@ -1,5 +1,5 @@
 hash: 236c8732c4c722312a9de905d4e93c8ae4c9418e810a8aff2436a90701366c54
-updated: 2018-03-14T09:05:36.609398581-07:00
+updated: 2018-03-15T14:21:05.877843271-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -23,7 +23,7 @@ imports:
   - util/errors
   - version
 - name: github.com/appscode/go-notify
-  version: 58a0d1c562d8ddda5d97cf8723a56d15124700f3
+  version: 0cc74b5af540568be7b72f6ce9f7a0232c4acda1
   subpackages:
   - hipchat
   - log
@@ -39,7 +39,7 @@ imports:
 - name: github.com/appscode/jsonpatch
   version: ee757872f6aca6d412d0d80543725bd4cf48f793
 - name: github.com/appscode/kutil
-  version: 985c87c4359c8372b334e9d5697425b3b13ce84c
+  version: 3e1d387015c275db5fd3d605fcf1f61af6ab6866
   subpackages:
   - admission/api
   - apiextensions/v1beta1
