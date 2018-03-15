@@ -20,27 +20,29 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// +genclient
+// +genclient:skipVerbs=get,list,update,patch,deleteCollection,watch
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 type Acknowledgement struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.TypeMeta
+	metav1.ObjectMeta
 
-	Request  AcknowledgementRequest  `json:"request"`
-	Response AcknowledgementResponse `json:"response,omitempty"`
+	Request  AcknowledgementRequest
+	Response AcknowledgementResponse
 }
 
 type AcknowledgementRequest struct {
 	// Comment by user
-	Comment string `json:"comment"`
+	Comment string
 
 	// Skip sending notification
 	// +optional
-	SkipNotify bool `json:"skipNotify,omitempty"`
+	SkipNotify bool
 }
 
 type AcknowledgementResponse struct {
 	// The time at which the acknowledgement was done.
 	// +optional
-	Timestamp metav1.Time `json:"timestamp,omitempty"`
+	Timestamp metav1.Time
 }

@@ -27,6 +27,7 @@ type REST struct {
 }
 
 var _ rest.Creater = &REST{}
+var _ rest.Deleter = &REST{}
 var _ rest.GroupVersionKindProvider = &REST{}
 
 func NewREST(config *restconfig.Config, ic *icinga.Client) *REST {
@@ -51,40 +52,14 @@ func (r *REST) Create(ctx apirequest.Context, obj runtime.Object, _ rest.Validat
 		return nil, apierrors.NewInvalid(schema.GroupKind{Group: api.GroupName, Kind: api.ResourceKindAcknowledgement}, req.Name, errs)
 	}
 
-	incident, err := r.client.MonitoringV1alpha1().Incidents(req.Namespace).Get(req.Name, metav1.GetOptions{})
-	if err != nil {
-		if kerr.IsNotFound(err) {
-			return nil, errors.Errorf("incident %s/%s not found", req.Namespace, req.Name)
-		}
-		return nil, errors.Wrapf(err, "failed to determine incident %s/%s", req.Namespace, req.Name)
-	}
-
-	host := &icinga.IcingaHost{AlertNamespace: req.Namespace}
-
-	alertName, ok := incident.Labels[monitoring.LabelKeyAlert]
-	if !ok {
-		return nil, errors.Errorf("incident %s/%s is missing label %s", req.Namespace, req.Name, monitoring.LabelKeyAlert)
-	}
-	host.Type, ok = incident.Labels[monitoring.LabelKeyAlertType]
-	if !ok {
-		return nil, errors.Errorf("incident %s/%s is missing label %s", req.Namespace, req.Name, monitoring.LabelKeyAlertType)
-	} else if !icinga.IsValidHostType(host.Type) {
-		return nil, errors.Errorf("incident %s/%s has invalid value %s for label %s", req.Namespace, req.Name, host.Type, monitoring.LabelKeyAlertType)
-	}
-	if host.Type != icinga.TypeCluster {
-		host.ObjectName, ok = incident.Labels[monitoring.LabelKeyObjectName]
-		if !ok {
-			return nil, errors.Errorf("incident %s/%s is missing label %s", req.Namespace, req.Name, monitoring.LabelKeyObjectName)
-		}
-	}
-	hostName, err := host.Name()
+	host, service, err := r.getIcingaObjects(req.Namespace, req.Name)
 	if err != nil {
 		return nil, err
 	}
 
 	mp := make(map[string]interface{})
 	mp["type"] = "Service"
-	mp["filter"] = fmt.Sprintf(`service.name == "%s" && host.name == "%s"`, alertName, hostName)
+	mp["filter"] = fmt.Sprintf(`service.name == "%s" && host.name == "%s"`, service, host)
 	mp["comment"] = req.Request.Comment
 	mp["notify"] = !req.Request.SkipNotify
 	if user, ok := apirequest.UserFrom(ctx); ok {
@@ -124,4 +99,80 @@ func validate(o *api.Acknowledgement) field.ErrorList {
 
 	// perform validation here and add to errlist using field.Invalid
 	return errs
+}
+
+func (r *REST) Delete(ctx apirequest.Context, name string) (runtime.Object, error) {
+	namespace, ok := apirequest.NamespaceFrom(ctx)
+	if !ok {
+		return nil, apierrors.NewBadRequest("namespace missing")
+	}
+
+	host, service, err := r.getIcingaObjects(namespace, name)
+	if err != nil {
+		return nil, err
+	}
+
+	mp := make(map[string]interface{})
+	mp["type"] = "Service"
+	mp["filter"] = fmt.Sprintf(`service.name == "%s" && host.name == "%s"`, service, host)
+	ack, err := json.Marshal(mp)
+	if err != nil {
+		return nil, err
+	}
+
+	response := r.ic.Actions("remove-acknowledgement").Update([]string{}, string(ack)).Do()
+	if response.Err != nil {
+		return nil, response.Err
+	}
+	var icingaResp icinga.APIResponse
+	status, err := response.Into(&icingaResp)
+	if err != nil {
+		return nil, err
+	}
+	if status != 200 {
+		return nil, errors.New(string(icingaResp.ResponseBody))
+	}
+
+	resp := &api.Acknowledgement{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+		},
+		Response: api.AcknowledgementResponse{
+			Timestamp: metav1.Now(),
+		},
+	}
+
+	return resp, nil
+}
+
+func (r *REST) getIcingaObjects(namespace, name string) (host string, service string, err error) {
+	incident, err := r.client.MonitoringV1alpha1().Incidents(namespace).Get(name, metav1.GetOptions{})
+	if err != nil {
+		if kerr.IsNotFound(err) {
+			return "", "", errors.Errorf("incident %s/%s not found", namespace, name)
+		}
+		return "", "", errors.Wrapf(err, "failed to determine incident %s/%s", namespace, name)
+	}
+
+	icingaHost := &icinga.IcingaHost{AlertNamespace: namespace}
+
+	service, ok := incident.Labels[monitoring.LabelKeyAlert]
+	if !ok {
+		return "", "", errors.Errorf("incident %s/%s is missing label %s", namespace, name, monitoring.LabelKeyAlert)
+	}
+	icingaHost.Type, ok = incident.Labels[monitoring.LabelKeyAlertType]
+	if !ok {
+		return "", "", errors.Errorf("incident %s/%s is missing label %s", namespace, name, monitoring.LabelKeyAlertType)
+	} else if !icinga.IsValidHostType(icingaHost.Type) {
+		return "", "", errors.Errorf("incident %s/%s has invalid value %s for label %s", namespace, name, icingaHost.Type, monitoring.LabelKeyAlertType)
+	}
+	if icingaHost.Type != icinga.TypeCluster {
+		icingaHost.ObjectName, ok = incident.Labels[monitoring.LabelKeyObjectName]
+		if !ok {
+			return "", "", errors.Errorf("incident %s/%s is missing label %s", namespace, name, monitoring.LabelKeyObjectName)
+		}
+	}
+	host, err = icingaHost.Name()
+	return
 }

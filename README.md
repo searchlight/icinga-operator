@@ -1,7 +1,9 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/appscode/searchlight)](https://goreportcard.com/report/github.com/appscode/searchlight)
 [![Build Status](https://travis-ci.org/appscode/searchlight.svg?branch=master)](https://travis-ci.org/appscode/searchlight)
 [![codecov](https://codecov.io/gh/appscode/searchlight/branch/master/graph/badge.svg)](https://codecov.io/gh/appscode/searchlight)
-[![Go Report Card](https://goreportcard.com/badge/github.com/appscode/searchlight)](https://goreportcard.com/report/github.com/appscode/searchlight)
-![Docker Pulls](https://img.shields.io/docker/pulls/appscode/searchlight.svg)
+[![Docker Pulls](https://img.shields.io/docker/pulls/appscode/searchlight.svg)](https://hub.docker.com/r/appscode/searchlight/)
+[![Slack](https://slack.appscode.com/badge.svg)](https://slack.appscode.com)
+[![Twitter](https://img.shields.io/twitter/follow/appscodehq.svg?style=social&logo=twitter&label=Follow)](https://twitter.com/intent/follow?screen_name=AppsCodeHQ)
 
 # Searchlight
 

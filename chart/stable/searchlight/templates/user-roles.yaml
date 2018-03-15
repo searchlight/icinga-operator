@@ -22,6 +22,25 @@ rules:
   - patch
   - update
   - watch
+- apiGroups:
+  - monitoring.appscode.com
+  resources:
+  - incidents
+  verbs:
+  - delete
+  - deletecollection
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - incidents.monitoring.appscode.com
+  resources:
+  - acknowledgements
+  verbs:
+  - create
+  - delete
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
@@ -36,6 +55,7 @@ rules:
   - clusteralerts
   - nodealerts
   - podalerts
+  - incidents
   verbs:
   - get
   - list
