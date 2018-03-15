@@ -359,8 +359,8 @@
     },
     {
       "description": "This is used to check Certificate expiration date using Secret",
-      "examples": "hyperalert check_any_cert",
-      "name": "any_cert",
+      "examples": "hyperalert check_cert",
+      "name": "cert",
       "envs": [
         "onebox",
         "prod",

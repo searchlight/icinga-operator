@@ -1,4 +1,4 @@
-package check_any_cert_test
+package check_cert_test
 
 import (
 	"testing"
@@ -22,7 +22,7 @@ const (
 func TestCertContext_CheckAnyCert(t *testing.T) {
 	RegisterFailHandler(Fail)
 	SetDefaultEventuallyTimeout(TIMEOUT)
-	RunSpecsWithDefaultAndCustomReporters(t, "check_any_cert Suite", []Reporter{})
+	RunSpecsWithDefaultAndCustomReporters(t, "check_cert Suite", []Reporter{})
 }
 
 var _ = BeforeSuite(func() {
