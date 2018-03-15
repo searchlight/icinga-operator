@@ -1,7 +1,6 @@
 package data_test
 
 import (
-	"fmt"
 	"log"
 	"testing"
 
@@ -10,11 +9,21 @@ import (
 )
 
 func TestIcingaData(t *testing.T) {
-	ic, err := LoadIcingaData()
+	ic, err := LoadClusterChecks()
 	if err != nil {
 		log.Fatal(err)
 	}
 	assert.NotZero(t, len(ic.Command), "No check agent found")
-	fmt.Println(ic.Command[0].Name)
-	fmt.Println(ic.Command[0].Description)
+
+	in, err := LoadNodeChecks()
+	if err != nil {
+		log.Fatal(err)
+	}
+	assert.NotZero(t, len(in.Command), "No check agent found")
+
+	ip, err := LoadPodChecks()
+	if err != nil {
+		log.Fatal(err)
+	}
+	assert.NotZero(t, len(ip.Command), "No check agent found")
 }

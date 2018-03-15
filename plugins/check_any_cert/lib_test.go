@@ -5,9 +5,11 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"fmt"
 	"math/big"
 	"time"
 
+	. "github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/icinga"
 	. "github.com/appscode/searchlight/plugins/check_any_cert"
 	. "github.com/onsi/ginkgo"
@@ -64,7 +66,9 @@ var _ = Describe("check_any_cert", func() {
 	})
 
 	AfterEach(func() {
-		client.Delete(secret.Name, &metav1.DeleteOptions{})
+		if client != nil {
+			client.Delete(secret.Name, &metav1.DeleteOptions{})
+		}
 	})
 
 	Describe("when there is a valid certificate", func() {
@@ -270,6 +274,27 @@ var _ = Describe("check_any_cert", func() {
 
 				state, _ := certContext.CheckAnyCert(req)
 				Expect(state).Should(BeIdenticalTo(icinga.Warning))
+			})
+		})
+	})
+
+	Describe("Check bindata support", func() {
+		Context("bindata contain plugin info", func() {
+			It("should be succeeded", func() {
+				ic, err := LoadClusterChecks()
+				Expect(err).ShouldNot(HaveOccurred())
+
+				found := false
+				for _, c := range ic.Command {
+					fmt.Println(c.Name)
+					if c.Name == "any_cert" {
+						found = true
+						break
+					}
+				}
+
+				fmt.Println(found)
+				Expect(found).Should(BeTrue())
 			})
 		})
 	})
