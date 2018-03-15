@@ -5,7 +5,6 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"crypto/x509/pkix"
-	"fmt"
 	"math/big"
 	"time"
 
@@ -283,17 +282,13 @@ var _ = Describe("check_any_cert", func() {
 			It("should be succeeded", func() {
 				ic, err := LoadClusterChecks()
 				Expect(err).ShouldNot(HaveOccurred())
-
 				found := false
 				for _, c := range ic.Command {
-					fmt.Println(c.Name)
 					if c.Name == "any_cert" {
 						found = true
 						break
 					}
 				}
-
-				fmt.Println(found)
 				Expect(found).Should(BeTrue())
 			})
 		})
