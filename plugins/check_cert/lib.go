@@ -2,8 +2,8 @@ package check_cert
 
 import (
 	"crypto/x509"
+	"errors"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/appscode/searchlight/pkg/icinga"
@@ -52,17 +52,16 @@ type options struct {
 	critical time.Duration
 }
 
-func (o *options) validate() {
+func (o *options) validate() error {
 	host, err := icinga.ParseHost(o.hostname)
 	if err != nil {
-		fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host.name")
-		os.Exit(3)
+		return errors.New("invalid icinga host.name")
 	}
 	if host.Type != icinga.TypeCluster {
-		fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host type")
-		os.Exit(3)
+		return errors.New("invalid icinga host type")
 	}
 	o.namespace = host.AlertNamespace
+	return nil
 }
 
 func (p *plugin) getCertSecrets() ([]core.Secret, error) {
@@ -170,7 +169,9 @@ func NewCmd() *cobra.Command {
 		Short: "Check Certificate expire date",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			opts.validate()
+			if err := opts.validate(); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
 			plugin, err := newPluginFromConfig(opts)
 			if err != nil {
 				icinga.Output(icinga.Unknown, err)

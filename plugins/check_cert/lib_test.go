@@ -288,4 +288,34 @@ var _ = Describe("check_cert", func() {
 			})
 		})
 	})
+
+	Describe("Check validation", func() {
+		Context("for invalid", func() {
+			It("with invalid part", func() {
+				opts = options{
+					hostname: "demo@cluster@name",
+				}
+				err := opts.validate()
+				Expect(err).Should(HaveOccurred())
+			})
+			It("with invalid type", func() {
+				opts = options{
+					hostname: "demo@pod",
+				}
+				err := opts.validate()
+				Expect(err).Should(HaveOccurred())
+			})
+		})
+		Context("for invalid", func() {
+			It("with valid name", func() {
+				opts = options{
+					hostname: "demo@cluster",
+				}
+				err := opts.validate()
+				Expect(err).ShouldNot(HaveOccurred())
+
+				Expect(opts.namespace).Should(Equal("demo"))
+			})
+		})
+	})
 })
