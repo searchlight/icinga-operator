@@ -9,7 +9,7 @@ import (
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
-var _ = Describe("check_cert", func() {
+var _ = Describe("check_node_status", func() {
 	var node *core.Node
 	var client corev1.NodeInterface
 	var opts options

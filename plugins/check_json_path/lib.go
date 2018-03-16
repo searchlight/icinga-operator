@@ -2,100 +2,113 @@ package check_json_path
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
-	"os/exec"
-	"reflect"
+	"time"
 
+	"github.com/Knetic/govaluate"
 	"github.com/appscode/envconfig"
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/net/httpclient"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/util/jsonpath"
 )
 
-type Request struct {
+type plugin struct {
+	client  corev1.SecretInterface
+	options options
+}
+
+var _ plugins.PluginInterface = &plugin{}
+
+func newPlugin(client corev1.SecretInterface, opts options) *plugin {
+	return &plugin{client, opts}
+}
+
+func newPluginFromConfig(opts options) (*plugin, error) {
+	config, err := clientcmd.BuildConfigFromFlags(opts.masterURL, opts.kubeconfigPath)
+	if err != nil {
+		return nil, err
+	}
+	client := kubernetes.NewForConfigOrDie(config).CoreV1().Secrets(opts.namespace)
+	return newPlugin(client, opts), nil
+}
+
+type options struct {
 	masterURL      string
 	kubeconfigPath string
-
-	URL             string
-	SecretName      string
-	Namespace       string
-	InClusterConfig bool
-	Warning         string
-	Critical        string
+	// Icinga host name
+	hostname string
+	// http url
+	url string
+	// auth secret information
+	secretName string
+	namespace  string
+	// Check condition
+	warning  string
+	critical string
 }
 
-type AuthInfo struct {
-	Username           string `envconfig:"USERNAME"`
-	Password           string `envconfig:"PASSWORD"`
-	Token              string `envconfig:"TOKEN"`
-	CACertData         string `envconfig:"CA_CERT_DATA"`
-	ClientCertData     string `envconfig:"CLIENT_CERT_DATA"`
-	ClientKeyData      string `envconfig:"CLIENT_KEY_DATA"`
-	InsecureSkipVerify bool   `envconfig:"INSECURE_SKIP_VERIFY"`
+func (o *options) validate() error {
+	host, err := icinga.ParseHost(o.hostname)
+	if err != nil {
+		return errors.New("invalid icinga host.name")
+	}
+	if host.Type != icinga.TypeCluster {
+		return errors.New("invalid icinga host type")
+	}
+	o.namespace = host.AlertNamespace
+	return nil
 }
 
-type JQ struct {
-	J string `json:"j"`
-	Q string `json:"q"`
+type authInfo struct {
+	username           string `envconfig:"USERNAME"`
+	password           string `envconfig:"PASSWORD"`
+	token              string `envconfig:"TOKEN"`
+	caCertData         string `envconfig:"CA_CERT_DATA"`
+	clientCertData     string `envconfig:"CLIENT_CERT_DATA"`
+	clientKeyData      string `envconfig:"CLIENT_KEY_DATA"`
+	insecureSkipVerify bool   `envconfig:"INSECURE_SKIP_VERIFY"`
 }
 
-func getData(req *Request) (string, error) {
+func (p *plugin) getData() (interface{}, error) {
+	opts := p.options
+
 	var hc *httpclient.Client
+	hc = httpclient.Default().WithBaseURL(opts.url).WithTimeout(time.Second * 10)
 
-	if req.InClusterConfig {
-		config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
+	if opts.secretName != "" {
+		secret, err := p.client.Get(opts.secretName, metav1.GetOptions{})
 		if err != nil {
 			return "", err
 		}
-		kubeClient := kubernetes.NewForConfigOrDie(config)
-		cc := kubeClient.CoreV1().RESTClient().(*rest.RESTClient)
-		hc = httpclient.New(cc.Client, nil, nil)
-	} else {
-		hc = httpclient.Default().WithBaseURL(req.URL)
-		if req.URL == "" {
-			return "", errors.New("Missing URL")
+		var au authInfo
+		err = envconfig.Load("", &au, func(key string) (string, bool) {
+			v, ok := secret.Data[key]
+			if !ok {
+				return "", false
+			}
+			return string(v), true
+		})
+		if err != nil {
+			return "", err
 		}
-
-		if req.SecretName != "" {
-			config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
-			if err != nil {
-				return "", err
+		hc = hc.WithBasicAuth(au.username, au.password).WithBearerToken(au.token)
+		if au.caCertData != "" {
+			if au.clientCertData != "" && au.clientKeyData != "" {
+				hc = hc.WithTLSConfig([]byte(au.caCertData), []byte(au.clientCertData), []byte(au.clientKeyData))
+			} else {
+				hc = hc.WithTLSConfig([]byte(au.caCertData))
 			}
-			kubeClient := kubernetes.NewForConfigOrDie(config)
-			secret, err := kubeClient.CoreV1().Secrets(req.Namespace).Get(req.SecretName, metav1.GetOptions{})
-			if err != nil {
-				return "", err
-			}
-			var au AuthInfo
-			err = envconfig.Load("", &au, func(key string) (string, bool) {
-				v, ok := secret.Data[key]
-				if !ok {
-					return "", false
-				}
-				return string(v), true
-			})
-			if err != nil {
-				return "", err
-			}
-			hc = hc.WithBasicAuth(au.Username, au.Password).WithBearerToken(au.Token)
-			if au.CACertData != "" {
-				if au.ClientCertData != "" && au.ClientKeyData != "" {
-					hc = hc.WithTLSConfig([]byte(au.CACertData), []byte(au.ClientKeyData), []byte(au.ClientKeyData))
-				} else {
-					hc = hc.WithTLSConfig([]byte(au.CACertData))
-				}
-			}
-			if au.InsecureSkipVerify {
-				hc = hc.WithInsecureSkipVerify()
-			}
+		}
+		if au.insecureSkipVerify {
+			hc = hc.WithInsecureSkipVerify()
 		}
 	}
 
@@ -105,103 +118,96 @@ func getData(req *Request) (string, error) {
 		return "", err
 	}
 	if resp.StatusCode != 200 {
-		return "", fmt.Errorf("Invalid status_code %v", resp.StatusCode)
+		return "", fmt.Errorf("invalid status_code %v", resp.StatusCode)
 	}
 
-	data, err := json.Marshal(respJson)
-	if err != nil {
-		return "", err
-	}
-
-	return string(data), nil
+	return respJson, nil
 }
 
-func (j *JQ) eval() (res interface{}, err error) {
-	cmd := exec.Command("jq", j.Q)
-	cmd.Stdin = bytes.NewBufferString(j.J)
-
-	var cmdOut []byte
-	if cmdOut, err = cmd.Output(); err != nil {
-		return
-
-	}
-	err = json.Unmarshal(cmdOut, &res)
-	return
-}
-
-func checkResult(response, query string) (bool, error) {
-	jqData := &JQ{
-		J: response,
-		Q: query,
-	}
-	result, err := jqData.eval()
-	if err != nil {
+func (p *plugin) checkResult(response interface{}, query string) (bool, error) {
+	j := jsonpath.New("check")
+	if err := j.Parse(query); err != nil {
 		return false, err
 	}
-	if reflect.TypeOf(result).Kind() != reflect.Bool {
-		return false, fmt.Errorf("invalid check query: %v", query)
+	buf := new(bytes.Buffer)
+	if err := j.Execute(buf, response); err != nil {
+		return false, err
 	}
-	return result.(bool), nil
+
+	expr, err := govaluate.NewEvaluableExpression(buf.String())
+	if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+
+	param := make(map[string]interface{})
+	for _, v := range expr.Vars() {
+		param[v] = v
+	}
+	res, err := expr.Evaluate(param)
+	if err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	return res.(bool), nil
 }
 
-func CheckJsonPath(req *Request) (icinga.State, interface{}) {
-	jsonData, err := getData(req)
+func (p *plugin) Check() (icinga.State, interface{}) {
+	opts := p.options
+	jsonInterface, err := p.getData()
 	if err != nil {
 		return icinga.Unknown, err
 	}
 
-	if req.Critical != "" {
-		isCritical, err := checkResult(jsonData, req.Critical)
+	if opts.critical != "" {
+		isCritical, err := p.checkResult(jsonInterface, opts.critical)
 		if err != nil {
 			return icinga.Unknown, err
 		}
 		if isCritical {
-			return icinga.Critical, fmt.Sprintf("%v", req.Critical)
+			return icinga.Critical, fmt.Sprintf("%v", opts.critical)
 		}
 	}
-	if req.Warning != "" {
-		isWarning, err := checkResult(jsonData, req.Warning)
+	if opts.warning != "" {
+		isWarning, err := p.checkResult(jsonInterface, opts.warning)
 		if err != nil {
 			return icinga.Unknown, err
 		}
 		if isWarning {
-			return icinga.Warning, fmt.Sprintf("%v", req.Warning)
+			return icinga.Warning, fmt.Sprintf("%v", opts.warning)
 		}
 	}
-	return icinga.OK, "Response looks good"
+	return icinga.OK, "response looks good"
 }
 
 func NewCmd() *cobra.Command {
-	var req Request
-	var icingaHost string
+	var opts options
 
 	c := &cobra.Command{
-		Use:     "check_json_path",
-		Short:   "Check Json Object",
-		Example: "",
+		Use:   "check_json_path",
+		Short: "Check Json Object",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(cmd, "host")
-
-			host, err := icinga.ParseHost(icingaHost)
-			if err != nil {
-				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host.name")
-				os.Exit(3)
-			}
-			req.Namespace = host.AlertNamespace
-
+			flags.EnsureRequiredFlags(cmd, "host", "url")
 			flags.EnsureAlterableFlags(cmd, "warning", "critical")
-			icinga.Output(CheckJsonPath(&req))
+
+			if err := opts.validate(); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			plugin, err := newPluginFromConfig(opts)
+			if err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			icinga.Output(plugin.Check())
 		},
 	}
 
-	c.Flags().StringVar(&req.masterURL, "master", req.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
-	c.Flags().StringVar(&req.kubeconfigPath, "kubeconfig", req.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
-	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
-	c.Flags().StringVarP(&req.URL, "url", "u", "", "URL to get data")
-	c.Flags().StringVarP(&req.SecretName, "secretName", "s", "", `Kubernetes secret name`)
-	c.Flags().BoolVar(&req.InClusterConfig, "inClusterConfig", false, `Use Kubernetes InCluserConfig`)
-	c.Flags().StringVarP(&req.Warning, "warning", "w", "", `Warning JQ query which returns [true/false]`)
-	c.Flags().StringVarP(&req.Critical, "critical", "c", "", `Critical JQ query which returns [true/false]`)
+	c.Flags().StringVar(&opts.masterURL, "master", opts.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
+	c.Flags().StringVar(&opts.kubeconfigPath, "kubeconfig", opts.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
+	c.Flags().StringVarP(&opts.hostname, "host", "H", "", "Icinga host name")
+	c.Flags().StringVarP(&opts.url, "url", "u", "", "URL to get data")
+	c.Flags().StringVarP(&opts.secretName, "secretName", "s", "", `Kubernetes secret name`)
+	c.Flags().StringVarP(&opts.warning, "warning", "w", "", `Warning jq query which returns [true/false]`)
+	c.Flags().StringVarP(&opts.critical, "critical", "c", "", `Critical jq query which returns [true/false]`)
 	return c
 }
