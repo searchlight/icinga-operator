@@ -306,7 +306,7 @@ var _ = Describe("check_cert", func() {
 				Expect(err).Should(HaveOccurred())
 			})
 		})
-		Context("for invalid", func() {
+		Context("for valid", func() {
 			It("with valid name", func() {
 				opts = options{
 					hostname: "demo@cluster",
