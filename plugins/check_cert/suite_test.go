@@ -1,4 +1,4 @@
-package check_cert_test
+package check_cert
 
 import (
 	"testing"

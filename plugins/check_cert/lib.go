@@ -24,17 +24,17 @@ type plugin struct {
 
 var _ plugins.PluginInterface = &plugin{}
 
-func NewPlugin(client corev1.SecretInterface, option options) *plugin {
-	return &plugin{client, option}
+func newPlugin(client corev1.SecretInterface, opts options) *plugin {
+	return &plugin{client, opts}
 }
 
-func newPluginFromConfig(option options) (*plugin, error) {
-	config, err := clientcmd.BuildConfigFromFlags(option.masterURL, option.kubeconfigPath)
+func newPluginFromConfig(opts options) (*plugin, error) {
+	config, err := clientcmd.BuildConfigFromFlags(opts.masterURL, opts.kubeconfigPath)
 	if err != nil {
 		return nil, err
 	}
-	client := kubernetes.NewForConfigOrDie(config).CoreV1().Secrets(option.Namespace)
-	return NewPlugin(client, option), nil
+	client := kubernetes.NewForConfigOrDie(config).CoreV1().Secrets(opts.namespace)
+	return newPlugin(client, opts), nil
 }
 
 type options struct {
@@ -43,13 +43,13 @@ type options struct {
 	// Icinga host name
 	hostname string
 	// options for Secret
-	Namespace  string
-	Selector   string
-	SecretName string
-	SecretKey  []string
+	namespace  string
+	selector   string
+	secretName string
+	secretKey  []string
 	// Certificate expirity duration
-	Warning  time.Duration
-	Critical time.Duration
+	warning  time.Duration
+	critical time.Duration
 }
 
 func (o *options) validate() {
@@ -62,21 +62,21 @@ func (o *options) validate() {
 		fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host type")
 		os.Exit(3)
 	}
-	o.Namespace = host.AlertNamespace
+	o.namespace = host.AlertNamespace
 }
 
 func (p *plugin) getCertSecrets() ([]core.Secret, error) {
-	option := p.options
-	if option.SecretName != "" {
+	opts := p.options
+	if opts.secretName != "" {
 		var secret *core.Secret
-		secret, err := p.client.Get(option.SecretName, metav1.GetOptions{})
+		secret, err := p.client.Get(opts.secretName, metav1.GetOptions{})
 		if err != nil {
 			return nil, err
 		}
 		return []core.Secret{*secret}, nil
 	} else {
 		secretList, err := p.client.List(metav1.ListOptions{
-			LabelSelector: option.Selector,
+			LabelSelector: opts.selector,
 		})
 		if err != nil {
 			return nil, err
@@ -87,13 +87,13 @@ func (p *plugin) getCertSecrets() ([]core.Secret, error) {
 }
 
 func (p *plugin) checkNotAfter(cert *x509.Certificate) (icinga.State, time.Duration) {
-	option := p.options
+	opts := p.options
 	remaining := cert.NotAfter.Sub(time.Now())
-	if remaining.Seconds() < option.Critical.Seconds() {
+	if remaining.Seconds() < opts.critical.Seconds() {
 		return icinga.Critical, remaining
 	}
 
-	if remaining.Seconds() < option.Warning.Seconds() {
+	if remaining.Seconds() < opts.warning.Seconds() {
 		return icinga.Warning, remaining
 	}
 
@@ -121,8 +121,8 @@ func (p *plugin) checkCert(data []byte, secret *core.Secret, key string) (icinga
 }
 
 func (p *plugin) checkCertPerSecretKey(secret *core.Secret) (icinga.State, error) {
-	option := p.options
-	for _, key := range option.SecretKey {
+	opts := p.options
+	for _, key := range opts.secretKey {
 		data, ok := secret.Data[key]
 		if !ok {
 			return icinga.Warning, fmt.Errorf(`key "%s" not found in Secret "%s/%s"`, key, secret.Namespace, secret.Name)
@@ -133,7 +133,7 @@ func (p *plugin) checkCertPerSecretKey(secret *core.Secret) (icinga.State, error
 		}
 	}
 
-	if len(option.SecretKey) == 0 && secret.Type == core.SecretTypeTLS {
+	if len(opts.secretKey) == 0 && secret.Type == core.SecretTypeTLS {
 		data, ok := secret.Data["tls.crt"]
 		if !ok {
 			return icinga.Warning, fmt.Errorf(`key "tls.crt" not found in Secret "%s/%s"`, secret.Namespace, secret.Name)
@@ -148,7 +148,6 @@ func (p *plugin) checkCertPerSecretKey(secret *core.Secret) (icinga.State, error
 }
 
 func (p *plugin) Check() (icinga.State, interface{}) {
-
 	secretList, err := p.getCertSecrets()
 	if err != nil {
 		return icinga.Unknown, err
@@ -183,10 +182,10 @@ func NewCmd() *cobra.Command {
 	cmd.Flags().StringVar(&opts.masterURL, "master", opts.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
 	cmd.Flags().StringVar(&opts.kubeconfigPath, "kubeconfig", opts.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
 	cmd.Flags().StringVarP(&opts.hostname, "host", "H", "", "Icinga host name")
-	cmd.Flags().StringVarP(&opts.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='")
-	cmd.Flags().StringVarP(&opts.SecretName, "secretName", "s", "", "Name of secret from where certificates are checked")
-	cmd.Flags().StringSliceVarP(&opts.SecretKey, "secretKey", "k", nil, "Name of secret key where certificates are kept")
-	cmd.Flags().DurationVarP(&opts.Warning, "warning", "w", time.Hour*360, `Remaining duration for Warning state. [Default: 360h]`)
-	cmd.Flags().DurationVarP(&opts.Critical, "critical", "c", time.Hour*120, `Remaining duration for Critical state. [Default: 120h]`)
+	cmd.Flags().StringVarP(&opts.selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='")
+	cmd.Flags().StringVarP(&opts.secretName, "secretName", "s", "", "Name of secret from where certificates are checked")
+	cmd.Flags().StringSliceVarP(&opts.secretKey, "secretKey", "k", nil, "Name of secret key where certificates are kept")
+	cmd.Flags().DurationVarP(&opts.warning, "warning", "w", time.Hour*360, `Remaining duration for Warning state. [Default: 360h]`)
+	cmd.Flags().DurationVarP(&opts.critical, "critical", "c", time.Hour*120, `Remaining duration for Critical state. [Default: 120h]`)
 	return cmd
 }
