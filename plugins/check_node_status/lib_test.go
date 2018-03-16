@@ -89,6 +89,14 @@ var _ = Describe("check_cert", func() {
 						Type:   core.NodeMemoryPressure,
 						Status: core.ConditionTrue,
 					},
+					{
+						Type:   core.NodeDiskPressure,
+						Status: core.ConditionTrue,
+					},
+					{
+						Type:   core.NodeNetworkUnavailable,
+						Status: core.ConditionTrue,
+					},
 				}
 				_, err = client.Update(node)
 				Expect(err).ShouldNot(HaveOccurred())
