@@ -1,5 +1,5 @@
-hash: 236c8732c4c722312a9de905d4e93c8ae4c9418e810a8aff2436a90701366c54
-updated: 2018-03-16T16:19:25.083796528+06:00
+hash: ce229c8c40efb46813185949327a6ef12ee379e554c38a77120c057c0bcd0667
+updated: 2018-03-16T16:28:32.754801503+06:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -89,7 +89,7 @@ imports:
   subpackages:
   - capnslog
 - name: github.com/cpuguy83/go-md2man
-  version: 48d8747a2ca13185e7cc8efe6e9fc196a83f71a5
+  version: 71acacd42f85e5e82f70a55327789582a5200a90
   subpackages:
   - md2man
 - name: github.com/davecgh/go-spew
