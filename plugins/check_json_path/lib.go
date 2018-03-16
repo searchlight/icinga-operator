@@ -149,7 +149,8 @@ func (p *plugin) checkResult(response interface{}, query string) (bool, error) {
 		fmt.Println(err)
 		return false, err
 	}
-	return res.(bool), nil
+	v, ok := res.(bool)
+	return v && ok, nil
 }
 
 func (p *plugin) Check() (icinga.State, interface{}) {
