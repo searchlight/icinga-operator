@@ -19,7 +19,7 @@ import (
 	"k8s.io/client-go/util/cert"
 )
 
-func generateCertificate(expirity time.Duration) ([]byte, error) {
+func generateCertificate(ttl time.Duration) ([]byte, error) {
 	priv, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func generateCertificate(expirity time.Duration) ([]byte, error) {
 			Organization: []string{"AppsCode Inc."},
 		},
 		NotBefore: time.Now(),
-		NotAfter:  time.Now().Add(expirity),
+		NotAfter:  time.Now().Add(ttl),
 	}
 
 	certByte, err := x509.CreateCertificate(rand.Reader, &template, &template, priv.Public(), priv)
