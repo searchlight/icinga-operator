@@ -24,15 +24,14 @@ hyperalert check_json_path [flags]
 ### Options
 
 ```
-  -c, --critical string     Critical JQ query which returns [true/false]
+  -c, --critical string     Critical jsonpath query which returns [true/false]
   -h, --help                help for check_json_path
   -H, --host string         Icinga host name
-      --inClusterConfig     Use Kubernetes InCluserConfig
       --kubeconfig string   Path to kubeconfig file with authorization information (the master location is set by the master flag).
       --master string       The address of the Kubernetes API server (overrides any value in kubeconfig)
   -s, --secretName string   Kubernetes secret name
   -u, --url string          URL to get data
-  -w, --warning string      Warning JQ query which returns [true/false]
+  -w, --warning string      Warning jsonpath query which returns [true/false]
 ```
 
 ### Options inherited from parent commands

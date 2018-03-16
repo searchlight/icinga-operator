@@ -207,7 +207,7 @@ func NewCmd() *cobra.Command {
 	c.Flags().StringVarP(&opts.hostname, "host", "H", "", "Icinga host name")
 	c.Flags().StringVarP(&opts.url, "url", "u", "", "URL to get data")
 	c.Flags().StringVarP(&opts.secretName, "secretName", "s", "", `Kubernetes secret name`)
-	c.Flags().StringVarP(&opts.warning, "warning", "w", "", `Warning jq query which returns [true/false]`)
-	c.Flags().StringVarP(&opts.critical, "critical", "c", "", `Critical jq query which returns [true/false]`)
+	c.Flags().StringVarP(&opts.warning, "warning", "w", "", `Warning jsonpath query which returns [true/false]`)
+	c.Flags().StringVarP(&opts.critical, "critical", "c", "", `Critical jsonpath query which returns [true/false]`)
 	return c
 }
