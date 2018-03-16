@@ -73,26 +73,24 @@ func (p *plugin) getCertSecrets() ([]core.Secret, error) {
 			return nil, err
 		}
 		return []core.Secret{*secret}, nil
-	} else {
-		secretList, err := p.client.List(metav1.ListOptions{
-			LabelSelector: opts.selector,
-		})
-		if err != nil {
-			return nil, err
-		}
-		return secretList.Items, nil
 	}
-	return nil, nil
+
+	secretList, err := p.client.List(metav1.ListOptions{
+		LabelSelector: opts.selector,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return secretList.Items, nil
 }
 
 func (p *plugin) checkNotAfter(cert *x509.Certificate) (icinga.State, time.Duration) {
-	opts := p.options
 	remaining := cert.NotAfter.Sub(time.Now())
-	if remaining.Seconds() < opts.critical.Seconds() {
+	if remaining.Seconds() < p.options.critical.Seconds() {
 		return icinga.Critical, remaining
 	}
 
-	if remaining.Seconds() < opts.warning.Seconds() {
+	if remaining.Seconds() < p.options.warning.Seconds() {
 		return icinga.Warning, remaining
 	}
 
@@ -111,7 +109,7 @@ func (p *plugin) checkCert(data []byte, secret *core.Secret, key string) (icinga
 	for _, cert := range certs {
 		if state, remaining := p.checkNotAfter(cert); state != icinga.OK {
 			return state, fmt.Errorf(
-				`certificate for key "%s" in Secret "%s/%s" will be expired within %v hours`,
+				`certificate found in key "%s" in Secret "%s/%s" will be expired within %v hours`,
 				key, secret.Namespace, secret.Name, remaining.Hours(),
 			)
 		}
@@ -133,12 +131,12 @@ func (p *plugin) checkCertPerSecretKey(secret *core.Secret) (icinga.State, error
 	}
 
 	if len(opts.secretKey) == 0 && secret.Type == core.SecretTypeTLS {
-		data, ok := secret.Data["tls.crt"]
+		data, ok := secret.Data[core.TLSCertKey]
 		if !ok {
-			return icinga.Warning, fmt.Errorf(`key "tls.crt" not found in Secret "%s/%s"`, secret.Namespace, secret.Name)
+			return icinga.Warning, fmt.Errorf(`key "%s" not found in Secret "%s/%s"`, core.TLSCertKey, secret.Namespace, secret.Name)
 		}
 
-		if state, err := p.checkCert(data, secret, "tls.crt"); err != nil {
+		if state, err := p.checkCert(data, secret, core.TLSCertKey); err != nil {
 			return state, err
 		}
 	}
