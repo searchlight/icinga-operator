@@ -1,5 +1,5 @@
 hash: 236c8732c4c722312a9de905d4e93c8ae4c9418e810a8aff2436a90701366c54
-updated: 2018-03-15T14:21:05.877843271-07:00
+updated: 2018-03-16T16:19:25.083796528+06:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -37,7 +37,7 @@ imports:
   - unified
   - webhook
 - name: github.com/appscode/jsonpatch
-  version: ee757872f6aca6d412d0d80543725bd4cf48f793
+  version: 3e75a56b8967932466984d4432401e1c1a7ff61e
 - name: github.com/appscode/kutil
   version: 3e1d387015c275db5fd3d605fcf1f61af6ab6866
   subpackages:
@@ -89,7 +89,7 @@ imports:
   subpackages:
   - capnslog
 - name: github.com/cpuguy83/go-md2man
-  version: 71acacd42f85e5e82f70a55327789582a5200a90
+  version: 48d8747a2ca13185e7cc8efe6e9fc196a83f71a5
   subpackages:
   - md2man
 - name: github.com/davecgh/go-spew
@@ -134,7 +134,7 @@ imports:
 - name: github.com/go-openapi/jsonreference
   version: 13c6e3589ad90f49bd3e3bbe2c2cb3d7a4142272
 - name: github.com/go-openapi/loads
-  version: a80dea3052f00e5f032e860dd7355cd0cc67e24d
+  version: 2a2b323bab96e6b1fdee110e57d959322446e9c9
 - name: github.com/go-openapi/spec
   version: 7abd5745472fff5eb3685386d5fb8bf38683154d
 - name: github.com/go-openapi/swag
@@ -250,7 +250,7 @@ imports:
 - name: github.com/NYTimes/gziphandler
   version: 56545f4a5d46df9a6648819d1664c3a03a13ffdb
 - name: github.com/olekukonko/tablewriter
-  version: cca8bbc0798408af109aaaa239cbd2634846b340
+  version: b8a9be070da40449e501c3c4730a889e42d87a9e
 - name: github.com/onsi/gomega
   version: 003f63b7f4cff3fc95357005358af2de0f5fe152
   subpackages:
@@ -299,7 +299,8 @@ imports:
 - name: github.com/russross/blackfriday
   version: 300106c228d52c8941d4b3de6054a6062a86dda3
 - name: github.com/sergi/go-diff
-  version: 97b2266dfe4bd4ea1b81a463322f04f8b724801e
+  version: 24e2351369ec4949b2ed0dc5c477afdd4c4034e8
+  repo: https://github.com/sergi/go-diff
   subpackages:
   - diffmatchpatch
 - name: github.com/shirou/gopsutil
@@ -344,11 +345,12 @@ imports:
 - name: github.com/vaughan0/go-ini
   version: a98ad7ee00ec53921f08832bc06ecf7fd600e6a1
 - name: github.com/yudai/gojsondiff
-  version: 7b1b7adf999dab73a6eb02669c3d82dbb27a3dd6
+  version: e21612694bdd50975f93cd5eaccb457477128e28
   subpackages:
   - formatter
 - name: github.com/yudai/golcs
   version: d1c525dea8ce39ea9a783d33cf08932305373f2c
+  repo: https://github.com/yudai/golcs
 - name: golang.org/x/crypto
   version: 81e90905daefcd6fd217b62423c0908922eadb30
   subpackages:
@@ -755,6 +757,7 @@ imports:
   - rest
   - rest/watch
   - testing
+  - third_party/forked/golang/template
   - tools/auth
   - tools/cache
   - tools/clientcmd
@@ -774,6 +777,7 @@ imports:
   - util/flowcontrol
   - util/homedir
   - util/integer
+  - util/jsonpath
   - util/workqueue
 - name: k8s.io/kube-openapi
   version: 50ae88d24ede7b8bad68e23c805b5d3da5c8abaf
