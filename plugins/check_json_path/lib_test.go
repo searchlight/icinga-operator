@@ -63,6 +63,14 @@ var _ = Describe("check_json_path", func() {
 				state, _ := newPlugin(nil, opts).Check()
 				Expect(state).Should(BeIdenticalTo(icinga.Critical))
 			})
+			It("1st Book Category", func() {
+				opts := options{
+					url:      ts.URL,
+					critical: "{.Book[0].Category}==novel",
+				}
+				state, _ := newPlugin(nil, opts).Check()
+				Expect(state).Should(BeIdenticalTo(icinga.OK))
+			})
 		})
 		Context("check float", func() {
 			JustBeforeEach(func() {
