@@ -1,8 +1,13 @@
 hash: ce229c8c40efb46813185949327a6ef12ee379e554c38a77120c057c0bcd0667
-updated: 2018-03-16T16:28:32.754801503+06:00
+updated: 2018-03-17T10:47:43.027908452-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
+- name: cloud.google.com/go
+  version: 3b1ae45394a234c385be014e9a488f2bb6eef821
+  subpackages:
+  - compute/metadata
+  - internal
 - name: github.com/appscode/envconfig
   version: 183bbe643a2875eaa69c85627ac6b25813983203
 - name: github.com/appscode/go
@@ -37,17 +42,19 @@ imports:
   - unified
   - webhook
 - name: github.com/appscode/jsonpatch
-  version: 3e75a56b8967932466984d4432401e1c1a7ff61e
+  version: ee757872f6aca6d412d0d80543725bd4cf48f793
 - name: github.com/appscode/kutil
-  version: 3e1d387015c275db5fd3d605fcf1f61af6ab6866
+  version: 0c1620d6537df14d999bb6f171524f947f5391f6
   subpackages:
-  - admission/api
+  - admission
+  - admission/v1beta1
   - apiextensions/v1beta1
   - core/v1
   - discovery
   - extensions/v1beta1
   - meta
   - registry/admissionreview/v1beta1
+  - runtime/serializer/versioning
   - tools/analytics
   - tools/certstore
   - tools/queue
@@ -55,6 +62,13 @@ imports:
   version: e3000cb3d28c72b837601cac94debd91032d19fe
 - name: github.com/appscode/pat
   version: 48ff78925b7955367d8a048fc2b5cec8efadf8d3
+- name: github.com/Azure/go-autorest
+  version: e14a70c556c8e0db173358d1a903dca345a8e75e
+  subpackages:
+  - autorest
+  - autorest/adal
+  - autorest/azure
+  - autorest/date
 - name: github.com/beorn7/perks
   version: 3ac7bf7a47d159a033b107610db8a1b6575507a4
   subpackages:
@@ -96,6 +110,8 @@ imports:
   version: 782f4967f2dc4564575ca782fe2d04090b5faca8
   subpackages:
   - spew
+- name: github.com/dgrijalva/jwt-go
+  version: 01aeca54ebda6e0fbfafd0a524d234159c05ec20
 - name: github.com/docker/distribution
   version: edc3ab29cdff8694dd6feb85cfeb4b5f1b38ed9c
   subpackages:
@@ -134,7 +150,7 @@ imports:
 - name: github.com/go-openapi/jsonreference
   version: 13c6e3589ad90f49bd3e3bbe2c2cb3d7a4142272
 - name: github.com/go-openapi/loads
-  version: 2a2b323bab96e6b1fdee110e57d959322446e9c9
+  version: a80dea3052f00e5f032e860dd7355cd0cc67e24d
 - name: github.com/go-openapi/spec
   version: 7abd5745472fff5eb3685386d5fb8bf38683154d
 - name: github.com/go-openapi/swag
@@ -183,6 +199,15 @@ imports:
   - OpenAPIv2
   - compiler
   - extensions
+- name: github.com/gophercloud/gophercloud
+  version: 8183543f90d1aef267a5ecc209f2e0715b355acb
+  subpackages:
+  - openstack
+  - openstack/identity/v2/tenants
+  - openstack/identity/v2/tokens
+  - openstack/identity/v3/tokens
+  - openstack/utils
+  - pagination
 - name: github.com/gorilla/websocket
   version: 6eb6ad425a89d9da7a5549bc6da8f79ba5c17844
 - name: github.com/gregjones/httpcache
@@ -250,7 +275,7 @@ imports:
 - name: github.com/NYTimes/gziphandler
   version: 56545f4a5d46df9a6648819d1664c3a03a13ffdb
 - name: github.com/olekukonko/tablewriter
-  version: b8a9be070da40449e501c3c4730a889e42d87a9e
+  version: cca8bbc0798408af109aaaa239cbd2634846b340
 - name: github.com/onsi/gomega
   version: 003f63b7f4cff3fc95357005358af2de0f5fe152
   subpackages:
@@ -299,8 +324,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 300106c228d52c8941d4b3de6054a6062a86dda3
 - name: github.com/sergi/go-diff
-  version: 24e2351369ec4949b2ed0dc5c477afdd4c4034e8
-  repo: https://github.com/sergi/go-diff
+  version: 97b2266dfe4bd4ea1b81a463322f04f8b724801e
   subpackages:
   - diffmatchpatch
 - name: github.com/shirou/gopsutil
@@ -345,12 +369,11 @@ imports:
 - name: github.com/vaughan0/go-ini
   version: a98ad7ee00ec53921f08832bc06ecf7fd600e6a1
 - name: github.com/yudai/gojsondiff
-  version: e21612694bdd50975f93cd5eaccb457477128e28
+  version: 7b1b7adf999dab73a6eb02669c3d82dbb27a3dd6
   subpackages:
   - formatter
 - name: github.com/yudai/golcs
   version: d1c525dea8ce39ea9a783d33cf08932305373f2c
-  repo: https://github.com/yudai/golcs
 - name: golang.org/x/crypto
   version: 81e90905daefcd6fd217b62423c0908922eadb30
   subpackages:
@@ -360,6 +383,7 @@ imports:
   version: 1c05540f6879653db88113bc4a2b70aec4bd491f
   subpackages:
   - context
+  - context/ctxhttp
   - html
   - html/atom
   - html/charset
@@ -370,6 +394,13 @@ imports:
   - lex/httplex
   - trace
   - websocket
+- name: golang.org/x/oauth2
+  version: a6bd8cefa1811bd24b86f8902872e4e8225f74c4
+  subpackages:
+  - google
+  - internal
+  - jws
+  - jwt
 - name: golang.org/x/sys
   version: bb24a47a89eac6c1227fbcb2ae37a8b9ed323366
   subpackages:
@@ -400,6 +431,18 @@ imports:
   - unicode/bidi
   - unicode/norm
   - width
+- name: google.golang.org/appengine
+  version: 4f7eeb5305a4ba1966344836ba4af9996b7b4e05
+  subpackages:
+  - internal
+  - internal/app_identity
+  - internal/base
+  - internal/datastore
+  - internal/log
+  - internal/modules
+  - internal/remote_api
+  - internal/urlfetch
+  - urlfetch
 - name: google.golang.org/genproto
   version: 09f6ed296fc66555a25fe4ce95173148778dfa85
   subpackages:
@@ -754,6 +797,11 @@ imports:
   - listers/storage/v1alpha1
   - listers/storage/v1beta1
   - pkg/version
+  - plugin/pkg/client/auth
+  - plugin/pkg/client/auth/azure
+  - plugin/pkg/client/auth/gcp
+  - plugin/pkg/client/auth/oidc
+  - plugin/pkg/client/auth/openstack
   - rest
   - rest/watch
   - testing

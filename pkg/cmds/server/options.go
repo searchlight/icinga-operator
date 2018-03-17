@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/appscode/go/log"
-	hookapi "github.com/appscode/kutil/admission/api"
+	hooks "github.com/appscode/kutil/admission/v1beta1"
 	"github.com/appscode/kutil/meta"
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	"github.com/appscode/searchlight/pkg/admission/plugin"
@@ -70,7 +70,7 @@ func (s *OperatorOptions) ApplyTo(cfg *operator.OperatorConfig) error {
 	if cfg.CRDClient, err = crd_cs.NewForConfig(cfg.ClientConfig); err != nil {
 		return err
 	}
-	cfg.AdmissionHooks = []hookapi.AdmissionHook{&plugin.CRDValidator{}}
+	cfg.AdmissionHooks = []hooks.AdmissionHook{&plugin.CRDValidator{}}
 
 	secret, err := cfg.KubeClient.CoreV1().Secrets(meta.Namespace()).Get(s.ConfigSecretName, metav1.GetOptions{})
 	if err != nil {

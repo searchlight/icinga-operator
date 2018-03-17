@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"sync"
 
-	hooks "github.com/appscode/kutil/admission/api"
+	hooks "github.com/appscode/kutil/admission/v1beta1"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	admission "k8s.io/api/admission/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
