@@ -68,7 +68,7 @@ func NewCmdRun(out, errOut io.Writer, stopCh <-chan struct{}) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			glog.Infof("Starting operator version %s+%s ...", v.Version.Version, v.Version.CommitHash)
 
-			if err := o.Complete(); err != nil {
+			if err := o.Complete(cmd); err != nil {
 				return err
 			}
 			if err := o.Validate(args); err != nil {

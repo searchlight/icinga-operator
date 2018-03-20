@@ -59,6 +59,11 @@ spec:
         ports:
         - containerPort: 5665
         - containerPort: 60006
+        env:
+        - name: ENABLE_ANALYTICS
+          value: ${ENABLE_ANALYTICS}
+        - name: APPSCODE_ANALYTICS_CLIENT_ID
+          value: ${APPSCODE_ANALYTICS_CLIENT_ID}
         livenessProbe:
           httpGet:
             scheme: HTTPS

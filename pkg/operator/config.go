@@ -21,6 +21,8 @@ type Config struct {
 	ResyncPeriod     time.Duration
 	MaxNumRequeues   int
 	NumThreads       int
+	// V logging level, the value of the -v flag
+	Verbosity string
 }
 
 type OperatorConfig struct {
@@ -49,9 +51,9 @@ func (c *OperatorConfig) New() (*Operator, error) {
 		extClient:           c.ExtClient,
 		monInformerFactory:  mon_informers.NewSharedInformerFactory(c.ExtClient, c.ResyncPeriod),
 		icingaClient:        c.IcingaClient,
-		clusterHost:         icinga.NewClusterHost(c.IcingaClient),
-		nodeHost:            icinga.NewNodeHost(c.IcingaClient),
-		podHost:             icinga.NewPodHost(c.IcingaClient),
+		clusterHost:         icinga.NewClusterHost(c.IcingaClient, c.Verbosity),
+		nodeHost:            icinga.NewNodeHost(c.IcingaClient, c.Verbosity),
+		podHost:             icinga.NewPodHost(c.IcingaClient, c.Verbosity),
 		recorder:            eventer.NewEventRecorder(c.KubeClient, "Searchlight operator"),
 	}
 

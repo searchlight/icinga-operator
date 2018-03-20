@@ -2,6 +2,7 @@ package hyperalert
 
 import (
 	"flag"
+	"os"
 	"strings"
 
 	v "github.com/appscode/go/version"
@@ -32,8 +33,9 @@ const (
 
 func NewCmd() *cobra.Command {
 	var (
-		enableAnalytics = true
+		enableAnalytics = os.Getenv("ENABLE_ANALYTICS") != "false"
 	)
+
 	cmd := &cobra.Command{
 		Use:   "hyperalert",
 		Short: "AppsCode Icinga2 plugin",
@@ -54,7 +56,6 @@ func NewCmd() *cobra.Command {
 	cmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
 	// ref: https://github.com/kubernetes/kubernetes/issues/17162#issuecomment-225596212
 	flag.CommandLine.Parse([]string{})
-	cmd.PersistentFlags().BoolVar(&enableAnalytics, "analytics", enableAnalytics, "Send analytical events to Google Analytics")
 
 	// CheckCluster
 	cmd.AddCommand(check_component_status.NewCmd())
