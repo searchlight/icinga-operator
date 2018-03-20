@@ -97,8 +97,6 @@ func NewCmd() *cobra.Command {
 			icinga.Output(CheckPodExists(&req, isCountSet))
 		},
 	}
-	cmd.Flags().StringVar(&req.masterURL, "master", req.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
-	cmd.Flags().StringVar(&req.kubeconfigPath, "kubeconfig", req.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
 	cmd.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	cmd.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
 	cmd.Flags().StringVarP(&req.PodName, "podName", "p", "", "Name of pod whose existence is checked")

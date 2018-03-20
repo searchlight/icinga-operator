@@ -135,9 +135,6 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&req.masterURL, "master", req.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
-	cmd.Flags().StringVar(&req.kubeconfigPath, "kubeconfig", req.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
-
 	cmd.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	cmd.Flags().DurationVarP(&req.CheckInterval, "checkInterval", "c", time.Second*0, "Icinga check_interval in duration. [Format: 30s, 5m]")
 	cmd.Flags().DurationVarP(&req.ClockSkew, "clockSkew", "s", time.Second*30, "Add skew with check_interval in duration. [Default: 30s]")

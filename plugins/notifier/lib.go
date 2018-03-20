@@ -13,19 +13,16 @@ import (
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/log"
 	logs "github.com/appscode/go/log/golog"
+	"github.com/appscode/kutil/tools/clientcmd"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 type Request struct {
-	masterURL      string
-	kubeconfigPath string
-
 	HostName  string
 	AlertName string
 	Type      string
@@ -70,7 +67,7 @@ func getAlert(kh *icinga.IcingaHost, extClient cs.MonitoringV1alpha1Interface, a
 }
 
 func sendNotification(req *Request) {
-	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
+	config, err := clientcmd.BuildConfigFromContext(req.kubeconfigPath, req.contextName)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -174,9 +171,6 @@ func NewCmd() *cobra.Command {
 			sendNotification(&req)
 		},
 	}
-
-	c.Flags().StringVar(&req.masterURL, "master", req.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
-	c.Flags().StringVar(&req.kubeconfigPath, "kubeconfig", req.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
 
 	c.Flags().StringVarP(&req.HostName, "host", "H", "", "Icinga host name")
 	c.Flags().StringVarP(&req.AlertName, "alert", "A", "", "Kubernetes alert object name")

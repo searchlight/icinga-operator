@@ -203,8 +203,6 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().StringVar(&opts.masterURL, "master", opts.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
-	c.Flags().StringVar(&opts.kubeconfigPath, "kubeconfig", opts.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
 	c.Flags().StringVarP(&opts.hostname, "host", "H", "", "Icinga host name")
 	c.Flags().StringVarP(&opts.url, "url", "u", "", "URL to get data")
 	c.Flags().StringVarP(&opts.secretName, "secretName", "s", "", `Kubernetes secret name`)

@@ -219,9 +219,6 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().StringVar(&req.masterURL, "master", req.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
-	c.Flags().StringVar(&req.kubeconfigPath, "kubeconfig", req.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
-
 	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
 	c.Flags().StringVar(&req.Host, "influxHost", "", "URL of InfluxDB host to query")
 	c.Flags().StringVarP(&req.SecretName, "secretName", "s", "", `Kubernetes secret name`)

@@ -9,15 +9,34 @@ import (
 	"time"
 
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
 )
 
-type request struct {
+type plugin struct {
+	options options
+}
+
+var _ plugins.PluginInterface = &plugin{}
+
+func newPlugin(opts options) *plugin {
+	return &plugin{opts}
+}
+
+type options struct {
 	warning  time.Duration
 	critical time.Duration
 }
 
-func loadCACert() (*x509.Certificate, error) {
+func (o *options) complete(cmd *cobra.Command) error {
+	return nil
+}
+
+func (o *options) validate() error {
+	return nil
+}
+
+func (p *plugin) loadCACert() (*x509.Certificate, error) {
 	caCert := "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
 	data, err := ioutil.ReadFile(caCert)
 	if err != nil {
@@ -31,19 +50,19 @@ func loadCACert() (*x509.Certificate, error) {
 	return x509.ParseCertificate(block.Bytes)
 }
 
-func checkCertificate(req *request) (icinga.State, string) {
-	crt, err := loadCACert()
+func (p *plugin) Check() (icinga.State, interface{}) {
+	crt, err := p.loadCACert()
 	if err != nil {
 		return icinga.Unknown, err.Error()
 	}
 
 	remaining := crt.NotAfter.Sub(time.Now())
 
-	if remaining.Seconds() < req.critical.Seconds() {
+	if remaining.Seconds() < p.options.critical.Seconds() {
 		return icinga.Critical, fmt.Sprintf("Certificate will be expired within %v hours", remaining.Hours())
 	}
 
-	if remaining.Seconds() < req.warning.Seconds() {
+	if remaining.Seconds() < p.options.warning.Seconds() {
 		return icinga.Warning, fmt.Sprintf("Certificate will be expired within %v hours", remaining.Hours())
 	}
 
@@ -51,7 +70,7 @@ func checkCertificate(req *request) (icinga.State, string) {
 }
 
 func NewCmd() *cobra.Command {
-	var req request
+	var opts options
 
 	c := &cobra.Command{
 		Use:     "check_ca_cert",
@@ -59,11 +78,12 @@ func NewCmd() *cobra.Command {
 		Example: "",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			icinga.Output(checkCertificate(&req))
+			plugin := newPlugin(opts)
+			icinga.Output(plugin.Check())
 		},
 	}
 
-	c.Flags().DurationVarP(&req.warning, "warning", "w", time.Hour*360, `Remaining duration for warning state. [Default: 360h]`)
-	c.Flags().DurationVarP(&req.critical, "critical", "c", time.Hour*120, `Remaining duration for critical state. [Default: 120h]`)
+	c.Flags().DurationVarP(&opts.warning, "warning", "w", time.Hour*360, `Remaining duration for warning state. [Default: 360h]`)
+	c.Flags().DurationVarP(&opts.critical, "critical", "c", time.Hour*120, `Remaining duration for critical state. [Default: 120h]`)
 	return c
 }

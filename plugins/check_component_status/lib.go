@@ -4,20 +4,57 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
-type Request struct {
-	masterURL      string
-	kubeconfigPath string
+type plugin struct {
+	client  corev1.ComponentStatusInterface
+	options options
+}
 
-	Selector      string
-	ComponentName string
+var _ plugins.PluginInterface = &plugin{}
+
+func newPlugin(client corev1.ComponentStatusInterface, opts options) *plugin {
+	return &plugin{client, opts}
+}
+
+func newPluginFromConfig(opts options) (*plugin, error) {
+	client, err := clientcmd.ClientFromContext(opts.kubeconfigPath, opts.contextName)
+	if err != nil {
+		return nil, err
+	}
+
+	return newPlugin(client.CoreV1().ComponentStatuses(), opts), nil
+}
+
+type options struct {
+	kubeconfigPath string
+	contextName    string
+	// options for Secret
+	selector      string
+	componentName string
+}
+
+func (o *options) complete(cmd *cobra.Command) (err error) {
+	o.kubeconfigPath, err = cmd.Flags().GetString(plugins.FlagKubeConfig)
+	if err != nil {
+		return
+	}
+	o.contextName, err = cmd.Flags().GetString(plugins.FlagKubeConfigContext)
+	if err != nil {
+		return
+	}
+	return nil
+}
+
+func (o *options) validate() error {
+	return nil
 }
 
 type objectInfo struct {
@@ -30,23 +67,17 @@ type serviceOutput struct {
 	Message string        `json:"message,omitempty"`
 }
 
-func CheckComponentStatus(req *Request) (icinga.State, interface{}) {
-	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
-	if err != nil {
-		return icinga.Unknown, err
-	}
-	kubeClient := kubernetes.NewForConfigOrDie(config)
-
+func (p *plugin) Check() (icinga.State, interface{}) {
 	var components []core.ComponentStatus
-	if req.ComponentName != "" {
-		comp, err := kubeClient.CoreV1().ComponentStatuses().Get(req.ComponentName, metav1.GetOptions{})
+	if p.options.componentName != "" {
+		comp, err := p.client.Get(p.options.componentName, metav1.GetOptions{})
 		if err != nil {
 			return icinga.Unknown, err
 		}
 		components = []core.ComponentStatus{*comp}
 	} else {
-		comps, err := kubeClient.CoreV1().ComponentStatuses().List(metav1.ListOptions{
-			LabelSelector: req.Selector,
+		comps, err := p.client.List(metav1.ListOptions{
+			LabelSelector: p.options.selector,
 		})
 		if err != nil {
 			return icinga.Unknown, err
@@ -84,22 +115,28 @@ func CheckComponentStatus(req *Request) (icinga.State, interface{}) {
 }
 
 func NewCmd() *cobra.Command {
-	var req Request
+	var opts options
 
 	cmd := &cobra.Command{
-		Use:     "check_component_status",
-		Short:   "Check Kubernetes Component Status",
-		Example: "",
+		Use:   "check_component_status",
+		Short: "Check Kubernetes Component Status",
 
-		Run: func(c *cobra.Command, args []string) {
-			icinga.Output(CheckComponentStatus(&req))
+		Run: func(cmd *cobra.Command, args []string) {
+			if err := opts.complete(cmd); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			if err := opts.validate(); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			plugin, err := newPluginFromConfig(opts)
+			if err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			icinga.Output(plugin.Check())
 		},
 	}
 
-	cmd.Flags().StringVar(&req.masterURL, "master", req.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
-	cmd.Flags().StringVar(&req.kubeconfigPath, "kubeconfig", req.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
-
-	cmd.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
-	cmd.Flags().StringVarP(&req.ComponentName, "componentName", "n", "", "Name of component which should be ready")
+	cmd.Flags().StringVarP(&opts.selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
+	cmd.Flags().StringVarP(&opts.componentName, "componentName", "n", "", "Name of component which should be ready")
 	return cmd
 }
