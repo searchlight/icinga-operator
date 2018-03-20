@@ -10,8 +10,10 @@ import (
 
 	. "github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/plugins"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/spf13/cobra"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -289,32 +291,42 @@ var _ = Describe("check_cert", func() {
 		})
 	})
 
-	Describe("Check validation", func() {
-		Context("for invalid", func() {
-			It("with invalid part", func() {
-				opts = options{
-					hostname: "demo@cluster@name",
-				}
-				err := opts.validate()
-				Expect(err).Should(HaveOccurred())
-			})
-			It("with invalid type", func() {
-				opts = options{
-					hostname: "demo@pod",
-				}
-				err := opts.validate()
-				Expect(err).Should(HaveOccurred())
+	Describe("test options", func() {
+		var (
+			cmd *cobra.Command
+		)
+
+		JustBeforeEach(func() {
+			cmd = new(cobra.Command)
+			cmd.Flags().String(plugins.FlagHost, "", "")
+			cmd.Flags().String(plugins.FlagKubeConfig, "", "")
+			cmd.Flags().String(plugins.FlagKubeConfigContext, "", "")
+		})
+		Context("valid", func() {
+			It("host", func() {
+				opts := options{}
+				cmd.Flags().Set(plugins.FlagHost, "demo@cluster")
+				err := opts.complete(cmd)
+				Expect(err).ShouldNot(HaveOccurred())
+				Expect(opts.namespace).Should(BeIdenticalTo("demo"))
+				err = opts.validate()
+				Expect(err).ShouldNot(HaveOccurred())
 			})
 		})
-		Context("for valid", func() {
-			It("with valid name", func() {
-				opts = options{
-					hostname: "demo@cluster",
-				}
-				err := opts.validate()
+		Context("invalid", func() {
+			It("hostname", func() {
+				opts := options{}
+				cmd.Flags().Set(plugins.FlagHost, "demo@cluster@demo")
+				err := opts.complete(cmd)
+				Expect(err).Should(HaveOccurred())
+			})
+			It("host type", func() {
+				opts := options{}
+				cmd.Flags().Set(plugins.FlagHost, "demo@pod@demo")
+				err := opts.complete(cmd)
 				Expect(err).ShouldNot(HaveOccurred())
-
-				Expect(opts.namespace).Should(Equal("demo"))
+				err = opts.validate()
+				Expect(err).Should(HaveOccurred())
 			})
 		})
 	})

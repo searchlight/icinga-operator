@@ -7,7 +7,6 @@ import (
 	"time"
 
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/pkg/icinga"
 )
 
 func RenderSubject(alert api.Alert, req *Request) string {
@@ -39,29 +38,27 @@ type TemplateData struct {
 	IcingaTime         time.Time
 }
 
-func RenderMail(alert api.Alert, req *Request) (string, error) {
-	host, err := icinga.ParseHost(req.HostName)
-	if err != nil {
-		return "", err
-	}
+func (p *plugin) RenderMail(alert api.Alert) (string, error) {
+	opts := p.options
+	host := opts.host
 	data := TemplateData{
 		AlertName:          alert.GetName(),
 		AlertNamespace:     host.AlertNamespace,
 		AlertType:          host.Type,
 		ObjectName:         host.ObjectName,
-		IcingaHostName:     req.HostName,
+		IcingaHostName:     p.options.hostname,
 		IcingaServiceName:  alert.GetName(),
 		IcingaCheckCommand: alert.Command(),
-		IcingaType:         req.Type,
-		IcingaState:        strings.ToUpper(req.State),
-		IcingaOutput:       req.Output,
-		Author:             req.Author,
-		Comment:            req.Comment,
-		IcingaTime:         req.Time,
+		IcingaType:         opts.notificationType,
+		IcingaState:        strings.ToUpper(opts.serviceState),
+		IcingaOutput:       opts.serviceOutput,
+		Author:             opts.author,
+		Comment:            opts.comment,
+		IcingaTime:         opts.time,
 	}
 
 	var buf bytes.Buffer
-	if err = mailTemplate.Execute(&buf, data); err != nil {
+	if err := mailTemplate.Execute(&buf, data); err != nil {
 		return "", err
 	}
 	config := buf.String()

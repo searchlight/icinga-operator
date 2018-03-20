@@ -26,17 +26,18 @@ func TestRenderMail(t *testing.T) {
 			},
 		},
 	}
-	req := Request{
-		HostName:  "demo@cluster",
-		AlertName: alert.Name,
-		Type:      "WHAT_IS_THE_CORRECT_VAL?",
-		State:     "Warning",
-		Output:    "Check command output",
-		Time:      time.Now(),
-		Author:    "<searchight-user>",
-		Comment:   "This is a test",
+	opts := options{
+		hostname:         "demo@cluster",
+		alertName:        alert.Name,
+		notificationType: "WHAT_IS_THE_CORRECT_VAL?",
+		serviceState:     "Warning",
+		serviceOutput:    "Check command output",
+		time:             time.Now(),
+		author:           "<searchight-user>",
+		comment:          "This is a test",
 	}
-	config, err := RenderMail(&alert, &req)
+
+	config, err := newPlugin(nil, nil, opts).RenderMail(&alert)
 	fmt.Println(err)
 	assert.Nil(t, err)
 	fmt.Println(config)

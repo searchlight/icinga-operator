@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"errors"
 	"github.com/appscode/envconfig"
 	"github.com/appscode/go-notify"
 	"github.com/appscode/go-notify/unified"
@@ -17,22 +18,106 @@ import (
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
-type Request struct {
-	HostName  string
-	AlertName string
-	Type      string
-	State     string
-	Output    string
+type plugin struct {
+	client    corev1.SecretInterface
+	extClient cs.MonitoringV1alpha1Interface
+	options   options
+}
+
+func newPlugin(client corev1.SecretInterface, extClient cs.MonitoringV1alpha1Interface, opts options) *plugin {
+	return &plugin{client, extClient, opts}
+}
+
+func newPluginFromConfig(opts options) (*plugin, error) {
+	config, err := clientcmd.BuildConfigFromContext(opts.kubeconfigPath, opts.contextName)
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, err
+	}
+
+	extClient, err := cs.NewForConfig(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return newPlugin(client.CoreV1().Secrets(opts.host.AlertNamespace), extClient, opts), nil
+}
+
+type options struct {
+	kubeconfigPath string
+	contextName    string
+	// http url
+	alertName        string
+	notificationType string
+	serviceState     string
+	serviceOutput    string
 	// The time object is used in icinga to send request. This
 	// indicates detection time from icinga.
-	Time    time.Time
-	Author  string
-	Comment string
+	time    time.Time
+	author  string
+	comment string
+	// IcingaHost
+	hostname string
+	host     *icinga.IcingaHost
+}
+
+func (o *options) complete(cmd *cobra.Command) (err error) {
+	o.hostname, err = cmd.Flags().GetString(plugins.FlagHost)
+	if err != nil {
+		return err
+	}
+	o.host, err = icinga.ParseHost(o.hostname)
+	if err != nil {
+		return errors.New("invalid icinga host.name")
+	}
+
+	eventTime, err := cmd.Flags().GetString(flagEventTime)
+	if err != nil {
+		return err
+	}
+	t, err := time.Parse("2006-01-02 15:04:05 +0000", eventTime)
+	if err != nil {
+		return err
+
+	}
+	o.time = t
+
+	// sanitized state to preferred form
+	switch strings.ToUpper(o.serviceState) {
+	case "OK":
+		o.serviceState = "OK"
+	case "CRITICAL":
+		o.serviceState = "Critical"
+	case "WARNING":
+		o.serviceState = "Warning"
+	default:
+		o.serviceState = "Unknown"
+	}
+
+	o.kubeconfigPath, err = cmd.Flags().GetString(plugins.FlagKubeConfig)
+	if err != nil {
+		return
+	}
+	o.contextName, err = cmd.Flags().GetString(plugins.FlagKubeConfigContext)
+	if err != nil {
+		return
+	}
+	return nil
+}
+
+func (o *options) validate() error {
+	return nil
 }
 
 type Secret struct {
@@ -40,8 +125,8 @@ type Secret struct {
 	Token     string `json:"token"`
 }
 
-func getLoader(client kubernetes.Interface, alert api.Alert) (envconfig.LoaderFunc, error) {
-	cfg, err := client.CoreV1().Secrets(alert.GetNamespace()).Get(alert.GetNotifierSecretName(), metav1.GetOptions{})
+func (p *plugin) getLoader(alert api.Alert) (envconfig.LoaderFunc, error) {
+	cfg, err := p.client.Get(alert.GetNotifierSecretName(), metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -54,37 +139,26 @@ func getLoader(client kubernetes.Interface, alert api.Alert) (envconfig.LoaderFu
 	}, nil
 }
 
-func getAlert(kh *icinga.IcingaHost, extClient cs.MonitoringV1alpha1Interface, alertName string) (api.Alert, error) {
-	switch kh.Type {
+func (p *plugin) getAlert() (api.Alert, error) {
+	opts := p.options
+	switch opts.host.Type {
 	case icinga.TypePod:
-		return extClient.PodAlerts(kh.AlertNamespace).Get(alertName, metav1.GetOptions{})
+		return p.extClient.PodAlerts(opts.host.AlertNamespace).Get(opts.alertName, metav1.GetOptions{})
 	case icinga.TypeNode:
-		return extClient.NodeAlerts(kh.AlertNamespace).Get(alertName, metav1.GetOptions{})
+		return p.extClient.NodeAlerts(opts.host.AlertNamespace).Get(opts.alertName, metav1.GetOptions{})
 	case icinga.TypeCluster:
-		return extClient.ClusterAlerts(kh.AlertNamespace).Get(alertName, metav1.GetOptions{})
+		return p.extClient.ClusterAlerts(opts.host.AlertNamespace).Get(opts.alertName, metav1.GetOptions{})
 	}
-	return nil, fmt.Errorf("unknown host type %s", kh.Type)
+	return nil, fmt.Errorf("unknown host type %s", opts.host.Type)
 }
 
-func sendNotification(req *Request) {
-	config, err := clientcmd.BuildConfigFromContext(req.kubeconfigPath, req.contextName)
+func (p *plugin) sendNotification() {
+	alert, err := p.getAlert()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	host, err := icinga.ParseHost(req.HostName)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	client := cs.NewForConfigOrDie(config)
-
-	alert, err := getAlert(host, client, req.AlertName)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	loader, err := getLoader(kubernetes.NewForConfigOrDie(config), alert)
+	loader, err := p.getLoader(alert)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -92,7 +166,7 @@ func sendNotification(req *Request) {
 	receivers := alert.GetReceivers()
 
 	for _, receiver := range receivers {
-		if !strings.EqualFold(receiver.State, req.State) || len(receiver.To) == 0 {
+		if !strings.EqualFold(receiver.State, p.options.serviceState) || len(receiver.To) == 0 {
 			continue
 		}
 		notifyVia, err := unified.LoadVia(receiver.Notifier, loader)
@@ -104,13 +178,13 @@ func sendNotification(req *Request) {
 		switch n := notifyVia.(type) {
 		case notify.ByEmail:
 			var body string
-			body, err = RenderMail(alert, req)
+			body, err = p.RenderMail(alert)
 			if err != nil {
 				log.Errorf("Failed to render email. Reason: %s", err)
 				break
 			}
 			err = n.To(receiver.To[0], receiver.To[1:]...).
-				WithSubject(RenderSubject(alert, req)).
+				WithSubject(RenderSubject(alert)).
 				WithBody(body).
 				WithNoTracking().
 				SendHtml()
@@ -140,46 +214,41 @@ func sendNotification(req *Request) {
 	}
 }
 
+const (
+	flagEventTime = "time"
+)
+
 func NewCmd() *cobra.Command {
-	var req Request
-	var eventTime string
+	var opts options
 
 	c := &cobra.Command{
 		Use:   "notifier",
 		Short: "AppsCode Icinga2 Notifier",
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "alert", "host", "type", "state", "time")
-			t, err := time.Parse("2006-01-02 15:04:05 +0000", eventTime)
+
+			if err := opts.complete(cmd); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			if err := opts.validate(); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			plugin, err := newPluginFromConfig(opts)
 			if err != nil {
-				log.Errorln(err)
-				os.Exit(1)
-
+				icinga.Output(icinga.Unknown, err)
 			}
-			req.Time = t
-			// sanitized state to preferred form
-			switch strings.ToUpper(req.State) {
-			case "OK":
-				req.State = "OK"
-			case "CRITICAL":
-				req.State = "Critical"
-			case "WARNING":
-				req.State = "Warning"
-			default:
-				req.State = "Unknown"
-			}
-
-			sendNotification(&req)
+			plugin.sendNotification()
 		},
 	}
 
-	c.Flags().StringVarP(&req.HostName, "host", "H", "", "Icinga host name")
-	c.Flags().StringVarP(&req.AlertName, "alert", "A", "", "Kubernetes alert object name")
-	c.Flags().StringVar(&req.Type, "type", "", "Notification type (PROBLEM | ACKNOWLEDGEMENT | RECOVERY)")
-	c.Flags().StringVar(&req.State, "state", "", "Service state (OK | Warning | Critical)")
-	c.Flags().StringVar(&req.Output, "output", "", "Service output")
-	c.Flags().StringVar(&eventTime, "time", "", "Event time")
-	c.Flags().StringVarP(&req.Author, "author", "a", "", "Event author name")
-	c.Flags().StringVarP(&req.Comment, "comment", "c", "", "Event comment")
+	c.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
+	c.Flags().StringVarP(&opts.alertName, "alert", "A", "", "Kubernetes alert object name")
+	c.Flags().StringVar(&opts.notificationType, "type", "", "Notification type (PROBLEM | ACKNOWLEDGEMENT | RECOVERY)")
+	c.Flags().StringVar(&opts.serviceState, "state", "", "Service state (OK | Warning | Critical)")
+	c.Flags().StringVar(&opts.serviceOutput, "output", "", "Service output")
+	c.Flags().String(flagEventTime, "", "Event time")
+	c.Flags().StringVarP(&opts.author, "author", "a", "", "Event author name")
+	c.Flags().StringVarP(&opts.comment, "comment", "c", "", "Event comment")
 
 	c.Flags().AddGoFlagSet(flag.CommandLine)
 	logs.InitLogs()
