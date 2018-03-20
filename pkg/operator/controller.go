@@ -81,9 +81,9 @@ func New(kubeClient kubernetes.Interface, crdClient ecs.ApiextensionsV1beta1Inte
 		monInformerFactory:  mon_informers.NewSharedInformerFactory(extClient, opt.ResyncPeriod),
 		icingaClient:        icingaClient,
 		Config:              opt,
-		clusterHost:         icinga.NewClusterHost(icingaClient),
-		nodeHost:            icinga.NewNodeHost(icingaClient),
-		podHost:             icinga.NewPodHost(icingaClient),
+		clusterHost:         icinga.NewClusterHost(icingaClient, opt.Verbosity),
+		nodeHost:            icinga.NewNodeHost(icingaClient, opt.Verbosity),
+		podHost:             icinga.NewPodHost(icingaClient, opt.Verbosity),
 		recorder:            eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
 	}
 }

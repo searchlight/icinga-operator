@@ -127,6 +127,7 @@ var _ = BeforeSuite(func() {
 	op = operator.New(kubeClient, apiExtKubeClient, extClient, icingaClient, operator.Config{
 		MaxNumRequeues: 3,
 		NumThreads:     3,
+		Verbosity:      "6",
 	})
 	err = op.Setup()
 	Expect(err).NotTo(HaveOccurred())
