@@ -7,6 +7,7 @@ import (
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/shirou/gopsutil/host"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 )
@@ -34,11 +35,11 @@ func updateIncidentNotification(notification api.IncidentNotification, req *Requ
 	return notification
 }
 
-func getLabel(req *Request, icingaHost *icinga.IcingaHost) map[string]string {
+func (p *plugin) getLabel() map[string]string {
 	labelMap := map[string]string{
-		api.LabelKeyAlertType:        icingaHost.Type,
-		api.LabelKeyAlert:            req.AlertName,
-		api.LabelKeyObjectName:       icingaHost.ObjectName,
+		api.LabelKeyAlertType:        p.options.host.Type,
+		api.LabelKeyAlert:            p.options.alertName,
+		api.LabelKeyObjectName:       p.options.host.ObjectName,
 		api.LabelKeyProblemRecovered: "false",
 	}
 
@@ -63,13 +64,10 @@ func generateIncidentName(req *Request) (string, error) {
 	return "", fmt.Errorf("unknown host type %s", host.Type)
 }
 
-func reconcileIncident(client *cs.MonitoringV1alpha1Client, req *Request) error {
-	host, err := icinga.ParseHost(req.HostName)
-	if err != nil {
-		return err
-	}
-
-	incidentList, err := client.Incidents(host.AlertNamespace).List(metav1.ListOptions{
+func (p *plugin) reconcileIncident() error {
+	opts := p.options
+	host := opts.host
+	incidentList, err := p.extClient.Incidents(host.AlertNamespace).List(metav1.ListOptions{
 		LabelSelector: labels.SelectorFromSet(getLabel(req, host)).String(),
 	})
 	if err != nil {

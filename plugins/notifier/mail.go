@@ -9,16 +9,17 @@ import (
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 )
 
-func RenderSubject(alert api.Alert, req *Request) string {
-	switch api.AlertType(req.Type) {
+func (p *plugin) RenderSubject(alert api.Alert) string {
+	opts := p.options
+	switch api.AlertType(opts.notificationType) {
 	case api.NotificationAcknowledgement:
-		return fmt.Sprintf("Problem Acknowledged: Service [%s] for [%s] is in \"%s\" state", alert.GetName(), req.HostName, req.State)
+		return fmt.Sprintf("Problem Acknowledged: Service [%s] for [%s] is in \"%s\" state", alert.GetName(), opts.hostname, opts.serviceState)
 	case api.NotificationRecovery:
-		return fmt.Sprintf("Problem Recovered: Service [%s] for [%s] is in \"%s\" state.", alert.GetName(), req.HostName, req.State)
+		return fmt.Sprintf("Problem Recovered: Service [%s] for [%s] is in \"%s\" state.", alert.GetName(), opts.hostname, opts.serviceState)
 	case api.NotificationProblem:
-		return fmt.Sprintf("Problem Detected: Service [%s] for [%s] is in \"%s\" state.", alert.GetName(), req.HostName, req.State)
+		return fmt.Sprintf("Problem Detected: Service [%s] for [%s] is in \"%s\" state.", alert.GetName(), opts.hostname, opts.serviceState)
 	default:
-		return fmt.Sprintf("Service [%s] for [%s] is in \"%s\" state.", alert.GetName(), req.HostName, req.State)
+		return fmt.Sprintf("Service [%s] for [%s] is in \"%s\" state.", alert.GetName(), opts.hostname, opts.serviceState)
 	}
 }
 

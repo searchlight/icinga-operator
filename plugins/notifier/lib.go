@@ -3,7 +3,6 @@ package notifier
 import (
 	"flag"
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
@@ -184,21 +183,21 @@ func (p *plugin) sendNotification() {
 				break
 			}
 			err = n.To(receiver.To[0], receiver.To[1:]...).
-				WithSubject(RenderSubject(alert)).
+				WithSubject(p.RenderSubject(alert)).
 				WithBody(body).
 				WithNoTracking().
 				SendHtml()
 		case notify.BySMS:
 			err = n.To(receiver.To[0], receiver.To[1:]...).
-				WithBody(RenderSMS(alert, req)).
+				WithBody(p.RenderSMS(alert)).
 				Send()
 		case notify.ByChat:
 			err = n.To(receiver.To[0], receiver.To[1:]...).
-				WithBody(RenderSMS(alert, req)).
+				WithBody(p.RenderSMS(alert)).
 				Send()
 		case notify.ByPush:
 			err = n.To(receiver.To[0:]...).
-				WithBody(RenderSMS(alert, req)).
+				WithBody(p.RenderSMS(alert)).
 				Send()
 		}
 
