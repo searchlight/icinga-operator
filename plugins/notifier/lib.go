@@ -1,14 +1,13 @@
 package notifier
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"strings"
 	"time"
 
-	"errors"
 	"github.com/appscode/envconfig"
-	"github.com/appscode/go-notify"
 	"github.com/appscode/go-notify/unified"
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/log"
@@ -72,10 +71,6 @@ type options struct {
 }
 
 func (o *options) complete(cmd *cobra.Command) (err error) {
-	o.hostname, err = cmd.Flags().GetString(plugins.FlagHost)
-	if err != nil {
-		return err
-	}
 	o.host, err = icinga.ParseHost(o.hostname)
 	if err != nil {
 		return errors.New("invalid icinga host.name")
@@ -215,6 +210,9 @@ func (n *notifier) sendNotification() {
 
 const (
 	flagEventTime = "time"
+	flagAlert     = "alert"
+	flagType      = "type"
+	flagState     = "state"
 )
 
 func NewCmd() *cobra.Command {
@@ -224,7 +222,7 @@ func NewCmd() *cobra.Command {
 		Use:   "notifier",
 		Short: "AppsCode Icinga2 Notifier",
 		Run: func(cmd *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(cmd, "alert", "host", "type", "state", "time")
+			flags.EnsureRequiredFlags(cmd, flagAlert, plugins.FlagHost, flagType, flagState, flagEventTime)
 
 			if err := opts.complete(cmd); err != nil {
 				icinga.Output(icinga.Unknown, err)
@@ -240,10 +238,10 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
-	c.Flags().StringVarP(&opts.alertName, "alert", "A", "", "Kubernetes alert object name")
-	c.Flags().StringVar(&opts.notificationType, "type", "", "Notification type (PROBLEM | ACKNOWLEDGEMENT | RECOVERY)")
-	c.Flags().StringVar(&opts.serviceState, "state", "", "Service state (OK | Warning | Critical)")
+	c.Flags().StringVarP(&opts.hostname, plugins.FlagHost, "H", "", "Icinga host name")
+	c.Flags().StringVarP(&opts.alertName, flagAlert, "A", "", "Kubernetes alert object name")
+	c.Flags().StringVar(&opts.notificationType, flagType, "", "Notification type (PROBLEM | ACKNOWLEDGEMENT | RECOVERY)")
+	c.Flags().StringVar(&opts.serviceState, flagState, "", "Service state (OK | Warning | Critical)")
 	c.Flags().StringVar(&opts.serviceOutput, "output", "", "Service output")
 	c.Flags().String(flagEventTime, "", "Event time")
 	c.Flags().StringVarP(&opts.author, "author", "a", "", "Event author name")
