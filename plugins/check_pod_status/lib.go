@@ -1,9 +1,9 @@
 package check_pod_status
 
 import (
+	"errors"
 	"fmt"
 
-	"errors"
 	"github.com/appscode/go/flags"
 	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
@@ -73,22 +73,10 @@ func (o *options) validate() error {
 	return nil
 }
 
-type objectInfo struct {
-	Name      string `json:"name,omitempty"`
-	Namespace string `json:"namespace,omitempty"`
-	Status    string `json:"status,omitempty"`
-}
-
-type serviceOutput struct {
-	Objects []*objectInfo `json:"objects,omitempty"`
-	Message string        `json:"message,omitempty"`
-}
-
 func (p *plugin) Check() (icinga.State, interface{}) {
 	opts := p.options
-	host := opts.host
 
-	pod, err := p.client.Get(host.ObjectName, metav1.GetOptions{})
+	pod, err := p.client.Get(opts.podName, metav1.GetOptions{})
 	if err != nil {
 		return icinga.Unknown, err
 	}
