@@ -13,7 +13,6 @@ import (
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/log"
 	logs "github.com/appscode/go/log/golog"
-	"github.com/appscode/kutil/tools/clientcmd"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
@@ -35,7 +34,7 @@ func newPlugin(client corev1.SecretInterface, extClient cs.MonitoringV1alpha1Int
 }
 
 func newPluginFromConfig(opts options) (*notifier, error) {
-	config, err := clientcmd.BuildConfigFromContext(opts.kubeconfigPath, opts.contextName)
+	config, err := plugins.BuildConfig(opts.kubeconfigPath, opts.contextName)
 	if err != nil {
 		return nil, err
 	}
@@ -161,9 +160,15 @@ func (n *notifier) sendNotification() {
 	receivers := alert.GetReceivers()
 
 	for _, receiver := range receivers {
-		if !strings.EqualFold(receiver.State, n.options.serviceState) || len(receiver.To) == 0 {
+		if len(receiver.To) == 0 {
 			continue
 		}
+
+		if api.IncidentNotificationType(n.options.notificationType) != api.NotificationRecovery &&
+			!strings.EqualFold(receiver.State, n.options.serviceState) {
+			continue
+		}
+
 		notifyVia, err := unified.LoadVia(receiver.Notifier, loader)
 		if err != nil {
 			log.Errorln(err)

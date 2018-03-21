@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/appscode/go/flags"
-	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
@@ -29,7 +28,7 @@ func newPlugin(client corev1.EventInterface, opts options) *plugin {
 }
 
 func newPluginFromConfig(opts options) (*plugin, error) {
-	client, err := clientcmd.ClientFromContext(opts.kubeconfigPath, opts.contextName)
+	client, err := plugins.GetClient(opts.kubeconfigPath, opts.contextName)
 	if err != nil {
 		return nil, err
 	}
