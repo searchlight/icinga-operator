@@ -31,7 +31,6 @@ hyperalert [flags]
 
 ```
       --alsologtostderr                  log to standard error as well as files
-      --analytics                        Send analytical events to Google Analytics (default true)
   -h, --help                             help for hyperalert
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory
@@ -43,6 +42,7 @@ hyperalert [flags]
 
 ### SEE ALSO
 
+* [hyperalert analytics_id](/docs/reference/hyperalert/hyperalert_analytics_id.md)	 - 
 * [hyperalert check_ca_cert](/docs/reference/hyperalert/hyperalert_check_ca_cert.md)	 - Check Certificate expire date
 * [hyperalert check_cert](/docs/reference/hyperalert/hyperalert_check_cert.md)	 - Check Certificate expire date
 * [hyperalert check_component_status](/docs/reference/hyperalert/hyperalert_check_component_status.md)	 - Check Kubernetes Component Status

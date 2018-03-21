@@ -1,36 +1,30 @@
 ---
-title: Check Pod Exec
+title: Analytics Id
 menu:
   product_searchlight_6.0.0-alpha.0:
-    identifier: hyperalert-check-pod-exec
-    name: Check Pod Exec
+    identifier: hyperalert-analytics-id
+    name: Analytics Id
     parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_6.0.0-alpha.0
 ---
-## hyperalert check_pod_exec
+## hyperalert analytics_id
 
-Check exit code of exec command on Kubernetes container
+
 
 ### Synopsis
 
-Check exit code of exec command on Kubernetes container
+
 
 ```
-hyperalert check_pod_exec [flags]
+hyperalert analytics_id [flags]
 ```
 
 ### Options
 
 ```
-  -a, --argv string         Arguments for exec command. [Format: 'arg; arg; arg']
-  -c, --cmd string          Exec command. [Default: /bin/sh] (default "/bin/sh")
-  -C, --container string    Container name in specified pod
-  -h, --help                help for check_pod_exec
-  -H, --host string         Icinga host name
-      --kubeconfig string   Path to kubeconfig file with authorization information (the master location is set by the master flag).
-      --master string       The address of the Kubernetes API server (overrides any value in kubeconfig)
+  -h, --help   help for analytics_id
 ```
 
 ### Options inherited from parent commands
