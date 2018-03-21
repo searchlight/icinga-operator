@@ -6,6 +6,7 @@ import (
 	"time"
 
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -26,8 +27,12 @@ func TestRenderMail(t *testing.T) {
 			},
 		},
 	}
+	hostname := "demo@cluster"
+	host, err := icinga.ParseHost(hostname)
+	assert.Nil(t, err)
+
 	opts := options{
-		hostname:         "demo@cluster",
+		hostname:         hostname,
 		alertName:        alert.Name,
 		notificationType: "WHAT_IS_THE_CORRECT_VAL?",
 		serviceState:     "Warning",
@@ -35,6 +40,7 @@ func TestRenderMail(t *testing.T) {
 		time:             time.Now(),
 		author:           "<searchight-user>",
 		comment:          "This is a test",
+		host:             host,
 	}
 
 	config, err := newPlugin(nil, nil, opts).RenderMail(&alert)

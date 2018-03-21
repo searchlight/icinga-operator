@@ -157,6 +157,10 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 	}
 }
 
+const (
+	flagCheckInterval = "checkInterval"
+)
+
 func NewCmd() *cobra.Command {
 	var opts options
 
@@ -165,7 +169,7 @@ func NewCmd() *cobra.Command {
 		Short: "Check kubernetes events for all namespaces",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(cmd, "check_interval")
+			flags.EnsureRequiredFlags(cmd, plugins.FlagHost, flagCheckInterval)
 
 			if err := opts.complete(cmd); err != nil {
 				icinga.Output(icinga.Unknown, err)
@@ -182,7 +186,7 @@ func NewCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
-	cmd.Flags().DurationVarP(&opts.checkInterval, "checkInterval", "c", time.Second*0, "Icinga check_interval in duration. [Format: 30s, 5m]")
+	cmd.Flags().DurationVarP(&opts.checkInterval, flagCheckInterval, "c", time.Second*0, "Icinga check_interval in duration. [Format: 30s, 5m]")
 	cmd.Flags().DurationVarP(&opts.clockSkew, "clockSkew", "s", time.Second*30, "Add skew with check_interval in duration. [Default: 30s]")
 
 	cmd.Flags().StringVar(&opts.involvedObjectName, "involvedObjectName", "", "Involved object name used to select events")

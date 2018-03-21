@@ -110,7 +110,6 @@ func NewCmd() *cobra.Command {
 		Short: "Count Kubernetes Nodes",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(cmd, "count")
 			if err := opts.complete(cmd); err != nil {
 				icinga.Output(icinga.Unknown, err)
 			}
