@@ -127,16 +127,12 @@ type plugin struct {
 
 var _ plugins.PluginInterface = &plugin{}
 
-func newPlugin(client kubernetes.Interface, opts options) *plugin {
-	return &plugin{client, opts}
-}
-
 func newPluginFromConfig(opts options) (*plugin, error) {
 	client, err := clientcmd.ClientFromContext(opts.kubeconfigPath, opts.contextName)
 	if err != nil {
 		return nil, err
 	}
-	return newPlugin(client, opts), nil
+	return &plugin{client, opts}, nil
 }
 
 type options struct {
@@ -184,18 +180,6 @@ func (o *options) validate() error {
 		}
 	}
 	return nil
-}
-
-type Request struct {
-	masterURL      string
-	kubeconfigPath string
-
-	Host       string
-	NodeStat   bool
-	SecretName string
-	VolumeName string
-	Warning    float64
-	Critical   float64
 }
 
 type usageStat struct {
@@ -368,20 +352,17 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 	} else {
 		return p.checkPodVolume()
 	}
-
-	return icinga.OK, nil
 }
 
 func NewCmd() *cobra.Command {
 	var opts options
 
 	c := &cobra.Command{
-		Use:     "check_volume",
-		Short:   "Check kubernetes volume",
-		Example: "",
+		Use:   "check_volume",
+		Short: "Check kubernetes volume",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(cmd, "host")
+			flags.EnsureRequiredFlags(cmd, plugins.FlagHost)
 
 			if err := opts.complete(cmd); err != nil {
 				icinga.Output(icinga.Unknown, err)

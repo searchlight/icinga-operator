@@ -79,13 +79,13 @@ func (o *options) validate() error {
 func (p *plugin) Check() (icinga.State, interface{}) {
 	opts := p.options
 
-	total_pod := 0
+	totalPod := 0
 	if opts.podName != "" {
 		_, err := p.client.Get(opts.podName, metav1.GetOptions{})
 		if err != nil {
 			return icinga.Unknown, err
 		}
-		total_pod = 1
+		totalPod = 1
 	} else {
 		podList, err := p.client.List(metav1.ListOptions{
 			LabelSelector: opts.selector,
@@ -93,20 +93,20 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 		if err != nil {
 			return icinga.Unknown, err
 		}
-		total_pod = len(podList.Items)
+		totalPod = len(podList.Items)
 	}
 
 	if opts.isCountSet {
-		if opts.count != total_pod {
-			return icinga.Critical, fmt.Sprintf("Found %d pod(s) instead of %d", total_pod, opts.count)
+		if opts.count != totalPod {
+			return icinga.Critical, fmt.Sprintf("Found %d pod(s) instead of %d", totalPod, opts.count)
 		} else {
 			return icinga.OK, "Found all pods"
 		}
 	} else {
-		if total_pod == 0 {
+		if totalPod == 0 {
 			return icinga.Critical, "No pod found"
 		} else {
-			return icinga.OK, fmt.Sprintf("Found %d pods(s)", total_pod)
+			return icinga.OK, fmt.Sprintf("Found %d pods(s)", totalPod)
 		}
 	}
 }
@@ -120,8 +120,9 @@ func NewCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "check_pod_exists",
 		Short: "Check Kubernetes Pod(s)",
+
 		Run: func(cmd *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(cmd, "host")
+			flags.EnsureRequiredFlags(cmd, plugins.FlagHost)
 
 			if err := opts.complete(cmd); err != nil {
 				icinga.Output(icinga.Unknown, err)
