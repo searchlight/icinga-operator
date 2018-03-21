@@ -11,7 +11,7 @@ func NewCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "analytics_id",
 		Run: func(c *cobra.Command, args []string) {
-			fmt.Println(analytics.ClientID())
+			fmt.Print(analytics.ClientID())
 		},
 	}
 	return cmd
