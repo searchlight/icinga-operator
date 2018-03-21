@@ -3,7 +3,6 @@ package check_node_exists
 import (
 	"fmt"
 
-	"github.com/appscode/go/flags"
 	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins"
