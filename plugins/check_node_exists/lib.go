@@ -127,6 +127,6 @@ func NewCmd() *cobra.Command {
 
 	cmd.Flags().StringVarP(&opts.selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
 	cmd.Flags().StringVarP(&opts.nodeName, "nodeName", "n", "", "Name of node whose existence is checked")
-	cmd.Flags().IntP(flagCount, "c", 0, "Number of expected Kubernetes Node")
+	cmd.Flags().IntVarP(&opts.count, flagCount, "c", 0, "Number of expected Kubernetes Node")
 	return cmd
 }

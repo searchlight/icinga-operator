@@ -1,55 +1,94 @@
 package check_pod_exists
 
 import (
+	"errors"
 	"fmt"
-	"os"
 
 	"github.com/appscode/go/flags"
+	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
-type Request struct {
-	masterURL      string
-	kubeconfigPath string
-
-	Namespace string
-	Selector  string
-	PodName   string
-	Count     int
+type plugin struct {
+	client  corev1.PodInterface
+	options options
 }
 
-type objectInfo struct {
-	Name      string `json:"name,omitempty"`
-	Namespace string `json:"namespace,omitempty"`
-	Status    string `json:"status,omitempty"`
+var _ plugins.PluginInterface = &plugin{}
+
+func newPlugin(client corev1.PodInterface, opts options) *plugin {
+	return &plugin{client, opts}
 }
 
-type serviceOutput struct {
-	Objects []*objectInfo `json:"objects,omitempty"`
-	Message string        `json:"message,omitempty"`
-}
-
-func CheckPodExists(req *Request, isCountSet bool) (icinga.State, interface{}) {
-	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
+func newPluginFromConfig(opts options) (*plugin, error) {
+	client, err := clientcmd.ClientFromContext(opts.kubeconfigPath, opts.contextName)
 	if err != nil {
-		return icinga.Unknown, err
+		return nil, err
 	}
-	kubeClient := kubernetes.NewForConfigOrDie(config)
+	return newPlugin(client.CoreV1().Pods(opts.namespace), opts), nil
+}
+
+type options struct {
+	kubeconfigPath string
+	contextName    string
+	// options
+	namespace  string
+	selector   string
+	podName    string
+	count      int
+	isCountSet bool
+	// IcingaHost
+	host *icinga.IcingaHost
+}
+
+func (o *options) complete(cmd *cobra.Command) (err error) {
+	hostname, err := cmd.Flags().GetString(plugins.FlagHost)
+	if err != nil {
+		return err
+	}
+	o.host, err = icinga.ParseHost(hostname)
+	if err != nil {
+		return errors.New("invalid icinga host.name")
+	}
+
+	o.namespace = o.host.AlertNamespace
+	o.isCountSet = cmd.Flag(flagCount).Changed
+
+	o.kubeconfigPath, err = cmd.Flags().GetString(plugins.FlagKubeConfig)
+	if err != nil {
+		return
+	}
+	o.contextName, err = cmd.Flags().GetString(plugins.FlagKubeConfigContext)
+	if err != nil {
+		return
+	}
+	return nil
+}
+
+func (o *options) validate() error {
+	if o.host.Type != icinga.TypeCluster {
+		return errors.New("invalid icinga host type")
+	}
+	return nil
+}
+
+func (p *plugin) Check() (icinga.State, interface{}) {
+	opts := p.options
 
 	total_pod := 0
-	if req.PodName != "" {
-		_, err := kubeClient.CoreV1().Pods(req.Namespace).Get(req.PodName, metav1.GetOptions{})
+	if opts.podName != "" {
+		_, err := p.client.Get(opts.podName, metav1.GetOptions{})
 		if err != nil {
 			return icinga.Unknown, err
 		}
 		total_pod = 1
 	} else {
-		podList, err := kubeClient.CoreV1().Pods(req.Namespace).List(metav1.ListOptions{
-			LabelSelector: req.Selector,
+		podList, err := p.client.List(metav1.ListOptions{
+			LabelSelector: opts.selector,
 		})
 		if err != nil {
 			return icinga.Unknown, err
@@ -57,9 +96,9 @@ func CheckPodExists(req *Request, isCountSet bool) (icinga.State, interface{}) {
 		total_pod = len(podList.Items)
 	}
 
-	if isCountSet {
-		if req.Count != total_pod {
-			return icinga.Critical, fmt.Sprintf("Found %d pod(s) instead of %d", total_pod, req.Count)
+	if opts.isCountSet {
+		if opts.count != total_pod {
+			return icinga.Critical, fmt.Sprintf("Found %d pod(s) instead of %d", total_pod, opts.count)
 		} else {
 			return icinga.OK, "Found all pods"
 		}
@@ -72,34 +111,34 @@ func CheckPodExists(req *Request, isCountSet bool) (icinga.State, interface{}) {
 	}
 }
 
-func NewCmd() *cobra.Command {
-	var req Request
-	var icingaHost string
+const (
+	flagCount = "count"
+)
 
+func NewCmd() *cobra.Command {
+	var opts options
 	cmd := &cobra.Command{
 		Use:   "check_pod_exists",
 		Short: "Check Kubernetes Pod(s)",
-		Run: func(c *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(c, "host")
+		Run: func(cmd *cobra.Command, args []string) {
+			flags.EnsureRequiredFlags(cmd, "host")
 
-			host, err := icinga.ParseHost(icingaHost)
+			if err := opts.complete(cmd); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			if err := opts.validate(); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			plugin, err := newPluginFromConfig(opts)
 			if err != nil {
-				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host.name")
-				os.Exit(3)
+				icinga.Output(icinga.Unknown, err)
 			}
-			if host.Type != icinga.TypeCluster {
-				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host type")
-				os.Exit(3)
-			}
-			req.Namespace = host.AlertNamespace
-
-			isCountSet := c.Flag("count").Changed
-			icinga.Output(CheckPodExists(&req, isCountSet))
+			icinga.Output(plugin.Check())
 		},
 	}
-	cmd.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
-	cmd.Flags().StringVarP(&req.Selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
-	cmd.Flags().StringVarP(&req.PodName, "podName", "p", "", "Name of pod whose existence is checked")
-	cmd.Flags().IntVarP(&req.Count, "count", "c", 0, "Number of Kubernetes pods")
+	cmd.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
+	cmd.Flags().StringVarP(&opts.selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.")
+	cmd.Flags().StringVarP(&opts.podName, "podName", "p", "", "Name of pod whose existence is checked")
+	cmd.Flags().IntVarP(&opts.count, flagCount, "c", 0, "Number of Kubernetes pods")
 	return cmd
 }
