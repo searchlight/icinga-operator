@@ -38,21 +38,29 @@ func newPluginFromConfig(opts options) (*plugin, error) {
 type options struct {
 	masterURL      string
 	kubeconfigPath string
-	// Icinga host name
-	hostname string
 	// options for Secret
 	nodeName string
+	// IcingaHost
+	host *icinga.IcingaHost
 }
 
-func (o *options) validate() error {
-	host, err := icinga.ParseHost(o.hostname)
+func (o *options) complete(cmd *cobra.Command) error {
+	hostname, err := cmd.Flags().GetString(plugins.FlagHost)
+	if err != nil {
+		return err
+	}
+	o.host, err = icinga.ParseHost(hostname)
 	if err != nil {
 		return errors.New("invalid icinga host.name")
 	}
-	if host.Type != icinga.TypeNode {
+	o.nodeName = o.host.ObjectName
+	return nil
+}
+
+func (o *options) validate() error {
+	if o.host.Type != icinga.TypeNode {
 		return errors.New("invalid icinga host type")
 	}
-	o.nodeName = host.ObjectName
 	return nil
 }
 
@@ -114,6 +122,9 @@ func NewCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "host")
 
+			if err := opts.complete(cmd); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
 			if err := opts.validate(); err != nil {
 				icinga.Output(icinga.Unknown, err)
 			}
@@ -125,6 +136,6 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().StringVarP(&opts.hostname, "host", "H", "", "Icinga host name")
+	c.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
 	return c
 }

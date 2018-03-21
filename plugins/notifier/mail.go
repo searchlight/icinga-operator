@@ -9,8 +9,8 @@ import (
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 )
 
-func (p *plugin) RenderSubject(alert api.Alert) string {
-	opts := p.options
+func (n *notifier) RenderSubject(alert api.Alert) string {
+	opts := n.options
 	switch api.AlertType(opts.notificationType) {
 	case api.NotificationAcknowledgement:
 		return fmt.Sprintf("Problem Acknowledged: Service [%s] for [%s] is in \"%s\" state", alert.GetName(), opts.hostname, opts.serviceState)
@@ -39,15 +39,15 @@ type TemplateData struct {
 	IcingaTime         time.Time
 }
 
-func (p *plugin) RenderMail(alert api.Alert) (string, error) {
-	opts := p.options
+func (n *notifier) RenderMail(alert api.Alert) (string, error) {
+	opts := n.options
 	host := opts.host
 	data := TemplateData{
 		AlertName:          alert.GetName(),
 		AlertNamespace:     host.AlertNamespace,
 		AlertType:          host.Type,
 		ObjectName:         host.ObjectName,
-		IcingaHostName:     p.options.hostname,
+		IcingaHostName:     n.options.hostname,
 		IcingaServiceName:  alert.GetName(),
 		IcingaCheckCommand: alert.Command(),
 		IcingaType:         opts.notificationType,

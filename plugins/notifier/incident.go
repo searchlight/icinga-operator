@@ -5,70 +5,68 @@ import (
 	"time"
 
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	cs "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/shirou/gopsutil/host"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 )
 
-func appendIncidentNotification(notifications []api.IncidentNotification, req *Request) []api.IncidentNotification {
+func (n *notifier) appendIncidentNotification(notifications []api.IncidentNotification) []api.IncidentNotification {
+	opts := n.options
 	notification := api.IncidentNotification{
-		Type:           api.AlertType(req.Type),
-		CheckOutput:    req.Output,
-		Author:         &req.Author,
-		Comment:        &req.Comment,
-		FirstTimestamp: metav1.NewTime(req.Time),
-		LastTimestamp:  metav1.NewTime(req.Time),
-		LastState:      req.State,
+		Type:           api.AlertType(opts.notificationType),
+		CheckOutput:    opts.serviceOutput,
+		Author:         &opts.author,
+		Comment:        &opts.comment,
+		FirstTimestamp: metav1.NewTime(opts.time),
+		LastTimestamp:  metav1.NewTime(opts.time),
+		LastState:      opts.serviceState,
 	}
 	notifications = append(notifications, notification)
 	return notifications
 }
 
-func updateIncidentNotification(notification api.IncidentNotification, req *Request) api.IncidentNotification {
-	notification.CheckOutput = req.Output
-	notification.Author = &req.Author
-	notification.Comment = &req.Comment
-	notification.LastTimestamp = metav1.NewTime(req.Time)
-	notification.LastState = req.State
+func (n *notifier) updateIncidentNotification(notification api.IncidentNotification) api.IncidentNotification {
+	opts := n.options
+	notification.CheckOutput = opts.serviceOutput
+	notification.Author = &opts.author
+	notification.Comment = &opts.comment
+	notification.LastTimestamp = metav1.NewTime(opts.time)
+	notification.LastState = opts.serviceState
 	return notification
 }
 
-func (p *plugin) getLabel() map[string]string {
+func (n *notifier) getLabel() map[string]string {
 	labelMap := map[string]string{
-		api.LabelKeyAlertType:        p.options.host.Type,
-		api.LabelKeyAlert:            p.options.alertName,
-		api.LabelKeyObjectName:       p.options.host.ObjectName,
+		api.LabelKeyAlertType:        n.options.host.Type,
+		api.LabelKeyAlert:            n.options.alertName,
+		api.LabelKeyObjectName:       n.options.host.ObjectName,
 		api.LabelKeyProblemRecovered: "false",
 	}
 
 	return labelMap
 }
 
-func generateIncidentName(req *Request) (string, error) {
-	host, err := icinga.ParseHost(req.HostName)
-	if err != nil {
-		return "", err
-	}
+func (n *notifier) generateIncidentName() (string, error) {
+	opts := n.options
+	host := opts.host
 
-	t := req.Time.Format("20060102-1504")
+	t := opts.time.Format("20060102-1504")
 
 	switch host.Type {
 	case icinga.TypePod, icinga.TypeNode:
-		return host.Type + "." + host.ObjectName + "." + req.AlertName + "." + t, nil
+		return host.Type + "." + host.ObjectName + "." + opts.alertName + "." + t, nil
 	case icinga.TypeCluster:
-		return host.Type + "." + req.AlertName + "." + t, nil
+		return host.Type + "." + opts.alertName + "." + t, nil
 	}
 
 	return "", fmt.Errorf("unknown host type %s", host.Type)
 }
 
-func (p *plugin) reconcileIncident() error {
-	opts := p.options
+func (n *notifier) reconcileIncident() error {
+	opts := n.options
 	host := opts.host
-	incidentList, err := p.extClient.Incidents(host.AlertNamespace).List(metav1.ListOptions{
-		LabelSelector: labels.SelectorFromSet(getLabel(req, host)).String(),
+	incidentList, err := n.extClient.Incidents(host.AlertNamespace).List(metav1.ListOptions{
+		LabelSelector: labels.SelectorFromSet(n.getLabel()).String(),
 	})
 	if err != nil {
 		return err
@@ -86,8 +84,8 @@ func (p *plugin) reconcileIncident() error {
 
 	if incident != nil {
 		notifications := incident.Status.Notifications
-		if api.AlertType(req.Type) == api.NotificationCustom {
-			notifications = appendIncidentNotification(notifications, req)
+		if api.AlertType(opts.notificationType) == api.NotificationCustom {
+			notifications = n.appendIncidentNotification(notifications)
 		} else {
 			updated := false
 			for i := len(notifications) - 1; i >= 0; i-- {
@@ -95,29 +93,29 @@ func (p *plugin) reconcileIncident() error {
 				if notification.Type == api.NotificationAcknowledgement {
 					continue
 				}
-				if api.AlertType(req.Type) == notification.Type {
-					notifications[i] = updateIncidentNotification(notification, req)
+				if api.AlertType(opts.notificationType) == notification.Type {
+					notifications[i] = n.updateIncidentNotification(notification)
 					updated = true
 					break
 				}
 			}
 			if !updated {
-				notifications = appendIncidentNotification(notifications, req)
+				notifications = n.appendIncidentNotification(notifications)
 			}
 		}
 
-		incident.Status.LastNotificationType = api.AlertType(req.Type)
+		incident.Status.LastNotificationType = api.AlertType(opts.notificationType)
 		incident.Status.Notifications = notifications
 
-		if api.AlertType(req.Type) == api.NotificationRecovery {
+		if api.AlertType(opts.notificationType) == api.NotificationRecovery {
 			incident.Labels[api.LabelKeyProblemRecovered] = "true"
 		}
 
-		if _, err := client.Incidents(incident.Namespace).Update(incident); err != nil {
+		if _, err := n.extClient.Incidents(incident.Namespace).Update(incident); err != nil {
 			return err
 		}
 	} else {
-		name, err := generateIncidentName(req)
+		name, err := n.generateIncidentName()
 		if err != nil {
 			return err
 		}
@@ -126,15 +124,15 @@ func (p *plugin) reconcileIncident() error {
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      name,
 				Namespace: host.AlertNamespace,
-				Labels:    getLabel(req, host),
+				Labels:    n.getLabel(),
 			},
 			Status: api.IncidentStatus{
-				LastNotificationType: api.AlertType(req.Type),
-				Notifications:        appendIncidentNotification(make([]api.IncidentNotification, 0), req),
+				LastNotificationType: api.AlertType(opts.notificationType),
+				Notifications:        n.appendIncidentNotification(make([]api.IncidentNotification, 0)),
 			},
 		}
 
-		if _, err = client.Incidents(incident.Namespace).Create(incident); err != nil {
+		if _, err = n.extClient.Incidents(incident.Namespace).Create(incident); err != nil {
 			return err
 		}
 	}

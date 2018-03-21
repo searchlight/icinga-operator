@@ -6,8 +6,8 @@ import (
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 )
 
-func (p *plugin) RenderSMS(alert api.Alert) string {
-	opts := p.options
+func (n *notifier) RenderSMS(alert api.Alert) string {
+	opts := n.options
 	var msg string
 
 	switch api.AlertType(opts.notificationType) {

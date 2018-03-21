@@ -24,17 +24,17 @@ import (
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
-type plugin struct {
+type notifier struct {
 	client    corev1.SecretInterface
 	extClient cs.MonitoringV1alpha1Interface
 	options   options
 }
 
-func newPlugin(client corev1.SecretInterface, extClient cs.MonitoringV1alpha1Interface, opts options) *plugin {
-	return &plugin{client, extClient, opts}
+func newPlugin(client corev1.SecretInterface, extClient cs.MonitoringV1alpha1Interface, opts options) *notifier {
+	return &notifier{client, extClient, opts}
 }
 
-func newPluginFromConfig(opts options) (*plugin, error) {
+func newPluginFromConfig(opts options) (*notifier, error) {
 	config, err := clientcmd.BuildConfigFromContext(opts.kubeconfigPath, opts.contextName)
 	if err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ func newPluginFromConfig(opts options) (*plugin, error) {
 type options struct {
 	kubeconfigPath string
 	contextName    string
-	// http url
+
 	alertName        string
 	notificationType string
 	serviceState     string
@@ -124,8 +124,8 @@ type Secret struct {
 	Token     string `json:"token"`
 }
 
-func (p *plugin) getLoader(alert api.Alert) (envconfig.LoaderFunc, error) {
-	cfg, err := p.client.Get(alert.GetNotifierSecretName(), metav1.GetOptions{})
+func (n *notifier) getLoader(alert api.Alert) (envconfig.LoaderFunc, error) {
+	cfg, err := n.client.Get(alert.GetNotifierSecretName(), metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -138,26 +138,26 @@ func (p *plugin) getLoader(alert api.Alert) (envconfig.LoaderFunc, error) {
 	}, nil
 }
 
-func (p *plugin) getAlert() (api.Alert, error) {
-	opts := p.options
+func (n *notifier) getAlert() (api.Alert, error) {
+	opts := n.options
 	switch opts.host.Type {
 	case icinga.TypePod:
-		return p.extClient.PodAlerts(opts.host.AlertNamespace).Get(opts.alertName, metav1.GetOptions{})
+		return n.extClient.PodAlerts(opts.host.AlertNamespace).Get(opts.alertName, metav1.GetOptions{})
 	case icinga.TypeNode:
-		return p.extClient.NodeAlerts(opts.host.AlertNamespace).Get(opts.alertName, metav1.GetOptions{})
+		return n.extClient.NodeAlerts(opts.host.AlertNamespace).Get(opts.alertName, metav1.GetOptions{})
 	case icinga.TypeCluster:
-		return p.extClient.ClusterAlerts(opts.host.AlertNamespace).Get(opts.alertName, metav1.GetOptions{})
+		return n.extClient.ClusterAlerts(opts.host.AlertNamespace).Get(opts.alertName, metav1.GetOptions{})
 	}
 	return nil, fmt.Errorf("unknown host type %s", opts.host.Type)
 }
 
-func (p *plugin) sendNotification() {
-	alert, err := p.getAlert()
+func (n *notifier) sendNotification() {
+	alert, err := n.getAlert()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	loader, err := p.getLoader(alert)
+	loader, err := n.getLoader(alert)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -165,7 +165,7 @@ func (p *plugin) sendNotification() {
 	receivers := alert.GetReceivers()
 
 	for _, receiver := range receivers {
-		if !strings.EqualFold(receiver.State, p.options.serviceState) || len(receiver.To) == 0 {
+		if !strings.EqualFold(receiver.State, n.options.serviceState) || len(receiver.To) == 0 {
 			continue
 		}
 		notifyVia, err := unified.LoadVia(receiver.Notifier, loader)
@@ -174,30 +174,30 @@ func (p *plugin) sendNotification() {
 			continue
 		}
 
-		switch n := notifyVia.(type) {
+		switch notify := notifyVia.(type) {
 		case notify.ByEmail:
 			var body string
-			body, err = p.RenderMail(alert)
+			body, err = n.RenderMail(alert)
 			if err != nil {
 				log.Errorf("Failed to render email. Reason: %s", err)
 				break
 			}
-			err = n.To(receiver.To[0], receiver.To[1:]...).
-				WithSubject(p.RenderSubject(alert)).
+			err = notify.To(receiver.To[0], receiver.To[1:]...).
+				WithSubject(n.RenderSubject(alert)).
 				WithBody(body).
 				WithNoTracking().
 				SendHtml()
 		case notify.BySMS:
-			err = n.To(receiver.To[0], receiver.To[1:]...).
-				WithBody(p.RenderSMS(alert)).
+			err = notify.To(receiver.To[0], receiver.To[1:]...).
+				WithBody(n.RenderSMS(alert)).
 				Send()
 		case notify.ByChat:
-			err = n.To(receiver.To[0], receiver.To[1:]...).
-				WithBody(p.RenderSMS(alert)).
+			err = notify.To(receiver.To[0], receiver.To[1:]...).
+				WithBody(n.RenderSMS(alert)).
 				Send()
 		case notify.ByPush:
-			err = n.To(receiver.To[0:]...).
-				WithBody(p.RenderSMS(alert)).
+			err = notify.To(receiver.To[0:]...).
+				WithBody(n.RenderSMS(alert)).
 				Send()
 		}
 
@@ -208,7 +208,7 @@ func (p *plugin) sendNotification() {
 		}
 	}
 
-	if err := reconcileIncident(client, req); err != nil {
+	if err := n.reconcileIncident(); err != nil {
 		log.Errorln(err)
 	}
 }

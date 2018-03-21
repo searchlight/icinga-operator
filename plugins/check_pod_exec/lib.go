@@ -1,20 +1,77 @@
 package check_pod_exec
 
 import (
+	"errors"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 
 	"github.com/appscode/go/flags"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
+	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/remotecommand"
 	utilexec "k8s.io/client-go/util/exec"
 )
+
+type plugin struct {
+	config  *restclient.Config
+	client  corev1.CoreV1Interface
+	options options
+}
+
+var _ plugins.PluginInterface = &plugin{}
+
+func newPlugin(config *restclient.Config, client corev1.CoreV1Interface, opts options) *plugin {
+	return &plugin{config, client, opts}
+}
+
+func newPluginFromConfig(opts options) (*plugin, error) {
+	config, err := clientcmd.BuildConfigFromFlags(opts.masterURL, opts.kubeconfigPath)
+	if err != nil {
+		return nil, err
+	}
+	return newPlugin(config, kubernetes.NewForConfigOrDie(config).CoreV1(), opts), nil
+}
+
+type options struct {
+	masterURL      string
+	kubeconfigPath string
+	// options
+	podName   string
+	container string
+	namespace string
+	command   string
+	arg       string
+	// IcingaHost
+	host *icinga.IcingaHost
+}
+
+func (o *options) complete(cmd *cobra.Command) error {
+	hostname, err := cmd.Flags().GetString(plugins.FlagHost)
+	if err != nil {
+		return err
+	}
+	o.host, err = icinga.ParseHost(hostname)
+	if err != nil {
+		return errors.New("invalid icinga host.name")
+	}
+	o.podName = o.host.ObjectName
+	o.namespace = o.host.AlertNamespace
+	return nil
+}
+
+func (o *options) validate() error {
+	if o.host.Type != icinga.TypePod {
+		return errors.New("invalid icinga host type")
+	}
+	return nil
+}
 
 type Writer struct {
 	Str []string
@@ -34,49 +91,44 @@ func newStringReader(ss []string) io.Reader {
 	return reader
 }
 
-func CheckKubeExec(req *Request) (icinga.State, interface{}) {
-	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
-	if err != nil {
-		return icinga.Unknown, err
-	}
-	kubeClient := kubernetes.NewForConfigOrDie(config)
-
-	pod, err := kubeClient.CoreV1().Pods(req.Namespace).Get(req.Pod, metav1.GetOptions{})
+func (p *plugin) Check() (icinga.State, interface{}) {
+	opts := p.options
+	pod, err := p.client.Pods(opts.namespace).Get(opts.podName, metav1.GetOptions{})
 	if err != nil {
 		return icinga.Unknown, err
 	}
 
-	if req.Container != "" {
+	if opts.container != "" {
 		notFound := true
 		for _, container := range pod.Spec.Containers {
-			if container.Name == req.Container {
+			if container.Name == opts.container {
 				notFound = false
 				break
 			}
 		}
 		if notFound {
-			return icinga.Unknown, fmt.Sprintf(`Container "%v" not found`, req.Container)
+			return icinga.Unknown, fmt.Sprintf(`Container "%v" not found`, opts.container)
 		}
 	}
 
-	execRequest := kubeClient.CoreV1().RESTClient().Post().
+	execRequest := p.client.RESTClient().Post().
 		Resource("pods").
-		Name(req.Pod).
-		Namespace(req.Namespace).
+		Name(opts.podName).
+		Namespace(opts.namespace).
 		SubResource("exec").
-		Param("container", req.Container).
-		Param("command", req.Command).
+		Param("container", opts.container).
+		Param("command", opts.command).
 		Param("stdin", "true").
 		Param("stdout", "false").
 		Param("stderr", "false").
 		Param("tty", "false")
 
-	exec, err := remotecommand.NewSPDYExecutor(config, "POST", execRequest.URL())
+	exec, err := remotecommand.NewSPDYExecutor(p.config, "POST", execRequest.URL())
 	if err != nil {
 		return icinga.Unknown, err
 	}
 
-	stdIn := newStringReader([]string{"-c", req.Arg})
+	stdIn := newStringReader([]string{"-c", opts.arg})
 	stdOut := new(Writer)
 	stdErr := new(Writer)
 
@@ -106,20 +158,9 @@ func CheckKubeExec(req *Request) (icinga.State, interface{}) {
 	return icinga.State(exitCode), output
 }
 
-type Request struct {
-	masterURL      string
-	kubeconfigPath string
-
-	Pod       string
-	Container string
-	Namespace string
-	Command   string
-	Arg       string
-}
-
 func NewCmd() *cobra.Command {
-	var req Request
-	var icingaHost string
+	var opts options
+
 	c := &cobra.Command{
 		Use:     "check_pod_exec",
 		Short:   "Check exit code of exec command on Kubernetes container",
@@ -128,24 +169,23 @@ func NewCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, "host", "arg")
 
-			host, err := icinga.ParseHost(icingaHost)
+			if err := opts.complete(cmd); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			if err := opts.validate(); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			plugin, err := newPluginFromConfig(opts)
 			if err != nil {
-				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host.name")
-				os.Exit(3)
+				icinga.Output(icinga.Unknown, err)
 			}
-			if host.Type != icinga.TypePod {
-				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host type")
-				os.Exit(3)
-			}
-			req.Namespace = host.AlertNamespace
-			req.Pod = host.ObjectName
-			icinga.Output(CheckKubeExec(&req))
+			icinga.Output(plugin.Check())
 		},
 	}
 
-	c.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
-	c.Flags().StringVarP(&req.Container, "container", "C", "", "Container name in specified pod")
-	c.Flags().StringVarP(&req.Command, "cmd", "c", "/bin/sh", "Exec command. [Default: /bin/sh]")
-	c.Flags().StringVarP(&req.Arg, "argv", "a", "", "Arguments for exec command. [Format: 'arg; arg; arg']")
+	c.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
+	c.Flags().StringVarP(&opts.container, "container", "C", "", "Container name in specified pod")
+	c.Flags().StringVarP(&opts.command, "cmd", "c", "/bin/sh", "Exec command. [Default: /bin/sh]")
+	c.Flags().StringVarP(&opts.arg, "argv", "a", "", "Arguments for exec command. [Format: 'arg; arg; arg']")
 	return c
 }
