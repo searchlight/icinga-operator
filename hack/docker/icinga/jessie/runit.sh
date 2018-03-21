@@ -73,6 +73,9 @@ until pg_isready -h 127.0.0.1 > /dev/null; do echo '.'; sleep 5; done
 echo "export KUBERNETES_SERVICE_HOST=${KUBERNETES_SERVICE_HOST}" >> /etc/default/icinga2
 echo "export KUBERNETES_SERVICE_PORT=${KUBERNETES_SERVICE_PORT}" >> /etc/default/icinga2
 
+export APPSCODE_ANALYTICS_CLIENT_ID=$(/usr/lib/monitoring-plugins/hyperalert analytics_id)
+echo "export APPSCODE_ANALYTICS_CLIENT_ID=${APPSCODE_ANALYTICS_CLIENT_ID}" >> /etc/profile.d/icinga2
+
 export > /etc/envvars
 
 echo "Starting runit..."

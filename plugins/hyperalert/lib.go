@@ -8,6 +8,7 @@ import (
 	v "github.com/appscode/go/version"
 	"github.com/appscode/kutil/tools/analytics"
 	"github.com/appscode/searchlight/client/clientset/versioned/scheme"
+	"github.com/appscode/searchlight/plugins/analytics_id"
 	"github.com/appscode/searchlight/plugins/check_ca_cert"
 	"github.com/appscode/searchlight/plugins/check_cert"
 	"github.com/appscode/searchlight/plugins/check_component_status"
@@ -81,6 +82,7 @@ func NewCmd() *cobra.Command {
 	// Notifier
 	cmd.AddCommand(notifier.NewCmd())
 
+	cmd.AddCommand(analytics_id.NewCmd())
 	cmd.AddCommand(v.NewCmdVersion())
 
 	return cmd

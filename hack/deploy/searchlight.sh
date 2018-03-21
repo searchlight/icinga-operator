@@ -57,7 +57,6 @@ export SEARCHLIGHT_IMAGE_PULL_SECRET=
 export SEARCHLIGHT_UNINSTALL=0
 export SEARCHLIGHT_PURGE=0
 export ENABLE_ANALYTICS=true
-export APPSCODE_ANALYTICS_CLIENT_ID=""
 
 KUBE_APISERVER_VERSION=$(kubectl version -o=json | $ONESSL jsonpath '{.serverVersion.gitVersion}')
 $ONESSL semver --check='>=1.9.0' $KUBE_APISERVER_VERSION
@@ -79,7 +78,6 @@ show_help() {
     echo "    --run-on-master                run searchlight operator on master"
     echo "    --enable-admission-webhook     configure admission webhook for searchlight CRDs"
     echo "    --analytics                    Send analytical events to Google Analytics"
-    echo "    --analytics-client-id          This ID is used to anonymously identifies a particular user who sends analytics"
     echo "    --uninstall                    uninstall searchlight"
     echo "    --purge                        purges searchlight crd objects and crds"
 }
@@ -127,10 +125,6 @@ while test $# -gt 0; do
             if [ "$val" = "false" ]; then
                 export ENABLE_ANALYTICS=false
             fi
-            shift
-            ;;
-        --analytics-client-id)
-            export APPSCODE_ANALYTICS_CLIENT_ID=`echo $1 | sed -e 's/^[^=]*=//g'`
             shift
             ;;
         --rbac*)
