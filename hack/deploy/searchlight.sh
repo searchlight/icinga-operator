@@ -56,7 +56,8 @@ export SEARCHLIGHT_DOCKER_REGISTRY=appscode
 export SEARCHLIGHT_IMAGE_PULL_SECRET=
 export SEARCHLIGHT_UNINSTALL=0
 export SEARCHLIGHT_PURGE=0
-export ENABLE_ANALYTICS=true
+export SEARCHLIGHT_ENABLE_ANALYTICS=true
+export SEARCHLIGH_ENABLE_ADMISSION_WEBHOOK=false
 
 KUBE_APISERVER_VERSION=$(kubectl version -o=json | $ONESSL jsonpath '{.serverVersion.gitVersion}')
 $ONESSL semver --check='>=1.9.0' $KUBE_APISERVER_VERSION
@@ -77,7 +78,7 @@ show_help() {
     echo "    --image-pull-secret            name of secret used to pull searchlight operator images"
     echo "    --run-on-master                run searchlight operator on master"
     echo "    --enable-admission-webhook     configure admission webhook for searchlight CRDs"
-    echo "    --analytics                    Send analytical events to Google Analytics"
+    echo "    --analytics                    send usage events to Google Analytics (default: true)"
     echo "    --uninstall                    uninstall searchlight"
     echo "    --purge                        purges searchlight crd objects and crds"
 }
@@ -115,15 +116,13 @@ while test $# -gt 0; do
             val=`echo $1 | sed -e 's/^[^=]*=//g'`
             if [ "$val" = "false" ]; then
                 export SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK=false
-            else
-                export SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK=true
             fi
             shift
             ;;
-        --analytics)
+        --analytics*)
             val=`echo $1 | sed -e 's/^[^=]*=//g'`
             if [ "$val" = "false" ]; then
-                export ENABLE_ANALYTICS=false
+                export SEARCHLIGHT_ENABLE_ANALYTICS=false
             fi
             shift
             ;;

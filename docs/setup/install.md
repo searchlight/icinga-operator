@@ -52,6 +52,7 @@ options:
     --image-pull-secret            name of secret used to pull searchlight operator images
     --run-on-master                run searchlight operator on master
     --enable-admission-webhook     configure admission webhook for searchlight CRDs
+    --analytics                    send usage events to Google Analytics (default: true)
     --uninstall                    uninstall searchlight
     --purge                        purges searchlight crd objects and crds
 ```

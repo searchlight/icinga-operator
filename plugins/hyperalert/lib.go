@@ -34,9 +34,8 @@ const (
 
 func NewCmd() *cobra.Command {
 	var (
-		enableAnalytics = os.Getenv("ENABLE_ANALYTICS") != "false"
+		enableAnalytics = strings.EqualFold(os.Getenv("ENABLE_ANALYTICS"), "true")
 	)
-
 	cmd := &cobra.Command{
 		Use:   "hyperalert",
 		Short: "AppsCode Icinga2 plugin",

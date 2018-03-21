@@ -55,6 +55,7 @@ The following tables lists the configurable parameters of the Searchlight chart 
 | `rbac.create`             | If `true`, create and use RBAC resources                          | `true`                 |
 | `serviceAccount.create`   | If `true`, create a new service account                           | `true`                 |
 | `serviceAccount.name`     | Service account to be used. If not set and `serviceAccount.create` is `true`, a name is generated using the fullname template | `` |
+| `enableAnalytics`         | Send usage events to Google Analytics                             | `true`                 |
 
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:

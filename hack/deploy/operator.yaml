@@ -40,6 +40,7 @@ spec:
         - --audit-log-path=-
         - --tls-cert-file=/var/serving-cert/tls.crt
         - --tls-private-key-file=/var/serving-cert/tls.key
+        - --analytics="${SEARCHLIGHT_ENABLE_ANALYTICS}"
         ports:
         - containerPort: 8443
         - containerPort: 56790
@@ -61,9 +62,7 @@ spec:
         - containerPort: 60006
         env:
         - name: ENABLE_ANALYTICS
-          value: ${ENABLE_ANALYTICS}
-        - name: APPSCODE_ANALYTICS_CLIENT_ID
-          value: ${APPSCODE_ANALYTICS_CLIENT_ID}
+          value: "${SEARCHLIGHT_ENABLE_ANALYTICS}"
         livenessProbe:
           httpGet:
             scheme: HTTPS
