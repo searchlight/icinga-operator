@@ -16,7 +16,7 @@ import (
 /*
 Event test List method doesn't support field selector
 */
-var _ = XDescribe("check_component_status", func() {
+var _ = XDescribe("check_event", func() {
 	var pod *core.Pod
 	var event *core.Event
 	var client corev1.EventInterface
