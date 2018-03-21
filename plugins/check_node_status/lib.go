@@ -127,7 +127,7 @@ func NewCmd() *cobra.Command {
 		Short: "Check Kubernetes Node",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(cmd, "host")
+			flags.EnsureRequiredFlags(cmd, plugins.FlagHost)
 
 			if err := opts.complete(cmd); err != nil {
 				icinga.Output(icinga.Unknown, err)

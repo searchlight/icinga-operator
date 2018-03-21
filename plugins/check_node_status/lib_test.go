@@ -2,8 +2,10 @@ package check_node_status
 
 import (
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/plugins"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/spf13/cobra"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -181,31 +183,43 @@ var _ = Describe("check_node_status", func() {
 	})
 
 	Describe("Check validation", func() {
+		var (
+			cmd *cobra.Command
+		)
+
+		JustBeforeEach(func() {
+			cmd = new(cobra.Command)
+			cmd.Flags().String(plugins.FlagHost, "", "")
+			cmd.Flags().String(plugins.FlagKubeConfig, "", "")
+			cmd.Flags().String(plugins.FlagKubeConfigContext, "", "")
+		})
+
 		Context("for invalid", func() {
 			It("with invalid part", func() {
-				opts = options{
-					hostname: "demo@node",
-				}
-				err := opts.validate()
+				opts := options{}
+				cmd.Flags().Set(plugins.FlagHost, "demo@node")
+				err := opts.complete(cmd)
 				Expect(err).Should(HaveOccurred())
 			})
 			It("with invalid type", func() {
-				opts = options{
-					hostname: "demo@cluster",
-				}
-				err := opts.validate()
+				opts := options{}
+				cmd.Flags().Set(plugins.FlagHost, "demo@cluster")
+				err := opts.complete(cmd)
+				Expect(err).ShouldNot(HaveOccurred())
+				err = opts.validate()
 				Expect(err).Should(HaveOccurred())
 			})
 		})
 		Context("for valid", func() {
 			It("with valid name", func() {
-				opts = options{
-					hostname: "demo@node@node",
-				}
-				err := opts.validate()
+				opts := options{}
+				cmd.Flags().Set(plugins.FlagHost, "demo@node@name")
+				err := opts.complete(cmd)
 				Expect(err).ShouldNot(HaveOccurred())
-
-				Expect(opts.nodeName).Should(Equal("node"))
+				Expect(opts.nodeName).Should(BeIdenticalTo("name"))
+				Expect(opts.host.Type).Should(BeIdenticalTo("node"))
+				err = opts.validate()
+				Expect(err).ShouldNot(HaveOccurred())
 			})
 		})
 	})
