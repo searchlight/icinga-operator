@@ -73,13 +73,17 @@ func NewCmd() *cobra.Command {
 	var opts options
 
 	c := &cobra.Command{
-		Use:     "check_ca_cert",
-		Short:   "Check Certificate expire date",
-		Example: "",
+		Use:   "check_ca_cert",
+		Short: "Check Certificate expire date",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			plugin := newPlugin(opts)
-			icinga.Output(plugin.Check())
+			if err := opts.complete(cmd); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			if err := opts.validate(); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			icinga.Output(newPlugin(opts).Check())
 		},
 	}
 
