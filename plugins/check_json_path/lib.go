@@ -196,6 +196,10 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 	return icinga.OK, "response looks good"
 }
 
+const (
+	flagURL = "url"
+)
+
 func NewCmd() *cobra.Command {
 	var opts options
 
@@ -204,7 +208,7 @@ func NewCmd() *cobra.Command {
 		Short: "Check Json Object",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(cmd, "host", "url")
+			flags.EnsureRequiredFlags(cmd, plugins.FlagHost, flagURL)
 			flags.EnsureAlterableFlags(cmd, "warning", "critical")
 
 			if err := opts.complete(cmd); err != nil {
@@ -222,7 +226,7 @@ func NewCmd() *cobra.Command {
 	}
 
 	c.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
-	c.Flags().StringVarP(&opts.url, "url", "u", "", "URL to get data")
+	c.Flags().StringVarP(&opts.url, flagURL, "u", "", "URL to get data")
 	c.Flags().StringVarP(&opts.secretName, "secretName", "s", "", `Kubernetes secret name`)
 	c.Flags().StringVarP(&opts.warning, "warning", "w", "", `Warning jsonpath query which returns [true/false]`)
 	c.Flags().StringVarP(&opts.critical, "critical", "c", "", `Critical jsonpath query which returns [true/false]`)

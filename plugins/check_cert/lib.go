@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/appscode/go/flags"
 	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins"
@@ -183,6 +184,8 @@ func NewCmd() *cobra.Command {
 		Short: "Check Certificate expire date",
 
 		Run: func(cmd *cobra.Command, args []string) {
+			flags.EnsureRequiredFlags(cmd, plugins.FlagHost)
+
 			if err := opts.complete(cmd); err != nil {
 				icinga.Output(icinga.Unknown, err)
 			}

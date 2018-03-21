@@ -49,6 +49,8 @@ type options struct {
 	involvedObjectNamespace string
 	involvedObjectKind      string
 	involvedObjectUID       string
+	// IcingaHost
+	host *icinga.IcingaHost
 }
 
 func (o *options) complete(cmd *cobra.Command) (err error) {
@@ -56,11 +58,11 @@ func (o *options) complete(cmd *cobra.Command) (err error) {
 	if err != nil {
 		return err
 	}
-	host, err := icinga.ParseHost(hostname)
+	o.host, err = icinga.ParseHost(hostname)
 	if err != nil {
 		return errors.New("invalid icinga host.name")
 	}
-	o.namespace = host.AlertNamespace
+	o.namespace = o.host.AlertNamespace
 
 	o.kubeconfigPath, err = cmd.Flags().GetString(plugins.FlagKubeConfig)
 	if err != nil {
@@ -74,6 +76,9 @@ func (o *options) complete(cmd *cobra.Command) (err error) {
 }
 
 func (o *options) validate() error {
+	if o.host.Type != icinga.TypeCluster {
+		return errors.New("invalid icinga host type")
+	}
 	return nil
 }
 
