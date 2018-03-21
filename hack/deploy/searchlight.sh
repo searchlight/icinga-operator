@@ -78,7 +78,7 @@ show_help() {
     echo "    --image-pull-secret            name of secret used to pull searchlight operator images"
     echo "    --run-on-master                run searchlight operator on master"
     echo "    --enable-admission-webhook     configure admission webhook for searchlight CRDs"
-    echo "    --analytics                    send usage events to Google Analytics (default: true)"
+    echo "    --enable-analytics             send usage events to Google Analytics (default: true)"
     echo "    --uninstall                    uninstall searchlight"
     echo "    --purge                        purges searchlight crd objects and crds"
 }
@@ -119,7 +119,7 @@ while test $# -gt 0; do
             fi
             shift
             ;;
-        --analytics*)
+        --enable-analytics*)
             val=`echo $1 | sed -e 's/^[^=]*=//g'`
             if [ "$val" = "false" ]; then
                 export SEARCHLIGHT_ENABLE_ANALYTICS=false

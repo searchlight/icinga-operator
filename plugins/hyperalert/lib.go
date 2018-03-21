@@ -56,6 +56,7 @@ func NewCmd() *cobra.Command {
 	cmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
 	// ref: https://github.com/kubernetes/kubernetes/issues/17162#issuecomment-225596212
 	flag.CommandLine.Parse([]string{})
+	cmd.PersistentFlags().BoolVar(&enableAnalytics, "enable-analytics", enableAnalytics, "send usage events to Google Analytics")
 
 	// CheckCluster
 	cmd.AddCommand(check_component_status.NewCmd())

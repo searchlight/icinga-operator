@@ -47,7 +47,7 @@ func NewCmdSearchlight() *cobra.Command {
 	rootCmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
 	// ref: https://github.com/kubernetes/kubernetes/issues/17162#issuecomment-225596212
 	flag.CommandLine.Parse([]string{})
-	rootCmd.PersistentFlags().BoolVar(&enableAnalytics, "analytics", enableAnalytics, "Send analytical events to Google Analytics")
+	rootCmd.PersistentFlags().BoolVar(&enableAnalytics, "enable-analytics", enableAnalytics, "send usage events to Google Analytics")
 
 	stopCh := genericapiserver.SetupSignalHandler()
 	rootCmd.AddCommand(NewCmdRun(os.Stdout, os.Stderr, stopCh))

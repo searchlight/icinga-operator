@@ -31,6 +31,7 @@ hyperalert [flags]
 
 ```
       --alsologtostderr                  log to standard error as well as files
+      --enable-analytics                 send usage events to Google Analytics
   -h, --help                             help for hyperalert
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory

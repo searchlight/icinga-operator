@@ -40,7 +40,7 @@ func NewCmdHostfacts() *cobra.Command {
 	cmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
 	// ref: https://github.com/kubernetes/kubernetes/issues/17162#issuecomment-225596212
 	flag.CommandLine.Parse([]string{})
-	cmd.PersistentFlags().BoolVar(&enableAnalytics, "analytics", enableAnalytics, "Send analytical events to Google Analytics")
+	cmd.PersistentFlags().BoolVar(&enableAnalytics, "enable-analytics", enableAnalytics, "send usage events to Google Analytics")
 
 	cmd.AddCommand(NewCmdServer())
 	cmd.AddCommand(v.NewCmdVersion())
