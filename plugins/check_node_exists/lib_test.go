@@ -2,14 +2,14 @@ package check_node_exists
 
 import (
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/plugins"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/spf13/cobra"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
-	"github.com/spf13/cobra"
-	"github.com/appscode/searchlight/plugins"
 )
 
 var _ = Describe("check_node_exists", func() {
@@ -160,7 +160,7 @@ var _ = Describe("check_node_exists", func() {
 			Context("without count", func() {
 				JustBeforeEach(func() {
 					opts = options{
-						selector:   labels.SelectorFromSet(node.Labels).String(),
+						selector: labels.SelectorFromSet(node.Labels).String(),
 					}
 				})
 				It("should be OK", func() {

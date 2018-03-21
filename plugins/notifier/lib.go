@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/appscode/envconfig"
+	"github.com/appscode/go-notify"
 	"github.com/appscode/go-notify/unified"
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/log"
@@ -169,7 +170,7 @@ func (n *notifier) sendNotification() {
 			continue
 		}
 
-		switch notify := notifyVia.(type) {
+		switch nv := notifyVia.(type) {
 		case notify.ByEmail:
 			var body string
 			body, err = n.RenderMail(alert)
@@ -177,21 +178,21 @@ func (n *notifier) sendNotification() {
 				log.Errorf("Failed to render email. Reason: %s", err)
 				break
 			}
-			err = notify.To(receiver.To[0], receiver.To[1:]...).
+			err = nv.To(receiver.To[0], receiver.To[1:]...).
 				WithSubject(n.RenderSubject(alert)).
 				WithBody(body).
 				WithNoTracking().
 				SendHtml()
 		case notify.BySMS:
-			err = notify.To(receiver.To[0], receiver.To[1:]...).
+			err = nv.To(receiver.To[0], receiver.To[1:]...).
 				WithBody(n.RenderSMS(alert)).
 				Send()
 		case notify.ByChat:
-			err = notify.To(receiver.To[0], receiver.To[1:]...).
+			err = nv.To(receiver.To[0], receiver.To[1:]...).
 				WithBody(n.RenderSMS(alert)).
 				Send()
 		case notify.ByPush:
-			err = notify.To(receiver.To[0:]...).
+			err = nv.To(receiver.To[0:]...).
 				WithBody(n.RenderSMS(alert)).
 				Send()
 		}
