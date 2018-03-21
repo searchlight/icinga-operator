@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/appscode/go/flags"
+	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
@@ -14,7 +15,6 @@ import (
 	"k8s.io/client-go/kubernetes"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	restclient "k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/remotecommand"
 	utilexec "k8s.io/client-go/util/exec"
 )
@@ -27,21 +27,17 @@ type plugin struct {
 
 var _ plugins.PluginInterface = &plugin{}
 
-func newPlugin(config *restclient.Config, client corev1.CoreV1Interface, opts options) *plugin {
-	return &plugin{config, client, opts}
-}
-
 func newPluginFromConfig(opts options) (*plugin, error) {
-	config, err := clientcmd.BuildConfigFromFlags(opts.masterURL, opts.kubeconfigPath)
+	config, err := clientcmd.BuildConfigFromContext(opts.kubeconfigPath, opts.contextName)
 	if err != nil {
 		return nil, err
 	}
-	return newPlugin(config, kubernetes.NewForConfigOrDie(config).CoreV1(), opts), nil
+	return &plugin{config, kubernetes.NewForConfigOrDie(config).CoreV1(), opts}, nil
 }
 
 type options struct {
-	masterURL      string
 	kubeconfigPath string
+	contextName    string
 	// options
 	podName   string
 	container string
@@ -63,6 +59,15 @@ func (o *options) complete(cmd *cobra.Command) error {
 	}
 	o.podName = o.host.ObjectName
 	o.namespace = o.host.AlertNamespace
+
+	o.kubeconfigPath, err = cmd.Flags().GetString(plugins.FlagKubeConfig)
+	if err != nil {
+		return err
+	}
+	o.contextName, err = cmd.Flags().GetString(plugins.FlagKubeConfigContext)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -158,16 +163,19 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 	return icinga.State(exitCode), output
 }
 
+const (
+	flagArgv = "argv"
+)
+
 func NewCmd() *cobra.Command {
 	var opts options
 
 	c := &cobra.Command{
-		Use:     "check_pod_exec",
-		Short:   "Check exit code of exec command on Kubernetes container",
-		Example: "",
+		Use:   "check_pod_exec",
+		Short: "Check exit code of exec command on Kubernetes container",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(cmd, "host", "arg")
+			flags.EnsureRequiredFlags(cmd, plugins.FlagHost, flagArgv)
 
 			if err := opts.complete(cmd); err != nil {
 				icinga.Output(icinga.Unknown, err)
@@ -186,6 +194,6 @@ func NewCmd() *cobra.Command {
 	c.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
 	c.Flags().StringVarP(&opts.container, "container", "C", "", "Container name in specified pod")
 	c.Flags().StringVarP(&opts.command, "cmd", "c", "/bin/sh", "Exec command. [Default: /bin/sh]")
-	c.Flags().StringVarP(&opts.arg, "argv", "a", "", "Arguments for exec command. [Format: 'arg; arg; arg']")
+	c.Flags().StringVarP(&opts.arg, flagArgv, "a", "", "Arguments for exec command. [Format: 'arg; arg; arg']")
 	return c
 }
