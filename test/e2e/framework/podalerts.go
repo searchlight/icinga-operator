@@ -86,7 +86,7 @@ func (f *Framework) EventuallyPodAlertIcingaService(meta metav1.ObjectMeta, podA
 	objectList, err := f.getPodAlertObjects(meta, podAlertSpec)
 	Expect(err).NotTo(HaveOccurred())
 
-	in := icinga.NewPodHost(f.icingaClient).
+	in := icinga.NewPodHost(f.icingaClient, "6").
 		IcingaServiceSearchQuery(meta.Name, objectList...)
 
 	return Eventually(

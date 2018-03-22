@@ -25,6 +25,8 @@ type OperatorOptions struct {
 	ResyncPeriod     time.Duration
 	MaxNumRequeues   int
 	NumThreads       int
+	// V logging level, the value of the -v flag
+	verbosity string
 }
 
 func NewOperatorOptions() *OperatorOptions {
@@ -35,6 +37,7 @@ func NewOperatorOptions() *OperatorOptions {
 		ResyncPeriod:     5 * time.Minute,
 		MaxNumRequeues:   5,
 		NumThreads:       1,
+		verbosity:        "3",
 	}
 }
 
@@ -60,6 +63,7 @@ func (s *OperatorOptions) ApplyTo(cfg *operator.OperatorConfig) error {
 	cfg.ResyncPeriod = s.ResyncPeriod
 	cfg.MaxNumRequeues = s.MaxNumRequeues
 	cfg.NumThreads = s.NumThreads
+	cfg.Verbosity = s.verbosity
 
 	if cfg.KubeClient, err = kubernetes.NewForConfig(cfg.ClientConfig); err != nil {
 		return err

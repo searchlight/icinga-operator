@@ -180,7 +180,10 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 	if key, err := sec.GetKey(ICINGA_API_PASSWORD); err == nil {
 		ctx.BasicAuth.Password = key.Value()
 	}
-	ctx.CACert = store.CACert()
+
+	if store.IsExists("ca") {
+		ctx.CACert = store.CACert()
+	}
 
 	return ctx, nil
 }

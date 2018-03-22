@@ -78,6 +78,7 @@ until pg_isready -h 127.0.0.1 > /dev/null; do echo '.'; sleep 5; done
 # Ensure icinga plugins can read ENV cars
 echo "export KUBERNETES_SERVICE_HOST=${KUBERNETES_SERVICE_HOST}" >> /etc/profile.d/icinga2
 echo "export KUBERNETES_SERVICE_PORT=${KUBERNETES_SERVICE_PORT}" >> /etc/profile.d/icinga2
+echo "export APPSCODE_ANALYTICS_CLIENT_ID=$(/usr/lib/monitoring-plugins/hyperalert analytics_id)" >> /etc/profile.d/icinga2
 
 export > /etc/envvars
 

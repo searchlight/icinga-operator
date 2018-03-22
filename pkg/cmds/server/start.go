@@ -5,10 +5,12 @@ import (
 	"io"
 	"net"
 
+	"github.com/appscode/go/log/golog"
 	incidentsv1alpha1 "github.com/appscode/searchlight/apis/incidents/v1alpha1"
 	"github.com/appscode/searchlight/pkg/operator"
 	"github.com/appscode/searchlight/pkg/server"
 	_ "github.com/go-openapi/loads"
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	admissionv1beta1 "k8s.io/api/admission/v1beta1"
 	_ "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -48,7 +50,8 @@ func (o SearchlightOptions) Validate(args []string) error {
 	return nil
 }
 
-func (o *SearchlightOptions) Complete() error {
+func (o *SearchlightOptions) Complete(cmd *cobra.Command) error {
+	o.OperatorOptions.verbosity = golog.ParseFlags(cmd.Flags()).Verbosity
 	return nil
 }
 

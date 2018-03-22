@@ -15,10 +15,11 @@ type NodeHost struct {
 	//*types.Context
 }
 
-func NewNodeHost(IcingaClient *Client) *NodeHost {
+func NewNodeHost(IcingaClient *Client, verbosity string) *NodeHost {
 	return &NodeHost{
 		commonHost: commonHost{
 			IcingaClient: IcingaClient,
+			verbosity:    verbosity,
 		},
 	}
 }
@@ -73,18 +74,18 @@ func (h *NodeHost) Apply(alert *api.NodeAlert, node *core.Node) error {
 	alertSpec := alert.Spec
 	kh := h.getHost(alert.Namespace, node)
 
-	if err := h.EnsureIcingaHost(kh); err != nil {
+	if err := h.reconcileIcingaHost(kh); err != nil {
 		return err
 	}
 
-	has, err := h.CheckIcingaService(alert.Name, kh)
+	has, err := h.checkIcingaService(alert.Name, kh)
 	if err != nil {
 		return err
 	}
 
 	if alertSpec.Paused {
 		if has {
-			if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
+			if err := h.deleteIcingaService(alert.Name, kh); err != nil {
 				return err
 			}
 		}
@@ -101,23 +102,23 @@ func (h *NodeHost) Apply(alert *api.NodeAlert, node *core.Node) error {
 
 	if !has {
 		attrs["check_command"] = alertSpec.Check
-		if err := h.CreateIcingaService(alert.Name, kh, attrs); err != nil {
+		if err := h.createIcingaService(alert.Name, kh, attrs); err != nil {
 			return err
 		}
 	} else {
-		if err := h.UpdateIcingaService(alert.Name, kh, attrs); err != nil {
+		if err := h.updateIcingaService(alert.Name, kh, attrs); err != nil {
 			return err
 		}
 	}
 
-	return h.ReconcileIcingaNotification(alert, kh)
+	return h.reconcileIcingaNotification(alert, kh)
 }
 
 func (h *NodeHost) Delete(alertNamespace, alertName string, node *core.Node) error {
 	kh := h.getHost(alertNamespace, node)
 
-	if err := h.DeleteIcingaService(alertName, kh); err != nil {
+	if err := h.deleteIcingaService(alertName, kh); err != nil {
 		return err
 	}
-	return h.DeleteIcingaHost(kh)
+	return h.deleteIcingaHost(kh)
 }

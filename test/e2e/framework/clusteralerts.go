@@ -54,7 +54,7 @@ func (f *Framework) EventuallyClusterAlertIcingaService(meta metav1.ObjectMeta, 
 	objectList, err := f.getClusterAlertObjects(meta, nodeAlertSpec)
 	Expect(err).NotTo(HaveOccurred())
 
-	in := icinga.NewClusterHost(f.icingaClient).
+	in := icinga.NewClusterHost(f.icingaClient, "6").
 		IcingaServiceSearchQuery(meta.Name, objectList...)
 
 	return Eventually(

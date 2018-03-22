@@ -1,37 +1,30 @@
 ---
-title: Check Json Path
+title: Analytics Id
 menu:
   product_searchlight_6.0.0-alpha.0:
-    identifier: hyperalert-check-json-path
-    name: Check Json Path
+    identifier: hyperalert-analytics-id
+    name: Analytics Id
     parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
 menu_name: product_searchlight_6.0.0-alpha.0
 ---
-## hyperalert check_json_path
+## hyperalert analytics_id
 
-Check Json Object
+
 
 ### Synopsis
 
-Check Json Object
+
 
 ```
-hyperalert check_json_path [flags]
+hyperalert analytics_id [flags]
 ```
 
 ### Options
 
 ```
-  -c, --critical string     Critical jsonpath query which returns [true/false]
-  -h, --help                help for check_json_path
-  -H, --host string         Icinga host name
-      --kubeconfig string   Path to kubeconfig file with authorization information (the master location is set by the master flag).
-      --master string       The address of the Kubernetes API server (overrides any value in kubeconfig)
-  -s, --secretName string   Kubernetes secret name
-  -u, --url string          URL to get data
-  -w, --warning string      Warning jsonpath query which returns [true/false]
+  -h, --help   help for analytics_id
 ```
 
 ### Options inherited from parent commands

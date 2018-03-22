@@ -57,7 +57,7 @@ curl -k -vv https://192.168.99.100:8443/apis --cert $HOME/.minikube/client.crt -
 curl -k -vv https://10.0.2.2:8443/apis/incidents.monitoring.appscode.com/v1alpha1
 
 ```
-$ kubectl create -f ./hack/dev/run-operator.yaml
+$ ./hack/dev/run-operator.sh
 
 $ kubectl create -f ./hack/dev/apiregistration.yaml
 $ kubectl get apiservice v1alpha1.incidents.monitoring.appscode.com -o yaml
