@@ -27,8 +27,6 @@ hyperalert check_json_path [flags]
   -c, --critical string     Critical jsonpath query which returns [true/false]
   -h, --help                help for check_json_path
   -H, --host string         Icinga host name
-      --kubeconfig string   Path to kubeconfig file with authorization information (the master location is set by the master flag).
-      --master string       The address of the Kubernetes API server (overrides any value in kubeconfig)
   -s, --secretName string   Kubernetes secret name
   -u, --url string          URL to get data
   -w, --warning string      Warning jsonpath query which returns [true/false]
@@ -38,7 +36,8 @@ hyperalert check_json_path [flags]
 
 ```
       --alsologtostderr                  log to standard error as well as files
-      --enable-analytics                 send usage events to Google Analytics
+      --context string                   Use the context in kubeconfig
+      --kubeconfig string                Path to kubeconfig file with authorization information (the master location is set by the master flag).
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory
       --logtostderr                      log to standard error instead of files

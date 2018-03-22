@@ -27,8 +27,6 @@ hyperalert check_volume [flags]
   -c, --critical float      Critical level value (usage percentage) (default 95)
   -h, --help                help for check_volume
   -H, --host string         Icinga host name
-      --kubeconfig string   Path to kubeconfig file with authorization information (the master location is set by the master flag).
-      --master string       The address of the Kubernetes API server (overrides any value in kubeconfig)
       --nodeStat            Checking Node disk size
   -s, --secretName string   Kubernetes secret name
   -N, --volumeName string   Volume name
@@ -39,7 +37,8 @@ hyperalert check_volume [flags]
 
 ```
       --alsologtostderr                  log to standard error as well as files
-      --enable-analytics                 send usage events to Google Analytics
+      --context string                   Use the context in kubeconfig
+      --kubeconfig string                Path to kubeconfig file with authorization information (the master location is set by the master flag).
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory
       --logtostderr                      log to standard error instead of files

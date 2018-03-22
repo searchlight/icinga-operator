@@ -27,8 +27,6 @@ hyperalert check_cert [flags]
   -c, --critical duration       Remaining duration for Critical state. [Default: 120h] (default 120h0m0s)
   -h, --help                    help for check_cert
   -H, --host string             Icinga host name
-      --kubeconfig string       Path to kubeconfig file with authorization information (the master location is set by the master flag).
-      --master string           The address of the Kubernetes API server (overrides any value in kubeconfig)
   -k, --secretKey stringSlice   Name of secret key where certificates are kept
   -s, --secretName string       Name of secret from where certificates are checked
   -l, --selector string         Selector (label query) to filter on, supports '=', '==', and '!='
@@ -39,7 +37,8 @@ hyperalert check_cert [flags]
 
 ```
       --alsologtostderr                  log to standard error as well as files
-      --enable-analytics                 send usage events to Google Analytics
+      --context string                   Use the context in kubeconfig
+      --kubeconfig string                Path to kubeconfig file with authorization information (the master location is set by the master flag).
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory
       --logtostderr                      log to standard error instead of files
