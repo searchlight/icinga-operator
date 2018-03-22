@@ -89,7 +89,7 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 // ref: https://github.com/coreos/prometheus-operator/blob/c79166fcff3dae7bb8bc1e6bddc81837c2d97c04/pkg/k8sutil/k8sutil.go#L64
 // podRunningAndReady returns whether a pod is running and each container has
 // passed it's ready state.
-func (p *plugin) podRunningAndReady(pod core.Pod) (bool, error) {
+func (p *plugin) podRunningAndReady(pod core.Pod) (bool, interface{}) {
 	switch pod.Status.Phase {
 	case core.PodFailed, core.PodSucceeded:
 		return false, fmt.Errorf("pod completed")
@@ -98,11 +98,16 @@ func (p *plugin) podRunningAndReady(pod core.Pod) (bool, error) {
 			if cond.Type != core.PodReady {
 				continue
 			}
-			return cond.Status == core.ConditionTrue, nil
+			if cond.Status == core.ConditionTrue {
+				return true, nil
+			}
+
+			return false, cond.Message
 		}
 		return false, fmt.Errorf("pod ready condition not found")
+	default:
+		return false, fmt.Errorf(`pod is in "%s" phase`, pod.Status.Phase)
 	}
-	return false, nil
 }
 
 func NewCmd() *cobra.Command {

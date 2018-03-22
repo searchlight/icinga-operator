@@ -47,16 +47,14 @@ func (n *notifier) getLabel() map[string]string {
 }
 
 func (n *notifier) generateIncidentName() (string, error) {
-	opts := n.options
-	host := opts.host
-
-	t := opts.time.Format("20060102-1504")
+	host := n.options.host
+	t := n.options.time.Format("20060102-1504")
 
 	switch host.Type {
 	case icinga.TypePod, icinga.TypeNode:
-		return host.Type + "." + host.ObjectName + "." + opts.alertName + "." + t, nil
+		return host.Type + "." + host.ObjectName + "." + n.options.alertName + "." + t, nil
 	case icinga.TypeCluster:
-		return host.Type + "." + opts.alertName + "." + t, nil
+		return host.Type + "." + n.options.alertName + "." + t, nil
 	}
 
 	return "", fmt.Errorf("unknown host type %s", host.Type)
@@ -64,22 +62,10 @@ func (n *notifier) generateIncidentName() (string, error) {
 
 func (n *notifier) reconcileIncident() error {
 	opts := n.options
-	host := opts.host
-	incidentList, err := n.extClient.Incidents(host.AlertNamespace).List(metav1.ListOptions{
-		LabelSelector: labels.SelectorFromSet(n.getLabel()).String(),
-	})
+
+	incident, err := n.getIncident()
 	if err != nil {
 		return err
-	}
-
-	var lastCreationTimestamp time.Time
-	var incident *api.Incident
-
-	for _, item := range incidentList.Items {
-		if item.CreationTimestamp.After(lastCreationTimestamp) {
-			lastCreationTimestamp = item.CreationTimestamp.Time
-			incident = &item
-		}
 	}
 
 	if incident != nil {
@@ -123,7 +109,7 @@ func (n *notifier) reconcileIncident() error {
 		incident := &api.Incident{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      name,
-				Namespace: host.AlertNamespace,
+				Namespace: opts.host.AlertNamespace,
 				Labels:    n.getLabel(),
 			},
 			Status: api.IncidentStatus{
@@ -138,4 +124,39 @@ func (n *notifier) reconcileIncident() error {
 	}
 
 	return nil
+}
+
+func (n *notifier) getIncident() (*api.Incident, error) {
+	incidentList, err := n.extClient.Incidents(n.options.host.AlertNamespace).List(metav1.ListOptions{
+		LabelSelector: labels.SelectorFromSet(n.getLabel()).String(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var lastCreationTimestamp time.Time
+	var incident *api.Incident
+
+	for _, item := range incidentList.Items {
+		if item.CreationTimestamp.After(lastCreationTimestamp) {
+			lastCreationTimestamp = item.CreationTimestamp.Time
+			incident = &item
+		}
+	}
+	return incident, nil
+}
+
+func (n *notifier) getLastNonOKState(incident *api.Incident) string {
+	var lastTimestamp time.Time
+	var lastNonOKState string
+
+	for _, item := range incident.Status.Notifications {
+		if item.LastTimestamp.After(lastTimestamp) {
+			lastTimestamp = item.LastTimestamp.Time
+			if item.LastState == stateCritical || item.LastState == stateWarning {
+				lastNonOKState = item.LastState
+			}
+		}
+	}
+	return lastNonOKState
 }

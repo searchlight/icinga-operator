@@ -70,6 +70,13 @@ type options struct {
 	host     *icinga.IcingaHost
 }
 
+const (
+	stateOK       = "OK"
+	stateWarning  = "Warning"
+	stateCritical = "Critical"
+	stateUnknown  = "unknown"
+)
+
 func (o *options) complete(cmd *cobra.Command) (err error) {
 	o.host, err = icinga.ParseHost(o.hostname)
 	if err != nil {
@@ -90,13 +97,13 @@ func (o *options) complete(cmd *cobra.Command) (err error) {
 	// sanitized state to preferred form
 	switch strings.ToUpper(o.serviceState) {
 	case "OK":
-		o.serviceState = "OK"
-	case "CRITICAL":
-		o.serviceState = "Critical"
+		o.serviceState = stateOK
 	case "WARNING":
-		o.serviceState = "Warning"
+		o.serviceState = stateWarning
+	case "CRITICAL":
+		o.serviceState = stateCritical
 	default:
-		o.serviceState = "Unknown"
+		o.serviceState = stateUnknown
 	}
 
 	o.kubeconfigPath, err = cmd.Flags().GetString(plugins.FlagKubeConfig)
@@ -146,7 +153,44 @@ func (n *notifier) getAlert() (api.Alert, error) {
 	return nil, fmt.Errorf("unknown host type %s", opts.host.Type)
 }
 
+func (n *notifier) sendToReceiver(alert api.Alert, receiver api.Receiver, loader envconfig.LoaderFunc) error {
+	notifyVia, err := unified.LoadVia(receiver.Notifier, loader)
+	if err != nil {
+		return err
+	}
+
+	switch nv := notifyVia.(type) {
+	case notify.ByEmail:
+		var body string
+		body, err = n.RenderMail(alert)
+		if err != nil {
+			return fmt.Errorf("failed to render email. Reason: %s", err)
+		}
+		return nv.To(receiver.To[0], receiver.To[1:]...).
+			WithSubject(n.RenderSubject(receiver)).
+			WithBody(body).
+			WithNoTracking().
+			SendHtml()
+	case notify.BySMS:
+		return nv.To(receiver.To[0], receiver.To[1:]...).
+			WithBody(n.RenderSMS(receiver)).
+			Send()
+	case notify.ByChat:
+		return nv.To(receiver.To[0], receiver.To[1:]...).
+			WithBody(n.RenderSMS(receiver)).
+			Send()
+	case notify.ByPush:
+		return nv.To(receiver.To[0:]...).
+			WithBody(n.RenderSMS(receiver)).
+			Send()
+	default:
+		return fmt.Errorf(`invalid notifier "%s"`, receiver.Notifier)
+	}
+
+}
+
 func (n *notifier) sendNotification() {
+
 	alert, err := n.getAlert()
 	if err != nil {
 		log.Fatalln(err)
@@ -164,42 +208,18 @@ func (n *notifier) sendNotification() {
 			continue
 		}
 
-		if api.IncidentNotificationType(n.options.notificationType) != api.NotificationRecovery &&
-			!strings.EqualFold(receiver.State, n.options.serviceState) {
-			continue
-		}
+		switch api.AlertType(n.options.notificationType) {
+		case api.NotificationRecovery:
+			if incident, _ := n.getIncident(); incident != nil {
+				if strings.EqualFold(receiver.State, n.getLastNonOKState(incident)) {
 
-		notifyVia, err := unified.LoadVia(receiver.Notifier, loader)
-		if err != nil {
-			log.Errorln(err)
-			continue
-		}
-
-		switch nv := notifyVia.(type) {
-		case notify.ByEmail:
-			var body string
-			body, err = n.RenderMail(alert)
-			if err != nil {
-				log.Errorf("Failed to render email. Reason: %s", err)
-				break
+					err = n.sendToReceiver(alert, receiver, loader)
+				}
 			}
-			err = nv.To(receiver.To[0], receiver.To[1:]...).
-				WithSubject(n.RenderSubject(alert)).
-				WithBody(body).
-				WithNoTracking().
-				SendHtml()
-		case notify.BySMS:
-			err = nv.To(receiver.To[0], receiver.To[1:]...).
-				WithBody(n.RenderSMS(alert)).
-				Send()
-		case notify.ByChat:
-			err = nv.To(receiver.To[0], receiver.To[1:]...).
-				WithBody(n.RenderSMS(alert)).
-				Send()
-		case notify.ByPush:
-			err = nv.To(receiver.To[0:]...).
-				WithBody(n.RenderSMS(alert)).
-				Send()
+		default:
+			if strings.EqualFold(receiver.State, n.options.serviceState) {
+				err = n.sendToReceiver(alert, receiver, loader)
+			}
 		}
 
 		if err != nil {
@@ -228,6 +248,7 @@ func NewCmd() *cobra.Command {
 		Use:   "notifier",
 		Short: "AppsCode Icinga2 Notifier",
 		Run: func(cmd *cobra.Command, args []string) {
+
 			flags.EnsureRequiredFlags(cmd, flagAlert, plugins.FlagHost, flagType, flagState, flagEventTime)
 
 			if err := opts.complete(cmd); err != nil {
