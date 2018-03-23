@@ -17,7 +17,7 @@ import (
 	extensions "k8s.io/api/extensions/v1beta1"
 )
 
-var _ = Describe("Notification", func() {
+var _ = Describe("e2e_test", func() {
 	var (
 		f            *framework.Invocation
 		rs           *extensions.ReplicaSet

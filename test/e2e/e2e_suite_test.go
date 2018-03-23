@@ -51,7 +51,7 @@ func TestE2e(t *testing.T) {
 	RegisterFailHandler(Fail)
 	SetDefaultEventuallyTimeout(TIMEOUT)
 
-	RunSpecsWithDefaultAndCustomReporters(t, "e2e Suite", []Reporter{})
+	RunSpecsWithDefaultAndCustomReporters(t, "e2e_test Suite", []Reporter{})
 }
 
 var _ = BeforeSuite(func() {
