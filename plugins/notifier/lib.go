@@ -201,28 +201,26 @@ func (n *notifier) sendNotification() {
 		log.Fatalln(err)
 	}
 
+	serviceState := n.options.serviceState
+
+	var incident *api.Incident
+	if api.AlertType(n.options.notificationType) == api.NotificationRecovery {
+		incident, _ = n.getIncident()
+		if incident != nil {
+			if lastNonOKState := n.getLastNonOKState(incident); lastNonOKState != "" {
+				serviceState = lastNonOKState
+			}
+		}
+	}
+
 	receivers := alert.GetReceivers()
 
 	for _, receiver := range receivers {
-		if len(receiver.To) == 0 {
+		if len(receiver.To) == 0 || !strings.EqualFold(receiver.State, serviceState) {
 			continue
 		}
 
-		switch api.AlertType(n.options.notificationType) {
-		case api.NotificationRecovery:
-			if incident, _ := n.getIncident(); incident != nil {
-				if strings.EqualFold(receiver.State, n.getLastNonOKState(incident)) {
-
-					err = n.sendToReceiver(alert, receiver, loader)
-				}
-			}
-		default:
-			if strings.EqualFold(receiver.State, n.options.serviceState) {
-				err = n.sendToReceiver(alert, receiver, loader)
-			}
-		}
-
-		if err != nil {
+		if err = n.sendToReceiver(alert, receiver, loader); err != nil {
 			log.Errorln(err)
 		} else {
 			log.Infof("Notification sent using %s", receiver.Notifier)
