@@ -92,7 +92,7 @@ func (f *Framework) EventuallyPodAlertIcingaService(meta metav1.ObjectMeta, podA
 	return Eventually(
 		func() matcher.IcingaServiceState {
 			var respService icinga.ResponseObject
-			status, err := f.icingaClient.Objects().Service("").Get([]string{}, in).Do().Into(&respService)
+			status, err := f.icingaClient.Service("").Get([]string{}, in).Do().Into(&respService)
 			if status == 0 {
 				return matcher.IcingaServiceState{Unknown: 1.0}
 			}

@@ -1,6 +1,9 @@
 #!/bin/bash
 set -eou pipefail
 
+GOPATH=$(go env GOPATH)
+REPO_ROOT="$GOPATH/src/github.com/appscode/searchlight"
+
 export PROVIDER="minikube"
 export STORAGE_CLASS="default"
 export PROVIDED_ICINGA=""
@@ -49,7 +52,11 @@ while test $# -gt 0; do
     esac
 done
 
-ginkgo -r -v -progress -trace test/e2e --\
+ginkgo -r -v -progress -trace -race \
+    -cover \
+    -coverprofile="profile.out" \
+    -outputdir="$REPO_ROOT/test/e2e" \
+    test/e2e --\
     --provider="$PROVIDER" \
     --storageclass="$STORAGE_CLASS" \
     --provided-icinga="$PROVIDED_ICINGA" \

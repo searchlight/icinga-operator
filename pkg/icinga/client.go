@@ -17,8 +17,7 @@ type Config struct {
 }
 
 type Client struct {
-	config     Config
-	pathPrefix string
+	config Config
 }
 
 type APIRequest struct {
@@ -54,34 +53,27 @@ func (c *Client) SetEndpoint(endpoint string) *Client {
 	return c
 }
 
-func (c *Client) Objects() *Client {
-	c.pathPrefix = "/objects"
-	return c
-}
-
 func (c *Client) Hosts(hostName string) *APIRequest {
-	return c.newRequest("/hosts/" + hostName)
+	return c.newRequest("/objects/hosts/" + hostName)
 }
 
 func (c *Client) HostGroups(hostName string) *APIRequest {
-	return c.newRequest("/hostgroups/" + hostName)
+	return c.newRequest("/objects/hostgroups/" + hostName)
 }
 
 func (c *Client) Service(hostName string) *APIRequest {
-	return c.newRequest("/services/" + hostName)
-}
-
-func (c *Client) Actions(action string) *APIRequest {
-	c.pathPrefix = ""
-	return c.newRequest("/actions/" + action)
+	return c.newRequest("/objects/services/" + hostName)
 }
 
 func (c *Client) Notifications(hostName string) *APIRequest {
-	return c.newRequest("/notifications/" + hostName)
+	return c.newRequest("/objects/notifications/" + hostName)
+}
+
+func (c *Client) Actions(action string) *APIRequest {
+	return c.newRequest("/actions/" + action)
 }
 
 func (c *Client) Check() *APIRequest {
-	c.pathPrefix = ""
 	return c.newRequest("")
 }
 

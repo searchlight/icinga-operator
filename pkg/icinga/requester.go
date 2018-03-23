@@ -82,9 +82,8 @@ func (c *Client) newRequest(path string) *APIRequest {
 	}
 	client := &http.Client{Transport: tr}
 
-	c.pathPrefix = c.pathPrefix + path
 	return &APIRequest{
-		uri:      c.config.Endpoint + c.pathPrefix,
+		uri:      c.config.Endpoint + path,
 		client:   client,
 		userName: c.config.BasicAuth.Username,
 		password: c.config.BasicAuth.Password,

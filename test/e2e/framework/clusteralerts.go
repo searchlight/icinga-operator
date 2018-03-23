@@ -1,8 +1,6 @@
 package framework
 
 import (
-	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
@@ -24,6 +22,7 @@ func (f *Invocation) ClusterAlert() *api.ClusterAlert {
 		},
 		Spec: api.ClusterAlertSpec{
 			CheckInterval: metav1.Duration{Duration: time.Second * 5},
+			AlertInterval: metav1.Duration{Duration: time.Minute * 5},
 			Vars:          make(map[string]string),
 		},
 	}
@@ -49,27 +48,6 @@ func (f *Framework) getClusterAlertObjects(meta metav1.ObjectMeta) icinga.Icinga
 	}
 }
 
-func (f *Framework) ForceCheckClusterAlert(meta metav1.ObjectMeta, times int) error {
-	hostName, err := f.getClusterAlertObjects(meta).Name()
-	if err != nil {
-		return err
-	}
-
-	mp := make(map[string]interface{})
-	mp["type"] = "Service"
-	mp["filter"] = fmt.Sprintf(`service.name == "%s" && host.name == "%s"`, meta.Name, hostName)
-	mp["force_check"] = true
-	checkNow, err := json.Marshal(mp)
-	if err != nil {
-		return err
-	}
-
-	for i := 0; i < times; i++ {
-		f.icingaClient.Actions("reschedule-check").Update([]string{}, string(checkNow)).Do()
-	}
-	return nil
-}
-
 func (f *Framework) EventuallyClusterAlertIcingaService(meta metav1.ObjectMeta) GomegaAsyncAssertion {
 	icingaHost := f.getClusterAlertObjects(meta)
 
@@ -79,7 +57,7 @@ func (f *Framework) EventuallyClusterAlertIcingaService(meta metav1.ObjectMeta) 
 	return Eventually(
 		func() matcher.IcingaServiceState {
 			var respService icinga.ResponseObject
-			status, err := f.icingaClient.Objects().Service("").Get([]string{}, in).Do().Into(&respService)
+			status, err := f.icingaClient.Service("").Get([]string{}, in).Do().Into(&respService)
 			if status == 0 {
 				return matcher.IcingaServiceState{Unknown: 1.0}
 			}
@@ -123,7 +101,7 @@ func (f *Framework) EventuallyClusterAlertIcingaNotification(meta metav1.ObjectM
 	return Eventually(
 		func() float64 {
 			var resp notificationObject
-			status, err := f.icingaClient.Objects().Notifications(host).Get([]string{meta.GetName(), meta.GetName()}, "").Do().Into(&resp)
+			status, err := f.icingaClient.Notifications(host).Get([]string{meta.GetName(), meta.GetName()}, "").Do().Into(&resp)
 			if status == 0 {
 				return -1
 			}

@@ -26,6 +26,7 @@ var _ = Describe("Notification", func() {
 		server       *http.Server
 		serverURL    string
 		icingaHost   *icinga.IcingaHost
+		hostname     string
 	)
 
 	BeforeEach(func() {
@@ -37,8 +38,8 @@ var _ = Describe("Notification", func() {
 		serverURL = fmt.Sprintf("http://10.0.2.2:%s", framework.HTTPServerPort)
 	})
 
-	Describe("Test", func() {
-		Context("Send custom notification", func() {
+	FDescribe("Test", func() {
+		Context("check notification", func() {
 			BeforeEach(func() {
 				go server.ListenAndServe()
 
@@ -62,11 +63,12 @@ var _ = Describe("Notification", func() {
 					Type:           icinga.TypeCluster,
 					AlertNamespace: clusterAlert.Namespace,
 				}
+				hostname, _ = icingaHost.Name()
 			})
 			AfterEach(func() {
 				server.Close()
 			})
-			It("Should be OK", func() {
+			It("with webhook receiver", func() {
 
 				By("Create notifier secret: " + secret.Name)
 				err := f.CreateWebHookSecret(secret)
@@ -88,22 +90,37 @@ var _ = Describe("Notification", func() {
 					Should(HaveIcingaObject(IcingaServiceState{Critical: 1}))
 
 				By("Force check now")
-				f.ForceCheckClusterAlert(clusterAlert.ObjectMeta, 5)
+				f.ForceCheckClusterAlert(clusterAlert.ObjectMeta, hostname, 5)
 
 				By("Count icinga notification")
 				f.EventuallyClusterAlertIcingaNotification(clusterAlert.ObjectMeta).Should(BeNumerically(">", 0.0))
 
 				hostname, err := icingaHost.Name()
 				Expect(err).NotTo(HaveOccurred())
-				req := &notifier.Request{
-					HostName: hostname,
-					State:    "Critical",
-					Type:     string(api.NotificationProblem),
+				sms := &notifier.SMS{
+					AlertName:        clusterAlert.Name,
+					Hostname:         hostname,
+					ServiceState:     "Critical",
+					NotificationType: string(api.NotificationProblem),
 				}
-				msg := notifier.RenderSMS(clusterAlert, req)
-
 				By("Check received notification message")
-				f.EventuallyHTTPServerResponse().Should(BeIdenticalTo(msg))
+				f.EventuallyHTTPServerResponse().Should(BeIdenticalTo(sms.Render()))
+
+				By("Send custom notification")
+				f.SendClusterAlertCustomNotification(clusterAlert.ObjectMeta, hostname)
+
+				sms.NotificationType = string(api.NotificationCustom)
+				sms.Comment = "test"
+				sms.Author = "e2e"
+				By("Check received notification message")
+				f.EventuallyHTTPServerResponse().Should(BeIdenticalTo(sms.Render()))
+
+				By("Acknowledge notification")
+				f.AcknowledgeClusterAlertNotification(clusterAlert.ObjectMeta, hostname)
+
+				sms.NotificationType = string(api.NotificationAcknowledgement)
+				By("Check received notification message")
+				f.EventuallyHTTPServerResponse().Should(BeIdenticalTo(sms.Render()))
 
 				By("Patch ReplicaSet to increate replicas")
 				rs, _, err = kutil_ext.PatchReplicaSet(f.KubeClient(), rs, func(set *extensions.ReplicaSet) *extensions.ReplicaSet {
@@ -115,11 +132,12 @@ var _ = Describe("Notification", func() {
 				f.EventuallyClusterAlertIcingaService(clusterAlert.ObjectMeta).
 					Should(HaveIcingaObject(IcingaServiceState{OK: 1}))
 
-				req.Type = string(api.NotificationRecovery)
-				msg = notifier.RenderSMS(clusterAlert, req)
+				sms.Comment = ""
+				sms.Author = ""
+				sms.NotificationType = string(api.NotificationRecovery)
 
 				By("Check received notification message")
-				f.EventuallyHTTPServerResponse().Should(BeIdenticalTo(msg))
+				f.EventuallyHTTPServerResponse().Should(BeIdenticalTo(sms.Render()))
 			})
 		})
 	})
