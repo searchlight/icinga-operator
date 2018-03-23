@@ -8,12 +8,13 @@ import (
 	"github.com/appscode/envconfig"
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/net/httpclient"
+	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 const (
@@ -119,16 +120,66 @@ func getPersistentVolumePluginName(volumeSource *core.PersistentVolumeSource) st
 	return ""
 }
 
-type Request struct {
-	masterURL      string
-	kubeconfigPath string
+type plugin struct {
+	client  kubernetes.Interface
+	options options
+}
 
-	Host       string
-	NodeStat   bool
-	SecretName string
-	VolumeName string
-	Warning    float64
-	Critical   float64
+var _ plugins.PluginInterface = &plugin{}
+
+func newPluginFromConfig(opts options) (*plugin, error) {
+	client, err := clientcmd.ClientFromContext(opts.kubeconfigPath, opts.contextName)
+	if err != nil {
+		return nil, err
+	}
+	return &plugin{client, opts}, nil
+}
+
+type options struct {
+	kubeconfigPath string
+	contextName    string
+	// options
+	nodeStat   bool
+	secretName string
+	volumeName string
+	warning    float64
+	critical   float64
+	// IcingaHost
+	host *icinga.IcingaHost
+}
+
+func (o *options) complete(cmd *cobra.Command) error {
+	hostname, err := cmd.Flags().GetString(plugins.FlagHost)
+	if err != nil {
+		return err
+	}
+	o.host, err = icinga.ParseHost(hostname)
+	if err != nil {
+		return errors.New("invalid icinga host.name")
+	}
+
+	o.kubeconfigPath, err = cmd.Flags().GetString(plugins.FlagKubeConfig)
+	if err != nil {
+		return err
+	}
+	o.contextName, err = cmd.Flags().GetString(plugins.FlagKubeConfigContext)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *options) validate() error {
+	if o.nodeStat {
+		if o.host.Type != icinga.TypeNode {
+			return errors.New("invalid icinga host type")
+		}
+	} else {
+		if o.host.Type != icinga.TypePod {
+			return errors.New("invalid icinga host type")
+		}
+	}
+	return nil
 }
 
 type usageStat struct {
@@ -152,12 +203,15 @@ type AuthInfo struct {
 	CACertData string `envconfig:"CA_CERT_DATA"`
 }
 
-func getAuthInfo(kubeClient kubernetes.Interface, secretName, secretNamespace string) (*AuthInfo, error) {
-	if secretName == "" {
+func (p *plugin) getAuthInfo() (*AuthInfo, error) {
+	opts := p.options
+	host := opts.host
+
+	if opts.secretName == "" {
 		return &AuthInfo{Port: 56977}, nil
 	}
 
-	secret, err := kubeClient.CoreV1().Secrets(secretNamespace).Get(secretName, metav1.GetOptions{})
+	secret, err := p.client.CoreV1().Secrets(host.AlertNamespace).Get(opts.secretName, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +229,7 @@ func getAuthInfo(kubeClient kubernetes.Interface, secretName, secretNamespace st
 	return &au, nil
 }
 
-func getStats(au *AuthInfo, hostIP, path string) (*usageStat, error) {
+func (p *plugin) getStats(au *AuthInfo, hostIP, path string) (*usageStat, error) {
 	hc := httpclient.Default().
 		WithBasicAuth(au.Username, au.Password).
 		WithBearerToken(au.Token)
@@ -203,18 +257,18 @@ func checkResult(field string, warning, critical, result float64) (icinga.State,
 	return icinga.OK, "(Disk & Inodes)"
 }
 
-func checkVolume(kubeClient kubernetes.Interface, req *Request, namespace, ip, path string) (icinga.State, interface{}) {
-	authInfo, err := getAuthInfo(kubeClient, req.SecretName, namespace)
+func (p *plugin) checkVolume(ip, path string) (icinga.State, interface{}) {
+	authInfo, err := p.getAuthInfo()
 	if err != nil {
 		return icinga.Unknown, err
 	}
-	usage, err := getStats(authInfo, ip, path)
+	usage, err := p.getStats(authInfo, ip, path)
 	if err != nil {
 		return icinga.Unknown, err
 	}
 
-	warning := req.Warning
-	critical := req.Critical
+	warning := p.options.warning
+	critical := p.options.critical
 	state, message := checkResult("Disk", warning, critical, usage.UsedPercent)
 	if state != icinga.OK {
 		return state, message
@@ -223,21 +277,8 @@ func checkVolume(kubeClient kubernetes.Interface, req *Request, namespace, ip, p
 	return state, message
 }
 
-func checkNodeVolume(req *Request) (icinga.State, interface{}) {
-	host, err := icinga.ParseHost(req.Host)
-	if err != nil {
-		return icinga.Unknown, "Invalid icinga host.name"
-	}
-	if host.Type != icinga.TypeNode {
-		return icinga.Unknown, "Invalid icinga host type"
-	}
-
-	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
-	if err != nil {
-		return icinga.Unknown, err
-	}
-	kubeClient := kubernetes.NewForConfigOrDie(config)
-	node, err := kubeClient.CoreV1().Nodes().Get(host.ObjectName, metav1.GetOptions{})
+func (p *plugin) checkNodeVolume() (icinga.State, interface{}) {
+	node, err := p.client.CoreV1().Nodes().Get(p.options.host.ObjectName, metav1.GetOptions{})
 	if err != nil {
 		return icinga.Unknown, err
 	}
@@ -256,58 +297,47 @@ func checkNodeVolume(req *Request) (icinga.State, interface{}) {
 	if hostIP == "" {
 		return icinga.Unknown, "Node InternalIP not found"
 	}
-	return checkVolume(kubeClient, req, host.AlertNamespace, hostIP, req.VolumeName)
+	return p.checkVolume(hostIP, p.options.volumeName)
 }
 
-func checkPodVolume(req *Request) (icinga.State, interface{}) {
-	host, err := icinga.ParseHost(req.Host)
-	if err != nil {
-		return icinga.Unknown, "Invalid icinga host.name"
-	}
-	if host.Type != icinga.TypePod {
-		return icinga.Unknown, "Invalid icinga host type"
-	}
+func (p *plugin) checkPodVolume() (icinga.State, interface{}) {
+	opts := p.options
+	host := opts.host
 
-	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
-	if err != nil {
-		return icinga.Unknown, err
-	}
-	kubeClient := kubernetes.NewForConfigOrDie(config)
-
-	pod, err := kubeClient.CoreV1().Pods(host.AlertNamespace).Get(host.ObjectName, metav1.GetOptions{})
+	pod, err := p.client.CoreV1().Pods(host.AlertNamespace).Get(host.ObjectName, metav1.GetOptions{})
 	if err != nil {
 		return icinga.Unknown, err
 	}
 
 	for _, volume := range pod.Spec.Volumes {
-		if volume.Name == req.VolumeName {
+		if volume.Name == opts.volumeName {
 			if volume.PersistentVolumeClaim != nil {
-				claim, err := kubeClient.CoreV1().PersistentVolumeClaims(host.AlertNamespace).Get(volume.PersistentVolumeClaim.ClaimName, metav1.GetOptions{})
+				claim, err := p.client.CoreV1().PersistentVolumeClaims(host.AlertNamespace).Get(volume.PersistentVolumeClaim.ClaimName, metav1.GetOptions{})
 				if err != nil {
 					return icinga.Unknown, err
 				}
-				volume, err := kubeClient.CoreV1().PersistentVolumes().Get(claim.Spec.VolumeName, metav1.GetOptions{})
+				volume, err := p.client.CoreV1().PersistentVolumes().Get(claim.Spec.VolumeName, metav1.GetOptions{})
 				if err != nil {
 					return icinga.Unknown, err
 				}
 				volumePluginName := getPersistentVolumePluginName(&volume.Spec.PersistentVolumeSource)
 				if volumePluginName == hostPathPluginName {
 					if claim.Spec.StorageClassName != nil {
-						class, err := kubeClient.StorageV1beta1().StorageClasses().Get(*claim.Spec.StorageClassName, metav1.GetOptions{})
+						class, err := p.client.StorageV1beta1().StorageClasses().Get(*claim.Spec.StorageClassName, metav1.GetOptions{})
 						if err != nil {
 							return icinga.Unknown, err
 						}
 						if class.Provisioner == "k8s.io/minikube-hostpath" {
 							path := fmt.Sprintf("/tmp/hostpath-provisioner/%s", volume.Name)
-							return checkVolume(kubeClient, req, host.AlertNamespace, pod.Status.HostIP, path)
+							return p.checkVolume(pod.Status.HostIP, path)
 						}
 					}
 				}
 				path := fmt.Sprintf("/var/lib/kubelet/pods/%v/volumes/%v/%v", pod.UID, volumePluginName, volume.Name)
-				return checkVolume(kubeClient, req, host.AlertNamespace, pod.Status.HostIP, path)
+				return p.checkVolume(pod.Status.HostIP, path)
 			} else {
 				path := fmt.Sprintf("/var/lib/kubelet/pods/%v/volumes/%v/%v", pod.UID, getVolumePluginName(&volume.VolumeSource), volume.Name)
-				return checkVolume(kubeClient, req, host.AlertNamespace, pod.Status.HostIP, path)
+				return p.checkVolume(pod.Status.HostIP, path)
 			}
 			break
 		}
@@ -315,34 +345,44 @@ func checkPodVolume(req *Request) (icinga.State, interface{}) {
 	return icinga.Unknown, errors.New("Invalid volume source")
 }
 
+func (p *plugin) Check() (icinga.State, interface{}) {
+
+	if p.options.nodeStat {
+		return p.checkNodeVolume()
+	} else {
+		return p.checkPodVolume()
+	}
+}
+
 func NewCmd() *cobra.Command {
-	var req Request
+	var opts options
 
 	c := &cobra.Command{
-		Use:     "check_volume",
-		Short:   "Check kubernetes volume",
-		Example: "",
+		Use:   "check_volume",
+		Short: "Check kubernetes volume",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(cmd, "host")
+			flags.EnsureRequiredFlags(cmd, plugins.FlagHost)
 
-			if req.NodeStat {
-				icinga.Output(checkNodeVolume(&req))
-			} else {
-				flags.EnsureRequiredFlags(cmd, "volume_name")
-				icinga.Output(checkPodVolume(&req))
+			if err := opts.complete(cmd); err != nil {
+				icinga.Output(icinga.Unknown, err)
 			}
+			if err := opts.validate(); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			plugin, err := newPluginFromConfig(opts)
+			if err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			icinga.Output(plugin.Check())
 		},
 	}
 
-	c.Flags().StringVar(&req.masterURL, "master", req.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
-	c.Flags().StringVar(&req.kubeconfigPath, "kubeconfig", req.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
-
-	c.Flags().StringVarP(&req.Host, "host", "H", "", "Icinga host name")
-	c.Flags().BoolVar(&req.NodeStat, "nodeStat", false, "Checking Node disk size")
-	c.Flags().StringVarP(&req.SecretName, "secretName", "s", "", `Kubernetes secret name`)
-	c.Flags().StringVarP(&req.VolumeName, "volumeName", "N", "", "Volume name")
-	c.Flags().Float64VarP(&req.Warning, "warning", "w", 80.0, "Warning level value (usage percentage)")
-	c.Flags().Float64VarP(&req.Critical, "critical", "c", 95.0, "Critical level value (usage percentage)")
+	c.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
+	c.Flags().BoolVar(&opts.nodeStat, "nodeStat", false, "Checking Node disk size")
+	c.Flags().StringVarP(&opts.secretName, "secretName", "s", "", `Kubernetes secret name`)
+	c.Flags().StringVarP(&opts.volumeName, "volumeName", "N", "", "Volume name")
+	c.Flags().Float64VarP(&opts.warning, "warning", "w", 80.0, "Warning level value (usage percentage)")
+	c.Flags().Float64VarP(&opts.critical, "critical", "c", 95.0, "Critical level value (usage percentage)")
 	return c
 }

@@ -24,20 +24,19 @@ hyperalert check_pod_exists [flags]
 ### Options
 
 ```
-  -c, --count int           Number of Kubernetes pods
-  -h, --help                help for check_pod_exists
-  -H, --host string         Icinga host name
-      --kubeconfig string   Path to kubeconfig file with authorization information (the master location is set by the master flag).
-      --master string       The address of the Kubernetes API server (overrides any value in kubeconfig)
-  -p, --podName string      Name of pod whose existence is checked
-  -l, --selector string     Selector (label query) to filter on, supports '=', '==', and '!='.
+  -c, --count int         Number of Kubernetes pods
+  -h, --help              help for check_pod_exists
+  -H, --host string       Icinga host name
+  -p, --podName string    Name of pod whose existence is checked
+  -l, --selector string   Selector (label query) to filter on, supports '=', '==', and '!='.
 ```
 
 ### Options inherited from parent commands
 
 ```
       --alsologtostderr                  log to standard error as well as files
-      --enable-analytics                 send usage events to Google Analytics
+      --context string                   Use the context in kubeconfig
+      --kubeconfig string                Path to kubeconfig file with authorization information (the master location is set by the master flag).
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory
       --logtostderr                      log to standard error instead of files

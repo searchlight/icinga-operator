@@ -6,8 +6,10 @@ import (
 	"net/http/httptest"
 
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/plugins"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/spf13/cobra"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -134,6 +136,45 @@ var _ = Describe("check_json_path", func() {
 				}
 				state, _ := newPlugin(nil, opts).Check()
 				Expect(state).Should(BeIdenticalTo(icinga.Critical))
+			})
+		})
+	})
+	Describe("test options", func() {
+		var (
+			cmd *cobra.Command
+		)
+
+		JustBeforeEach(func() {
+			cmd = new(cobra.Command)
+			cmd.Flags().String(plugins.FlagHost, "", "")
+			cmd.Flags().String(plugins.FlagKubeConfig, "", "")
+			cmd.Flags().String(plugins.FlagKubeConfigContext, "", "")
+		})
+		Context("valid", func() {
+			It("host", func() {
+				opts := options{}
+				cmd.Flags().Set(plugins.FlagHost, "demo@cluster")
+				err := opts.complete(cmd)
+				Expect(err).ShouldNot(HaveOccurred())
+				Expect(opts.namespace).Should(BeIdenticalTo("demo"))
+				err = opts.validate()
+				Expect(err).ShouldNot(HaveOccurred())
+			})
+		})
+		Context("invalid", func() {
+			It("hostname", func() {
+				opts := options{}
+				cmd.Flags().Set(plugins.FlagHost, "demo@cluster@demo")
+				err := opts.complete(cmd)
+				Expect(err).Should(HaveOccurred())
+			})
+			It("host type", func() {
+				opts := options{}
+				cmd.Flags().Set(plugins.FlagHost, "demo@pod@demo")
+				err := opts.complete(cmd)
+				Expect(err).ShouldNot(HaveOccurred())
+				err = opts.validate()
+				Expect(err).Should(HaveOccurred())
 			})
 		})
 	})

@@ -8,6 +8,7 @@ import (
 	v "github.com/appscode/go/version"
 	"github.com/appscode/kutil/tools/analytics"
 	"github.com/appscode/searchlight/client/clientset/versioned/scheme"
+	"github.com/appscode/searchlight/plugins"
 	"github.com/appscode/searchlight/plugins/analytics_id"
 	"github.com/appscode/searchlight/plugins/check_ca_cert"
 	"github.com/appscode/searchlight/plugins/check_cert"
@@ -56,7 +57,8 @@ func NewCmd() *cobra.Command {
 	cmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
 	// ref: https://github.com/kubernetes/kubernetes/issues/17162#issuecomment-225596212
 	flag.CommandLine.Parse([]string{})
-	cmd.PersistentFlags().BoolVar(&enableAnalytics, "enable-analytics", enableAnalytics, "send usage events to Google Analytics")
+	cmd.PersistentFlags().String(plugins.FlagKubeConfig, "", "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
+	cmd.PersistentFlags().String(plugins.FlagKubeConfigContext, "", "Use the context in kubeconfig")
 
 	// CheckCluster
 	cmd.AddCommand(check_component_status.NewCmd())

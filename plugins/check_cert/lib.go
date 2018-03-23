@@ -6,14 +6,14 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/appscode/go/flags"
+	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
-	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/cert"
 )
 
@@ -29,19 +29,17 @@ func newPlugin(client corev1.SecretInterface, opts options) *plugin {
 }
 
 func newPluginFromConfig(opts options) (*plugin, error) {
-	config, err := clientcmd.BuildConfigFromFlags(opts.masterURL, opts.kubeconfigPath)
+	client, err := clientcmd.ClientFromContext(opts.kubeconfigPath, opts.contextName)
 	if err != nil {
 		return nil, err
 	}
-	client := kubernetes.NewForConfigOrDie(config).CoreV1().Secrets(opts.namespace)
-	return newPlugin(client, opts), nil
+
+	return newPlugin(client.CoreV1().Secrets(opts.namespace), opts), nil
 }
 
 type options struct {
-	masterURL      string
 	kubeconfigPath string
-	// Icinga host name
-	hostname string
+	contextName    string
 	// options for Secret
 	namespace  string
 	selector   string
@@ -50,17 +48,36 @@ type options struct {
 	// Certificate expirity duration
 	warning  time.Duration
 	critical time.Duration
+	// IcingaHost
+	host *icinga.IcingaHost
 }
 
-func (o *options) validate() error {
-	host, err := icinga.ParseHost(o.hostname)
+func (o *options) complete(cmd *cobra.Command) error {
+	hostname, err := cmd.Flags().GetString(plugins.FlagHost)
+	if err != nil {
+		return err
+	}
+	o.host, err = icinga.ParseHost(hostname)
 	if err != nil {
 		return errors.New("invalid icinga host.name")
 	}
-	if host.Type != icinga.TypeCluster {
+	o.namespace = o.host.AlertNamespace
+
+	o.kubeconfigPath, err = cmd.Flags().GetString(plugins.FlagKubeConfig)
+	if err != nil {
+		return err
+	}
+	o.contextName, err = cmd.Flags().GetString(plugins.FlagKubeConfigContext)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *options) validate() error {
+	if o.host.Type != icinga.TypeCluster {
 		return errors.New("invalid icinga host type")
 	}
-	o.namespace = host.AlertNamespace
 	return nil
 }
 
@@ -167,6 +184,11 @@ func NewCmd() *cobra.Command {
 		Short: "Check Certificate expire date",
 
 		Run: func(cmd *cobra.Command, args []string) {
+			flags.EnsureRequiredFlags(cmd, plugins.FlagHost)
+
+			if err := opts.complete(cmd); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
 			if err := opts.validate(); err != nil {
 				icinga.Output(icinga.Unknown, err)
 			}
@@ -178,9 +200,7 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&opts.masterURL, "master", opts.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
-	cmd.Flags().StringVar(&opts.kubeconfigPath, "kubeconfig", opts.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
-	cmd.Flags().StringVarP(&opts.hostname, "host", "H", "", "Icinga host name")
+	cmd.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
 	cmd.Flags().StringVarP(&opts.selector, "selector", "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='")
 	cmd.Flags().StringVarP(&opts.secretName, "secretName", "s", "", "Name of secret from where certificates are checked")
 	cmd.Flags().StringSliceVarP(&opts.secretKey, "secretKey", "k", nil, "Name of secret key where certificates are kept")

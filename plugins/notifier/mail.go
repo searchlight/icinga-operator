@@ -7,19 +7,19 @@ import (
 	"time"
 
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/pkg/icinga"
 )
 
-func RenderSubject(alert api.Alert, req *Request) string {
-	switch api.AlertType(req.Type) {
+func (n *notifier) RenderSubject(receiver api.Receiver) string {
+	opts := n.options
+	switch api.AlertType(opts.notificationType) {
 	case api.NotificationAcknowledgement:
-		return fmt.Sprintf("Problem Acknowledged: Service [%s] for [%s] is in \"%s\" state", alert.GetName(), req.HostName, req.State)
+		return fmt.Sprintf("Problem Acknowledged: Service [%s] for [%s] is in \"%s\" state", opts.alertName, opts.hostname, receiver.State)
 	case api.NotificationRecovery:
-		return fmt.Sprintf("Problem Recovered: Service [%s] for [%s] is in \"%s\" state.", alert.GetName(), req.HostName, req.State)
+		return fmt.Sprintf("Problem Recovered: Service [%s] for [%s] was in \"%s\" state.", opts.alertName, opts.hostname, receiver.State)
 	case api.NotificationProblem:
-		return fmt.Sprintf("Problem Detected: Service [%s] for [%s] is in \"%s\" state.", alert.GetName(), req.HostName, req.State)
+		return fmt.Sprintf("Problem Detected: Service [%s] for [%s] is in \"%s\" state.", opts.alertName, opts.hostname, receiver.State)
 	default:
-		return fmt.Sprintf("Service [%s] for [%s] is in \"%s\" state.", alert.GetName(), req.HostName, req.State)
+		return fmt.Sprintf("Service [%s] for [%s] is in \"%s\" state.", opts.alertName, opts.hostname, receiver.State)
 	}
 }
 
@@ -39,29 +39,27 @@ type TemplateData struct {
 	IcingaTime         time.Time
 }
 
-func RenderMail(alert api.Alert, req *Request) (string, error) {
-	host, err := icinga.ParseHost(req.HostName)
-	if err != nil {
-		return "", err
-	}
+func (n *notifier) RenderMail(alert api.Alert) (string, error) {
+	opts := n.options
+	host := opts.host
 	data := TemplateData{
 		AlertName:          alert.GetName(),
 		AlertNamespace:     host.AlertNamespace,
 		AlertType:          host.Type,
 		ObjectName:         host.ObjectName,
-		IcingaHostName:     req.HostName,
+		IcingaHostName:     n.options.hostname,
 		IcingaServiceName:  alert.GetName(),
 		IcingaCheckCommand: alert.Command(),
-		IcingaType:         req.Type,
-		IcingaState:        strings.ToUpper(req.State),
-		IcingaOutput:       req.Output,
-		Author:             req.Author,
-		Comment:            req.Comment,
-		IcingaTime:         req.Time,
+		IcingaType:         opts.notificationType,
+		IcingaState:        strings.ToUpper(opts.serviceState),
+		IcingaOutput:       opts.serviceOutput,
+		Author:             opts.author,
+		Comment:            opts.comment,
+		IcingaTime:         opts.time,
 	}
 
 	var buf bytes.Buffer
-	if err = mailTemplate.Execute(&buf, data); err != nil {
+	if err := mailTemplate.Execute(&buf, data); err != nil {
 		return "", err
 	}
 	config := buf.String()

@@ -5,14 +5,13 @@ import (
 	"errors"
 
 	"github.com/appscode/go/flags"
+	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 type plugin struct {
@@ -27,32 +26,48 @@ func newPlugin(client corev1.NodeInterface, opts options) *plugin {
 }
 
 func newPluginFromConfig(opts options) (*plugin, error) {
-	config, err := clientcmd.BuildConfigFromFlags(opts.masterURL, opts.kubeconfigPath)
+	client, err := clientcmd.ClientFromContext(opts.kubeconfigPath, opts.contextName)
 	if err != nil {
 		return nil, err
 	}
-	client := kubernetes.NewForConfigOrDie(config).CoreV1().Nodes()
-	return newPlugin(client, opts), nil
+	return newPlugin(client.CoreV1().Nodes(), opts), nil
 }
 
 type options struct {
-	masterURL      string
 	kubeconfigPath string
-	// Icinga host name
-	hostname string
+	contextName    string
 	// options for Secret
 	nodeName string
+	// IcingaHost
+	host *icinga.IcingaHost
 }
 
-func (o *options) validate() error {
-	host, err := icinga.ParseHost(o.hostname)
+func (o *options) complete(cmd *cobra.Command) error {
+	hostname, err := cmd.Flags().GetString(plugins.FlagHost)
+	if err != nil {
+		return err
+	}
+	o.host, err = icinga.ParseHost(hostname)
 	if err != nil {
 		return errors.New("invalid icinga host.name")
 	}
-	if host.Type != icinga.TypeNode {
+	o.nodeName = o.host.ObjectName
+
+	o.kubeconfigPath, err = cmd.Flags().GetString(plugins.FlagKubeConfig)
+	if err != nil {
+		return err
+	}
+	o.contextName, err = cmd.Flags().GetString(plugins.FlagKubeConfigContext)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *options) validate() error {
+	if o.host.Type != icinga.TypeNode {
 		return errors.New("invalid icinga host type")
 	}
-	o.nodeName = host.ObjectName
 	return nil
 }
 
@@ -112,8 +127,11 @@ func NewCmd() *cobra.Command {
 		Short: "Check Kubernetes Node",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(cmd, "host")
+			flags.EnsureRequiredFlags(cmd, plugins.FlagHost)
 
+			if err := opts.complete(cmd); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
 			if err := opts.validate(); err != nil {
 				icinga.Output(icinga.Unknown, err)
 			}
@@ -125,8 +143,6 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().StringVar(&opts.masterURL, "master", opts.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
-	c.Flags().StringVar(&opts.kubeconfigPath, "kubeconfig", opts.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
-	c.Flags().StringVarP(&opts.hostname, "host", "H", "", "Icinga host name")
+	c.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
 	return c
 }

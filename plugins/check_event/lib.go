@@ -2,19 +2,85 @@ package check_event
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/appscode/go/flags"
+	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
+
+type plugin struct {
+	client  corev1.EventInterface
+	options options
+}
+
+var _ plugins.PluginInterface = &plugin{}
+
+func newPlugin(client corev1.EventInterface, opts options) *plugin {
+	return &plugin{client, opts}
+}
+
+func newPluginFromConfig(opts options) (*plugin, error) {
+	client, err := clientcmd.ClientFromContext(opts.kubeconfigPath, opts.contextName)
+	if err != nil {
+		return nil, err
+	}
+
+	return newPlugin(client.CoreV1().Events(opts.namespace), opts), nil
+}
+
+type options struct {
+	kubeconfigPath string
+	contextName    string
+	// Event check information
+	namespace     string
+	checkInterval time.Duration
+	clockSkew     time.Duration
+	// Involved object information
+	involvedObjectName      string
+	involvedObjectNamespace string
+	involvedObjectKind      string
+	involvedObjectUID       string
+	// IcingaHost
+	host *icinga.IcingaHost
+}
+
+func (o *options) complete(cmd *cobra.Command) (err error) {
+	hostname, err := cmd.Flags().GetString(plugins.FlagHost)
+	if err != nil {
+		return err
+	}
+	o.host, err = icinga.ParseHost(hostname)
+	if err != nil {
+		return errors.New("invalid icinga host.name")
+	}
+	o.namespace = o.host.AlertNamespace
+
+	o.kubeconfigPath, err = cmd.Flags().GetString(plugins.FlagKubeConfig)
+	if err != nil {
+		return
+	}
+	o.contextName, err = cmd.Flags().GetString(plugins.FlagKubeConfigContext)
+	if err != nil {
+		return
+	}
+	return nil
+}
+
+func (o *options) validate() error {
+	if o.host.Type != icinga.TypeCluster {
+		return errors.New("invalid icinga host type")
+	}
+	return nil
+}
 
 type eventInfo struct {
 	Name      string `json:"name,omitempty"`
@@ -30,34 +96,31 @@ type serviceOutput struct {
 	Message string       `json:"message,omitempty"`
 }
 
-func CheckKubeEvent(req *Request) (icinga.State, interface{}) {
-	config, err := clientcmd.BuildConfigFromFlags(req.masterURL, req.kubeconfigPath)
-	if err != nil {
-		return icinga.Unknown, err
-	}
-	kubeClient := kubernetes.NewForConfigOrDie(config)
+func (p *plugin) Check() (icinga.State, interface{}) {
+	opts := p.options
 
-	checkTime := time.Now().Add(-(req.CheckInterval + req.ClockSkew))
+	checkTime := time.Now().Add(-(opts.checkInterval + opts.clockSkew))
 	eventInfoList := make([]*eventInfo, 0)
 
 	var objName, objNamespace, objKind, objUID *string
-	if req.InvolvedObjectName != "" {
-		objName = &req.InvolvedObjectName
+	if opts.involvedObjectName != "" {
+		objName = &opts.involvedObjectName
 	}
-	if req.InvolvedObjectNamespace != "" {
-		objNamespace = &req.InvolvedObjectNamespace
+	if opts.involvedObjectNamespace != "" {
+		objNamespace = &opts.involvedObjectNamespace
 	}
-	if req.InvolvedObjectKind != "" {
-		objKind = &req.InvolvedObjectKind
+	if opts.involvedObjectKind != "" {
+		objKind = &opts.involvedObjectKind
 	}
-	if req.InvolvedObjectUID != "" {
-		objUID = &req.InvolvedObjectUID
+	if opts.involvedObjectUID != "" {
+		objUID = &opts.involvedObjectUID
 	}
 	fs := fields.AndSelectors(
 		fields.OneTermEqualSelector("type", core.EventTypeWarning),
-		kubeClient.CoreV1().Events(req.Namespace).GetFieldSelector(objName, objNamespace, objKind, objUID),
+		p.client.GetFieldSelector(objName, objNamespace, objKind, objUID),
 	)
-	eventList, err := kubeClient.CoreV1().Events(req.Namespace).List(metav1.ListOptions{
+
+	eventList, err := p.client.List(metav1.ListOptions{
 		FieldSelector: fs.String(),
 	})
 	if err != nil {
@@ -94,58 +157,42 @@ func CheckKubeEvent(req *Request) (icinga.State, interface{}) {
 	}
 }
 
-type Request struct {
-	masterURL      string
-	kubeconfigPath string
-
-	Namespace     string
-	CheckInterval time.Duration
-	ClockSkew     time.Duration
-
-	InvolvedObjectName      string
-	InvolvedObjectNamespace string
-	InvolvedObjectKind      string
-	InvolvedObjectUID       string
-}
+const (
+	flagCheckInterval = "checkInterval"
+)
 
 func NewCmd() *cobra.Command {
-	var req Request
-	var icingaHost string
+	var opts options
 
 	cmd := &cobra.Command{
-		Use:     "check_event",
-		Short:   "Check kubernetes events for all namespaces",
-		Example: "",
+		Use:   "check_event",
+		Short: "Check kubernetes events for all namespaces",
 
-		Run: func(c *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(c, "check_interval")
+		Run: func(cmd *cobra.Command, args []string) {
+			flags.EnsureRequiredFlags(cmd, plugins.FlagHost, flagCheckInterval)
 
-			host, err := icinga.ParseHost(icingaHost)
+			if err := opts.complete(cmd); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			if err := opts.validate(); err != nil {
+				icinga.Output(icinga.Unknown, err)
+			}
+			plugin, err := newPluginFromConfig(opts)
 			if err != nil {
-				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host.name")
-				os.Exit(3)
+				icinga.Output(icinga.Unknown, err)
 			}
-			if host.Type != icinga.TypeCluster {
-				fmt.Fprintln(os.Stdout, icinga.Warning, "Invalid icinga host type")
-				os.Exit(3)
-			}
-			req.Namespace = host.AlertNamespace
-
-			icinga.Output(CheckKubeEvent(&req))
+			icinga.Output(plugin.Check())
 		},
 	}
 
-	cmd.Flags().StringVar(&req.masterURL, "master", req.masterURL, "The address of the Kubernetes API server (overrides any value in kubeconfig)")
-	cmd.Flags().StringVar(&req.kubeconfigPath, "kubeconfig", req.kubeconfigPath, "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
+	cmd.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
+	cmd.Flags().DurationVarP(&opts.checkInterval, flagCheckInterval, "c", time.Second*0, "Icinga check_interval in duration. [Format: 30s, 5m]")
+	cmd.Flags().DurationVarP(&opts.clockSkew, "clockSkew", "s", time.Second*30, "Add skew with check_interval in duration. [Default: 30s]")
 
-	cmd.Flags().StringVarP(&icingaHost, "host", "H", "", "Icinga host name")
-	cmd.Flags().DurationVarP(&req.CheckInterval, "checkInterval", "c", time.Second*0, "Icinga check_interval in duration. [Format: 30s, 5m]")
-	cmd.Flags().DurationVarP(&req.ClockSkew, "clockSkew", "s", time.Second*30, "Add skew with check_interval in duration. [Default: 30s]")
-
-	cmd.Flags().StringVar(&req.InvolvedObjectName, "involvedObjectName", "", "Involved object name used to select events")
-	cmd.Flags().StringVar(&req.InvolvedObjectNamespace, "involvedObjectNamespace", "", "Involved object namespace used to select events")
-	cmd.Flags().StringVar(&req.InvolvedObjectKind, "involvedObjectKind", "", "Involved object kind used to select events")
-	cmd.Flags().StringVar(&req.InvolvedObjectUID, "involvedObjectUID", "", "Involved object uid used to select events")
+	cmd.Flags().StringVar(&opts.involvedObjectName, "involvedObjectName", "", "Involved object name used to select events")
+	cmd.Flags().StringVar(&opts.involvedObjectNamespace, "involvedObjectNamespace", "", "Involved object namespace used to select events")
+	cmd.Flags().StringVar(&opts.involvedObjectKind, "involvedObjectKind", "", "Involved object kind used to select events")
+	cmd.Flags().StringVar(&opts.involvedObjectUID, "involvedObjectUID", "", "Involved object uid used to select events")
 
 	return cmd
 }
