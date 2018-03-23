@@ -13,7 +13,7 @@ func RenderSMS(alert api.Alert, req *Request) string {
 	case api.NotificationAcknowledgement:
 		msg = fmt.Sprintf("Service [%s] for [%s] is in \"%s\" state.\nThis issue is acked.", alert.GetName(), req.HostName, req.State)
 	case api.NotificationRecovery:
-		msg = fmt.Sprintf("Service [%s] for [%s] is in \"%s\" state.\nThis issue is recovered.", alert.GetName(), req.HostName, req.State)
+		msg = fmt.Sprintf("Service [%s] for [%s] was in \"%s\" state.\nThis issue is recovered.", alert.GetName(), req.HostName, req.State)
 	case api.NotificationProblem:
 		msg = fmt.Sprintf("Service [%s] for [%s] is in \"%s\" state.\nCheck this issue in Icingaweb.", alert.GetName(), req.HostName, req.State)
 	default:

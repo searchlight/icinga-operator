@@ -35,7 +35,7 @@ var _ = Describe("ClusterAlert", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Check icinga services")
-			f.EventuallyClusterAlertIcingaService(alert.ObjectMeta, alert.Spec).
+			f.EventuallyClusterAlertIcingaService(alert.ObjectMeta).
 				Should(HaveIcingaObject(icingaServiceState))
 
 			By("Delete clusteralert")
@@ -43,7 +43,7 @@ var _ = Describe("ClusterAlert", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Wait for icinga services to be deleted")
-			f.EventuallyClusterAlertIcingaService(alert.ObjectMeta, alert.Spec).
+			f.EventuallyClusterAlertIcingaService(alert.ObjectMeta).
 				Should(HaveIcingaObject(IcingaServiceState{}))
 		}
 
@@ -107,7 +107,7 @@ var _ = Describe("ClusterAlert", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				By("Check icinga services")
-				f.EventuallyClusterAlertIcingaService(alert.ObjectMeta, alert.Spec).
+				f.EventuallyClusterAlertIcingaService(alert.ObjectMeta).
 					Should(HaveIcingaObject(icingaServiceState))
 
 				By("Delete clusteralert")
@@ -115,7 +115,7 @@ var _ = Describe("ClusterAlert", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				By("Wait for icinga services to be deleted")
-				f.EventuallyClusterAlertIcingaService(alert.ObjectMeta, alert.Spec).
+				f.EventuallyClusterAlertIcingaService(alert.ObjectMeta).
 					Should(HaveIcingaObject(IcingaServiceState{}))
 			}
 

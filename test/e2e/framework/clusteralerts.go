@@ -1,6 +1,8 @@
 package framework
 
 import (
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/appscode/go/crypto/rand"
@@ -21,7 +23,7 @@ func (f *Invocation) ClusterAlert() *api.ClusterAlert {
 			},
 		},
 		Spec: api.ClusterAlertSpec{
-			CheckInterval: metav1.Duration{time.Second * 5},
+			CheckInterval: metav1.Duration{Duration: time.Second * 5},
 			Vars:          make(map[string]string),
 		},
 	}
@@ -40,22 +42,39 @@ func (f *Framework) DeleteClusterAlert(meta metav1.ObjectMeta) error {
 	return f.extClient.MonitoringV1alpha1().ClusterAlerts(meta.Namespace).Delete(meta.Name, &metav1.DeleteOptions{})
 }
 
-func (f *Framework) getClusterAlertObjects(meta metav1.ObjectMeta, clusterAlertSpec api.ClusterAlertSpec) ([]icinga.IcingaHost, error) {
-	objectList := []icinga.IcingaHost{
-		{
-			Type:           icinga.TypeCluster,
-			AlertNamespace: meta.Namespace,
-		},
+func (f *Framework) getClusterAlertObjects(meta metav1.ObjectMeta) icinga.IcingaHost {
+	return icinga.IcingaHost{
+		Type:           icinga.TypeCluster,
+		AlertNamespace: meta.Namespace,
 	}
-	return objectList, nil
 }
 
-func (f *Framework) EventuallyClusterAlertIcingaService(meta metav1.ObjectMeta, nodeAlertSpec api.ClusterAlertSpec) GomegaAsyncAssertion {
-	objectList, err := f.getClusterAlertObjects(meta, nodeAlertSpec)
-	Expect(err).NotTo(HaveOccurred())
+func (f *Framework) ForceCheckClusterAlert(meta metav1.ObjectMeta, times int) error {
+	hostName, err := f.getClusterAlertObjects(meta).Name()
+	if err != nil {
+		return err
+	}
+
+	mp := make(map[string]interface{})
+	mp["type"] = "Service"
+	mp["filter"] = fmt.Sprintf(`service.name == "%s" && host.name == "%s"`, meta.Name, hostName)
+	mp["force_check"] = true
+	checkNow, err := json.Marshal(mp)
+	if err != nil {
+		return err
+	}
+
+	for i := 0; i < times; i++ {
+		f.icingaClient.Actions("reschedule-check").Update([]string{}, string(checkNow)).Do()
+	}
+	return nil
+}
+
+func (f *Framework) EventuallyClusterAlertIcingaService(meta metav1.ObjectMeta) GomegaAsyncAssertion {
+	icingaHost := f.getClusterAlertObjects(meta)
 
 	in := icinga.NewClusterHost(f.icingaClient, "6").
-		IcingaServiceSearchQuery(meta.Name, objectList...)
+		IcingaServiceSearchQuery(meta.Name, icingaHost)
 
 	return Eventually(
 		func() matcher.IcingaServiceState {
@@ -82,6 +101,38 @@ func (f *Framework) EventuallyClusterAlertIcingaService(meta metav1.ObjectMeta, 
 				}
 			}
 			return icingaServiceState
+		},
+		time.Minute*5,
+		time.Second*5,
+	)
+}
+
+type notificationObject struct {
+	Results []struct {
+		Attrs struct {
+			NotificationNumber float64 `json:"notification_number"`
+		} `json:"attrs"`
+	} `json:"results"`
+}
+
+func (f *Framework) EventuallyClusterAlertIcingaNotification(meta metav1.ObjectMeta) GomegaAsyncAssertion {
+	icingaHost := f.getClusterAlertObjects(meta)
+	host, err := icingaHost.Name()
+	Expect(err).NotTo(HaveOccurred())
+
+	return Eventually(
+		func() float64 {
+			var resp notificationObject
+			status, err := f.icingaClient.Objects().Notifications(host).Get([]string{meta.GetName(), meta.GetName()}, "").Do().Into(&resp)
+			if status == 0 {
+				return -1
+			}
+			Expect(err).NotTo(HaveOccurred())
+
+			if len(resp.Results) != 1 {
+				return -1
+			}
+			return resp.Results[0].Attrs.NotificationNumber
 		},
 		time.Minute*5,
 		time.Second*5,

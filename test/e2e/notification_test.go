@@ -1,0 +1,126 @@
+package e2e_test
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/appscode/go/types"
+	kutil_ext "github.com/appscode/kutil/extensions/v1beta1"
+	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/plugins/notifier"
+	"github.com/appscode/searchlight/test/e2e/framework"
+	. "github.com/appscode/searchlight/test/e2e/matcher"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	core_v1 "k8s.io/api/core/v1"
+	extensions "k8s.io/api/extensions/v1beta1"
+)
+
+var _ = Describe("Notification", func() {
+	var (
+		f            *framework.Invocation
+		rs           *extensions.ReplicaSet
+		clusterAlert *api.ClusterAlert
+		secret       *core_v1.Secret
+		server       *http.Server
+		serverURL    string
+		icingaHost   *icinga.IcingaHost
+	)
+
+	BeforeEach(func() {
+		f = root.Invoke()
+		rs = f.ReplicaSet()
+		clusterAlert = f.ClusterAlert()
+		secret = f.GetWebHookSecret()
+		server = framework.GetServer()
+		serverURL = fmt.Sprintf("http://10.0.2.2:%s", framework.HTTPServerPort)
+	})
+
+	Describe("Test", func() {
+		Context("Send custom notification", func() {
+			BeforeEach(func() {
+				go server.ListenAndServe()
+
+				rs.Spec.Replicas = types.Int32P(*rs.Spec.Replicas - 1)
+
+				secret.StringData["WEBHOOK_URL"] = serverURL
+				secret.StringData["WEBHOOK_TO"] = "test"
+
+				clusterAlert.Spec.Check = api.CheckPodExists
+				clusterAlert.Spec.Vars["count"] = fmt.Sprintf("%v", *rs.Spec.Replicas+1)
+				clusterAlert.Spec.NotifierSecretName = secret.Name
+				clusterAlert.Spec.Receivers = []api.Receiver{
+					{
+						State:    "Critical",
+						To:       []string{"shahriar"},
+						Notifier: "webhook",
+					},
+				}
+
+				icingaHost = &icinga.IcingaHost{
+					Type:           icinga.TypeCluster,
+					AlertNamespace: clusterAlert.Namespace,
+				}
+			})
+			AfterEach(func() {
+				server.Close()
+			})
+			It("Should be OK", func() {
+
+				By("Create notifier secret: " + secret.Name)
+				err := f.CreateWebHookSecret(secret)
+				Expect(err).NotTo(HaveOccurred())
+
+				By("Create ReplicaSet: " + rs.Name)
+				rs, err = f.CreateReplicaSet(rs)
+				Expect(err).NotTo(HaveOccurred())
+
+				By("Wait for Running pods")
+				f.EventuallyReplicaSet(rs.ObjectMeta).Should(HaveRunningPods(*rs.Spec.Replicas))
+
+				By("Create cluster alert: " + clusterAlert.Name)
+				err = f.CreateClusterAlert(clusterAlert)
+				Expect(err).NotTo(HaveOccurred())
+
+				By("Check icinga services")
+				f.EventuallyClusterAlertIcingaService(clusterAlert.ObjectMeta).
+					Should(HaveIcingaObject(IcingaServiceState{Critical: 1}))
+
+				By("Force check now")
+				f.ForceCheckClusterAlert(clusterAlert.ObjectMeta, 5)
+
+				By("Count icinga notification")
+				f.EventuallyClusterAlertIcingaNotification(clusterAlert.ObjectMeta).Should(BeNumerically(">", 0.0))
+
+				hostname, err := icingaHost.Name()
+				Expect(err).NotTo(HaveOccurred())
+				req := &notifier.Request{
+					HostName: hostname,
+					State:    "Critical",
+					Type:     string(api.NotificationProblem),
+				}
+				msg := notifier.RenderSMS(clusterAlert, req)
+
+				By("Check received notification message")
+				f.EventuallyHTTPServerResponse().Should(BeIdenticalTo(msg))
+
+				By("Patch ReplicaSet to increate replicas")
+				rs, _, err = kutil_ext.PatchReplicaSet(f.KubeClient(), rs, func(set *extensions.ReplicaSet) *extensions.ReplicaSet {
+					set.Spec.Replicas = types.Int32P(*rs.Spec.Replicas + 1)
+					return set
+				})
+
+				By("Check icinga services")
+				f.EventuallyClusterAlertIcingaService(clusterAlert.ObjectMeta).
+					Should(HaveIcingaObject(IcingaServiceState{OK: 1}))
+
+				req.Type = string(api.NotificationRecovery)
+				msg = notifier.RenderSMS(clusterAlert, req)
+
+				By("Check received notification message")
+				f.EventuallyHTTPServerResponse().Should(BeIdenticalTo(msg))
+			})
+		})
+	})
+})
