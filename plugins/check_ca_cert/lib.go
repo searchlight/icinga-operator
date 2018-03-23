@@ -2,8 +2,6 @@ package check_ca_cert
 
 import (
 	"crypto/x509"
-	"encoding/pem"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"time"
@@ -11,6 +9,7 @@ import (
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
+	"k8s.io/client-go/util/cert"
 )
 
 type plugin struct {
@@ -36,37 +35,41 @@ func (o *options) validate() error {
 	return nil
 }
 
-func (p *plugin) loadCACert() (*x509.Certificate, error) {
+func (p *plugin) loadCACert() ([]*x509.Certificate, error) {
 	caCert := "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
 	data, err := ioutil.ReadFile(caCert)
 	if err != nil {
 		return nil, err
 	}
 
-	block, _ := pem.Decode(data)
-	if block == nil {
-		return nil, errors.New("failed to parse certificate")
+	return cert.ParseCertsPEM(data)
+}
+
+func (p *plugin) checkNotAfter(cert *x509.Certificate) (icinga.State, time.Duration) {
+	remaining := cert.NotAfter.Sub(time.Now())
+	if remaining.Seconds() < p.options.critical.Seconds() {
+		return icinga.Critical, remaining
 	}
-	return x509.ParseCertificate(block.Bytes)
+
+	if remaining.Seconds() < p.options.warning.Seconds() {
+		return icinga.Warning, remaining
+	}
+
+	return icinga.OK, remaining
 }
 
 func (p *plugin) Check() (icinga.State, interface{}) {
-	crt, err := p.loadCACert()
+	certs, err := p.loadCACert()
 	if err != nil {
 		return icinga.Unknown, err.Error()
 	}
 
-	remaining := crt.NotAfter.Sub(time.Now())
-
-	if remaining.Seconds() < p.options.critical.Seconds() {
-		return icinga.Critical, fmt.Sprintf("Certificate will be expired within %v hours", remaining.Hours())
+	for _, cert := range certs {
+		if state, remaining := p.checkNotAfter(cert); state != icinga.OK {
+			return state, fmt.Errorf(`certificate will be expired within %v hours`, remaining.Hours())
+		}
 	}
-
-	if remaining.Seconds() < p.options.warning.Seconds() {
-		return icinga.Warning, fmt.Sprintf("Certificate will be expired within %v hours", remaining.Hours())
-	}
-
-	return icinga.OK, fmt.Sprintf("Certificate is valid more than %v days", remaining.Hours()/24.0)
+	return icinga.OK, nil
 }
 
 func NewCmd() *cobra.Command {
