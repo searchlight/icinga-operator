@@ -202,11 +202,8 @@ func (n *notifier) sendNotification() {
 	}
 
 	serviceState := n.options.serviceState
-
-	var incident *api.Incident
 	if api.AlertType(n.options.notificationType) == api.NotificationRecovery {
-		incident, _ = n.getIncident()
-		if incident != nil {
+		if incident, _ := n.getIncident(); incident != nil {
 			if lastNonOKState := n.getLastNonOKState(incident); lastNonOKState != "" {
 				serviceState = lastNonOKState
 			}
