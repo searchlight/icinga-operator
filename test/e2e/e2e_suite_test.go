@@ -1,4 +1,4 @@
-package e2e_test
+package e2e
 
 import (
 	"flag"
@@ -12,7 +12,6 @@ import (
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/operator"
-	"github.com/appscode/searchlight/test/e2e"
 	"github.com/appscode/searchlight/test/e2e/framework"
 	. "github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/ginkgo"
@@ -67,7 +66,7 @@ var _ = BeforeSuite(func() {
 	// Framework
 	root = framework.New(kubeClient, apiExtKubeClient, extClient, nil, provider, storageClass)
 
-	e2e.PrintSeparately("Using namespace " + root.Namespace())
+	framework.PrintSeparately("Using namespace " + root.Namespace())
 
 	// Create namespace
 	err = root.CreateNamespace()
@@ -106,8 +105,8 @@ var _ = BeforeSuite(func() {
 		CACert:   nil,
 	}
 
-	cfg.BasicAuth.Username = e2e.ICINGA_API_USER
-	cfg.BasicAuth.Password = e2e.ICINGA_API_PASSWORD
+	cfg.BasicAuth.Username = ICINGA_API_USER
+	cfg.BasicAuth.Password = ICINGA_API_PASSWORD
 
 	// Icinga Client
 	icingaClient := icinga.NewClient(*cfg)
@@ -118,7 +117,7 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	fmt.Println()
 	fmt.Println("Icingaweb2:     ", fmt.Sprintf("http://%v/", icingawebEndpoint))
-	fmt.Println("Login password: ", e2e.ICINGA_WEB_UI_PASSWORD)
+	fmt.Println("Login password: ", ICINGA_WEB_UI_PASSWORD)
 	fmt.Println()
 
 	// Controller
@@ -138,5 +137,5 @@ var _ = AfterSuite(func() {
 	root.CleanClusterAlert()
 	err := root.DeleteNamespace()
 	Expect(err).NotTo(HaveOccurred())
-	e2e.PrintSeparately("Deleted namespace")
+	framework.PrintSeparately("Deleted namespace")
 })

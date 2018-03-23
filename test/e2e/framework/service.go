@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/appscode/searchlight/test/e2e"
 	shell "github.com/codeskyblue/go-sh"
 	. "github.com/onsi/gomega"
 	core "k8s.io/api/core/v1"
@@ -81,7 +80,7 @@ func (f *Framework) EventuallyServiceLoadBalancer(meta metav1.ObjectMeta, portNa
 				fmt.Println("Waiting for LoadBalancer")
 				return false
 			}
-			e2e.PrintSeparately("LoadBalancer is ready")
+			PrintSeparately("LoadBalancer is ready")
 			return true
 		},
 		time.Minute*5,

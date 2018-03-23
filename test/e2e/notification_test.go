@@ -1,4 +1,4 @@
-package e2e_test
+package e2e
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ import (
 	extensions "k8s.io/api/extensions/v1beta1"
 )
 
-var _ = Describe("e2e_test", func() {
+var _ = Describe("notification", func() {
 	var (
 		f            *framework.Invocation
 		rs           *extensions.ReplicaSet
@@ -38,7 +38,7 @@ var _ = Describe("e2e_test", func() {
 		serverURL = fmt.Sprintf("http://10.0.2.2:%s", framework.HTTPServerPort)
 	})
 
-	FDescribe("Test", func() {
+	Describe("Test", func() {
 		Context("check notification", func() {
 			BeforeEach(func() {
 				go server.ListenAndServe()

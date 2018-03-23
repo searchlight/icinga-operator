@@ -4,6 +4,7 @@ import (
 	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"fmt"
 )
 
 const (
@@ -19,4 +20,10 @@ func deleteInBackground() *metav1.DeleteOptions {
 func deleteInForeground() *metav1.DeleteOptions {
 	policy := metav1.DeletePropagationForeground
 	return &metav1.DeleteOptions{PropagationPolicy: &policy}
+}
+
+func PrintSeparately(a ...interface{}) {
+	fmt.Println()
+	fmt.Println(a...)
+	fmt.Println()
 }

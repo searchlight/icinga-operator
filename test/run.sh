@@ -16,9 +16,9 @@ show_help() {
     echo " "
     echo "options:"
     echo "-h, --help                show brief help"
-    echo "    --provider            specify namespace (default: kube-system)"
-    echo "    --storageclass        create RBAC roles and bindings (default: true)"
-    echo "    --provided-icinga     docker registry used to pull searchlight images (default: appscode)"
+    echo "    --provider            kubernetes cloud provider"
+    echo "    --storageclass        kubernetes storage class name"
+    echo "    --provided-icinga     already running icinga"
     echo "    --v                   log version"
 
 }
@@ -54,9 +54,10 @@ done
 
 ginkgo -r -v -progress -trace -race \
     -cover \
+    -coverpkg=github.com/appscode/searchlight/pkg/operator \
     -coverprofile="profile.out" \
     -outputdir="$REPO_ROOT/test/e2e" \
-    test/e2e --\
+    ./test/e2e --\
     --provider="$PROVIDER" \
     --storageclass="$STORAGE_CLASS" \
     --provided-icinga="$PROVIDED_ICINGA" \
