@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/appscode/go/flags"
+	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
@@ -27,7 +28,7 @@ type plugin struct {
 var _ plugins.PluginInterface = &plugin{}
 
 func newPluginFromConfig(opts options) (*plugin, error) {
-	config, err := plugins.BuildConfig(opts.kubeconfigPath, opts.contextName)
+	config, err := clientcmd.BuildConfigFromContext(opts.kubeconfigPath, opts.contextName)
 	if err != nil {
 		return nil, err
 	}

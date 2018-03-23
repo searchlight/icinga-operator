@@ -11,9 +11,7 @@ import (
 func BuildConfigFromContext(kubeconfigPath, contextName string) (*rest.Config, error) {
 	var loader clientcmd.ClientConfigLoader
 	if kubeconfigPath == "" {
-		rules := clientcmd.NewDefaultClientConfigLoadingRules()
-		rules.DefaultClientConfig = &clientcmd.DefaultClientConfig
-		loader = rules
+		return rest.InClusterConfig()
 	} else {
 		loader = &clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfigPath}
 	}

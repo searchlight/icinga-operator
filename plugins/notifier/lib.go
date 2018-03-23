@@ -13,6 +13,7 @@ import (
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/log"
 	logs "github.com/appscode/go/log/golog"
+	"github.com/appscode/kutil/tools/clientcmd"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
@@ -34,7 +35,7 @@ func newPlugin(client corev1.SecretInterface, extClient cs.MonitoringV1alpha1Int
 }
 
 func newPluginFromConfig(opts options) (*notifier, error) {
-	config, err := plugins.BuildConfig(opts.kubeconfigPath, opts.contextName)
+	config, err := clientcmd.BuildConfigFromContext(opts.kubeconfigPath, opts.contextName)
 	if err != nil {
 		return nil, err
 	}
