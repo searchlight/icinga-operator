@@ -1,5 +1,5 @@
-hash: ce229c8c40efb46813185949327a6ef12ee379e554c38a77120c057c0bcd0667
-updated: 2018-03-20T14:31:20.175768897+06:00
+hash: 8a2a4e5e28b4af97e93d3a08dd147ccbd0193f3bba43420f3150a0fe15d8c21a
+updated: 2018-03-23T08:57:11.424251144-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -42,24 +42,24 @@ imports:
   - unified
   - webhook
 - name: github.com/appscode/jsonpatch
-  version: 3e75a56b8967932466984d4432401e1c1a7ff61e
-- name: github.com/appscode/kutil
-  version: 1d084497109d657343cd2656d8fd9ea972c2d6e8
+  version: ee757872f6aca6d412d0d80543725bd4cf48f793
+- name: github.com/appscode/kubernetes-webhook-util
+  version: 9d399622f03d590cb55fd549131de7393a2b38cc
   subpackages:
-  - admission
   - admission/v1beta1
+  - registry/admissionreview/v1beta1
+- name: github.com/appscode/kutil
+  version: e1b81090692390fbeeaff130582847b6f7fe3355
+  subpackages:
   - apiextensions/v1beta1
   - core/v1
   - discovery
   - extensions/v1beta1
   - meta
-  - registry/admissionreview/v1beta1
-  - runtime/serializer/versioning
   - tools/analytics
   - tools/certstore
   - tools/clientcmd
   - tools/queue
-  - workload/v1
 - name: github.com/appscode/mergo
   version: e3000cb3d28c72b837601cac94debd91032d19fe
 - name: github.com/appscode/pat
@@ -114,11 +114,6 @@ imports:
   - spew
 - name: github.com/dgrijalva/jwt-go
   version: 01aeca54ebda6e0fbfafd0a524d234159c05ec20
-- name: github.com/docker/distribution
-  version: edc3ab29cdff8694dd6feb85cfeb4b5f1b38ed9c
-  subpackages:
-  - digestset
-  - reference
 - name: github.com/docker/spdystream
   version: 449fdfce4d962303d702fec724ef0ad181c92528
   subpackages:
@@ -152,7 +147,7 @@ imports:
 - name: github.com/go-openapi/jsonreference
   version: 13c6e3589ad90f49bd3e3bbe2c2cb3d7a4142272
 - name: github.com/go-openapi/loads
-  version: 2a2b323bab96e6b1fdee110e57d959322446e9c9
+  version: a80dea3052f00e5f032e860dd7355cd0cc67e24d
 - name: github.com/go-openapi/spec
   version: 7abd5745472fff5eb3685386d5fb8bf38683154d
 - name: github.com/go-openapi/swag
@@ -211,7 +206,7 @@ imports:
   - openstack/utils
   - pagination
 - name: github.com/gorilla/websocket
-  version: 6eb6ad425a89d9da7a5549bc6da8f79ba5c17844
+  version: 2d1e4548da234d9cb742cc3628556fef86aafbac
 - name: github.com/gregjones/httpcache
   version: 787624de3eb7bd915c329cba748687a3b22666a6
   subpackages:
@@ -245,7 +240,7 @@ imports:
   - models
   - pkg/escape
 - name: github.com/jaytaylor/html2text
-  version: 190166da35878a77103b951ae035a473531c1fc2
+  version: 64a82a6d140778896f13303121a49d8cb8007034
 - name: github.com/jpillora/go-ogle-analytics
   version: 14b04e0594ef6a9fd943363b135656f0ec8c9d0e
 - name: github.com/json-iterator/go
@@ -277,7 +272,7 @@ imports:
 - name: github.com/NYTimes/gziphandler
   version: 56545f4a5d46df9a6648819d1664c3a03a13ffdb
 - name: github.com/olekukonko/tablewriter
-  version: b8a9be070da40449e501c3c4730a889e42d87a9e
+  version: cca8bbc0798408af109aaaa239cbd2634846b340
 - name: github.com/onsi/gomega
   version: 003f63b7f4cff3fc95357005358af2de0f5fe152
   subpackages:
@@ -292,8 +287,6 @@ imports:
   - matchers/support/goraph/node
   - matchers/support/goraph/util
   - types
-- name: github.com/opencontainers/go-digest
-  version: a6d0ee40d4207ea02364bd3b9e8e77b9159ba1eb
 - name: github.com/pborman/uuid
   version: ca53cad383cad2479bbba7f7a1a05797ec1386e4
 - name: github.com/peterbourgon/diskv
@@ -326,8 +319,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 300106c228d52c8941d4b3de6054a6062a86dda3
 - name: github.com/sergi/go-diff
-  version: 24e2351369ec4949b2ed0dc5c477afdd4c4034e8
-  repo: https://github.com/sergi/go-diff
+  version: 97b2266dfe4bd4ea1b81a463322f04f8b724801e
   subpackages:
   - diffmatchpatch
 - name: github.com/shirou/gopsutil
@@ -350,7 +342,7 @@ imports:
   subpackages:
   - mem
 - name: github.com/spf13/cobra
-  version: c439c4fa093711d42e1b01acb1235b52004753c1
+  version: a1f051bc3eba734da4772d60e2d677f47cf93ef4
   subpackages:
   - doc
 - name: github.com/spf13/pflag
@@ -372,12 +364,11 @@ imports:
 - name: github.com/vaughan0/go-ini
   version: a98ad7ee00ec53921f08832bc06ecf7fd600e6a1
 - name: github.com/yudai/gojsondiff
-  version: e21612694bdd50975f93cd5eaccb457477128e28
+  version: 7b1b7adf999dab73a6eb02669c3d82dbb27a3dd6
   subpackages:
   - formatter
 - name: github.com/yudai/golcs
   version: d1c525dea8ce39ea9a783d33cf08932305373f2c
-  repo: https://github.com/yudai/golcs
 - name: golang.org/x/crypto
   version: 81e90905daefcd6fd217b62423c0908922eadb30
   subpackages:
@@ -436,7 +427,7 @@ imports:
   - unicode/norm
   - width
 - name: google.golang.org/appengine
-  version: 5bee14b453b4c71be47ec1781b0fa61c2ea182db
+  version: 4f7eeb5305a4ba1966344836ba4af9996b7b4e05
   subpackages:
   - internal
   - internal/app_identity
@@ -520,7 +511,6 @@ imports:
   - pkg/apis/apiextensions/v1beta1
   - pkg/client/clientset/clientset/scheme
   - pkg/client/clientset/clientset/typed/apiextensions/v1beta1
-  - pkg/features
 - name: k8s.io/apimachinery
   version: 180eddb345a5be3a157cea1c624700ad5bd27b8f
   subpackages:
@@ -839,31 +829,6 @@ imports:
   - pkg/handler
   - pkg/util
   - pkg/util/proto
-- name: k8s.io/kubernetes
-  version: 925c127ec6b946659ad0fd596fa959be43f0cc05
-  subpackages:
-  - pkg/api/legacyscheme
-  - pkg/apis/apps
-  - pkg/apis/apps/install
-  - pkg/apis/apps/v1
-  - pkg/apis/apps/v1beta1
-  - pkg/apis/apps/v1beta2
-  - pkg/apis/autoscaling
-  - pkg/apis/batch
-  - pkg/apis/batch/install
-  - pkg/apis/batch/v1
-  - pkg/apis/batch/v1beta1
-  - pkg/apis/batch/v2alpha1
-  - pkg/apis/core
-  - pkg/apis/core/install
-  - pkg/apis/core/v1
-  - pkg/apis/extensions
-  - pkg/apis/extensions/install
-  - pkg/apis/extensions/v1beta1
-  - pkg/apis/networking
-  - pkg/features
-  - pkg/util/parsers
-  - pkg/util/pointer
 testImports:
 - name: github.com/onsi/ginkgo
   version: 9eda700730cba42af70d53180f9dcce9266bc2bc

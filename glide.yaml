@@ -8,6 +8,8 @@ import:
   version: master
 - package: github.com/appscode/go
   version: master
+- package: github.com/appscode/kubernetes-webhook-util
+  version: release-6.0
 - package: github.com/appscode/kutil
   version: release-6.0
 - package: github.com/appscode/pat
