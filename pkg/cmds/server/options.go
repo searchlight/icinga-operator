@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/appscode/go/log"
-	hooks "github.com/appscode/kutil/admission/v1beta1"
+	hooks "github.com/appscode/kubernetes-webhook-util/admission/v1beta1"
 	"github.com/appscode/kutil/meta"
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	"github.com/appscode/searchlight/pkg/admission/plugin"

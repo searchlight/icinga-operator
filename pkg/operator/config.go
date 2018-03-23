@@ -3,7 +3,7 @@ package operator
 import (
 	"time"
 
-	hooks "github.com/appscode/kutil/admission/v1beta1"
+	hooks "github.com/appscode/kubernetes-webhook-util/admission/v1beta1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	mon_informers "github.com/appscode/searchlight/client/informers/externalversions"
 	"github.com/appscode/searchlight/pkg/eventer"
