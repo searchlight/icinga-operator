@@ -153,16 +153,18 @@ while test $# -gt 0; do
 done
 
 if [ "$SEARCHLIGHT_UNINSTALL" -eq 1 ]; then
+    # delete webhooks and apiservices
+    kubectl delete validatingwebhookconfiguration -l app=searchlight
+    kubectl delete mutatingwebhookconfiguration -l app=searchlight
+    kubectl delete apiservice -l app=searchlight
+    # delete searchlight operator
     kubectl delete deployment -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
     kubectl delete service -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
     kubectl delete secret -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
-    kubectl delete apiservice -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
-    kubectl delete validatingwebhookconfiguration -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
-    kubectl delete mutatingwebhookconfiguration -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
-    # Delete RBAC objects, if --rbac flag was used.
+    # delete RBAC objects, if --rbac flag was used.
     kubectl delete serviceaccount -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
-    kubectl delete clusterrolebindings -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
-    kubectl delete clusterrole -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
+    kubectl delete clusterrolebindings -l app=searchlight
+    kubectl delete clusterrole -l app=searchlight
     kubectl delete rolebindings -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
     kubectl delete role -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
 
