@@ -4,13 +4,10 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
 	"time"
 
 	. "github.com/onsi/gomega"
-)
-
-const (
-	HTTPServerPort = "7033"
 )
 
 type Message struct {
@@ -18,7 +15,7 @@ type Message struct {
 	Body string   `json:"body,omitempty"`
 }
 
-func GetServer() *http.Server {
+func StartServer() *httptest.Server {
 	var msg Message
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -36,18 +33,13 @@ func GetServer() *http.Server {
 			}
 		}
 	}
-	return &http.Server{
-		Addr:         ":" + HTTPServerPort,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		Handler:      http.HandlerFunc(handler),
-	}
+	return httptest.NewServer(http.HandlerFunc(handler))
 }
 
-func (f *Framework) EventuallyHTTPServerResponse() GomegaAsyncAssertion {
+func (f *Framework) EventuallyHTTPServerResponse(serverURL string) GomegaAsyncAssertion {
 	return Eventually(
 		func() string {
-			resp, err := http.Get("http://127.0.0.1:" + HTTPServerPort)
+			resp, err := http.Get(serverURL)
 			if err != nil {
 				return err.Error()
 			}

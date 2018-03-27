@@ -2,7 +2,8 @@ package e2e
 
 import (
 	"fmt"
-	"net/http"
+	"net/http/httptest"
+	"net/url"
 
 	"github.com/appscode/go/types"
 	kutil_ext "github.com/appscode/kutil/extensions/v1beta1"
@@ -23,8 +24,9 @@ var _ = Describe("notification", func() {
 		rs           *extensions.ReplicaSet
 		clusterAlert *api.ClusterAlert
 		secret       *core_v1.Secret
-		server       *http.Server
+		server       *httptest.Server
 		serverURL    string
+		webhookURL   string
 		icingaHost   *icinga.IcingaHost
 		hostname     string
 	)
@@ -34,18 +36,22 @@ var _ = Describe("notification", func() {
 		rs = f.ReplicaSet()
 		clusterAlert = f.ClusterAlert()
 		secret = f.GetWebHookSecret()
-		server = framework.GetServer()
-		serverURL = fmt.Sprintf("http://10.0.2.2:%s", framework.HTTPServerPort)
+		server = framework.StartServer()
+		serverURL = server.URL
+		url, _ := url.Parse(serverURL)
+		webhookURL = fmt.Sprintf("http://10.0.2.2:%s", url.Port())
+	})
+
+	AfterEach(func() {
+		server.Close()
 	})
 
 	Describe("Test", func() {
 		Context("check notification", func() {
 			BeforeEach(func() {
-				go server.ListenAndServe()
-
 				rs.Spec.Replicas = types.Int32P(*rs.Spec.Replicas - 1)
 
-				secret.StringData["WEBHOOK_URL"] = serverURL
+				secret.StringData["WEBHOOK_URL"] = webhookURL
 				secret.StringData["WEBHOOK_TO"] = "test"
 
 				clusterAlert.Spec.Check = api.CheckPodExists
@@ -104,7 +110,7 @@ var _ = Describe("notification", func() {
 					NotificationType: string(api.NotificationProblem),
 				}
 				By("Check received notification message")
-				f.EventuallyHTTPServerResponse().Should(BeIdenticalTo(sms.Render()))
+				f.EventuallyHTTPServerResponse(serverURL).Should(BeIdenticalTo(sms.Render()))
 
 				By("Send custom notification")
 				f.SendClusterAlertCustomNotification(clusterAlert.ObjectMeta, hostname)
@@ -113,14 +119,14 @@ var _ = Describe("notification", func() {
 				sms.Comment = "test"
 				sms.Author = "e2e"
 				By("Check received notification message")
-				f.EventuallyHTTPServerResponse().Should(BeIdenticalTo(sms.Render()))
+				f.EventuallyHTTPServerResponse(serverURL).Should(BeIdenticalTo(sms.Render()))
 
 				By("Acknowledge notification")
 				f.AcknowledgeClusterAlertNotification(clusterAlert.ObjectMeta, hostname)
 
 				sms.NotificationType = string(api.NotificationAcknowledgement)
 				By("Check received notification message")
-				f.EventuallyHTTPServerResponse().Should(BeIdenticalTo(sms.Render()))
+				f.EventuallyHTTPServerResponse(serverURL).Should(BeIdenticalTo(sms.Render()))
 
 				By("Patch ReplicaSet to increate replicas")
 				rs, _, err = kutil_ext.PatchReplicaSet(f.KubeClient(), rs, func(set *extensions.ReplicaSet) *extensions.ReplicaSet {
@@ -137,7 +143,7 @@ var _ = Describe("notification", func() {
 				sms.NotificationType = string(api.NotificationRecovery)
 
 				By("Check received notification message")
-				f.EventuallyHTTPServerResponse().Should(BeIdenticalTo(sms.Render()))
+				f.EventuallyHTTPServerResponse(serverURL).Should(BeIdenticalTo(sms.Render()))
 			})
 		})
 	})
