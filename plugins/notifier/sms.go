@@ -21,7 +21,7 @@ func (n *notifier) RenderSMS(receiver api.Receiver) string {
 		AlertName:        opts.alertName,
 		NotificationType: opts.notificationType,
 		ServiceState:     receiver.State,
-		Author:           opts.alertName,
+		Author:           opts.author,
 		Comment:          opts.comment,
 		Hostname:         opts.hostname,
 	}
