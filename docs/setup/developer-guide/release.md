@@ -2,13 +2,13 @@
 title: Release | Searchlight
 description: Searchlight Release
 menu:
-  product_searchlight_6.0.0-alpha.0:
+  product_searchlight_6.0.0-rc.0:
     identifier: release
     name: Release
     parent: developer-guide
     weight: 15
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-alpha.0
+menu_name: product_searchlight_6.0.0-rc.0
 section_menu_id: setup
 ---
 # Release Process

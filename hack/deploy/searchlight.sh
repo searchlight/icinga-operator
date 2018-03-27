@@ -225,22 +225,22 @@ export TLS_SERVING_CERT=$(cat server.crt | $ONESSL base64)
 export TLS_SERVING_KEY=$(cat server.key | $ONESSL base64)
 export KUBE_CA=$($ONESSL get kube-ca | $ONESSL base64)
 
-curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/operator.yaml | $ONESSL envsubst | kubectl apply -f -
+curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-rc.0/hack/deploy/operator.yaml | $ONESSL envsubst | kubectl apply -f -
 
 if [ "$SEARCHLIGHT_ENABLE_RBAC" = true ]; then
     kubectl create serviceaccount $SEARCHLIGHT_SERVICE_ACCOUNT --namespace $SEARCHLIGHT_NAMESPACE
     kubectl label serviceaccount $SEARCHLIGHT_SERVICE_ACCOUNT app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
-    curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/rbac-list.yaml | $ONESSL envsubst | kubectl auth reconcile -f -
-    curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/user-roles.yaml | $ONESSL envsubst | kubectl auth reconcile -f -
+    curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-rc.0/hack/deploy/rbac-list.yaml | $ONESSL envsubst | kubectl auth reconcile -f -
+    curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-rc.0/hack/deploy/user-roles.yaml | $ONESSL envsubst | kubectl auth reconcile -f -
 fi
 
 if [ "$SEARCHLIGHT_RUN_ON_MASTER" -eq 1 ]; then
     kubectl patch deploy searchlight-operator -n $SEARCHLIGHT_NAMESPACE \
-      --patch="$(curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/run-on-master.yaml)"
+      --patch="$(curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-rc.0/hack/deploy/run-on-master.yaml)"
 fi
 
 if [ "$SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK" = true ]; then
-    curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/hack/deploy/admission.yaml | $ONESSL envsubst | kubectl apply -f -
+    curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-rc.0/hack/deploy/admission.yaml | $ONESSL envsubst | kubectl apply -f -
 fi
 
 echo

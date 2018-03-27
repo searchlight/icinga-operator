@@ -2,13 +2,13 @@
 title: Install Hostfacts
 description: Install Hostfacts
 menu:
-  product_searchlight_6.0.0-alpha.0:
+  product_searchlight_6.0.0-rc.0:
     identifier: hostfacts-searchlight
     name: Install Hostfacts
     parent: setup
     weight: 15
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-alpha.0
+menu_name: product_searchlight_6.0.0-rc.0
 section_menu_id: setup
 ---
 
@@ -26,7 +26,7 @@ $ minikube ssh
 ### Install Hostfacts
 Now, download and install a pre-built binary using the following command:
 ```console
-curl -Lo hostfacts https://cdn.appscode.com/binaries/hostfacts/6.0.0-alpha.0/hostfacts-linux-amd64 \
+curl -Lo hostfacts https://cdn.appscode.com/binaries/hostfacts/6.0.0-rc.0/hostfacts-linux-amd64 \
   && chmod +x hostfacts \
   && sudo mv hostfacts /usr/bin/
 ```
