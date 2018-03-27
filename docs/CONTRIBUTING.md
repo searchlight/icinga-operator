@@ -2,17 +2,17 @@
 title: Contributing | Searchlight
 description: Contributing
 menu:
-  product_searchlight_6.0.0-alpha.0:
+  product_searchlight_6.0.0-rc.0:
     identifier: contributing-searchlight
     name: Contributing
     parent: welcome
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-alpha.0
+menu_name: product_searchlight_6.0.0-rc.0
 section_menu_id: welcome
-url: /products/searchlight/6.0.0-alpha.0/welcome/contributing/
+url: /products/searchlight/6.0.0-rc.0/welcome/contributing/
 aliases:
-  - /products/searchlight/6.0.0-alpha.0/CONTRIBUTING/
+  - /products/searchlight/6.0.0-rc.0/CONTRIBUTING/
 ---
 
 # Contribution Guidelines

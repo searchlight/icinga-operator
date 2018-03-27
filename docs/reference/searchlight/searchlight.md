@@ -1,7 +1,7 @@
 ---
 title: Searchlight
 menu:
-  product_searchlight_6.0.0-alpha.0:
+  product_searchlight_6.0.0-rc.0:
     identifier: searchlight
     name: Searchlight
     parent: searchlight-cli
@@ -9,10 +9,10 @@ menu:
 
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_6.0.0-alpha.0
-url: /products/searchlight/6.0.0-alpha.0/reference/searchlight/
+menu_name: product_searchlight_6.0.0-rc.0
+url: /products/searchlight/6.0.0-rc.0/reference/searchlight/
 aliases:
-  - products/searchlight/6.0.0-alpha.0/reference/searchlight/searchlight/
+  - products/searchlight/6.0.0-rc.0/reference/searchlight/searchlight/
 
 ---
 ## searchlight

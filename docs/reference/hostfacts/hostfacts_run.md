@@ -1,13 +1,13 @@
 ---
 title: Run
 menu:
-  product_searchlight_6.0.0-alpha.0:
+  product_searchlight_6.0.0-rc.0:
     identifier: hostfacts-run
     name: Run
     parent: hostfacts-cli
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_6.0.0-alpha.0
+menu_name: product_searchlight_6.0.0-rc.0
 ---
 ## hostfacts run
 
