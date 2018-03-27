@@ -1,5 +1,5 @@
 hash: 8a2a4e5e28b4af97e93d3a08dd147ccbd0193f3bba43420f3150a0fe15d8c21a
-updated: 2018-03-23T08:57:11.424251144-07:00
+updated: 2018-03-27T16:33:58.711637959-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -42,14 +42,14 @@ imports:
   - unified
   - webhook
 - name: github.com/appscode/jsonpatch
-  version: ee757872f6aca6d412d0d80543725bd4cf48f793
+  version: d1ada3d25b084ae42746377df856bbc74a901503
 - name: github.com/appscode/kubernetes-webhook-util
-  version: 9d399622f03d590cb55fd549131de7393a2b38cc
+  version: 52939d4c06ccf60997cdc8f0fa1fecb27b383a0d
   subpackages:
   - admission/v1beta1
   - registry/admissionreview/v1beta1
 - name: github.com/appscode/kutil
-  version: e1b81090692390fbeeaff130582847b6f7fe3355
+  version: ec35d3a9c9de2400477fa0cd6131cfa7b7e64d9c
   subpackages:
   - apiextensions/v1beta1
   - core/v1
@@ -176,7 +176,7 @@ imports:
 - name: github.com/google/btree
   version: 7d79101e329e5a3adf994758c578dab82b90c017
 - name: github.com/google/go-cmp
-  version: 0c93777250bd58222171888d1651979319d8b381
+  version: ab810a8a5d6524ae4659463790261878fe6a0718
   subpackages:
   - cmp
   - cmp/internal/diff
