@@ -2,6 +2,7 @@ package icinga
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
 	"time"
@@ -12,6 +13,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/afero"
 	"gopkg.in/ini.v1"
+	"k8s.io/client-go/util/cert"
 )
 
 const (
@@ -111,7 +113,10 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 			if err != nil {
 				return nil, err
 			}
-			serverCert, serverKey, err := store.NewClientCertPair("icinga")
+			sans := cert.AltNames{
+				IPs: []net.IP{net.ParseIP("127.0.0.1")},
+			}
+			serverCert, serverKey, err := store.NewServerCertPair("icinga", sans)
 			if err != nil {
 				return nil, err
 			}
