@@ -22,12 +22,12 @@ Check command `json_path` is used to check JSON HTTP response using [jsonpath](h
 
 - `url` - URL to get data
 - `secretName` - Name of Kubernetes Secret used to call HTTP api.
-- `warning` - Query for warning which return [true/false].
-- `critical` - Query for critical which return [true/false].
+- `warning` - Query for warning which returns [true/false].
+- `critical` - Query for critical which returns [true/false].
 
 ### Query
 
-A query used in `warning` and `critical` variable must returns boolean [true/false].
+A query used in `warning` and `critical` variable must return boolean [true/false].
 In this query, you can use following operators:
 
 * Modifiers: `+` `-` `/` `*` `&` `|` `^` `**` `%` `>>` `<<`
@@ -38,7 +38,7 @@ And also you can use [jsonpath](https://kubernetes.io/docs/reference/kubectl/jso
 
 #### Examples
 
-Lets assumes, we get following JSON from provided URL.
+Lets assume, we get following JSON from provided URL.
 ```json
 {
    "Book":[
