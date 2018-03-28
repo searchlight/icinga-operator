@@ -138,6 +138,29 @@ var _ = Describe("check_json_path", func() {
 				Expect(state).Should(BeIdenticalTo(icinga.Critical))
 			})
 		})
+		Context("check multiple", func() {
+			JustBeforeEach(func() {
+				ts = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					fmt.Fprintln(w, jsonDataAsServerOutput)
+				}))
+			})
+			It("logical operator", func() {
+				opts := options{
+					url:      ts.URL,
+					critical: "{.Bicycle[0].Color} == red && {.Bicycle[0].Price} < 20" ,
+				}
+				state, _ := newPlugin(nil, opts).Check()
+				Expect(state).Should(BeIdenticalTo(icinga.Critical))
+			})
+			It("-", func() {
+				opts := options{
+					url:      ts.URL,
+					critical: "{.Bicycle[0].Color} != {.Bicycle[1].Color}" ,
+				}
+				state, _ := newPlugin(nil, opts).Check()
+				Expect(state).Should(BeIdenticalTo(icinga.Critical))
+			})
+		})
 	})
 	Describe("test options", func() {
 		var (
