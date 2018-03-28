@@ -15,14 +15,13 @@ section_menu_id: guides
 
 # Check json_path
 
-Check command `json_path` is used to check JSON HTTP response using [jq](https://stedolan.github.io/jq/) queries.
+Check command `json_path` is used to check JSON HTTP response using [jsonpath](https://kubernetes.io/docs/reference/kubectl/jsonpath/) queries.
 
 ## Spec
 `json_path` check command has no variables.
 
 - `url` - URL to get data
 - `secretName` - Name of Kubernetes Secret used to call HTTP api.
-- `inClusterConfig` - Use InClusterConfig if hosted in Kubernetes
 - `warning` - Warning [jq query](https://stedolan.github.io/jq/manual/#ConditionalsandComparisons) which returns [true/false]
 - `critical` - Critical [jq query](https://stedolan.github.io/jq/manual/#ConditionalsandComparisons) which returns [true/false]
 

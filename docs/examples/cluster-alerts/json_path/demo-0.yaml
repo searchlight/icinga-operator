@@ -6,8 +6,8 @@ metadata:
 spec:
   check: json_path
   vars:
-    url: https://api.appscode.com/health/json
-    critical: '.metadata.env!="prod"'
+    url: http://echo.jsontest.com/key/value/one/two
+    critical: '{.one} != "one"'
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
