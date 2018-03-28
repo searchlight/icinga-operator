@@ -181,13 +181,13 @@ if [ "$SEARCHLIGHT_UNINSTALL" -eq 1 ]; then
     # https://github.com/kubernetes/kubernetes/issues/60538
     if [ "$SEARCHLIGHT_PURGE" -eq 1 ]; then
         for crd in "${crds[@]}"; do
-            pairs=($(kubectl get ${crd}.searchlight.appscode.com --all-namespaces -o jsonpath='{range .items[*]}{.metadata.name} {.metadata.namespace} {end}' || true))
+            pairs=($(kubectl get ${crd}.monitoring.appscode.com --all-namespaces -o jsonpath='{range .items[*]}{.metadata.name} {.metadata.namespace} {end}' || true))
             total=${#pairs[*]}
 
             # save objects
             if [ $total -gt 0 ]; then
                 echo "dumping ${crd} objects into ${crd}.yaml"
-                kubectl get ${crd}.searchlight.appscode.com --all-namespaces -o yaml > ${crd}.yaml
+                kubectl get ${crd}.monitoring.appscode.com --all-namespaces -o yaml > ${crd}.yaml
             fi
 
             for (( i=0; i<$total; i+=2 )); do
@@ -195,11 +195,11 @@ if [ "$SEARCHLIGHT_UNINSTALL" -eq 1 ]; then
                 namespace=${pairs[$i + 1]}
                 # delete crd object
                 echo "deleting ${crd} $namespace/$name"
-                kubectl delete ${crd}.searchlight.appscode.com $name -n $namespace
+                kubectl delete ${crd}.monitoring.appscode.com $name -n $namespace
             done
 
             # delete crd
-            kubectl delete crd ${crd}.searchlight.appscode.com || true
+            kubectl delete crd ${crd}.monitoring.appscode.com || true
         done
     fi
 
@@ -254,7 +254,7 @@ done
 
 echo "waiting until searchlight crds are ready"
 for crd in "${crds[@]}"; do
-    $ONESSL wait-until-ready crd ${crd}.searchlight.appscode.com || { echo "$crd crd failed to be ready"; exit 1; }
+    $ONESSL wait-until-ready crd ${crd}.monitoring.appscode.com || { echo "$crd crd failed to be ready"; exit 1; }
 done
 
 echo
