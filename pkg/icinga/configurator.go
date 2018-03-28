@@ -111,7 +111,15 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 			if err != nil {
 				return nil, err
 			}
-			_, _, err := store.NewClientCertPair("icinga")
+			serverCert, serverKey, err := store.NewClientCertPair("icinga")
+			if err != nil {
+				return nil, err
+			}
+			err = afero.WriteFile(fs, store.CertFile("icinga"), []byte(serverCert), 0755)
+			if err != nil {
+				return nil, err
+			}
+			err = afero.WriteFile(fs, store.KeyFile("icinga"), []byte(serverKey), 0644)
 			if err != nil {
 				return nil, err
 			}
