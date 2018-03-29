@@ -147,7 +147,7 @@ var _ = Describe("check_json_path", func() {
 			It("logical operator", func() {
 				opts := options{
 					url:      ts.URL,
-					critical: "{.Bicycle[0].Color} == red && {.Bicycle[0].Price} < 20" ,
+					critical: "{.Bicycle[0].Color} == red && {.Bicycle[0].Price} < 20",
 				}
 				state, _ := newPlugin(nil, opts).Check()
 				Expect(state).Should(BeIdenticalTo(icinga.Critical))
@@ -155,7 +155,7 @@ var _ = Describe("check_json_path", func() {
 			It("-", func() {
 				opts := options{
 					url:      ts.URL,
-					critical: "{.Bicycle[0].Color} != {.Bicycle[1].Color}" ,
+					critical: "{.Bicycle[0].Color} != {.Bicycle[1].Color}",
 				}
 				state, _ := newPlugin(nil, opts).Check()
 				Expect(state).Should(BeIdenticalTo(icinga.Critical))

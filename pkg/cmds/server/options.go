@@ -25,6 +25,7 @@ type OperatorOptions struct {
 	ResyncPeriod     time.Duration
 	MaxNumRequeues   int
 	NumThreads       int
+	IncidentTTL      time.Duration
 	// V logging level, the value of the -v flag
 	verbosity string
 }
@@ -37,6 +38,7 @@ func NewOperatorOptions() *OperatorOptions {
 		ResyncPeriod:     5 * time.Minute,
 		MaxNumRequeues:   5,
 		NumThreads:       1,
+		IncidentTTL:      90 * 24 * time.Hour,
 		verbosity:        "3",
 	}
 }
@@ -46,6 +48,7 @@ func (s *OperatorOptions) AddGoFlags(fs *flag.FlagSet) {
 	fs.StringVar(&s.ConfigSecretName, "config-secret-name", s.ConfigSecretName, "Name of Kubernetes secret used to pass icinga credentials.")
 	fs.StringVar(&s.OpsAddress, "ops-address", s.OpsAddress, "Address to listen on for web interface and telemetry.")
 	fs.DurationVar(&s.ResyncPeriod, "resync-period", s.ResyncPeriod, "If non-zero, will re-list this often. Otherwise, re-list will be delayed aslong as possible (until the upstream source closes the watch or times out.")
+	fs.DurationVar(&s.IncidentTTL, "incidnet-ttl", s.IncidentTTL, "Garbage collects incidents older than this duration. Set to 0 to disable garbage collection.")
 }
 
 func (s *OperatorOptions) AddFlags(fs *pflag.FlagSet) {
@@ -63,6 +66,7 @@ func (s *OperatorOptions) ApplyTo(cfg *operator.OperatorConfig) error {
 	cfg.ResyncPeriod = s.ResyncPeriod
 	cfg.MaxNumRequeues = s.MaxNumRequeues
 	cfg.NumThreads = s.NumThreads
+	cfg.IncidentTTL = s.IncidentTTL
 	cfg.Verbosity = s.verbosity
 
 	if cfg.KubeClient, err = kubernetes.NewForConfig(cfg.ClientConfig); err != nil {

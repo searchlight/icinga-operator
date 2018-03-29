@@ -52,6 +52,7 @@ searchlight run [flags]
       --contention-profiling                                    Enable lock contention profiling, if profiling is enabled
       --enable-swagger-ui                                       Enables swagger ui on the apiserver at /swagger-ui
   -h, --help                                                    help for run
+      --incidnet-ttl duration                                   Garbage collects incidents older than this duration. Set to 0 to disable garbage collection. (default 2160h0m0s)
       --kubeconfig string                                       kubeconfig file pointing at the 'core' kubernetes server.
       --ops-address string                                      Address to listen on for web interface and telemetry. (default ":56790")
       --profiling                                               Enable profiling via web interface host:port/debug/pprof/ (default true)

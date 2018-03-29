@@ -21,6 +21,7 @@ type Config struct {
 	ResyncPeriod     time.Duration
 	MaxNumRequeues   int
 	NumThreads       int
+	IncidentTTL      time.Duration
 	// V logging level, the value of the -v flag
 	Verbosity string
 }

@@ -144,6 +144,7 @@ func (op *Operator) RunWatchers(stopCh <-chan struct{}) {
 }
 
 func (op *Operator) Run(stopCh <-chan struct{}) error {
+	op.gcIncidents()
 	go op.RunWatchers(stopCh)
 
 	m := pat.New()
