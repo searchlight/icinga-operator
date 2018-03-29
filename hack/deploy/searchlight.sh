@@ -59,10 +59,7 @@ export SEARCHLIGHT_PURGE=0
 export SEARCHLIGHT_ENABLE_ANALYTICS=true
 
 KUBE_APISERVER_VERSION=$(kubectl version -o=json | $ONESSL jsonpath '{.serverVersion.gitVersion}')
-$ONESSL semver --check='>=1.9.0' $KUBE_APISERVER_VERSION
-if [ $? -eq 0 ]; then
-    export SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK=true
-fi
+$ONESSL semver --check='<1.9.0' $KUBE_APISERVER_VERSION || { export SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK=true; }
 
 show_help() {
     echo "searchlight.sh - install searchlight operator"
@@ -154,8 +151,8 @@ done
 
 if [ "$SEARCHLIGHT_UNINSTALL" -eq 1 ]; then
     # delete webhooks and apiservices
-    kubectl delete validatingwebhookconfiguration -l app=searchlight
-    kubectl delete mutatingwebhookconfiguration -l app=searchlight
+    kubectl delete validatingwebhookconfiguration -l app=searchlight || true
+    kubectl delete mutatingwebhookconfiguration -l app=searchlight || true
     kubectl delete apiservice -l app=searchlight
     # delete searchlight operator
     kubectl delete deployment -l app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
