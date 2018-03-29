@@ -48,7 +48,7 @@ func (s *OperatorOptions) AddGoFlags(fs *flag.FlagSet) {
 	fs.StringVar(&s.ConfigSecretName, "config-secret-name", s.ConfigSecretName, "Name of Kubernetes secret used to pass icinga credentials.")
 	fs.StringVar(&s.OpsAddress, "ops-address", s.OpsAddress, "Address to listen on for web interface and telemetry.")
 	fs.DurationVar(&s.ResyncPeriod, "resync-period", s.ResyncPeriod, "If non-zero, will re-list this often. Otherwise, re-list will be delayed aslong as possible (until the upstream source closes the watch or times out.")
-	fs.DurationVar(&s.IncidentTTL, "incidnet-ttl", s.IncidentTTL, "Garbage collects incidents older than this duration. Set to 0 to disable garbage collection.")
+	fs.DurationVar(&s.IncidentTTL, "incident-ttl", s.IncidentTTL, "Garbage collects incidents older than this duration. Set to 0 to disable garbage collection.")
 }
 
 func (s *OperatorOptions) AddFlags(fs *pflag.FlagSet) {
