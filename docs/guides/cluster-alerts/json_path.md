@@ -15,16 +15,68 @@ section_menu_id: guides
 
 # Check json_path
 
-Check command `json_path` is used to check JSON HTTP response using [jq](https://stedolan.github.io/jq/) queries.
+Check command `json_path` is used to check JSON HTTP response using [jsonpath](https://kubernetes.io/docs/reference/kubectl/jsonpath/) queries.
 
 ## Spec
-`json_path` check command has no variables.
+`json_path` check command has the following variables:
 
 - `url` - URL to get data
 - `secretName` - Name of Kubernetes Secret used to call HTTP api.
-- `inClusterConfig` - Use InClusterConfig if hosted in Kubernetes
-- `warning` - Warning [jq query](https://stedolan.github.io/jq/manual/#ConditionalsandComparisons) which returns [true/false]
-- `critical` - Critical [jq query](https://stedolan.github.io/jq/manual/#ConditionalsandComparisons) which returns [true/false]
+- `warning` - Query for warning which returns [true/false].
+- `critical` - Query for critical which returns [true/false].
+
+### Query
+
+A query used in `warning` and `critical` variable must return boolean [true/false].
+In this query, you can use following operators:
+
+* Modifiers: `+` `-` `/` `*` `&` `|` `^` `**` `%` `>>` `<<`
+* Comparators: `>` `>=` `<` `<=` `==` `!=` `=~` `!~`
+* Logical ops: `||` `&&`
+
+And also you can use [jsonpath](https://kubernetes.io/docs/reference/kubectl/jsonpath/) queries to get values from JSON data.
+
+#### Examples
+
+Lets assume, we get following JSON from provided URL.
+```json
+{
+   "Book":[
+      {
+         "Category":"reference",
+         "Author":"Nigel Rees",
+         "Title":"Sayings of the Centurey",
+         "Price":8.95
+      }
+   ],
+   "Bicycle":[
+      {
+         "Color":"red",
+         "Price":19.95,
+         "IsNew":true
+      },
+      {
+         "Color":"green",
+         "Price":20.01,
+         "IsNew":false
+      }
+   ]
+}
+```
+
+Supported queries look like:
+
+* `{.Book[0].Category}==novel`
+* `{.Book[0].Category}!=reference`
+* `{.Book[0].Price} > 10`
+* `{.Book[0].Price} < 10`
+* `{.Bicycle[0].IsNew} != true`
+* `{.Bicycle[0].Color} == red && {.Bicycle[0].Price} < 20`
+* `{.Bicycle[0].Color} != {.Bicycle[1].Color}`
+
+and so many others.
+
+### Secret
 
 The following keys are supported for Secret passed via `secretName` flag.
 
@@ -70,6 +122,7 @@ demo          Active    4m
 
 ### Check JSON response of HTTP api
 In this tutorial, a ClusterAlert will be used check JSON response of a HTTP api.
+
 ```yaml
 $ cat ./docs/examples/cluster-alerts/json_path/demo-0.yaml
 
@@ -81,8 +134,8 @@ metadata:
 spec:
   check: json_path
   vars:
-    url: https://api.appscode.com/health/json
-    critical: '.metadata.env!="prod"'
+    url: http://echo.jsontest.com/key/value/one/two
+    critical: '{.one} != "one"'
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
@@ -91,6 +144,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/cluster-alerts/json_path/demo-0.yaml
 clusteralert "json-path-demo-0" created
@@ -102,7 +156,6 @@ Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  16s		16s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "json-path-demo-0". Reason: secrets "notifier-config" not found
   16s		16s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "json-path-demo-0"
 ```
 

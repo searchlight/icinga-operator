@@ -22,7 +22,7 @@ Guides show you how to perform tasks with Searchlight.
   - [ca_cert](/docs/guides/cluster-alerts/ca_cert.md) - To check expiration of CA certificate used by Kubernetes api server.
   - [component_status](/docs/guides/cluster-alerts/component_status.md) - To check Kubernetes component status.
   - [event](/docs/guides/cluster-alerts/event.md) - To check Kubernetes Warning events.
-  - [json_path](/docs/guides/cluster-alerts/json_path.md) - To check any JSON HTTP response using [jq](https://stedolan.github.io/jq/).
+  - [json_path](/docs/guides/cluster-alerts/json_path.md) - To check any JSON HTTP response using [jsonpath](https://kubernetes.io/docs/reference/kubectl/jsonpath/).
   - [node_exists](/docs/guides/cluster-alerts/node_exists.md) - To check existence of Kubernetes nodes.
   - [pod_exists](/docs/guides/cluster-alerts/pod_exists.md) - To check existence of Kubernetes pods.
 

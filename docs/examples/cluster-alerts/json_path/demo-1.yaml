@@ -1,13 +1,13 @@
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: json-path-demo-0
+  name: json-path-demo-1
   namespace: demo
 spec:
   check: json_path
   vars:
-    url: http://echo.jsontest.com/key/value/one/two
-    critical: '{.one} != "one"'
+    url: "http://validate.jsontest.com/?json=[ok,warning,critical]"
+    critical: '{.size} != 3'
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
