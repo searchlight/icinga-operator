@@ -163,6 +163,24 @@ $ kubectl delete pods -n kube-system searchlight-operator-1987091405-ghj5b
 pod "searchlight-operator-1987091405-ghj5b" deleted
 ```
 
+## Configuring RBAC
+Searchlight introduces the following Kubernetes objects:
+
+| API Group                         | Kinds             |
+|-----------------------------------|-------------------|
+| monitoring.appscode.com           | `ClusterAlert`<br/>`NodeAlert`<br/>`PodAlert`<br/>`Incident` |
+| incidents.monitoring.appscode.com | `Acknowledgement` |
+
+Searchlight installer will create 3 user facing cluster roles:
+
+| ClusterRole               | Aggregates To | Desription                            |
+|---------------------------|---------------|---------------------------------------|
+| appscode:searchlight:edit | admin         | Allows admin access to Searchlight objects, intended to be granted within a namespace using a RoleBinding. This grants ability to create incidents manually.|
+| appscode:searchlight:edit | edit          | Allows edit access to Searchlight objects, intended to be granted within a namespace using a RoleBinding.      |
+| appscode:searchlight:view | view          | Allows read-only access to Searchlight objects, intended to be granted within a namespace using a RoleBinding. |
+
+These user facing roles supports [ClusterRole Aggregation](https://kubernetes.io/docs/admin/authorization/rbac/#aggregated-clusterroles) feature in Kubernetes 1.9 or later clusters.
+
 ## Using kubectl
 ```console
 # List all Searchlight objects
