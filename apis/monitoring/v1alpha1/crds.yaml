@@ -10,7 +10,6 @@ spec:
   group: monitoring.appscode.com
   names:
     kind: ClusterAlert
-    listKind: ClusterAlertList
     plural: clusteralerts
     shortNames:
     - ca
@@ -371,7 +370,6 @@ spec:
   group: monitoring.appscode.com
   names:
     kind: NodeAlert
-    listKind: NodeAlertList
     plural: nodealerts
     shortNames:
     - noa
@@ -735,7 +733,6 @@ spec:
   group: monitoring.appscode.com
   names:
     kind: PodAlert
-    listKind: PodAlertList
     plural: podalerts
     shortNames:
     - poa
@@ -1139,7 +1136,6 @@ spec:
   group: monitoring.appscode.com
   names:
     kind: Incident
-    listKind: IncidentList
     plural: incidents
     singular: incident
   scope: Namespaced
