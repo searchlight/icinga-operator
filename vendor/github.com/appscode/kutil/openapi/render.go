@@ -29,7 +29,8 @@ type Config struct {
 	Resources          []schema.GroupVersionResource
 	GetterResources    []schema.GroupVersionResource
 	ListerResources    []schema.GroupVersionResource
-	ImmutableResources []schema.GroupVersionResource
+	CDResources        []schema.GroupVersionResource
+	RDResources        []schema.GroupVersionResource
 }
 
 func (c *Config) GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
@@ -170,7 +171,7 @@ func RenderOpenAPISpec(cfg Config) (string, error) {
 		}
 	}
 	{
-		for _, gvr := range cfg.ImmutableResources {
+		for _, gvr := range cfg.CDResources {
 			var resmap map[string]rest.Storage
 			if m, found := table[gvr.GroupVersion()]; found {
 				resmap = m
@@ -188,9 +189,39 @@ func RenderOpenAPISpec(cfg Config) (string, error) {
 				return "", err
 			}
 
-			resmap[gvr.Resource] = NewImmutableStorage(ResourceInfo{
+			resmap[gvr.Resource] = NewCDStorage(ResourceInfo{
 				gvk: gvk,
 				obj: obj,
+			})
+		}
+	}
+	{
+		for _, gvr := range cfg.RDResources {
+			var resmap map[string]rest.Storage
+			if m, found := table[gvr.GroupVersion()]; found {
+				resmap = m
+			} else {
+				resmap = map[string]rest.Storage{}
+				table[gvr.GroupVersion()] = resmap
+			}
+
+			gvk, err := mapper.KindFor(gvr)
+			if err != nil {
+				return "", err
+			}
+			obj, err := cfg.Scheme.New(gvk)
+			if err != nil {
+				return "", err
+			}
+			list, err := cfg.Scheme.New(gvk.GroupVersion().WithKind(gvk.Kind + "List"))
+			if err != nil {
+				return "", err
+			}
+
+			resmap[gvr.Resource] = NewRDStorage(ResourceInfo{
+				gvk:  gvk,
+				obj:  obj,
+				list: list,
 			})
 		}
 	}

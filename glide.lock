@@ -1,5 +1,5 @@
 hash: e0b07167ef3650096c626670c46034935c0b8a6894a15e4fe2b9202e25ad6352
-updated: 2018-04-09T06:54:05.506340668-07:00
+updated: 2018-04-09T07:27:02.034735156-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -49,7 +49,7 @@ imports:
   - admission/v1beta1
   - registry/admissionreview/v1beta1
 - name: github.com/appscode/kutil
-  version: 94b3df38e89c761d2952e01171cd1257ff7028d0
+  version: 97071957a4aa713c2245bb675a53939de3f3ef1a
   subpackages:
   - apiextensions/v1beta1
   - core/v1
