@@ -3,8 +3,10 @@
 
 ## TL;DR;
 
-```bash
-$ helm install stable/searchlight
+```console
+$ helm repo add appscode https://charts.appscode.com/stable/
+$ helm repo update
+$ helm install appscode/searchlight
 ```
 
 ## Introduction
@@ -17,9 +19,11 @@ This chart bootstraps a [Searchlight controller](https://github.com/appscode/sea
 
 ## Installing the Chart
 To install the chart with the release name `my-release`:
-```bash
-$ helm install --name my-release stable/searchlight
+
+```console
+$ helm install --name my-release appscode/searchlight
 ```
+
 The command deploys Searchlight controller on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
 
 > **Tip**: List all releases using `helm list`
@@ -28,7 +32,7 @@ The command deploys Searchlight controller on the Kubernetes cluster in the defa
 
 To uninstall/delete the `my-release`:
 
-```bash
+```console
 $ helm delete my-release
 ```
 
@@ -61,14 +65,14 @@ The following table lists the configurable parameters of the Searchlight chart a
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:
 
 ```console
-$ helm install --name my-release --set image.tag=v0.2.1 stable/searchlight
+$ helm install --name my-release --set image.tag=v0.2.1 appscode/searchlight
 ```
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while
 installing the chart. For example:
 
 ```console
-$ helm install --name my-release --values values.yaml stable/searchlight
+$ helm install --name my-release --values values.yaml appscode/searchlight
 ```
 
 ## RBAC
@@ -89,5 +93,5 @@ If the output contains "beta", you may install the chart with RBAC enabled (see 
 To enable the creation of RBAC resources (On clusters with RBAC). Do the following:
 
 ```console
-$ helm install --name my-release stable/searchlight --set rbac.create=true
+$ helm install --name my-release appscode/searchlight --set rbac.create=true
 ```

@@ -95,12 +95,14 @@ $ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.
 
 
 ## Using Helm
-Searchlight can be installed via [Helm](https://helm.sh/) using the [chart](https://github.com/appscode/searchlight/blob/master/chart/stable/searchlight) included in this repository. To install the chart with the release name `my-release`:
+Searchlight can be installed via [Helm](https://helm.sh/) using the [chart](https://github.com/appscode/searchlight/blob/master/chart/searchlight) from [AppsCode Charts Repository](https://github.com/appscode/charts). To install the chart with the release name `my-release`:
+
 ```console
+$ helm repo add appscode https://charts.appscode.com/stable/
 $ helm repo update
-$ helm install stable/searchlight --name my-release
+$ helm install appscode/searchlight --name my-release
 ```
-To see the detailed configuration options, visit [here](https://github.com/appscode/searchlight/tree/master/chart/stable/searchlight).
+To see the detailed configuration options, visit [here](https://github.com/appscode/searchlight/tree/master/chart/searchlight).
 
 
 ## Verify installation
