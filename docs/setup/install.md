@@ -104,6 +104,18 @@ $ helm install appscode/searchlight --name my-release
 ```
 To see the detailed configuration options, visit [here](https://github.com/appscode/searchlight/tree/master/chart/searchlight).
 
+### Installing in GKE Cluster
+
+If you are installing Searchlight on a GKE cluster, you will need cluster admin permissions to install Searchlight operator. Run the following command to grant admin permision to the cluster.
+
+```console
+# get current google identity
+$ gcloud info | grep Account
+Account: [user@example.org]
+
+$ kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=user@example.org
+```
+
 
 ## Verify installation
 To check if Searchlight operator pods have started, run the following command:
