@@ -57,10 +57,10 @@ func (op *Operator) reconcilePlugin(key string) error {
 		return op.ensureCheckCommandDeleted(name)
 	}
 
-	plugin := obj.(*api.SearchlightPlugin).DeepCopy()
-	log.Infof("Sync/Add/Update for SearchlightPlugin %s\n", plugin.GetName())
+	searchlightPlugin := obj.(*api.SearchlightPlugin).DeepCopy()
+	log.Infof("Sync/Add/Update for SearchlightPlugin %s\n", searchlightPlugin.GetName())
 
-	return op.ensureCheckCommand(plugin)
+	return op.ensureCheckCommand(searchlightPlugin)
 }
 
 func (op *Operator) ensureCheckCommand(wp *api.SearchlightPlugin) error {
