@@ -1,5 +1,5 @@
 hash: e0b07167ef3650096c626670c46034935c0b8a6894a15e4fe2b9202e25ad6352
-updated: 2018-04-10T05:06:49.611582257-07:00
+updated: 2018-04-13T10:56:36.148148631+06:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
@@ -18,6 +18,7 @@ imports:
   - crypto/rand
   - flags
   - homedir
+  - ioutil
   - log
   - log/golog
   - net
@@ -42,9 +43,9 @@ imports:
   - unified
   - webhook
 - name: github.com/appscode/jsonpatch
-  version: 58a38a46ddb591a543c6b1003213353e29331c5a
+  version: 0e31a6adcfad9818e0208d4e3f0540d2fb414b52
 - name: github.com/appscode/kubernetes-webhook-util
-  version: bc38cfdad2cba8a14a06b1919347ff810286a46d
+  version: ddc919f31cdf677c9ca8a4697cc5163694d5e1a3
   subpackages:
   - admission/v1beta1
   - registry/admissionreview/v1beta1
@@ -129,6 +130,8 @@ imports:
   version: dcef7f55730566d41eae5db10e7d6981829720f6
 - name: github.com/evanphx/json-patch
   version: 944e07253867aacae43c04b2e6a239005443f33a
+- name: github.com/fsnotify/fsnotify
+  version: c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9
 - name: github.com/ghodss/yaml
   version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
 - name: github.com/go-macaron/auth
@@ -148,7 +151,7 @@ imports:
 - name: github.com/go-openapi/jsonreference
   version: 13c6e3589ad90f49bd3e3bbe2c2cb3d7a4142272
 - name: github.com/go-openapi/loads
-  version: a80dea3052f00e5f032e860dd7355cd0cc67e24d
+  version: 2a2b323bab96e6b1fdee110e57d959322446e9c9
 - name: github.com/go-openapi/spec
   version: 7abd5745472fff5eb3685386d5fb8bf38683154d
 - name: github.com/go-openapi/swag
@@ -273,7 +276,7 @@ imports:
 - name: github.com/NYTimes/gziphandler
   version: 56545f4a5d46df9a6648819d1664c3a03a13ffdb
 - name: github.com/olekukonko/tablewriter
-  version: cca8bbc0798408af109aaaa239cbd2634846b340
+  version: b8a9be070da40449e501c3c4730a889e42d87a9e
 - name: github.com/onsi/gomega
   version: 003f63b7f4cff3fc95357005358af2de0f5fe152
   subpackages:
@@ -320,7 +323,8 @@ imports:
 - name: github.com/russross/blackfriday
   version: 300106c228d52c8941d4b3de6054a6062a86dda3
 - name: github.com/sergi/go-diff
-  version: 97b2266dfe4bd4ea1b81a463322f04f8b724801e
+  version: 24e2351369ec4949b2ed0dc5c477afdd4c4034e8
+  repo: https://github.com/sergi/go-diff
   subpackages:
   - diffmatchpatch
 - name: github.com/shirou/gopsutil
@@ -338,15 +342,15 @@ imports:
   subpackages:
   - mem
 - name: github.com/spf13/cobra
-  version: cd30c2a7e91a1d63fd9a0027accf18a681e9d50b
+  version: 615425954c3b0d9485a7027d4d451fdcdfdee84e
   subpackages:
   - doc
 - name: github.com/spf13/pflag
-  version: 1ce0cc6db4029d97571db82f85092fccedb572ce
+  version: 583c0c0531f06d5278b7d917446061adc344b5cd
 - name: github.com/ssor/bom
   version: 6386211fdfcf24c0bfbdaceafd02849ed9a8a509
 - name: github.com/StackExchange/wmi
-  version: 5d049714c4a64225c3c79a7cf7d02f7fb5b96338
+  version: cdffdb33acae0e14efff2628f9bae377b597840e
 - name: github.com/tbruyelle/hipchat-go
   version: 749fb9e14beb9995f677c101a754393cecb64b0f
   subpackages:
@@ -360,11 +364,12 @@ imports:
 - name: github.com/vaughan0/go-ini
   version: a98ad7ee00ec53921f08832bc06ecf7fd600e6a1
 - name: github.com/yudai/gojsondiff
-  version: 7b1b7adf999dab73a6eb02669c3d82dbb27a3dd6
+  version: e21612694bdd50975f93cd5eaccb457477128e28
   subpackages:
   - formatter
 - name: github.com/yudai/golcs
   version: d1c525dea8ce39ea9a783d33cf08932305373f2c
+  repo: https://github.com/yudai/golcs
 - name: golang.org/x/crypto
   version: 81e90905daefcd6fd217b62423c0908922eadb30
   subpackages:
@@ -423,7 +428,7 @@ imports:
   - unicode/norm
   - width
 - name: google.golang.org/appengine
-  version: 4f7eeb5305a4ba1966344836ba4af9996b7b4e05
+  version: 0a24098c0ec68416ec050f567f75df563d6b231e
   subpackages:
   - internal
   - internal/app_identity
@@ -818,7 +823,7 @@ imports:
   - util/jsonpath
   - util/workqueue
 - name: k8s.io/kube-openapi
-  version: cd0308977f05a0de033c0e8ce1860b317e360dca
+  version: f442ecb314a3679150c272e2b9713d8deed5955d
   subpackages:
   - pkg/builder
   - pkg/common
