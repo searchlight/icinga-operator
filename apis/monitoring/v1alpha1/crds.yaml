@@ -1797,15 +1797,6 @@ spec:
               type: array
             webhook:
               properties:
-                caBundle:
-                  description: CABundle is a PEM encoded CA bundle which will be used
-                    to validate an webhook's serving certificate.
-                  format: byte
-                  type: string
-                insecureSkipTLSVerify:
-                  description: InsecureSkipTLSVerify disables TLS certificate verification
-                    when communicating with this webhook.
-                  type: boolean
                 name:
                   description: Name is the name of the service
                   type: string

@@ -46,10 +46,6 @@ type WebhookServiceSpec struct {
 	Namespace string `json:"namespace,omitempty"`
 	// Name is the name of the service
 	Name string `json:"name"`
-	// InsecureSkipTLSVerify disables TLS certificate verification when communicating with this webhook.
-	InsecureSkipTLSVerify bool `json:"insecureSkipTLSVerify,omitempty"`
-	// CABundle is a PEM encoded CA bundle which will be used to validate an webhook's serving certificate.
-	CABundle []byte `json:"caBundle,omitempty"`
 }
 
 type PluginArguments struct {

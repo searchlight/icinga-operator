@@ -997,20 +997,6 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 								Format:      "",
 							},
 						},
-						"insecureSkipTLSVerify": {
-							SchemaProps: spec.SchemaProps{
-								Description: "InsecureSkipTLSVerify disables TLS certificate verification when communicating with this webhook.",
-								Type:        []string{"boolean"},
-								Format:      "",
-							},
-						},
-						"caBundle": {
-							SchemaProps: spec.SchemaProps{
-								Description: "CABundle is a PEM encoded CA bundle which will be used to validate an webhook's serving certificate.",
-								Type:        []string{"string"},
-								Format:      "byte",
-							},
-						},
 					},
 					Required: []string{"name"},
 				},
