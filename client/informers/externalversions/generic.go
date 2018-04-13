@@ -20,7 +20,6 @@ package externalversions
 
 import (
 	"fmt"
-
 	v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"
@@ -59,6 +58,8 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Monitoring().V1alpha1().Incidents().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("nodealerts"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Monitoring().V1alpha1().NodeAlerts().Informer()}, nil
+	case v1alpha1.SchemeGroupVersion.WithResource("plugins"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Monitoring().V1alpha1().Plugins().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("podalerts"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Monitoring().V1alpha1().PodAlerts().Informer()}, nil
 

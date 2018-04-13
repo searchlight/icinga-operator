@@ -98,6 +98,10 @@ func (a PodAlert) GetAlertInterval() time.Duration {
 }
 
 func (a PodAlert) IsValid(kc kubernetes.Interface) error {
+	if a.Spec.Paused {
+		return nil
+	}
+
 	if a.Spec.PodName != nil && a.Spec.Selector != nil {
 		return fmt.Errorf("can't specify both pod name and selector")
 	}

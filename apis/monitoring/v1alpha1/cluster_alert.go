@@ -94,6 +94,10 @@ func (a ClusterAlert) GetAlertInterval() time.Duration {
 }
 
 func (a ClusterAlert) IsValid(kc kubernetes.Interface) error {
+	if a.Spec.Paused {
+		return nil
+	}
+
 	cmd, ok := ClusterCommands[a.Spec.Check]
 	if !ok {
 		return fmt.Errorf("'%s' is not a valid cluster check command", a.Spec.Check)

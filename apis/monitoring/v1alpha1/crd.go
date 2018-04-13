@@ -75,3 +75,20 @@ func (a Incident) CustomResourceDefinition() *apiextensions.CustomResourceDefini
 		GetOpenAPIDefinitions: GetOpenAPIDefinitions,
 	})
 }
+
+func (a Plugin) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
+	return crdutils.NewCustomResourceDefinition(crdutils.Config{
+		Group:         SchemeGroupVersion.Group,
+		Version:       SchemeGroupVersion.Version,
+		Plural:        ResourcePluralPlugin,
+		Singular:      ResourceSingularPlugin,
+		Kind:          ResourceKindPlugin,
+		ResourceScope: string(apiextensions.ClusterScoped),
+		Labels: crdutils.Labels{
+			LabelsMap: map[string]string{"app": "searchlight"},
+		},
+		SpecDefinitionName:    "github.com/appscode/searchlight/apis/monitoring/v1alpha1.Plugin",
+		EnableValidation:      true,
+		GetOpenAPIDefinitions: GetOpenAPIDefinitions,
+	})
+}

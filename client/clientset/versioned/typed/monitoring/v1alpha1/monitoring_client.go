@@ -28,6 +28,7 @@ type MonitoringV1alpha1Interface interface {
 	ClusterAlertsGetter
 	IncidentsGetter
 	NodeAlertsGetter
+	PluginsGetter
 	PodAlertsGetter
 }
 
@@ -46,6 +47,10 @@ func (c *MonitoringV1alpha1Client) Incidents(namespace string) IncidentInterface
 
 func (c *MonitoringV1alpha1Client) NodeAlerts(namespace string) NodeAlertInterface {
 	return newNodeAlerts(c, namespace)
+}
+
+func (c *MonitoringV1alpha1Client) Plugins(namespace string) PluginInterface {
+	return newPlugins(c, namespace)
 }
 
 func (c *MonitoringV1alpha1Client) PodAlerts(namespace string) PodAlertInterface {

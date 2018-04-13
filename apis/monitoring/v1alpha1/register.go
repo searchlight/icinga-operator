@@ -40,6 +40,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&PodAlertList{},
 		&Incident{},
 		&IncidentList{},
+		&Plugin{},
+		&PluginList{},
 	)
 
 	scheme.AddKnownTypes(SchemeGroupVersion,

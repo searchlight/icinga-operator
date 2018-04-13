@@ -37,6 +37,7 @@ func generateCRDDefinitions() {
 		slitev1alpha1.NodeAlert{}.CustomResourceDefinition(),
 		slitev1alpha1.PodAlert{}.CustomResourceDefinition(),
 		slitev1alpha1.Incident{}.CustomResourceDefinition(),
+		slitev1alpha1.Plugin{}.CustomResourceDefinition(),
 	}
 	for _, crd := range crds {
 		crdutils.MarshallCrd(f, crd, "yaml")

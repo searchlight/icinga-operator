@@ -98,6 +98,10 @@ func (a NodeAlert) GetAlertInterval() time.Duration {
 }
 
 func (a NodeAlert) IsValid(kc kubernetes.Interface) error {
+	if a.Spec.Paused {
+		return nil
+	}
+
 	if a.Spec.NodeName != nil && len(a.Spec.Selector) > 0 {
 		return fmt.Errorf("can't specify both node name and selector")
 	}

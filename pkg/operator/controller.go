@@ -22,6 +22,7 @@ import (
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	core_listers "k8s.io/client-go/listers/core/v1"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
 )
@@ -29,6 +30,7 @@ import (
 type Operator struct {
 	Config
 
+	clientConfig *rest.Config
 	kubeClient   kubernetes.Interface
 	crdClient    ecs.ApiextensionsV1beta1Interface
 	extClient    cs.Interface
@@ -70,21 +72,27 @@ type Operator struct {
 	paQueue    *queue.Worker
 	paInformer cache.SharedIndexInformer
 	paLister   mon_listers.PodAlertLister
+
+	// Plugin
+	pluginQueue    *queue.Worker
+	pluginInformer cache.SharedIndexInformer
+	pluginLister   mon_listers.PluginLister
 }
 
-func New(kubeClient kubernetes.Interface, crdClient ecs.ApiextensionsV1beta1Interface, extClient cs.Interface, icingaClient *icinga.Client, opt Config) *Operator {
+func New(opc *OperatorConfig) *Operator {
 	return &Operator{
-		kubeClient:          kubeClient,
-		kubeInformerFactory: informers.NewSharedInformerFactory(kubeClient, opt.ResyncPeriod),
-		crdClient:           crdClient,
-		extClient:           extClient,
-		monInformerFactory:  mon_informers.NewSharedInformerFactory(extClient, opt.ResyncPeriod),
-		icingaClient:        icingaClient,
-		Config:              opt,
-		clusterHost:         icinga.NewClusterHost(icingaClient, opt.Verbosity),
-		nodeHost:            icinga.NewNodeHost(icingaClient, opt.Verbosity),
-		podHost:             icinga.NewPodHost(icingaClient, opt.Verbosity),
-		recorder:            eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
+		clientConfig:        opc.ClientConfig,
+		kubeClient:          opc.KubeClient,
+		kubeInformerFactory: informers.NewSharedInformerFactory(opc.KubeClient, opc.ResyncPeriod),
+		crdClient:           opc.CRDClient,
+		extClient:           opc.ExtClient,
+		monInformerFactory:  mon_informers.NewSharedInformerFactory(opc.ExtClient, opc.ResyncPeriod),
+		icingaClient:        opc.IcingaClient,
+		Config:              opc.Config,
+		clusterHost:         icinga.NewClusterHost(opc.IcingaClient, opc.Verbosity),
+		nodeHost:            icinga.NewNodeHost(opc.IcingaClient, opc.Verbosity),
+		podHost:             icinga.NewPodHost(opc.IcingaClient, opc.Verbosity),
+		recorder:            eventer.NewEventRecorder(opc.KubeClient, "Searchlight operator"),
 	}
 }
 
@@ -98,6 +106,7 @@ func (op *Operator) Setup() error {
 	op.initClusterAlertWatcher()
 	op.initNodeAlertWatcher()
 	op.initPodAlertWatcher()
+	op.initPluginWatcher()
 	return nil
 }
 
@@ -107,6 +116,7 @@ func (op *Operator) ensureCustomResourceDefinitions() error {
 		api.NodeAlert{}.CustomResourceDefinition(),
 		api.PodAlert{}.CustomResourceDefinition(),
 		api.Incident{}.CustomResourceDefinition(),
+		api.Plugin{}.CustomResourceDefinition(),
 	}
 	return apiext_util.RegisterCRDs(op.crdClient, crds)
 }
@@ -138,6 +148,7 @@ func (op *Operator) RunWatchers(stopCh <-chan struct{}) {
 	op.caQueue.Run(stopCh)
 	op.naQueue.Run(stopCh)
 	op.paQueue.Run(stopCh)
+	op.pluginQueue.Run(stopCh)
 
 	<-stopCh
 	glog.Info("Stopping Searchlight controller")
