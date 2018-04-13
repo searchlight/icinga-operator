@@ -12,6 +12,7 @@ import (
 	"github.com/appscode/kutil/meta"
 	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/plugin"
 	"github.com/golang/glog"
@@ -62,7 +63,6 @@ func (op *Operator) reconcilePlugin(key string) error {
 		}
 
 		fmt.Println("deleting CheckCommand for ", name)
-
 		return op.ensureCheckCommandDeleted(name)
 	}
 
@@ -76,11 +76,11 @@ func (op *Operator) ensureCheckCommand(wp *api.Plugin) error {
 
 	ic := api.IcingaCommand{
 		Name: wp.Name,
-		Vars: make(map[string]bool),
+		Vars: make(map[string]data.CommandVar),
 	}
 
 	for _, item := range wp.Spec.Arguments.Vars {
-		ic.Vars[item] = true
+		ic.Vars[item] = data.CommandVar{}
 	}
 
 	ic.States = wp.Spec.State
