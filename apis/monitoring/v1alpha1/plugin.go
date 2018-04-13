@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	ResourceKindPlugin     = "Plugin"
-	ResourcePluralPlugin   = "plugins"
-	ResourceSingularPlugin = "plugin"
+	ResourceKindSearchlightPlugin     = "SearchlightPlugin"
+	ResourcePluralSearchlightPlugin   = "searchlightplugins"
+	ResourceSingularSearchlightPlugin = "searchlightplugin"
 )
 
 // +genclient
@@ -15,27 +15,27 @@ const (
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-type Plugin struct {
+type SearchlightPlugin struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	// Spec is the desired state of the Plugin.
+	// Spec is the desired state of the SearchlightPlugin.
 	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#spec-and-status
-	Spec PluginSpec `json:"spec,omitempty"`
+	Spec SearchlightPluginSpec `json:"spec,omitempty"`
 }
 
-// PluginSpec describes the Plugin the user wishes to create.
-type PluginSpec struct {
+// SearchlightPluginSpec describes the SearchlightPlugin the user wishes to create.
+type SearchlightPluginSpec struct {
 	// Check Command
 	Command string `json:"command,omitempty"`
 
-	// Webhook provides a reference to the service for this Plugin.
+	// Webhook provides a reference to the service for this SearchlightPlugin.
 	// It must communicate on port 80
 	Webhook *WebhookServiceSpec `json:"webhook,omitempty"`
 
 	// AlertKinds refers to supports Alert kinds for this plugin
 	AlertKinds []string `json:"alertKinds"`
-	// Supported arguments for Plugin
+	// Supported arguments for SearchlightPlugin
 	Arguments PluginArguments `json:"arguments,omitempty"`
 	// Supported Icinga Service State
 	State []string `json:"state"`
@@ -60,13 +60,13 @@ type PluginArguments struct {
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// PluginList is a collection of Plugin.
-type PluginList struct {
+// SearchlightPluginList is a collection of SearchlightPlugin.
+type SearchlightPluginList struct {
 	metav1.TypeMeta `json:",inline"`
 	// Standard object's metadata.
 	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#metadata
 	metav1.ListMeta `json:"metadata,omitempty"`
 
-	// Items is the list of Plugin.
-	Items []Plugin `json:"items"`
+	// Items is the list of SearchlightPlugin.
+	Items []SearchlightPlugin `json:"items"`
 }

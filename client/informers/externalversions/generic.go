@@ -59,10 +59,10 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Monitoring().V1alpha1().Incidents().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("nodealerts"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Monitoring().V1alpha1().NodeAlerts().Informer()}, nil
-	case v1alpha1.SchemeGroupVersion.WithResource("plugins"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Monitoring().V1alpha1().Plugins().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("podalerts"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Monitoring().V1alpha1().PodAlerts().Informer()}, nil
+	case v1alpha1.SchemeGroupVersion.WithResource("searchlightplugins"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Monitoring().V1alpha1().SearchlightPlugins().Informer()}, nil
 
 	}
 

@@ -19,11 +19,11 @@ const (
 
 // CustomResourceDefinitionTypeMeta set the default kind/apiversion of CRD
 var PluginTypeMeta = metav1.TypeMeta{
-	Kind:       "Plugin",
+	Kind:       "SearchlightPlugin",
 	APIVersion: "monitoring.appscode.com/v1alpha1",
 }
 
-func MarshallPlugin(w io.Writer, plugin *api.Plugin, outputFormat string) {
+func MarshallPlugin(w io.Writer, plugin *api.SearchlightPlugin, outputFormat string) {
 	jsonBytes, err := json.MarshalIndent(plugin, "", "    ")
 	if err != nil {
 		fmt.Println("error:", err)

@@ -73,10 +73,10 @@ type Operator struct {
 	paInformer cache.SharedIndexInformer
 	paLister   mon_listers.PodAlertLister
 
-	// Plugin
+	// SearchlightPlugin
 	pluginQueue    *queue.Worker
 	pluginInformer cache.SharedIndexInformer
-	pluginLister   mon_listers.PluginLister
+	pluginLister   mon_listers.SearchlightPluginLister
 }
 
 func New(opc *OperatorConfig) *Operator {
@@ -116,7 +116,7 @@ func (op *Operator) ensureCustomResourceDefinitions() error {
 		api.NodeAlert{}.CustomResourceDefinition(),
 		api.PodAlert{}.CustomResourceDefinition(),
 		api.Incident{}.CustomResourceDefinition(),
-		api.Plugin{}.CustomResourceDefinition(),
+		api.SearchlightPlugin{}.CustomResourceDefinition(),
 	}
 	return apiext_util.RegisterCRDs(op.crdClient, crds)
 }

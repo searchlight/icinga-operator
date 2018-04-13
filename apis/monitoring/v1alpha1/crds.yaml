@@ -1474,13 +1474,15 @@ metadata:
   creationTimestamp: null
   labels:
     app: searchlight
-  name: plugins.monitoring.appscode.com
+  name: searchlightplugins.monitoring.appscode.com
 spec:
   group: monitoring.appscode.com
   names:
-    kind: Plugin
-    plural: plugins
-    singular: plugin
+    kind: SearchlightPlugin
+    plural: searchlightplugins
+    shortNames:
+    - sp
+    singular: searchlightplugin
   scope: Cluster
   validation:
     openAPIV3Schema:
@@ -1767,7 +1769,8 @@ spec:
                 Populated by the system. Read-only. More info: http://kubernetes.io/docs/user-guide/identifiers#uids
               type: string
         spec:
-          description: PluginSpec describes the Plugin the user wishes to create.
+          description: SearchlightPluginSpec describes the SearchlightPlugin the user
+            wishes to create.
           properties:
             alertKinds:
               description: AlertKinds refers to supports Alert kinds for this plugin

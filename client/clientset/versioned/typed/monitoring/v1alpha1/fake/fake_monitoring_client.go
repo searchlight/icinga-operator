@@ -38,12 +38,12 @@ func (c *FakeMonitoringV1alpha1) NodeAlerts(namespace string) v1alpha1.NodeAlert
 	return &FakeNodeAlerts{c, namespace}
 }
 
-func (c *FakeMonitoringV1alpha1) Plugins(namespace string) v1alpha1.PluginInterface {
-	return &FakePlugins{c, namespace}
-}
-
 func (c *FakeMonitoringV1alpha1) PodAlerts(namespace string) v1alpha1.PodAlertInterface {
 	return &FakePodAlerts{c, namespace}
+}
+
+func (c *FakeMonitoringV1alpha1) SearchlightPlugins(namespace string) v1alpha1.SearchlightPluginInterface {
+	return &FakeSearchlightPlugins{c, namespace}
 }
 
 // RESTClient returns a RESTClient that is used to communicate

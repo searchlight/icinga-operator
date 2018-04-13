@@ -16,7 +16,7 @@ var checkCommandTemplate = `object CheckCommand "%s" {
   }
 }`
 
-func GenerateCheckCommand(plugin *api.Plugin) string {
+func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 	type arg struct {
 		key string
 		val string

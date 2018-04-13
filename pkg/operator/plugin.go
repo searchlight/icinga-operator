@@ -25,15 +25,15 @@ import (
 )
 
 func (op *Operator) initPluginWatcher() {
-	op.pluginInformer = op.monInformerFactory.Monitoring().V1alpha1().Plugins().Informer()
-	op.pluginQueue = queue.New("Plugin", op.MaxNumRequeues, op.NumThreads, op.reconcilePlugin)
+	op.pluginInformer = op.monInformerFactory.Monitoring().V1alpha1().SearchlightPlugins().Informer()
+	op.pluginQueue = queue.New("SearchlightPlugin", op.MaxNumRequeues, op.NumThreads, op.reconcilePlugin)
 	op.pluginInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			queue.Enqueue(op.pluginQueue.GetQueue(), obj)
 		},
 		UpdateFunc: func(oldObj interface{}, newObj interface{}) {
-			old := oldObj.(*api.Plugin)
-			nu := newObj.(*api.Plugin)
+			old := oldObj.(*api.SearchlightPlugin)
+			nu := newObj.(*api.SearchlightPlugin)
 
 			if reflect.DeepEqual(old.Spec, nu.Spec) {
 				return
@@ -44,7 +44,7 @@ func (op *Operator) initPluginWatcher() {
 			queue.Enqueue(op.pluginQueue.GetQueue(), obj)
 		},
 	})
-	op.pluginLister = op.monInformerFactory.Monitoring().V1alpha1().Plugins().Lister()
+	op.pluginLister = op.monInformerFactory.Monitoring().V1alpha1().SearchlightPlugins().Lister()
 }
 
 func (op *Operator) reconcilePlugin(key string) error {
@@ -55,7 +55,7 @@ func (op *Operator) reconcilePlugin(key string) error {
 	}
 
 	if !exists {
-		log.Warningf("Plugin %s does not exist anymore\n", key)
+		log.Warningf("SearchlightPlugin %s does not exist anymore\n", key)
 
 		_, name, err := cache.SplitMetaNamespaceKey(key)
 		if err != nil {
@@ -66,13 +66,13 @@ func (op *Operator) reconcilePlugin(key string) error {
 		return op.ensureCheckCommandDeleted(name)
 	}
 
-	plugin := obj.(*api.Plugin).DeepCopy()
-	log.Infof("Sync/Add/Update for Plugin %s\n", plugin.GetName())
+	plugin := obj.(*api.SearchlightPlugin).DeepCopy()
+	log.Infof("Sync/Add/Update for SearchlightPlugin %s\n", plugin.GetName())
 
 	return op.ensureCheckCommand(plugin)
 }
 
-func (op *Operator) ensureCheckCommand(wp *api.Plugin) error {
+func (op *Operator) ensureCheckCommand(wp *api.SearchlightPlugin) error {
 
 	ic := api.IcingaCommand{
 		Name: wp.Name,
@@ -182,7 +182,7 @@ func (op *Operator) ensureCheckCommandDeleted(name string) error {
 	return nil
 }
 
-func (op *Operator) addPluginSupport(wp *api.Plugin) error {
+func (op *Operator) addPluginSupport(wp *api.SearchlightPlugin) error {
 
 	checkCommandString := plugin.GenerateCheckCommand(wp)
 

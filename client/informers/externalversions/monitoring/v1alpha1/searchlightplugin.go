@@ -31,59 +31,59 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 )
 
-// PluginInformer provides access to a shared informer and lister for
-// Plugins.
-type PluginInformer interface {
+// SearchlightPluginInformer provides access to a shared informer and lister for
+// SearchlightPlugins.
+type SearchlightPluginInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.PluginLister
+	Lister() v1alpha1.SearchlightPluginLister
 }
 
-type pluginInformer struct {
+type searchlightPluginInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
 	namespace        string
 }
 
-// NewPluginInformer constructs a new informer for Plugin type.
+// NewSearchlightPluginInformer constructs a new informer for SearchlightPlugin type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewPluginInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredPluginInformer(client, namespace, resyncPeriod, indexers, nil)
+func NewSearchlightPluginInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredSearchlightPluginInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredPluginInformer constructs a new informer for Plugin type.
+// NewFilteredSearchlightPluginInformer constructs a new informer for SearchlightPlugin type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredPluginInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredSearchlightPluginInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.MonitoringV1alpha1().Plugins(namespace).List(options)
+				return client.MonitoringV1alpha1().SearchlightPlugins(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.MonitoringV1alpha1().Plugins(namespace).Watch(options)
+				return client.MonitoringV1alpha1().SearchlightPlugins(namespace).Watch(options)
 			},
 		},
-		&monitoring_v1alpha1.Plugin{},
+		&monitoring_v1alpha1.SearchlightPlugin{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *pluginInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredPluginInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *searchlightPluginInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredSearchlightPluginInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *pluginInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&monitoring_v1alpha1.Plugin{}, f.defaultInformer)
+func (f *searchlightPluginInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&monitoring_v1alpha1.SearchlightPlugin{}, f.defaultInformer)
 }
 
-func (f *pluginInformer) Lister() v1alpha1.PluginLister {
-	return v1alpha1.NewPluginLister(f.Informer().GetIndexer())
+func (f *searchlightPluginInformer) Lister() v1alpha1.SearchlightPluginLister {
+	return v1alpha1.NewSearchlightPluginLister(f.Informer().GetIndexer())
 }
