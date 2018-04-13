@@ -33,7 +33,7 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 
 		args = append(args, arg{
 			key: "url",
-			val: fmt.Sprintf("http://%s.%s.svc.cluster.local", webhook.Name, namespace),
+			val: fmt.Sprintf("http://%s.%s.svc", webhook.Name, namespace),
 		})
 	}
 
