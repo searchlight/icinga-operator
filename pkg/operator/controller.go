@@ -123,6 +123,11 @@ func (op *Operator) RunWatchers(stopCh <-chan struct{}) {
 }
 
 func (op *Operator) Run(stopCh <-chan struct{}) error {
+	err := op.MigrateAlerts()
+	if err != nil {
+		log.Fatalln("Failed alert migrations:", err)
+	}
+
 	op.gcIncidents()
 	go op.RunWatchers(stopCh)
 
