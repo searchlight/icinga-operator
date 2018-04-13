@@ -75,7 +75,7 @@ const (
 	stateOK       = "OK"
 	stateWarning  = "Warning"
 	stateCritical = "Critical"
-	stateUnknown  = "unknown"
+	stateUnknown  = "Unknown"
 )
 
 func (o *options) complete(cmd *cobra.Command) (err error) {
@@ -231,10 +231,10 @@ func (n *notifier) sendNotification() {
 }
 
 const (
-	flagEventTime = "time"
-	flagAlert     = "alert"
-	flagType      = "type"
-	flagState     = "state"
+	flagEventTime = "iv-time"
+	flagAlert     = "iv-alert"
+	flagType      = "iv-type"
+	flagState     = "iv-state"
 )
 
 func NewCmd() *cobra.Command {
@@ -265,10 +265,10 @@ func NewCmd() *cobra.Command {
 	c.Flags().StringVarP(&opts.alertName, flagAlert, "A", "", "Kubernetes alert object name")
 	c.Flags().StringVar(&opts.notificationType, flagType, "", "Notification type (PROBLEM | ACKNOWLEDGEMENT | RECOVERY)")
 	c.Flags().StringVar(&opts.serviceState, flagState, "", "Service state (OK | Warning | Critical)")
-	c.Flags().StringVar(&opts.serviceOutput, "output", "", "Service output")
+	c.Flags().StringVar(&opts.serviceOutput, "iv-output", "", "Service output")
 	c.Flags().String(flagEventTime, "", "Event time")
-	c.Flags().StringVarP(&opts.author, "author", "a", "", "Event author name")
-	c.Flags().StringVarP(&opts.comment, "comment", "c", "", "Event comment")
+	c.Flags().StringVarP(&opts.author, "iv-author", "a", "", "Event author name")
+	c.Flags().StringVarP(&opts.comment, "iv-comment", "c", "", "Event comment")
 
 	c.Flags().AddGoFlagSet(flag.CommandLine)
 	logs.InitLogs()

@@ -49,14 +49,20 @@ COPY config/icinga2/ido-pgsql.conf        /scripts/icinga2/ido-pgsql.conf
 RUN set -x && icinga2 feature enable ido-pgsql syslog checker
 
 # Command Feature
-COPY config/icinga2/appscode-commands.conf /scripts/appscode-commands.conf
-COPY config/icinga2/modified-commands.conf /scripts/modified-commands.conf
 RUN set -x \
   && icinga2 feature enable command notification \
   && mkdir -p /run/icinga2/cmd \
-  && chown icinga:icinga -R /run/icinga2 \
-  && cat /scripts/*-commands.conf >> /etc/icinga2/conf.d/commands.conf \
-  && rm /scripts/*-commands.conf
+  && chown icinga:icinga -R /run/icinga2
+
+COPY config/icinga2/notification-command.conf /scripts/notification-command.conf
+RUN set -x \
+  && cat /scripts/notification-command.conf >> /etc/icinga2/conf.d/notification-command.conf \
+  && rm /scripts/notification-command.conf
+
+COPY config/icinga2/modified-commands.conf /scripts/modified-commands.conf
+RUN set -x \
+  && cat /scripts/modified-commands.conf >> /etc/icinga2/conf.d/modified-commands.conf \
+  && rm /scripts/modified-commands.conf
 
 COPY config/icinga2/templates.conf /scripts/templates.conf
 RUN set -x \
@@ -103,7 +109,6 @@ COPY plugins/* /usr/lib/monitoring-plugins/
 # runit ##############################################
 ADD sv /etc/sv/
 RUN ln -s /etc/sv /etc/service
-
 
 COPY sv /etc/sv/
 COPY runit.sh /runit.sh

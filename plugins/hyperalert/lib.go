@@ -23,6 +23,7 @@ import (
 	"github.com/appscode/searchlight/plugins/check_pod_exists"
 	"github.com/appscode/searchlight/plugins/check_pod_status"
 	"github.com/appscode/searchlight/plugins/check_volume"
+	"github.com/appscode/searchlight/plugins/check_webhook"
 	"github.com/appscode/searchlight/plugins/notifier"
 	"github.com/jpillora/go-ogle-analytics"
 	"github.com/spf13/cobra"
@@ -59,6 +60,7 @@ func NewCmd() *cobra.Command {
 	flag.CommandLine.Parse([]string{})
 	cmd.PersistentFlags().String(plugins.FlagKubeConfig, "", "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
 	cmd.PersistentFlags().String(plugins.FlagKubeConfigContext, "", "Use the context in kubeconfig")
+	cmd.PersistentFlags().Int(plugins.FlagCheckInterval, 30, "Icinga check_interval in second. [Format: 30, 300]")
 
 	// CheckCluster
 	cmd.AddCommand(check_component_status.NewCmd())
@@ -69,6 +71,7 @@ func NewCmd() *cobra.Command {
 	cmd.AddCommand(check_ca_cert.NewCmd())
 	cmd.AddCommand(check_cert.NewCmd())
 	cmd.AddCommand(check_env.NewCmd())
+	cmd.AddCommand(check_webhook.NewCmd())
 
 	// CheckNode
 	cmd.AddCommand(check_node_status.NewCmd())

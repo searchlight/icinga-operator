@@ -55,7 +55,7 @@ spec:
   selector:
     matchLabels:
       app: nginx
-  check: pod_volume
+  check: pod-volume
   vars:
     volumeName: www
     warning: '70'

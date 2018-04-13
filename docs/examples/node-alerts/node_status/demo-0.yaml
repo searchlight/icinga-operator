@@ -4,7 +4,7 @@ metadata:
   name: node-status-demo-0
   namespace: demo
 spec:
-  check: node_status
+  check: node-status
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config

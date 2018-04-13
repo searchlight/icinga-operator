@@ -4,7 +4,7 @@ metadata:
   name: any-http
   namespace: demo
 spec:
-  check: any_http
+  check: any-http
   vars:
     count: '1'
   checkInterval: 30s

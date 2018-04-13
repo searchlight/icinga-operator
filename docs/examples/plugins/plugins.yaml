@@ -1,0 +1,261 @@
+---
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: component-status
+spec:
+  alertKinds:
+  - ClusterAlert
+  arguments:
+    host:
+      v: vars.verbosity
+    vars:
+    - selector
+    - componentName
+  command: hyperalert check_component_status
+  state:
+  - OK
+  - Critical
+  - Unknown
+---
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: json-path
+spec:
+  alertKinds:
+  - ClusterAlert
+  arguments:
+    host:
+      iv-host: name
+      v: vars.verbosity
+    vars:
+    - url
+    - secretName
+    - warning
+    - critical
+  command: hyperalert check_json_path
+  state:
+  - OK
+  - Warning
+  - Critical
+  - Unknown
+---
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: node-exists
+spec:
+  alertKinds:
+  - ClusterAlert
+  arguments:
+    host:
+      v: vars.verbosity
+    vars:
+    - selector
+    - nodeName
+    - count
+  command: hyperalert check_node_exists
+  state:
+  - OK
+  - Critical
+  - Unknown
+---
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: pod-exists
+spec:
+  alertKinds:
+  - ClusterAlert
+  arguments:
+    host:
+      iv-host: name
+      v: vars.verbosity
+    vars:
+    - selector
+    - podName
+    - count
+  command: hyperalert check_pod_exists
+  state:
+  - OK
+  - Critical
+  - Unknown
+---
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: event
+spec:
+  alertKinds:
+  - ClusterAlert
+  arguments:
+    host:
+      iv-host: name
+      v: vars.verbosity
+    vars:
+    - clockSkew
+    - involvedObjectName
+    - involvedObjectNamespace
+    - involvedObjectKind
+    - involvedObjectUID
+  command: hyperalert check_event
+  state:
+  - OK
+  - Warning
+  - Unknown
+---
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: ca-cert
+spec:
+  alertKinds:
+  - ClusterAlert
+  arguments:
+    host:
+      v: vars.verbosity
+    vars:
+    - warning
+    - critical
+  command: hyperalert check_ca_cert
+  state:
+  - OK
+  - Warning
+  - Critical
+  - Unknown
+---
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: cert
+spec:
+  alertKinds:
+  - ClusterAlert
+  arguments:
+    host:
+      iv-host: name
+      v: vars.verbosity
+    vars:
+    - selector
+    - secretName
+    - secretKey
+    - warning
+    - critical
+  command: hyperalert check_cert
+  state:
+  - OK
+  - Warning
+  - Critical
+  - Unknown
+---
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: node-status
+spec:
+  alertKinds:
+  - NodeAlert
+  arguments:
+    host:
+      iv-host: name
+      v: vars.verbosity
+  command: hyperalert check_node_status
+  state:
+  - OK
+  - Critical
+  - Unknown
+---
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: node-volume
+spec:
+  alertKinds:
+  - NodeAlert
+  arguments:
+    host:
+      iv-host: name
+      v: vars.verbosity
+    vars:
+    - mountPoint
+    - secretName
+    - warning
+    - critical
+  command: hyperalert check_volume
+  state:
+  - OK
+  - Critical
+  - Unknown
+---
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: pod-status
+spec:
+  alertKinds:
+  - PodAlert
+  arguments:
+    host:
+      iv-host: name
+      v: vars.verbosity
+  command: hyperalert check_pod_status
+  state:
+  - OK
+  - Critical
+  - Unknown
+---
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: pod-volume
+spec:
+  alertKinds:
+  - PodAlert
+  arguments:
+    host:
+      iv-host: name
+      v: vars.verbosity
+    vars:
+    - volumeName
+    - secretName
+    - warning
+    - critical
+  command: hyperalert check_volume
+  state:
+  - OK
+  - Critical
+  - Unknown
+---
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: pod-exec
+spec:
+  alertKinds:
+  - PodAlert
+  arguments:
+    host:
+      iv-host: name
+      v: vars.verbosity
+    vars:
+    - container
+    - cmd
+    - argv
+  command: hyperalert check_pod_exec
+  state:
+  - OK
+  - Critical
+  - Unknown

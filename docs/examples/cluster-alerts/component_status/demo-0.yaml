@@ -4,7 +4,7 @@ metadata:
   name: component-status-demo-0
   namespace: demo
 spec:
-  check: component_status
+  check: component-status
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config

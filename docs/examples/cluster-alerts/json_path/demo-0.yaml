@@ -4,7 +4,7 @@ metadata:
   name: json-path-demo-0
   namespace: demo
 spec:
-  check: json_path
+  check: json-path
   vars:
     url: http://echo.jsontest.com/key/value/one/two
     critical: '{.one} != "one"'

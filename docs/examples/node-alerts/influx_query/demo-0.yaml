@@ -23,7 +23,7 @@ metadata:
   name: influx-query-demo-0
   namespace: demo
 spec:
-  check: influx_query
+  check: influx-query
   vars:
     influxHost: "monitoring-influxdb.demo:8086"
     secretName: "appscode-influx"

@@ -4,7 +4,7 @@ metadata:
   name: ca-cert-demo-0
   namespace: demo
 spec:
-  check: ca_cert
+  check: ca-cert
   vars:
     warning: 240h
     critical: 72h

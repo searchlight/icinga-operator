@@ -4,9 +4,9 @@ metadata:
   name: node-volume-demo-0
   namespace: demo
 spec:
-  check: node_volume
+  check: node-volume
   vars:
-    mountpoint: /mnt/sda1
+    mountPoint: /mnt/sda1
     warning: '70'
     critical: '95'
   checkInterval: 5m

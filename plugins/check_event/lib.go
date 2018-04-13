@@ -42,7 +42,7 @@ type options struct {
 	contextName    string
 	// Event check information
 	namespace     string
-	checkInterval time.Duration
+	checkInterval int
 	clockSkew     time.Duration
 	// Involved object information
 	involvedObjectName      string
@@ -63,6 +63,11 @@ func (o *options) complete(cmd *cobra.Command) (err error) {
 		return errors.New("invalid icinga host.name")
 	}
 	o.namespace = o.host.AlertNamespace
+
+	o.checkInterval, err = cmd.Flags().GetInt(plugins.FlagCheckInterval)
+	if err != nil {
+		return
+	}
 
 	o.kubeconfigPath, err = cmd.Flags().GetString(plugins.FlagKubeConfig)
 	if err != nil {
@@ -99,7 +104,16 @@ type serviceOutput struct {
 func (p *plugin) Check() (icinga.State, interface{}) {
 	opts := p.options
 
-	checkTime := time.Now().Add(-(opts.checkInterval + opts.clockSkew))
+	var checkInterval time.Duration = 0
+	if opts.checkInterval > 0 {
+		var err error
+		checkInterval, err = time.ParseDuration(fmt.Sprintf("%ds", opts.checkInterval))
+		if err != nil {
+			return icinga.Unknown, err
+		}
+
+	}
+	checkTime := time.Now().Add(-(checkInterval + opts.clockSkew))
 	eventInfoList := make([]*eventInfo, 0)
 
 	var objName, objNamespace, objKind, objUID *string
@@ -186,7 +200,6 @@ func NewCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
-	cmd.Flags().DurationVarP(&opts.checkInterval, flagCheckInterval, "c", time.Second*0, "Icinga check_interval in duration. [Format: 30s, 5m]")
 	cmd.Flags().DurationVarP(&opts.clockSkew, "clockSkew", "s", time.Second*30, "Add skew with check_interval in duration. [Default: 30s]")
 
 	cmd.Flags().StringVar(&opts.involvedObjectName, "involvedObjectName", "", "Involved object name used to select events")

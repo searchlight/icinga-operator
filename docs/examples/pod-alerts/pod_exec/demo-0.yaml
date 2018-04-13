@@ -26,7 +26,7 @@ spec:
   selector:
     matchLabels:
       app: nginx
-  check: pod_exec
+  check: pod-exec
   vars:
     argv: ls -l /usr
   checkInterval: 30s

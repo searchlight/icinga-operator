@@ -4,7 +4,7 @@ metadata:
   name: json-path-demo-1
   namespace: demo
 spec:
-  check: json_path
+  check: json-path
   vars:
     url: "http://validate.jsontest.com/?json=[ok,warning,critical]"
     critical: '{.size} != 3'

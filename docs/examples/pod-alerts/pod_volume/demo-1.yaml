@@ -39,7 +39,7 @@ metadata:
   namespace: demo
 spec:
   podName: busybox
-  check: pod_volume
+  check: pod-volume
   vars:
     volumeName: mypd
     warning: '70'

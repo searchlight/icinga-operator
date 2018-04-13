@@ -4,7 +4,7 @@ metadata:
   name: node-exists-demo-0
   namespace: demo
 spec:
-  check: node_exists
+  check: node-exists
   vars:
     selector: beta.kubernetes.io/os=linux
     count: '1'

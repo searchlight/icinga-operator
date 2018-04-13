@@ -23,6 +23,11 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 	}
 	args := make([]arg, 0)
 
+	args = append(args, arg{
+		key: "iv-checkInterval",
+		val: "$service.check_interval$",
+	})
+
 	webhook := plugin.Spec.Webhook
 	if webhook != nil {
 		namespace := "default"

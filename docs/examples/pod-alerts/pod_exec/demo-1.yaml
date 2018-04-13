@@ -20,9 +20,9 @@ metadata:
   namespace: demo
 spec:
   podName: busybox
-  check: pod_exec
+  check: pod-exec
   vars:
-    argv: ls -l /usr
+    argv: "exit 1"
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config

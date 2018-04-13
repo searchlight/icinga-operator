@@ -26,7 +26,7 @@ spec:
   selector:
     matchLabels:
       app: nginx
-  check: influx_query
+  check: influx-query
   vars:
     influxHost: "monitoring-influxdb.demo:8086"
     secretName: "appscode-influx"

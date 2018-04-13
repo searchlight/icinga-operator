@@ -4,7 +4,7 @@ metadata:
   name: node-status-demo-1
   namespace: demo
 spec:
-  check: node_status
+  check: node-status
   selector:
     beta.kubernetes.io/os: linux
   checkInterval: 30s

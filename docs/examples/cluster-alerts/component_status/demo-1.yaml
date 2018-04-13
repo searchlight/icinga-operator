@@ -4,7 +4,7 @@ metadata:
   name: component-status-demo-1
   namespace: demo
 spec:
-  check: component_status
+  check: component-status
   vars:
     componentName: etcd-0
   checkInterval: 30s

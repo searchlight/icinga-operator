@@ -142,6 +142,7 @@ type options struct {
 	nodeStat   bool
 	secretName string
 	volumeName string
+	mountPoint string
 	warning    float64
 	critical   float64
 	// IcingaHost
@@ -156,6 +157,10 @@ func (o *options) complete(cmd *cobra.Command) error {
 	o.host, err = icinga.ParseHost(hostname)
 	if err != nil {
 		return errors.New("invalid icinga host.name")
+	}
+
+	if o.host.Type == icinga.TypeNode {
+		o.nodeStat = true
 	}
 
 	o.kubeconfigPath, err = cmd.Flags().GetString(plugins.FlagKubeConfig)
@@ -297,7 +302,7 @@ func (p *plugin) checkNodeVolume() (icinga.State, interface{}) {
 	if hostIP == "" {
 		return icinga.Unknown, "Node InternalIP not found"
 	}
-	return p.checkVolume(hostIP, p.options.volumeName)
+	return p.checkVolume(hostIP, p.options.mountPoint)
 }
 
 func (p *plugin) checkPodVolume() (icinga.State, interface{}) {
@@ -379,9 +384,9 @@ func NewCmd() *cobra.Command {
 	}
 
 	c.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
-	c.Flags().BoolVar(&opts.nodeStat, "nodeStat", false, "Checking Node disk size")
 	c.Flags().StringVarP(&opts.secretName, "secretName", "s", "", `Kubernetes secret name`)
 	c.Flags().StringVarP(&opts.volumeName, "volumeName", "N", "", "Volume name")
+	c.Flags().StringVarP(&opts.mountPoint, "mountPoint", "M", "", "Mount point")
 	c.Flags().Float64VarP(&opts.warning, "warning", "w", 80.0, "Warning level value (usage percentage)")
 	c.Flags().Float64VarP(&opts.critical, "critical", "c", 95.0, "Critical level value (usage percentage)")
 	return c
