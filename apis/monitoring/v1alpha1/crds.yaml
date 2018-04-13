@@ -1781,8 +1781,6 @@ spec:
               properties:
                 host:
                   type: object
-                service:
-                  type: object
                 vars:
                   items:
                     type: string

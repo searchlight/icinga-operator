@@ -44,13 +44,6 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 		})
 	}
 
-	for key, val := range plugin.Spec.Arguments.Service {
-		args = append(args, arg{
-			key: key,
-			val: fmt.Sprintf("$service.%s$", val),
-		})
-	}
-
 	for key, val := range plugin.Spec.Arguments.Host {
 		args = append(args, arg{
 			key: key,

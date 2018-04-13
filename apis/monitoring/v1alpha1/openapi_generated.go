@@ -594,19 +594,6 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 								},
 							},
 						},
-						"service": {
-							SchemaProps: spec.SchemaProps{
-								Type: []string{"object"},
-								AdditionalProperties: &spec.SchemaOrBool{
-									Schema: &spec.Schema{
-										SchemaProps: spec.SchemaProps{
-											Type:   []string{"string"},
-											Format: "",
-										},
-									},
-								},
-							},
-						},
 					},
 				},
 			},

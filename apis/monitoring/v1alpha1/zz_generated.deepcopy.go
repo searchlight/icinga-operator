@@ -365,13 +365,6 @@ func (in *PluginArguments) DeepCopyInto(out *PluginArguments) {
 			(*out)[key] = val
 		}
 	}
-	if in.Service != nil {
-		in, out := &in.Service, &out.Service
-		*out = make(map[string]string, len(*in))
-		for key, val := range *in {
-			(*out)[key] = val
-		}
-	}
 	return
 }
 

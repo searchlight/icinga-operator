@@ -49,9 +49,8 @@ type WebhookServiceSpec struct {
 }
 
 type PluginArguments struct {
-	Vars    []string          `json:"vars,omitempty"`
-	Host    map[string]string `json:"host,omitempty"`
-	Service map[string]string `json:"service,omitempty"`
+	Vars []string          `json:"vars,omitempty"`
+	Host map[string]string `json:"host,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
