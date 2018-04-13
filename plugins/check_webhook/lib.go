@@ -66,6 +66,7 @@ func NewCmd() *cobra.Command {
 			if err != nil {
 				icinga.Output(stateUnknown, err)
 			}
+			defer resp.Body.Close()
 
 			if resp.StatusCode != 200 {
 				icinga.Output(stateUnknown, fmt.Sprintf("status code: %d", resp.StatusCode))
