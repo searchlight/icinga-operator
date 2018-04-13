@@ -123,6 +123,6 @@ func (h *NodeHost) Delete(alertNamespace, alertName string, node *core.Node) err
 	return h.deleteIcingaHost(kh)
 }
 
-func (h *NodeHost) DeleteForCheckCommand(name string) error {
-	return h.deleteIcingaServiceForCheckCommand(name)
+func (h *NodeHost) DeleteChecks(cmd string) error {
+	return h.deleteIcingaServiceForCheckCommand(cmd)
 }

@@ -80,6 +80,6 @@ func (h *ClusterHost) Delete(namespace, name string) error {
 	return h.deleteIcingaHost(kh)
 }
 
-func (h *ClusterHost) DeleteForCheckCommand(name string) error {
-	return h.deleteIcingaServiceForCheckCommand(name)
+func (h *ClusterHost) DeleteChecks(cmd string) error {
+	return h.deleteIcingaServiceForCheckCommand(cmd)
 }

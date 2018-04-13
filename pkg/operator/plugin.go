@@ -9,9 +9,11 @@ import (
 
 	"github.com/appscode/go/ioutil"
 	"github.com/appscode/go/log"
+	utilerrors "github.com/appscode/go/util/errors"
 	"github.com/appscode/kutil/meta"
 	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/util"
 	"github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/plugin"
@@ -19,6 +21,7 @@ import (
 	"github.com/pkg/errors"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/remotecommand"
@@ -27,23 +30,11 @@ import (
 func (op *Operator) initPluginWatcher() {
 	op.pluginInformer = op.monInformerFactory.Monitoring().V1alpha1().SearchlightPlugins().Informer()
 	op.pluginQueue = queue.New("SearchlightPlugin", op.MaxNumRequeues, op.NumThreads, op.reconcilePlugin)
-	op.pluginInformer.AddEventHandler(&cache.ResourceEventHandlerFuncs{
-		AddFunc: func(obj interface{}) {
-			queue.Enqueue(op.pluginQueue.GetQueue(), obj)
-		},
-		UpdateFunc: func(oldObj interface{}, newObj interface{}) {
-			old := oldObj.(*api.SearchlightPlugin)
-			nu := newObj.(*api.SearchlightPlugin)
-
-			if reflect.DeepEqual(old.Spec, nu.Spec) {
-				return
-			}
-			queue.Enqueue(op.pluginQueue.GetQueue(), nu)
-		},
-		DeleteFunc: func(obj interface{}) {
-			queue.Enqueue(op.pluginQueue.GetQueue(), obj)
-		},
-	})
+	op.pluginInformer.AddEventHandler(queue.NewEventHandler(op.pluginQueue.GetQueue(), func(oldObj, newObj interface{}) bool {
+		old := oldObj.(*api.SearchlightPlugin)
+		nu := newObj.(*api.SearchlightPlugin)
+		return !reflect.DeepEqual(old.Spec, nu.Spec)
+	}))
 	op.pluginLister = op.monInformerFactory.Monitoring().V1alpha1().SearchlightPlugins().Lister()
 }
 
@@ -99,64 +90,74 @@ func (op *Operator) ensureCheckCommand(wp *api.SearchlightPlugin) error {
 }
 
 func (op *Operator) ensureCheckCommandDeleted(name string) error {
-
 	pod, err := op.GetIcingaPod()
 	if err != nil {
 		return errors.WithMessage(err, "failed to get Icinga2 Pod name.")
 	}
 
-	// Pause all ClusterAlerts for this plugin
-	caList, err := op.extClient.MonitoringV1alpha1().ClusterAlerts(core.NamespaceAll).List(metav1.ListOptions{})
-	if err != nil {
-		return err
-	}
-	for _, ca := range caList.Items {
-		if ca.Spec.Check == api.CheckCluster(name) {
-			ca.Spec.Paused = true
-			if _, err := op.extClient.MonitoringV1alpha1().ClusterAlerts(ca.Namespace).Update(&ca); err != nil {
-				return err
+	var errs []error
+	{
+		// Pause all ClusterAlerts for this plugin
+		err = cache.ListAll(op.caInformer.GetIndexer(), labels.Everything(), func(obj interface{}) {
+			_, _, err = util.PatchClusterAlert(op.extClient.MonitoringV1alpha1(), obj.(*api.ClusterAlert), func(alert *api.ClusterAlert) *api.ClusterAlert {
+				pause := alert.Spec.Check == api.CheckCluster(name)
+				alert.Spec.Paused = pause
+				return alert
+			})
+			if err != nil {
+				errs = append(errs, err)
 			}
+		})
+		if err != nil {
+			errs = append(errs, err)
 		}
 	}
-
-	// Pause all PodAlerts for this plugin
-	paList, err := op.extClient.MonitoringV1alpha1().PodAlerts(core.NamespaceAll).List(metav1.ListOptions{})
-	if err != nil {
-		return err
-	}
-	for _, pa := range paList.Items {
-		if pa.Spec.Check == api.CheckPod(name) {
-			pa.Spec.Paused = true
-			if _, err := op.extClient.MonitoringV1alpha1().PodAlerts(pa.Namespace).Update(&pa); err != nil {
-				return err
+	{
+		// Pause all PodAlerts for this plugin
+		err = cache.ListAll(op.paInformer.GetIndexer(), labels.Everything(), func(obj interface{}) {
+			_, _, err = util.PatchPodAlert(op.extClient.MonitoringV1alpha1(), obj.(*api.PodAlert), func(alert *api.PodAlert) *api.PodAlert {
+				pause := alert.Spec.Check == api.CheckPod(name)
+				alert.Spec.Paused = pause
+				return alert
+			})
+			if err != nil {
+				errs = append(errs, err)
 			}
+		})
+		if err != nil {
+			errs = append(errs, err)
 		}
 	}
-
-	// Pause all NodeAlerts for this plugin
-	naList, err := op.extClient.MonitoringV1alpha1().NodeAlerts(core.NamespaceAll).List(metav1.ListOptions{})
-	if err != nil {
-		return err
-	}
-	for _, na := range naList.Items {
-		if na.Spec.Check == api.CheckNode(name) {
-			na.Spec.Paused = true
-			if _, err := op.extClient.MonitoringV1alpha1().NodeAlerts(na.Namespace).Update(&na); err != nil {
-				return err
+	{
+		// Pause all NodeAlerts for this plugin
+		err = cache.ListAll(op.naInformer.GetIndexer(), labels.Everything(), func(obj interface{}) {
+			_, _, err = util.PatchNodeAlert(op.extClient.MonitoringV1alpha1(), obj.(*api.NodeAlert), func(alert *api.NodeAlert) *api.NodeAlert {
+				pause := alert.Spec.Check == api.CheckNode(name)
+				alert.Spec.Paused = pause
+				return alert
+			})
+			if err != nil {
+				errs = append(errs, err)
 			}
+		})
+		if err != nil {
+			errs = append(errs, err)
 		}
+	}
+	if len(errs) > 0 {
+		return utilerrors.NewAggregate(errs)
 	}
 
 	// Pausing Alerts may take times. In that case, removing CheckCommand will cause panic in Icinga API
 	// That's why deleting all Icinga2 Service Objects with check_command matched with this plugin.
 	// We can confirm that removing CheckCommand config is safe now
-	if err := icinga.NewClusterHost(op.icingaClient, "").DeleteForCheckCommand(name); err != nil {
+	if err := icinga.NewClusterHost(op.icingaClient, "").DeleteChecks(name); err != nil {
 		return err
 	}
-	if err := icinga.NewNodeHost(op.icingaClient, "").DeleteForCheckCommand(name); err != nil {
+	if err := icinga.NewNodeHost(op.icingaClient, "").DeleteChecks(name); err != nil {
 		return err
 	}
-	if err := icinga.NewPodHost(op.icingaClient, "").DeleteForCheckCommand(name); err != nil {
+	if err := icinga.NewPodHost(op.icingaClient, "").DeleteChecks(name); err != nil {
 		return err
 	}
 
@@ -166,9 +167,6 @@ func (op *Operator) ensureCheckCommandDeleted(name string) error {
 	delete(api.PodCommands, api.CheckPod(name))
 
 	// Remove CheckCommand config file from custom.d folder
-	if err := ioutil.EnsureDirectory(filepath.Join(op.ConfigRoot, "custom.d")); err != nil {
-		return err
-	}
 	path := filepath.Join(op.ConfigRoot, "custom.d", fmt.Sprintf("%s.conf", name))
 	if err := os.Remove(path); err != nil {
 		return err

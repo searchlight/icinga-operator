@@ -114,6 +114,6 @@ func (h *PodHost) Delete(alertNamespace, alertName string, pod *core.Pod) error 
 	return h.deleteIcingaHost(kh)
 }
 
-func (h *PodHost) DeleteForCheckCommand(name string) error {
-	return h.deleteIcingaServiceForCheckCommand(name)
+func (h *PodHost) DeleteChecks(cmd string) error {
+	return h.deleteIcingaServiceForCheckCommand(cmd)
 }
