@@ -48,7 +48,7 @@ type ClusterAlertList struct {
 // ClusterAlertSpec describes the ClusterAlert the user wishes to create.
 type ClusterAlertSpec struct {
 	// Icinga CheckCommand name
-	Check CheckCluster `json:"check,omitempty"`
+	Check string `json:"check,omitempty"`
 
 	// How frequently Icinga Service will be checked
 	CheckInterval metav1.Duration `json:"checkInterval,omitempty"`
@@ -98,7 +98,7 @@ func (a ClusterAlert) IsValid(kc kubernetes.Interface) error {
 		return nil
 	}
 
-	cmd, ok := ClusterCommands[a.Spec.Check]
+	cmd, ok := ClusterCommands.Get(a.Spec.Check)
 	if !ok {
 		return fmt.Errorf("'%s' is not a valid cluster check command", a.Spec.Check)
 	}

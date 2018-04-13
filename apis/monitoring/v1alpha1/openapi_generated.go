@@ -812,6 +812,34 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 			},
 			Dependencies: []string{},
 		},
+		"github.com/appscode/searchlight/apis/monitoring/v1alpha1.Registry": {
+			Schema: spec.Schema{
+				SchemaProps: spec.SchemaProps{
+					Properties: map[string]spec.Schema{
+						"reg": {
+							SchemaProps: spec.SchemaProps{
+								Type: []string{"object"},
+								AdditionalProperties: &spec.SchemaOrBool{
+									Schema: &spec.Schema{
+										SchemaProps: spec.SchemaProps{
+											Ref: ref("github.com/appscode/searchlight/apis/monitoring/v1alpha1.IcingaCommand"),
+										},
+									},
+								},
+							},
+						},
+						"mu": {
+							SchemaProps: spec.SchemaProps{
+								Ref: ref("sync.RWMutex"),
+							},
+						},
+					},
+					Required: []string{"reg", "mu"},
+				},
+			},
+			Dependencies: []string{
+				"github.com/appscode/searchlight/apis/monitoring/v1alpha1.IcingaCommand", "sync.RWMutex"},
+		},
 		"github.com/appscode/searchlight/apis/monitoring/v1alpha1.SearchlightPlugin": {
 			Schema: spec.Schema{
 				SchemaProps: spec.SchemaProps{

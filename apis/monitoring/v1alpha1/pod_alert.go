@@ -52,7 +52,7 @@ type PodAlertSpec struct {
 	PodName *string `json:"podName,omitempty"`
 
 	// Icinga CheckCommand name
-	Check CheckPod `json:"check,omitempty"`
+	Check string `json:"check,omitempty"`
 
 	// How frequently Icinga Service will be checked
 	CheckInterval metav1.Duration `json:"checkInterval,omitempty"`
@@ -115,7 +115,7 @@ func (a PodAlert) IsValid(kc kubernetes.Interface) error {
 		}
 	}
 
-	cmd, ok := PodCommands[a.Spec.Check]
+	cmd, ok := PodCommands.Get(a.Spec.Check)
 	if !ok {
 		return fmt.Errorf("%s is not a valid pod check command", a.Spec.Check)
 	}

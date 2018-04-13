@@ -32,7 +32,8 @@ func (h *PodHost) getHost(namespace string, pod *core.Pod) IcingaHost {
 }
 
 func (h *PodHost) expandVars(alertSpec api.PodAlertSpec, kh IcingaHost, attrs map[string]interface{}) error {
-	commandVars := api.PodCommands[alertSpec.Check].Vars
+	cmd, _ := api.PodCommands.Get(alertSpec.Check)
+	commandVars := cmd.Vars
 	for key, val := range alertSpec.Vars {
 		if v, found := commandVars[key]; found {
 			if v.Parameterized {

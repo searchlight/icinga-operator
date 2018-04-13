@@ -52,7 +52,7 @@ type NodeAlertSpec struct {
 	NodeName *string `json:"nodeName,omitempty"`
 
 	// Icinga CheckCommand name
-	Check CheckNode `json:"check,omitempty"`
+	Check string `json:"check,omitempty"`
 
 	// How frequently Icinga Service will be checked
 	CheckInterval metav1.Duration `json:"checkInterval,omitempty"`
@@ -106,7 +106,7 @@ func (a NodeAlert) IsValid(kc kubernetes.Interface) error {
 		return fmt.Errorf("can't specify both node name and selector")
 	}
 
-	cmd, ok := NodeCommands[a.Spec.Check]
+	cmd, ok := NodeCommands.Get(a.Spec.Check)
 	if !ok {
 		return fmt.Errorf("%s is not a valid node check command", a.Spec.Check)
 	}

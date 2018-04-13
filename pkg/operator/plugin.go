@@ -78,11 +78,11 @@ func (op *Operator) ensureCheckCommand(wp *api.SearchlightPlugin) error {
 
 	for _, t := range wp.Spec.AlertKinds {
 		if t == api.ResourceKindClusterAlert {
-			api.ClusterCommands[api.CheckCluster(wp.Name)] = ic
+			api.ClusterCommands.Insert(wp.Name, ic)
 		} else if t == api.ResourceKindNodeAlert {
-			api.NodeCommands[api.CheckNode(wp.Name)] = ic
+			api.NodeCommands.Insert(wp.Name, ic)
 		} else if t == api.ResourceKindPodAlert {
-			api.PodCommands[api.CheckPod(wp.Name)] = ic
+			api.PodCommands.Insert(wp.Name, ic)
 		}
 	}
 
@@ -100,7 +100,7 @@ func (op *Operator) ensureCheckCommandDeleted(name string) error {
 		// Pause all ClusterAlerts for this plugin
 		err = cache.ListAll(op.caInformer.GetIndexer(), labels.Everything(), func(obj interface{}) {
 			_, _, err = util.PatchClusterAlert(op.extClient.MonitoringV1alpha1(), obj.(*api.ClusterAlert), func(alert *api.ClusterAlert) *api.ClusterAlert {
-				pause := alert.Spec.Check == api.CheckCluster(name)
+				pause := alert.Spec.Check == name
 				alert.Spec.Paused = pause
 				return alert
 			})
@@ -116,7 +116,7 @@ func (op *Operator) ensureCheckCommandDeleted(name string) error {
 		// Pause all PodAlerts for this plugin
 		err = cache.ListAll(op.paInformer.GetIndexer(), labels.Everything(), func(obj interface{}) {
 			_, _, err = util.PatchPodAlert(op.extClient.MonitoringV1alpha1(), obj.(*api.PodAlert), func(alert *api.PodAlert) *api.PodAlert {
-				pause := alert.Spec.Check == api.CheckPod(name)
+				pause := alert.Spec.Check == name
 				alert.Spec.Paused = pause
 				return alert
 			})
@@ -132,7 +132,7 @@ func (op *Operator) ensureCheckCommandDeleted(name string) error {
 		// Pause all NodeAlerts for this plugin
 		err = cache.ListAll(op.naInformer.GetIndexer(), labels.Everything(), func(obj interface{}) {
 			_, _, err = util.PatchNodeAlert(op.extClient.MonitoringV1alpha1(), obj.(*api.NodeAlert), func(alert *api.NodeAlert) *api.NodeAlert {
-				pause := alert.Spec.Check == api.CheckNode(name)
+				pause := alert.Spec.Check == name
 				alert.Spec.Paused = pause
 				return alert
 			})
@@ -162,9 +162,9 @@ func (op *Operator) ensureCheckCommandDeleted(name string) error {
 	}
 
 	// Delete IcingaCommand definition from Maps
-	delete(api.ClusterCommands, api.CheckCluster(name))
-	delete(api.NodeCommands, api.CheckNode(name))
-	delete(api.PodCommands, api.CheckPod(name))
+	api.ClusterCommands.Delete(name)
+	api.NodeCommands.Delete(name)
+	api.PodCommands.Delete(name)
 
 	// Remove CheckCommand config file from custom.d folder
 	path := filepath.Join(op.ConfigRoot, "custom.d", fmt.Sprintf("%s.conf", name))
