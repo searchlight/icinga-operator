@@ -34,12 +34,16 @@ func CreateOrPatchPodAlert(c cs.MonitoringV1alpha1Interface, meta metav1.ObjectM
 }
 
 func PatchPodAlert(c cs.MonitoringV1alpha1Interface, cur *api.PodAlert, transform func(*api.PodAlert) *api.PodAlert) (*api.PodAlert, kutil.VerbType, error) {
+	return PatchPodAlertObject(c, cur, transform(cur.DeepCopy()))
+}
+
+func PatchPodAlertObject(c cs.MonitoringV1alpha1Interface, cur, mod *api.PodAlert) (*api.PodAlert, kutil.VerbType, error) {
 	curJson, err := json.Marshal(cur)
 	if err != nil {
 		return nil, kutil.VerbUnchanged, err
 	}
 
-	modJson, err := json.Marshal(transform(cur.DeepCopy()))
+	modJson, err := json.Marshal(mod)
 	if err != nil {
 		return nil, kutil.VerbUnchanged, err
 	}
