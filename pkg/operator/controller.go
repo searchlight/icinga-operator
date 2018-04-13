@@ -12,7 +12,6 @@ import (
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	mon_informers "github.com/appscode/searchlight/client/informers/externalversions"
 	mon_listers "github.com/appscode/searchlight/client/listers/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -77,37 +76,6 @@ type Operator struct {
 	pluginQueue    *queue.Worker
 	pluginInformer cache.SharedIndexInformer
 	pluginLister   mon_listers.SearchlightPluginLister
-}
-
-func New(opc *OperatorConfig) *Operator {
-	return &Operator{
-		clientConfig:        opc.ClientConfig,
-		kubeClient:          opc.KubeClient,
-		kubeInformerFactory: informers.NewSharedInformerFactory(opc.KubeClient, opc.ResyncPeriod),
-		crdClient:           opc.CRDClient,
-		extClient:           opc.ExtClient,
-		monInformerFactory:  mon_informers.NewSharedInformerFactory(opc.ExtClient, opc.ResyncPeriod),
-		icingaClient:        opc.IcingaClient,
-		Config:              opc.Config,
-		clusterHost:         icinga.NewClusterHost(opc.IcingaClient, opc.Verbosity),
-		nodeHost:            icinga.NewNodeHost(opc.IcingaClient, opc.Verbosity),
-		podHost:             icinga.NewPodHost(opc.IcingaClient, opc.Verbosity),
-		recorder:            eventer.NewEventRecorder(opc.KubeClient, "Searchlight operator"),
-	}
-}
-
-func (op *Operator) Setup() error {
-	if err := op.ensureCustomResourceDefinitions(); err != nil {
-		return err
-	}
-	op.initNamespaceWatcher()
-	op.initNodeWatcher()
-	op.initPodWatcher()
-	op.initClusterAlertWatcher()
-	op.initNodeAlertWatcher()
-	op.initPodAlertWatcher()
-	op.initPluginWatcher()
-	return nil
 }
 
 func (op *Operator) ensureCustomResourceDefinitions() error {

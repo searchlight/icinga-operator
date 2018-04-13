@@ -135,8 +135,7 @@ var _ = BeforeSuite(func() {
 		IcingaClient: icingaClient,
 	}
 	// Controller
-	op = operator.New(opc)
-	err = op.Setup()
+	op, err = opc.New()
 	Expect(err).NotTo(HaveOccurred())
 	go op.RunWatchers(nil)
 })
