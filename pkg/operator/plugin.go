@@ -14,7 +14,6 @@ import (
 	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/util"
-	"github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/plugin"
 	"github.com/golang/glog"
@@ -67,11 +66,11 @@ func (op *Operator) ensureCheckCommand(wp *api.SearchlightPlugin) error {
 
 	ic := api.IcingaCommand{
 		Name: wp.Name,
-		Vars: make(map[string]data.CommandVar),
+		Vars: make(map[string]api.IcingaCommandVar),
 	}
 
 	for _, item := range wp.Spec.Arguments.Vars {
-		ic.Vars[item] = data.CommandVar{}
+		ic.Vars[item] = api.IcingaCommandVar{}
 	}
 
 	ic.States = wp.Spec.State

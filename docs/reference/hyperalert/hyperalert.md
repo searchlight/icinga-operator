@@ -33,6 +33,7 @@ hyperalert [flags]
       --alsologtostderr                  log to standard error as well as files
       --context string                   Use the context in kubeconfig
   -h, --help                             help for hyperalert
+      --icinga.checkInterval int         Icinga check_interval in second. [Format: 30, 300] (default 30)
       --kubeconfig string                Path to kubeconfig file with authorization information (the master location is set by the master flag).
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory
@@ -50,7 +51,6 @@ hyperalert [flags]
 * [hyperalert check_component_status](/docs/reference/hyperalert/hyperalert_check_component_status.md)	 - Check Kubernetes Component Status
 * [hyperalert check_env](/docs/reference/hyperalert/hyperalert_check_env.md)	 - 
 * [hyperalert check_event](/docs/reference/hyperalert/hyperalert_check_event.md)	 - Check kubernetes events for all namespaces
-* [hyperalert check_influx_query](/docs/reference/hyperalert/hyperalert_check_influx_query.md)	 - Check InfluxDB Query Data
 * [hyperalert check_json_path](/docs/reference/hyperalert/hyperalert_check_json_path.md)	 - Check Json Object
 * [hyperalert check_node_exists](/docs/reference/hyperalert/hyperalert_check_node_exists.md)	 - Count Kubernetes Nodes
 * [hyperalert check_node_status](/docs/reference/hyperalert/hyperalert_check_node_status.md)	 - Check Kubernetes Node
@@ -58,6 +58,7 @@ hyperalert [flags]
 * [hyperalert check_pod_exists](/docs/reference/hyperalert/hyperalert_check_pod_exists.md)	 - Check Kubernetes Pod(s)
 * [hyperalert check_pod_status](/docs/reference/hyperalert/hyperalert_check_pod_status.md)	 - Check Kubernetes Pod(s) status
 * [hyperalert check_volume](/docs/reference/hyperalert/hyperalert_check_volume.md)	 - Check kubernetes volume
+* [hyperalert check_webhook](/docs/reference/hyperalert/hyperalert_check_webhook.md)	 - Check webhook result
 * [hyperalert notifier](/docs/reference/hyperalert/hyperalert_notifier.md)	 - AppsCode Icinga2 Notifier
 * [hyperalert version](/docs/reference/hyperalert/hyperalert_version.md)	 - Prints binary version number.
 

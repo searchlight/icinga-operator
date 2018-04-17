@@ -33,6 +33,7 @@ hyperalert check_node_status [flags]
 ```
       --alsologtostderr                  log to standard error as well as files
       --context string                   Use the context in kubeconfig
+      --icinga.checkInterval int         Icinga check_interval in second. [Format: 30, 300] (default 30)
       --kubeconfig string                Path to kubeconfig file with authorization information (the master location is set by the master flag).
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory

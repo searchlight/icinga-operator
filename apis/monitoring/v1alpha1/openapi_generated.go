@@ -197,7 +197,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 								AdditionalProperties: &spec.SchemaOrBool{
 									Schema: &spec.Schema{
 										SchemaProps: spec.SchemaProps{
-											Ref: ref("github.com/appscode/searchlight/data.CommandVar"),
+											Ref: ref("github.com/appscode/searchlight/apis/monitoring/v1alpha1.IcingaCommandVar"),
 										},
 									},
 								},
@@ -221,7 +221,29 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 				},
 			},
 			Dependencies: []string{
-				"github.com/appscode/searchlight/data.CommandVar"},
+				"github.com/appscode/searchlight/apis/monitoring/v1alpha1.IcingaCommandVar"},
+		},
+		"github.com/appscode/searchlight/apis/monitoring/v1alpha1.IcingaCommandVar": {
+			Schema: spec.Schema{
+				SchemaProps: spec.SchemaProps{
+					Properties: map[string]spec.Schema{
+						"Description": {
+							SchemaProps: spec.SchemaProps{
+								Type:   []string{"string"},
+								Format: "",
+							},
+						},
+						"Optional": {
+							SchemaProps: spec.SchemaProps{
+								Type:   []string{"boolean"},
+								Format: "",
+							},
+						},
+					},
+					Required: []string{"Description", "Optional"},
+				},
+			},
+			Dependencies: []string{},
 		},
 		"github.com/appscode/searchlight/apis/monitoring/v1alpha1.Incident": {
 			Schema: spec.Schema{

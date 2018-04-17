@@ -24,7 +24,6 @@ hyperalert check_event [flags]
 ### Options
 
 ```
-  -c, --checkInterval duration           Icinga check_interval in duration. [Format: 30s, 5m]
   -s, --clockSkew duration               Add skew with check_interval in duration. [Default: 30s] (default 30s)
   -h, --help                             help for check_event
   -H, --host string                      Icinga host name
@@ -39,6 +38,7 @@ hyperalert check_event [flags]
 ```
       --alsologtostderr                  log to standard error as well as files
       --context string                   Use the context in kubeconfig
+      --icinga.checkInterval int         Icinga check_interval in second. [Format: 30, 300] (default 30)
       --kubeconfig string                Path to kubeconfig file with authorization information (the master location is set by the master flag).
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory

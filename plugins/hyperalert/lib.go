@@ -15,7 +15,6 @@ import (
 	"github.com/appscode/searchlight/plugins/check_component_status"
 	"github.com/appscode/searchlight/plugins/check_env"
 	"github.com/appscode/searchlight/plugins/check_event"
-	"github.com/appscode/searchlight/plugins/check_influx_query"
 	"github.com/appscode/searchlight/plugins/check_json_path"
 	"github.com/appscode/searchlight/plugins/check_node_exists"
 	"github.com/appscode/searchlight/plugins/check_node_status"
@@ -82,7 +81,6 @@ func NewCmd() *cobra.Command {
 
 	// Combined
 	cmd.AddCommand(check_volume.NewCmd())
-	cmd.AddCommand(check_influx_query.NewCmd())
 
 	// Notifier
 	cmd.AddCommand(notifier.NewCmd())

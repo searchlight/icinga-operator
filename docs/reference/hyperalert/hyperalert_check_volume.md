@@ -27,7 +27,7 @@ hyperalert check_volume [flags]
   -c, --critical float      Critical level value (usage percentage) (default 95)
   -h, --help                help for check_volume
   -H, --host string         Icinga host name
-      --nodeStat            Checking Node disk size
+  -M, --mountPoint string   Mount point
   -s, --secretName string   Kubernetes secret name
   -N, --volumeName string   Volume name
   -w, --warning float       Warning level value (usage percentage) (default 80)
@@ -38,6 +38,7 @@ hyperalert check_volume [flags]
 ```
       --alsologtostderr                  log to standard error as well as files
       --context string                   Use the context in kubeconfig
+      --icinga.checkInterval int         Icinga check_interval in second. [Format: 30, 300] (default 30)
       --kubeconfig string                Path to kubeconfig file with authorization information (the master location is set by the master flag).
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory

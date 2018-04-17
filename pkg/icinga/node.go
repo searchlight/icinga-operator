@@ -1,11 +1,7 @@
 package icinga
 
 import (
-	"bytes"
-	"text/template"
-
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/pkg/errors"
 	core "k8s.io/api/core/v1"
 )
 
@@ -40,36 +36,6 @@ func (h *NodeHost) getHost(namespace string, node *core.Node) IcingaHost {
 	}
 }
 
-func (h *NodeHost) expandVars(alertSpec api.NodeAlertSpec, kh IcingaHost, attrs map[string]interface{}) error {
-	cmd, _ := api.NodeCommands.Get(alertSpec.Check)
-	commandVars := cmd.Vars
-	for key, val := range alertSpec.Vars {
-		if v, found := commandVars[key]; found {
-			if v.Parameterized {
-				type Data struct {
-					NodeName string
-					NodeIP   string
-				}
-				tmpl, err := template.New("").Parse(val)
-				if err != nil {
-					return err
-				}
-				var buf bytes.Buffer
-				err = tmpl.Execute(&buf, Data{NodeName: kh.ObjectName, NodeIP: kh.IP})
-				if err != nil {
-					return err
-				}
-				attrs[IVar(key)] = buf.String()
-			} else {
-				attrs[IVar(key)] = val
-			}
-		} else {
-			return errors.Errorf("variable %v not found", key)
-		}
-	}
-	return nil
-}
-
 // set Alert in Icinga LocalHost
 func (h *NodeHost) Apply(alert *api.NodeAlert, node *core.Node) error {
 	alertSpec := alert.Spec
@@ -97,8 +63,8 @@ func (h *NodeHost) Apply(alert *api.NodeAlert, node *core.Node) error {
 	if alertSpec.CheckInterval.Seconds() > 0 {
 		attrs["check_interval"] = alertSpec.CheckInterval.Seconds()
 	}
-	if err := h.expandVars(alertSpec, kh, attrs); err != nil {
-		return err
+	for key, val := range alertSpec.Vars {
+		attrs[IVar(key)] = val
 	}
 
 	if !has {
