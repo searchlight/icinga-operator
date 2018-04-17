@@ -12,26 +12,26 @@ import (
 )
 
 const (
-	CheckPodInfluxQuery = "influx_query"
-	CheckPodStatus      = "pod_status"
-	CheckPodVolume      = "pod_volume"
-	CheckPodExec        = "pod_exec"
+	CheckPodInfluxQuery = "influx-query"
+	CheckPodStatus      = "pod-status"
+	CheckPodVolume      = "pod-volume"
+	CheckPodExec        = "pod-exec"
 )
 
 const (
-	CheckNodeInfluxQuery = "influx_query"
-	CheckNodeVolume      = "node_volume"
-	CheckNodeStatus      = "node_status"
+	CheckNodeInfluxQuery = "influx-query"
+	CheckNodeVolume      = "node-volume"
+	CheckNodeStatus      = "node-status"
 )
 
 const (
-	CheckComponentStatus = "component_status"
-	CheckJsonPath        = "json_path"
-	CheckNodeExists      = "node_exists"
-	CheckPodExists       = "pod_exists"
+	CheckComponentStatus = "component-status"
+	CheckJsonPath        = "json-path"
+	CheckNodeExists      = "node-exists"
+	CheckPodExists       = "pod-exists"
 	CheckEvent           = "event"
-	CheckCACert          = "ca_cert"
-	CheckHttp            = "any_http"
+	CheckCACert          = "ca-cert"
+	CheckHttp            = "any-http"
 	CheckEnv             = "env"
 	CheckDummy           = "dummy"
 	//CheckICMP           = "icmp"

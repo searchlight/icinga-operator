@@ -41,9 +41,9 @@ type options struct {
 	kubeconfigPath string
 	contextName    string
 	// Event check information
-	namespace     string
-	checkInterval int
-	clockSkew     time.Duration
+	namespace         string
+	checkIntervalSecs int
+	clockSkew         time.Duration
 	// Involved object information
 	involvedObjectName      string
 	involvedObjectNamespace string
@@ -64,7 +64,7 @@ func (o *options) complete(cmd *cobra.Command) (err error) {
 	}
 	o.namespace = o.host.AlertNamespace
 
-	o.checkInterval, err = cmd.Flags().GetInt(plugins.FlagCheckInterval)
+	o.checkIntervalSecs, err = cmd.Flags().GetInt(plugins.FlagCheckInterval)
 	if err != nil {
 		return
 	}
@@ -104,15 +104,8 @@ type serviceOutput struct {
 func (p *plugin) Check() (icinga.State, interface{}) {
 	opts := p.options
 
-	var checkInterval time.Duration = 0
-	if opts.checkInterval > 0 {
-		var err error
-		checkInterval, err = time.ParseDuration(fmt.Sprintf("%ds", opts.checkInterval))
-		if err != nil {
-			return icinga.Unknown, err
-		}
+	var checkInterval = time.Second * time.Duration(opts.checkIntervalSecs)
 
-	}
 	checkTime := time.Now().Add(-(checkInterval + opts.clockSkew))
 	eventInfoList := make([]*eventInfo, 0)
 
@@ -172,7 +165,7 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 }
 
 const (
-	flagCheckInterval = "checkInterval"
+	flagCheckInterval = "checkIntervalSecs"
 )
 
 func NewCmd() *cobra.Command {

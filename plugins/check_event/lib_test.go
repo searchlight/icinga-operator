@@ -34,7 +34,7 @@ var _ = XDescribe("check_event", func() {
 		client = cs.CoreV1().Events(pod.Namespace)
 		opts = options{
 			namespace:               pod.Namespace,
-			checkInterval:           60,
+			checkIntervalSecs:       60,
 			involvedObjectName:      pod.Name,
 			involvedObjectNamespace: pod.Namespace,
 			involvedObjectKind:      "Pod",

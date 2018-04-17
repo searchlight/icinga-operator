@@ -16,8 +16,8 @@ func GetPodStatusPlugin() *api.SearchlightPlugin {
 			AlertKinds: []string{api.ResourceKindPodAlert},
 			Arguments: api.PluginArguments{
 				Host: map[string]string{
-					"iv-host": "name",
-					"v":       "vars.verbosity",
+					"host": "name",
+					"v":    "vars.verbosity",
 				},
 			},
 			State: []string{stateOK, stateCritical, stateUnknown},
@@ -42,8 +42,8 @@ func GetPodVolumePlugin() *api.SearchlightPlugin {
 					"critical",
 				},
 				Host: map[string]string{
-					"iv-host": "name",
-					"v":       "vars.verbosity",
+					"host": "name",
+					"v":    "vars.verbosity",
 				},
 			},
 			State: []string{stateOK, stateCritical, stateUnknown},
@@ -67,8 +67,8 @@ func GetPodExecPlugin() *api.SearchlightPlugin {
 					"argv",
 				},
 				Host: map[string]string{
-					"iv-host": "name",
-					"v":       "vars.verbosity",
+					"host": "name",
+					"v":    "vars.verbosity",
 				},
 			},
 			State: []string{stateOK, stateCritical, stateUnknown},

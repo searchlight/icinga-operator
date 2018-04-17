@@ -13,8 +13,8 @@ import (
 )
 
 func main() {
-	folder := runtime.GOPath() + "/src/github.com/appscode/searchlight/docs/examples/plugins"
-	checkCommandFolder := folder + "/check-command"
+	pluginFolder := runtime.GOPath() + "/src/github.com/appscode/searchlight/hack/deploy"
+	checkCommandFolder := runtime.GOPath() + "/src/github.com/appscode/searchlight/docs/examples/plugins/check-command"
 
 	plugins := []*api.SearchlightPlugin{
 		plugin.GetComponentStatusPlugin(),
@@ -31,7 +31,7 @@ func main() {
 		plugin.GetPodExecPlugin(),
 	}
 
-	f, err := os.OpenFile(filepath.Join(folder, "plugins.yaml"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	f, err := os.OpenFile(filepath.Join(pluginFolder, "plugins.yaml"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -261,7 +261,7 @@ for crd in "${crds[@]}"; do
 done
 
 echo "creating built-in plugins"
-${SCRIPT_LOCATION}docs/examples/plugins/plugins.yaml| kubectl apply -f -
+{SCRIPT_LOCATION}hack/deploy/plugins.yaml| kubectl apply -f -
 
 echo
 echo "Successfully installed Searchlight!"

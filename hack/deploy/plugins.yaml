@@ -29,7 +29,7 @@ spec:
   - ClusterAlert
   arguments:
     host:
-      iv-host: name
+      host: name
       v: vars.verbosity
     vars:
     - url
@@ -74,7 +74,7 @@ spec:
   - ClusterAlert
   arguments:
     host:
-      iv-host: name
+      host: name
       v: vars.verbosity
     vars:
     - selector
@@ -96,7 +96,7 @@ spec:
   - ClusterAlert
   arguments:
     host:
-      iv-host: name
+      host: name
       v: vars.verbosity
     vars:
     - clockSkew
@@ -141,7 +141,7 @@ spec:
   - ClusterAlert
   arguments:
     host:
-      iv-host: name
+      host: name
       v: vars.verbosity
     vars:
     - selector
@@ -166,7 +166,7 @@ spec:
   - NodeAlert
   arguments:
     host:
-      iv-host: name
+      host: name
       v: vars.verbosity
   command: hyperalert check_node_status
   state:
@@ -184,7 +184,7 @@ spec:
   - NodeAlert
   arguments:
     host:
-      iv-host: name
+      host: name
       v: vars.verbosity
     vars:
     - mountPoint
@@ -207,7 +207,7 @@ spec:
   - PodAlert
   arguments:
     host:
-      iv-host: name
+      host: name
       v: vars.verbosity
   command: hyperalert check_pod_status
   state:
@@ -225,7 +225,7 @@ spec:
   - PodAlert
   arguments:
     host:
-      iv-host: name
+      host: name
       v: vars.verbosity
     vars:
     - volumeName
@@ -248,7 +248,7 @@ spec:
   - PodAlert
   arguments:
     host:
-      iv-host: name
+      host: name
       v: vars.verbosity
     vars:
     - container

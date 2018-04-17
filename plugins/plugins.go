@@ -3,10 +3,10 @@ package plugins
 import "github.com/appscode/searchlight/pkg/icinga"
 
 const (
-	FlagKubeConfig        = "iv-kubeconfig"
-	FlagKubeConfigContext = "iv-context"
-	FlagHost              = "iv-host"
-	FlagCheckInterval     = "iv-checkInterval"
+	FlagKubeConfig        = "kubeconfig"
+	FlagKubeConfigContext = "context"
+	FlagHost              = "host"
+	FlagCheckInterval     = "icinga.checkInterval"
 )
 
 type PluginInterface interface {

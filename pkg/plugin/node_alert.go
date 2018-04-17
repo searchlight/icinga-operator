@@ -16,8 +16,8 @@ func GetNodeStatusPlugin() *api.SearchlightPlugin {
 			AlertKinds: []string{api.ResourceKindNodeAlert},
 			Arguments: api.PluginArguments{
 				Host: map[string]string{
-					"iv-host": "name",
-					"v":       "vars.verbosity",
+					"host": "name",
+					"v":    "vars.verbosity",
 				},
 			},
 			State: []string{stateOK, stateCritical, stateUnknown},
@@ -42,8 +42,8 @@ func GetNodeVolumePlugin() *api.SearchlightPlugin {
 					"critical",
 				},
 				Host: map[string]string{
-					"iv-host": "name",
-					"v":       "vars.verbosity",
+					"host": "name",
+					"v":    "vars.verbosity",
 				},
 			},
 			State: []string{stateOK, stateCritical, stateUnknown},

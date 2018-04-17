@@ -24,7 +24,7 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 	args := make([]arg, 0)
 
 	args = append(args, arg{
-		key: "iv-checkInterval",
+		key: "icinga.checkInterval",
 		val: "$service.check_interval$",
 	})
 

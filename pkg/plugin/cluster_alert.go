@@ -45,8 +45,8 @@ func GetJsonPathPlugin() *api.SearchlightPlugin {
 					"critical",
 				},
 				Host: map[string]string{
-					"iv-host": "name",
-					"v":       "vars.verbosity",
+					"host": "name",
+					"v":    "vars.verbosity",
 				},
 			},
 			State: []string{stateOK, stateWarning, stateCritical, stateUnknown},
@@ -94,8 +94,8 @@ func GetPodExistsPlugin() *api.SearchlightPlugin {
 					"count",
 				},
 				Host: map[string]string{
-					"iv-host": "name",
-					"v":       "vars.verbosity",
+					"host": "name",
+					"v":    "vars.verbosity",
 				},
 			},
 			State: []string{stateOK, stateCritical, stateUnknown},
@@ -121,8 +121,8 @@ func GetEventPlugin() *api.SearchlightPlugin {
 					"involvedObjectUID",
 				},
 				Host: map[string]string{
-					"iv-host": "name",
-					"v":       "vars.verbosity",
+					"host": "name",
+					"v":    "vars.verbosity",
 				},
 			},
 			State: []string{stateOK, stateWarning, stateUnknown},
@@ -171,8 +171,8 @@ func GetCertPlugin() *api.SearchlightPlugin {
 					"critical",
 				},
 				Host: map[string]string{
-					"iv-host": "name",
-					"v":       "vars.verbosity",
+					"host": "name",
+					"v":    "vars.verbosity",
 				},
 			},
 			State: []string{stateOK, stateWarning, stateCritical, stateUnknown},
