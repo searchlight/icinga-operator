@@ -164,10 +164,6 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 	}
 }
 
-const (
-	flagCheckInterval = "checkIntervalSecs"
-)
-
 func NewCmd() *cobra.Command {
 	var opts options
 
@@ -176,7 +172,7 @@ func NewCmd() *cobra.Command {
 		Short: "Check kubernetes events for all namespaces",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(cmd, plugins.FlagHost, flagCheckInterval)
+			flags.EnsureRequiredFlags(cmd, plugins.FlagHost, plugins.FlagCheckInterval)
 
 			if err := opts.complete(cmd); err != nil {
 				icinga.Output(icinga.Unknown, err)
