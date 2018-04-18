@@ -35,11 +35,20 @@ func GetPodVolumePlugin() *api.SearchlightPlugin {
 			Command:    "hyperalert check_volume",
 			AlertKinds: []string{api.ResourceKindPodAlert},
 			Arguments: api.PluginArguments{
-				Vars: []string{
-					"volumeName",
-					"secretName",
-					"warning",
-					"critical",
+				Vars: []api.PluginVar{
+					{
+						Name:     "volumeName",
+						Required: true,
+					},
+					{
+						Name: "secretName",
+					},
+					{
+						Name: "warning",
+					},
+					{
+						Name: "critical",
+					},
 				},
 				Host: map[string]string{
 					"host": "name",
@@ -61,10 +70,17 @@ func GetPodExecPlugin() *api.SearchlightPlugin {
 			Command:    "hyperalert check_pod_exec",
 			AlertKinds: []string{api.ResourceKindPodAlert},
 			Arguments: api.PluginArguments{
-				Vars: []string{
-					"container",
-					"cmd",
-					"argv",
+				Vars: []api.PluginVar{
+					{
+						Name: "container",
+					},
+					{
+						Name: "cmd",
+					},
+					{
+						Name:     "argv",
+						Required: true,
+					},
 				},
 				Host: map[string]string{
 					"host": "name",

@@ -11,8 +11,8 @@ spec:
     host:
       v: vars.verbosity
     vars:
-    - selector
-    - componentName
+    - name: selector
+    - name: componentName
   command: hyperalert check_component_status
   state:
   - OK
@@ -32,10 +32,11 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-    - url
-    - secretName
-    - warning
-    - critical
+    - name: url
+      required: true
+    - name: secretName
+    - name: warning
+    - name: critical
   command: hyperalert check_json_path
   state:
   - OK
@@ -55,9 +56,9 @@ spec:
     host:
       v: vars.verbosity
     vars:
-    - selector
-    - nodeName
-    - count
+    - name: selector
+    - name: nodeName
+    - name: count
   command: hyperalert check_node_exists
   state:
   - OK
@@ -77,9 +78,9 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-    - selector
-    - podName
-    - count
+    - name: selector
+    - name: podName
+    - name: count
   command: hyperalert check_pod_exists
   state:
   - OK
@@ -99,11 +100,11 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-    - clockSkew
-    - involvedObjectName
-    - involvedObjectNamespace
-    - involvedObjectKind
-    - involvedObjectUID
+    - name: clockSkew
+    - name: involvedObjectName
+    - name: involvedObjectNamespace
+    - name: involvedObjectKind
+    - name: involvedObjectUID
   command: hyperalert check_event
   state:
   - OK
@@ -122,8 +123,8 @@ spec:
     host:
       v: vars.verbosity
     vars:
-    - warning
-    - critical
+    - name: warning
+    - name: critical
   command: hyperalert check_ca_cert
   state:
   - OK
@@ -144,11 +145,11 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-    - selector
-    - secretName
-    - secretKey
-    - warning
-    - critical
+    - name: selector
+    - name: secretName
+    - name: secretKey
+    - name: warning
+    - name: critical
   command: hyperalert check_cert
   state:
   - OK
@@ -187,10 +188,11 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-    - mountPoint
-    - secretName
-    - warning
-    - critical
+    - name: mountPoint
+      required: true
+    - name: secretName
+    - name: warning
+    - name: critical
   command: hyperalert check_volume
   state:
   - OK
@@ -228,10 +230,11 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-    - volumeName
-    - secretName
-    - warning
-    - critical
+    - name: volumeName
+      required: true
+    - name: secretName
+    - name: warning
+    - name: critical
   command: hyperalert check_volume
   state:
   - OK
@@ -251,9 +254,10 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-    - container
-    - cmd
-    - argv
+    - name: container
+    - name: cmd
+    - name: argv
+      required: true
   command: hyperalert check_pod_exec
   state:
   - OK

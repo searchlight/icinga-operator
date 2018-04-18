@@ -359,6 +359,11 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 	}
 }
 
+const (
+	flagVolumeName = "volumeName"
+	flagMountPoint = "mountPoint"
+)
+
 func NewCmd() *cobra.Command {
 	var opts options
 
@@ -368,6 +373,7 @@ func NewCmd() *cobra.Command {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			flags.EnsureRequiredFlags(cmd, plugins.FlagHost)
+			flags.EnsureAlterableFlags(cmd, flagMountPoint, flagVolumeName)
 
 			if err := opts.complete(cmd); err != nil {
 				icinga.Output(icinga.Unknown, err)
@@ -385,8 +391,8 @@ func NewCmd() *cobra.Command {
 
 	c.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
 	c.Flags().StringVarP(&opts.secretName, "secretName", "s", "", `Kubernetes secret name`)
-	c.Flags().StringVarP(&opts.volumeName, "volumeName", "N", "", "Volume name")
-	c.Flags().StringVarP(&opts.mountPoint, "mountPoint", "M", "", "Mount point")
+	c.Flags().StringVarP(&opts.volumeName, flagVolumeName, "N", "", "Volume name")
+	c.Flags().StringVarP(&opts.mountPoint, flagMountPoint, "M", "", "Mount point")
 	c.Flags().Float64VarP(&opts.warning, "warning", "w", 80.0, "Warning level value (usage percentage)")
 	c.Flags().Float64VarP(&opts.critical, "critical", "c", 95.0, "Critical level value (usage percentage)")
 	return c

@@ -1783,7 +1783,15 @@ spec:
                   type: object
                 vars:
                   items:
-                    type: string
+                    properties:
+                      description:
+                        type: string
+                      name:
+                        type: string
+                      required:
+                        type: boolean
+                    required:
+                    - name
                   type: array
             command:
               description: Check Command

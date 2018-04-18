@@ -59,7 +59,7 @@ export SEARCHLIGHT_PURGE=0
 export SEARCHLIGHT_ENABLE_ANALYTICS=true
 
 export APPSCODE_ENV=${APPSCODE_ENV:-prod}
-export SCRIPT_LOCATION="curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-alpha.0/"
+export SCRIPT_LOCATION="curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-rc.0/"
 if [ "$APPSCODE_ENV" = "dev" ]; then
     export SCRIPT_LOCATION="cat "
 fi
@@ -261,7 +261,7 @@ for crd in "${crds[@]}"; do
 done
 
 echo "creating built-in plugins"
-{SCRIPT_LOCATION}hack/deploy/plugins.yaml| kubectl apply -f -
+${SCRIPT_LOCATION}hack/deploy/plugins.yaml| kubectl apply -f -
 
 echo
 echo "Successfully installed Searchlight!"

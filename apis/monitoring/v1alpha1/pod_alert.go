@@ -119,9 +119,18 @@ func (a PodAlert) IsValid(kc kubernetes.Interface) error {
 	if !ok {
 		return fmt.Errorf("%s is not a valid pod check command", a.Spec.Check)
 	}
+	// Check if any invalid variable is provided
 	for k := range a.Spec.Vars {
 		if _, ok := cmd.Vars[k]; !ok {
-			return fmt.Errorf("var %s is unsupported for check command %s", k, a.Spec.Check)
+			return fmt.Errorf("var '%s' is unsupported for check command %s", k, a.Spec.Check)
+		}
+	}
+	// Check if any required variable is missing
+	for k, v := range cmd.Vars {
+		if v.Required {
+			if _, ok := a.Spec.Vars[k]; !ok {
+				return fmt.Errorf("var '%s' is required for check command %s", k, a.Spec.Check)
+			}
 		}
 	}
 	for _, rcv := range a.Spec.Receivers {

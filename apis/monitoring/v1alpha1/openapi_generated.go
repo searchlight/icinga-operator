@@ -197,7 +197,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 								AdditionalProperties: &spec.SchemaOrBool{
 									Schema: &spec.Schema{
 										SchemaProps: spec.SchemaProps{
-											Ref: ref("github.com/appscode/searchlight/apis/monitoring/v1alpha1.IcingaCommandVar"),
+											Ref: ref("github.com/appscode/searchlight/apis/monitoring/v1alpha1.PluginVar"),
 										},
 									},
 								},
@@ -221,29 +221,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 				},
 			},
 			Dependencies: []string{
-				"github.com/appscode/searchlight/apis/monitoring/v1alpha1.IcingaCommandVar"},
-		},
-		"github.com/appscode/searchlight/apis/monitoring/v1alpha1.IcingaCommandVar": {
-			Schema: spec.Schema{
-				SchemaProps: spec.SchemaProps{
-					Properties: map[string]spec.Schema{
-						"Description": {
-							SchemaProps: spec.SchemaProps{
-								Type:   []string{"string"},
-								Format: "",
-							},
-						},
-						"Optional": {
-							SchemaProps: spec.SchemaProps{
-								Type:   []string{"boolean"},
-								Format: "",
-							},
-						},
-					},
-					Required: []string{"Description", "Optional"},
-				},
-			},
-			Dependencies: []string{},
+				"github.com/appscode/searchlight/apis/monitoring/v1alpha1.PluginVar"},
 		},
 		"github.com/appscode/searchlight/apis/monitoring/v1alpha1.Incident": {
 			Schema: spec.Schema{
@@ -596,8 +574,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 								Items: &spec.SchemaOrArray{
 									Schema: &spec.Schema{
 										SchemaProps: spec.SchemaProps{
-											Type:   []string{"string"},
-											Format: "",
+											Ref: ref("github.com/appscode/searchlight/apis/monitoring/v1alpha1.PluginVar"),
 										},
 									},
 								},
@@ -617,6 +594,35 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 							},
 						},
 					},
+				},
+			},
+			Dependencies: []string{
+				"github.com/appscode/searchlight/apis/monitoring/v1alpha1.PluginVar"},
+		},
+		"github.com/appscode/searchlight/apis/monitoring/v1alpha1.PluginVar": {
+			Schema: spec.Schema{
+				SchemaProps: spec.SchemaProps{
+					Properties: map[string]spec.Schema{
+						"name": {
+							SchemaProps: spec.SchemaProps{
+								Type:   []string{"string"},
+								Format: "",
+							},
+						},
+						"description": {
+							SchemaProps: spec.SchemaProps{
+								Type:   []string{"string"},
+								Format: "",
+							},
+						},
+						"required": {
+							SchemaProps: spec.SchemaProps{
+								Type:   []string{"boolean"},
+								Format: "",
+							},
+						},
+					},
+					Required: []string{"name"},
 				},
 			},
 			Dependencies: []string{},

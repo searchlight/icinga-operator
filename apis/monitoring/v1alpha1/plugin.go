@@ -48,8 +48,14 @@ type WebhookServiceSpec struct {
 	Name string `json:"name"`
 }
 
+type PluginVar struct {
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+	Required    bool   `json:"required,omitempty"`
+}
+
 type PluginArguments struct {
-	Vars []string          `json:"vars,omitempty"`
+	Vars []PluginVar       `json:"vars,omitempty"`
 	Host map[string]string `json:"host,omitempty"`
 }
 
