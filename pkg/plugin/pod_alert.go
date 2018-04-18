@@ -35,20 +35,22 @@ func GetPodVolumePlugin() *api.SearchlightPlugin {
 			Command:    "hyperalert check_volume",
 			AlertKinds: []string{api.ResourceKindPodAlert},
 			Arguments: api.PluginArguments{
-				Vars: []api.PluginVar{
-					{
-						Name:     "volumeName",
-						Required: true,
+				Vars: &api.PluginVars{
+					Items: map[string]api.PluginVarItem{
+						"volumeName": {
+							Type: api.VarTypeString,
+						},
+						"secretName": {
+							Type: api.VarTypeString,
+						},
+						"warning": {
+							Type: api.VarTypeNumber,
+						},
+						"critical": {
+							Type: api.VarTypeNumber,
+						},
 					},
-					{
-						Name: "secretName",
-					},
-					{
-						Name: "warning",
-					},
-					{
-						Name: "critical",
-					},
+					Required: []string{"volumeName"},
 				},
 				Host: map[string]string{
 					"host": "name",
@@ -70,17 +72,19 @@ func GetPodExecPlugin() *api.SearchlightPlugin {
 			Command:    "hyperalert check_pod_exec",
 			AlertKinds: []string{api.ResourceKindPodAlert},
 			Arguments: api.PluginArguments{
-				Vars: []api.PluginVar{
-					{
-						Name: "container",
+				Vars: &api.PluginVars{
+					Items: map[string]api.PluginVarItem{
+						"container": {
+							Type: api.VarTypeString,
+						},
+						"cmd": {
+							Type: api.VarTypeString,
+						},
+						"argv": {
+							Type: api.VarTypeString,
+						},
 					},
-					{
-						Name: "cmd",
-					},
-					{
-						Name:     "argv",
-						Required: true,
-					},
+					Required: []string{"argv"},
 				},
 				Host: map[string]string{
 					"host": "name",

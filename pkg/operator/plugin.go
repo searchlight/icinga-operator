@@ -66,13 +66,13 @@ func (op *Operator) ensureCheckCommand(wp *api.SearchlightPlugin) error {
 
 	ic := api.IcingaCommand{
 		Name: wp.Name,
-		Vars: make(map[string]api.PluginVar),
+		Vars: &api.PluginVars{
+			Items:    make(map[string]api.PluginVarItem),
+			Required: make([]string, 0),
+		},
 	}
 
-	for _, item := range wp.Spec.Arguments.Vars {
-		ic.Vars[item.Name] = item
-	}
-
+	ic.Vars = wp.Spec.Arguments.Vars
 	ic.States = wp.Spec.State
 
 	for _, t := range wp.Spec.AlertKinds {

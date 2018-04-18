@@ -57,7 +57,7 @@ func (c *Registry) Delete(cmd string) {
 // +k8s:deepcopy-gen=false
 type IcingaCommand struct {
 	Name   string
-	Vars   map[string]PluginVar
+	Vars   *PluginVars
 	States []string
 }
 

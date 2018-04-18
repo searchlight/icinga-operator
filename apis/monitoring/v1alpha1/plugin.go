@@ -1,6 +1,10 @@
 package v1alpha1
 
 import (
+	"fmt"
+
+	"github.com/appscode/kutil/meta"
+	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -48,14 +52,28 @@ type WebhookServiceSpec struct {
 	Name string `json:"name"`
 }
 
-type PluginVar struct {
-	Name        string `json:"name"`
-	Description string `json:"description,omitempty"`
-	Required    bool   `json:"required,omitempty"`
+type VarType string
+
+const (
+	VarTypeInteger  = "integer"
+	VarTypeNumber   = "number"
+	VarTypeBoolean  = "boolean"
+	VarTypeString   = "string"
+	VarTypeDuration = "duration"
+)
+
+type PluginVarItem struct {
+	Description string  `json:"description,omitempty"`
+	Type        VarType `json:"type"`
+}
+
+type PluginVars struct {
+	Items     map[string]PluginVarItem `json:"Item"`
+	Required []string                 `json:"required,omitempty"`
 }
 
 type PluginArguments struct {
-	Vars []PluginVar       `json:"vars,omitempty"`
+	Vars *PluginVars       `json:"vars,omitempty"`
 	Host map[string]string `json:"host,omitempty"`
 }
 
@@ -70,4 +88,50 @@ type SearchlightPluginList struct {
 
 	// Items is the list of SearchlightPlugin.
 	Items []SearchlightPlugin `json:"items"`
+}
+
+var (
+	getVarValue = map[VarType]meta.ParserFunc{}
+)
+
+func registerVarValueParser(key VarType, fn meta.ParserFunc) {
+	getVarValue[key] = fn
+}
+
+func init() {
+	registerVarValueParser(VarTypeInteger, meta.GetInt)
+	registerVarValueParser(VarTypeNumber, meta.GetFloat)
+	registerVarValueParser(VarTypeBoolean, meta.GetBool)
+	registerVarValueParser(VarTypeString, meta.GetString)
+	registerVarValueParser(VarTypeDuration, meta.GetDuration)
+}
+
+func validateVariables(pluginVars *PluginVars, vars map[string]string) error {
+	if pluginVars == nil {
+		return nil
+	}
+	// Check if any invalid variable is provided
+	var err error
+	specVars := vars
+	for k := range specVars {
+		p, found := pluginVars.Items[k]
+		if !found {
+			return fmt.Errorf("var '%s' is unsupported", k)
+		}
+
+		fn, found := getVarValue[p.Type]
+		if !found {
+			return errors.Errorf(`type "%v" is not registered`, p.Type)
+		}
+		if _, err = fn(specVars, k); err != nil {
+			return errors.Wrapf(err, `validation failure: variable "%s" must be of type %v`, k, p.Type)
+		}
+	}
+	for _, k := range pluginVars.Required {
+		if _, ok := specVars[k]; !ok {
+			return fmt.Errorf("plugin variable '%s' is required", k)
+		}
+	}
+
+	return nil
 }

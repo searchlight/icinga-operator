@@ -15,12 +15,14 @@ func GetComponentStatusPlugin() *api.SearchlightPlugin {
 			Command:    "hyperalert check_component_status",
 			AlertKinds: []string{api.ResourceKindClusterAlert},
 			Arguments: api.PluginArguments{
-				Vars: []api.PluginVar{
-					{
-						Name: "selector",
-					},
-					{
-						Name: "componentName",
+				Vars: &api.PluginVars{
+					Items: map[string]api.PluginVarItem{
+						"selector": {
+							Type: api.VarTypeString,
+						},
+						"componentName": {
+							Type: api.VarTypeString,
+						},
 					},
 				},
 				Host: map[string]string{
@@ -42,20 +44,22 @@ func GetJsonPathPlugin() *api.SearchlightPlugin {
 			Command:    "hyperalert check_json_path",
 			AlertKinds: []string{api.ResourceKindClusterAlert},
 			Arguments: api.PluginArguments{
-				Vars: []api.PluginVar{
-					{
-						Name:     "url",
-						Required: true,
+				Vars: &api.PluginVars{
+					Items: map[string]api.PluginVarItem{
+						"url": {
+							Type: api.VarTypeString,
+						},
+						"secretName": {
+							Type: api.VarTypeString,
+						},
+						"warning": {
+							Type: api.VarTypeString,
+						},
+						"critical": {
+							Type: api.VarTypeString,
+						},
 					},
-					{
-						Name: "secretName",
-					},
-					{
-						Name: "warning",
-					},
-					{
-						Name: "critical",
-					},
+					Required: []string{"url"},
 				},
 				Host: map[string]string{
 					"host": "name",
@@ -77,15 +81,17 @@ func GetNodeExistsPlugin() *api.SearchlightPlugin {
 			Command:    "hyperalert check_node_exists",
 			AlertKinds: []string{api.ResourceKindClusterAlert},
 			Arguments: api.PluginArguments{
-				Vars: []api.PluginVar{
-					{
-						Name: "selector",
-					},
-					{
-						Name: "nodeName",
-					},
-					{
-						Name: "count",
+				Vars: &api.PluginVars{
+					Items: map[string]api.PluginVarItem{
+						"selector": {
+							Type: api.VarTypeString,
+						},
+						"nodeName": {
+							Type: api.VarTypeString,
+						},
+						"count": {
+							Type: api.VarTypeInteger,
+						},
 					},
 				},
 				Host: map[string]string{
@@ -107,15 +113,17 @@ func GetPodExistsPlugin() *api.SearchlightPlugin {
 			Command:    "hyperalert check_pod_exists",
 			AlertKinds: []string{api.ResourceKindClusterAlert},
 			Arguments: api.PluginArguments{
-				Vars: []api.PluginVar{
-					{
-						Name: "selector",
-					},
-					{
-						Name: "podName",
-					},
-					{
-						Name: "count",
+				Vars: &api.PluginVars{
+					Items: map[string]api.PluginVarItem{
+						"selector": {
+							Type: api.VarTypeString,
+						},
+						"podName": {
+							Type: api.VarTypeString,
+						},
+						"count": {
+							Type: api.VarTypeInteger,
+						},
 					},
 				},
 				Host: map[string]string{
@@ -138,21 +146,23 @@ func GetEventPlugin() *api.SearchlightPlugin {
 			Command:    "hyperalert check_event",
 			AlertKinds: []string{api.ResourceKindClusterAlert},
 			Arguments: api.PluginArguments{
-				Vars: []api.PluginVar{
-					{
-						Name: "clockSkew",
-					},
-					{
-						Name: "involvedObjectName",
-					},
-					{
-						Name: "involvedObjectNamespace",
-					},
-					{
-						Name: "involvedObjectKind",
-					},
-					{
-						Name: "involvedObjectUID",
+				Vars: &api.PluginVars{
+					Items: map[string]api.PluginVarItem{
+						"clockSkew": {
+							Type: api.VarTypeDuration,
+						},
+						"involvedObjectName": {
+							Type: api.VarTypeString,
+						},
+						"involvedObjectNamespace": {
+							Type: api.VarTypeString,
+						},
+						"involvedObjectKind": {
+							Type: api.VarTypeString,
+						},
+						"involvedObjectUID": {
+							Type: api.VarTypeString,
+						},
 					},
 				},
 				Host: map[string]string{
@@ -175,12 +185,14 @@ func GetCACertPlugin() *api.SearchlightPlugin {
 			Command:    "hyperalert check_ca_cert",
 			AlertKinds: []string{api.ResourceKindClusterAlert},
 			Arguments: api.PluginArguments{
-				Vars: []api.PluginVar{
-					{
-						Name: "warning",
-					},
-					{
-						Name: "critical",
+				Vars: &api.PluginVars{
+					Items: map[string]api.PluginVarItem{
+						"warning": {
+							Type: api.VarTypeDuration,
+						},
+						"critical": {
+							Type: api.VarTypeDuration,
+						},
 					},
 				},
 				Host: map[string]string{
@@ -202,21 +214,23 @@ func GetCertPlugin() *api.SearchlightPlugin {
 			Command:    "hyperalert check_cert",
 			AlertKinds: []string{api.ResourceKindClusterAlert},
 			Arguments: api.PluginArguments{
-				Vars: []api.PluginVar{
-					{
-						Name: "selector",
-					},
-					{
-						Name: "secretName",
-					},
-					{
-						Name: "secretKey",
-					},
-					{
-						Name: "warning",
-					},
-					{
-						Name: "critical",
+				Vars: &api.PluginVars{
+					Items: map[string]api.PluginVarItem{
+						"selector": {
+							Type: api.VarTypeString,
+						},
+						"secretName": {
+							Type: api.VarTypeString,
+						},
+						"secretKey": {
+							Type: api.VarTypeString,
+						},
+						"warning": {
+							Type: api.VarTypeDuration,
+						},
+						"critical": {
+							Type: api.VarTypeDuration,
+						},
 					},
 				},
 				Host: map[string]string{

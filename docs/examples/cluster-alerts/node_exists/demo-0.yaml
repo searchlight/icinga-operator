@@ -7,7 +7,7 @@ spec:
   check: node-exists
   vars:
     selector: beta.kubernetes.io/os=linux
-    count: '1'
+    count: 'one'
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config

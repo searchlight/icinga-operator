@@ -35,20 +35,22 @@ func GetNodeVolumePlugin() *api.SearchlightPlugin {
 			Command:    "hyperalert check_volume",
 			AlertKinds: []string{api.ResourceKindNodeAlert},
 			Arguments: api.PluginArguments{
-				Vars: []api.PluginVar{
-					{
-						Name:     "mountPoint",
-						Required: true,
+				Vars: &api.PluginVars{
+					Items: map[string]api.PluginVarItem{
+						"mountPoint": {
+							Type: api.VarTypeString,
+						},
+						"secretName": {
+							Type: api.VarTypeString,
+						},
+						"warning": {
+							Type: api.VarTypeNumber,
+						},
+						"critical": {
+							Type: api.VarTypeNumber,
+						},
 					},
-					{
-						Name: "secretName",
-					},
-					{
-						Name: "warning",
-					},
-					{
-						Name: "critical",
-					},
+					Required: []string{"mountPoint"},
 				},
 				Host: map[string]string{
 					"host": "name",

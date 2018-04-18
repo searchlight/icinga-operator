@@ -11,8 +11,11 @@ spec:
     host:
       v: vars.verbosity
     vars:
-    - name: selector
-    - name: componentName
+      properties:
+        componentName:
+          type: string
+        selector:
+          type: string
   command: hyperalert check_component_status
   state:
   - OK
@@ -32,11 +35,17 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-    - name: url
-      required: true
-    - name: secretName
-    - name: warning
-    - name: critical
+      properties:
+        critical:
+          type: string
+        secretName:
+          type: string
+        url:
+          type: string
+        warning:
+          type: string
+      required:
+      - url
   command: hyperalert check_json_path
   state:
   - OK
@@ -56,9 +65,13 @@ spec:
     host:
       v: vars.verbosity
     vars:
-    - name: selector
-    - name: nodeName
-    - name: count
+      properties:
+        count:
+          type: integer
+        nodeName:
+          type: string
+        selector:
+          type: string
   command: hyperalert check_node_exists
   state:
   - OK
@@ -78,9 +91,13 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-    - name: selector
-    - name: podName
-    - name: count
+      properties:
+        count:
+          type: integer
+        podName:
+          type: string
+        selector:
+          type: string
   command: hyperalert check_pod_exists
   state:
   - OK
@@ -100,11 +117,17 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-    - name: clockSkew
-    - name: involvedObjectName
-    - name: involvedObjectNamespace
-    - name: involvedObjectKind
-    - name: involvedObjectUID
+      properties:
+        clockSkew:
+          type: duration
+        involvedObjectKind:
+          type: string
+        involvedObjectName:
+          type: string
+        involvedObjectNamespace:
+          type: string
+        involvedObjectUID:
+          type: string
   command: hyperalert check_event
   state:
   - OK
@@ -123,8 +146,11 @@ spec:
     host:
       v: vars.verbosity
     vars:
-    - name: warning
-    - name: critical
+      properties:
+        critical:
+          type: duration
+        warning:
+          type: duration
   command: hyperalert check_ca_cert
   state:
   - OK
@@ -145,11 +171,17 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-    - name: selector
-    - name: secretName
-    - name: secretKey
-    - name: warning
-    - name: critical
+      properties:
+        critical:
+          type: duration
+        secretKey:
+          type: string
+        secretName:
+          type: string
+        selector:
+          type: string
+        warning:
+          type: duration
   command: hyperalert check_cert
   state:
   - OK
@@ -188,11 +220,17 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-    - name: mountPoint
-      required: true
-    - name: secretName
-    - name: warning
-    - name: critical
+      properties:
+        critical:
+          type: number
+        mountPoint:
+          type: string
+        secretName:
+          type: string
+        warning:
+          type: number
+      required:
+      - mountPoint
   command: hyperalert check_volume
   state:
   - OK
@@ -230,11 +268,17 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-    - name: volumeName
-      required: true
-    - name: secretName
-    - name: warning
-    - name: critical
+      properties:
+        critical:
+          type: number
+        secretName:
+          type: string
+        volumeName:
+          type: string
+        warning:
+          type: number
+      required:
+      - volumeName
   command: hyperalert check_volume
   state:
   - OK
@@ -254,10 +298,15 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-    - name: container
-    - name: cmd
-    - name: argv
-      required: true
+      properties:
+        argv:
+          type: string
+        cmd:
+          type: string
+        container:
+          type: string
+      required:
+      - argv
   command: hyperalert check_pod_exec
   state:
   - OK

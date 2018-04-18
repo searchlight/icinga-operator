@@ -42,11 +42,13 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 		})
 	}
 
-	for _, item := range plugin.Spec.Arguments.Vars {
-		args = append(args, arg{
-			key: item.Name,
-			val: fmt.Sprintf("$%s$", item.Name),
-		})
+	if plugin.Spec.Arguments.Vars != nil {
+		for key := range plugin.Spec.Arguments.Vars.Items {
+			args = append(args, arg{
+				key: key,
+				val: fmt.Sprintf("$%s$", key),
+			})
+		}
 	}
 
 	for key, val := range plugin.Spec.Arguments.Host {

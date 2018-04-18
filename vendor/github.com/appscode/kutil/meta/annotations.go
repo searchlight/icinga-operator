@@ -2,6 +2,7 @@ package meta
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/appscode/kutil"
 )
@@ -13,6 +14,8 @@ var _ ParserFunc = GetInt
 var _ ParserFunc = GetString
 var _ ParserFunc = GetList
 var _ ParserFunc = GetMap
+var _ ParserFunc = GetFloat
+var _ ParserFunc = GetDuration
 
 func GetBool(m map[string]string, key string) (interface{}, error) {
 	if m == nil {
@@ -112,6 +115,40 @@ func GetMap(m map[string]string, key string) (interface{}, error) {
 func GetMapValue(m map[string]string, key string) (map[string]string, error) {
 	v, err := GetMap(m, key)
 	return v.(map[string]string), err
+}
+
+func GetFloat(m map[string]string, key string) (interface{}, error) {
+	if m == nil {
+		return map[string]string{}, kutil.ErrNotFound
+	}
+	f, ok := m[key]
+	if !ok {
+		return map[string]string{}, kutil.ErrNotFound
+	}
+
+	return strconv.ParseFloat(f, 64)
+}
+
+func GetFloatValue(m map[string]string, key string) (float64, error) {
+	v, err := GetFloat(m, key)
+	return v.(float64), err
+}
+
+func GetDuration(m map[string]string, key string) (interface{}, error) {
+	if m == nil {
+		return map[string]string{}, kutil.ErrNotFound
+	}
+	f, ok := m[key]
+	if !ok {
+		return map[string]string{}, kutil.ErrNotFound
+	}
+
+	return time.ParseDuration(f)
+}
+
+func GetDurationValue(m map[string]string, key string) (float64, error) {
+	v, err := GetDuration(m, key)
+	return v.(float64), err
 }
 
 type GetFunc func(map[string]string) (interface{}, error)
