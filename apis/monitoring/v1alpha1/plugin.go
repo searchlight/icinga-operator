@@ -68,7 +68,7 @@ type PluginVarItem struct {
 }
 
 type PluginVars struct {
-	Items     map[string]PluginVarItem `json:"Item"`
+	Items    map[string]PluginVarItem `json:"Item"`
 	Required []string                 `json:"required,omitempty"`
 }
 

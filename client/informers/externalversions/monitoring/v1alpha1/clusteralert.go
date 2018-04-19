@@ -19,6 +19,8 @@ limitations under the License.
 package v1alpha1
 
 import (
+	time "time"
+
 	monitoring_v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	versioned "github.com/appscode/searchlight/client/clientset/versioned"
 	internalinterfaces "github.com/appscode/searchlight/client/informers/externalversions/internalinterfaces"
@@ -27,7 +29,6 @@ import (
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
-	time "time"
 )
 
 // ClusterAlertInformer provides access to a shared informer and lister for
