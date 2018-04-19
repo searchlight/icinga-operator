@@ -55,11 +55,11 @@ type WebhookServiceSpec struct {
 type VarType string
 
 const (
-	VarTypeInteger  = "integer"
-	VarTypeNumber   = "number"
-	VarTypeBoolean  = "boolean"
-	VarTypeString   = "string"
-	VarTypeDuration = "duration"
+	VarTypeInteger  VarType = "integer"
+	VarTypeNumber   VarType = "number"
+	VarTypeBoolean  VarType = "boolean"
+	VarTypeString   VarType = "string"
+	VarTypeDuration VarType = "duration"
 )
 
 type PluginVarItem struct {
@@ -91,11 +91,11 @@ type SearchlightPluginList struct {
 }
 
 var (
-	getVarValue = map[VarType]meta.ParserFunc{}
+	validateVarValue = map[VarType]meta.ParserFunc{}
 )
 
 func registerVarValueParser(key VarType, fn meta.ParserFunc) {
-	getVarValue[key] = fn
+	validateVarValue[key] = fn
 }
 
 func init() {
@@ -112,23 +112,22 @@ func validateVariables(pluginVars *PluginVars, vars map[string]string) error {
 	}
 	// Check if any invalid variable is provided
 	var err error
-	specVars := vars
-	for k := range specVars {
+	for k := range vars {
 		p, found := pluginVars.Items[k]
 		if !found {
 			return fmt.Errorf("var '%s' is unsupported", k)
 		}
 
-		fn, found := getVarValue[p.Type]
+		fn, found := validateVarValue[p.Type]
 		if !found {
 			return errors.Errorf(`type "%v" is not registered`, p.Type)
 		}
-		if _, err = fn(specVars, k); err != nil {
+		if _, err = fn(vars, k); err != nil {
 			return errors.Wrapf(err, `validation failure: variable "%s" must be of type %v`, k, p.Type)
 		}
 	}
 	for _, k := range pluginVars.Required {
-		if _, ok := specVars[k]; !ok {
+		if _, ok := vars[k]; !ok {
 			return fmt.Errorf("plugin variable '%s' is required", k)
 		}
 	}
