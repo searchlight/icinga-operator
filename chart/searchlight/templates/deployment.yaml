@@ -22,7 +22,7 @@ spec:
       serviceAccountName: {{ template "searchlight.serviceAccountName" . }}
       containers:
       - name: operator
-        image: {{ .Values.operator.image }}:{{ .Values.operator.tag }}
+        image: {{ .Values.operator.registry }}/{{ .Values.operator.repository }}:{{ .Values.operator.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         {{- if .Values.imagePullSecrets }}
         imagePullSecrets:
@@ -53,7 +53,7 @@ spec:
             port: 8443
             scheme: HTTPS
       - name: icinga
-        image: {{ .Values.icinga.image }}:{{ .Values.icinga.tag }}
+        image: {{ .Values.icinga.registry }}/{{ .Values.icinga.repository }}:{{ .Values.icinga.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         {{- if .Values.imagePullSecrets }}
         imagePullSecrets:
@@ -79,7 +79,7 @@ spec:
         - name: data
           mountPath: /srv
       - name: ido
-        image: {{ .Values.ido.image }}:{{ .Values.ido.tag }}
+        image: {{ .Values.ido.registry }}/{{ .Values.ido.repository }}:{{ .Values.ido.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         {{- if .Values.imagePullSecrets }}
         imagePullSecrets:

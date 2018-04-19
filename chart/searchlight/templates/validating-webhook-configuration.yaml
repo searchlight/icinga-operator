@@ -1,0 +1,30 @@
+{{- if .Values.apiserver.enableValidatingWebhook }}
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: admission.monitoring.appscode.com
+  labels:
+    app: "{{ template "searchlight.name" . }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+webhooks:
+- name: admission.monitoring.appscode.com
+  clientConfig:
+    service:
+      namespace: default
+      name: kubernetes
+      path: /apis/admission.monitoring.appscode.com/v1alpha1/admissionreviews
+    caBundle: ${KUBE_CA}
+  rules:
+  - operations:
+    - CREATE
+    - UPDATE
+    apiGroups:
+    - monitoring.appscode.com
+    apiVersions:
+    - "*"
+    resources:
+    - "*"
+  failurePolicy: Fail
+{{ end }}
