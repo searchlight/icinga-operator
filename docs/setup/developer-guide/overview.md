@@ -2,13 +2,13 @@
 title: Overview | Developer Guide
 description: Developer Guide Overview
 menu:
-  product_searchlight_6.0.0-alpha.0:
+  product_searchlight_6.0.0-rc.0:
     identifier: developer-guide-readme
     name: Overview
     parent: developer-guide
     weight: 15
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-alpha.0
+menu_name: product_searchlight_6.0.0-rc.0
 section_menu_id: setup
 ---
 

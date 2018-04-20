@@ -1,24 +1,24 @@
 ---
 title: Pod Volume
 menu:
-  product_searchlight_6.0.0-alpha.0:
+  product_searchlight_6.0.0-rc.0:
     identifier: pod-pod-volume
     name: Pod Volume
     parent: pod-alert
     weight: 40
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-alpha.0
+menu_name: product_searchlight_6.0.0-rc.0
 section_menu_id: guides
 ---
 
 > New to Searchlight? Please start [here](/docs/concepts/README.md).
 
-# Check pod_volume
+# Check pod-volume
 
-Check command `pod_volume` is used to check percentage of available space in Kubernetes Pods.
+Check command `pod-volume` is used to check percentage of available space in Kubernetes Pods.
 
 ## Spec
-`pod_volume` check command has the following variables:
+`pod-volume` check command has the following variables:
 
 - `volumeName` - Name of volume whose usage stats will be checked
 - `secretName` - Name of Kubernetes Secret used to pass [hostfacts auth info](/docs/setup/hostfacts.md#create-hostfacts-secret)
@@ -38,7 +38,7 @@ Execution of this command can result in following states:
 ### Before You Begin
 At first, you need to have a Kubernetes cluster, and the kubectl command-line tool must be configured to communicate with your cluster. If you do not already have a cluster, you can create one by using [Minikube](https://github.com/kubernetes/minikube).
 
-Now, install Searchlight operator in your cluster following the steps [here](/docs/setup/install.md). To use `pod_volume` command, please also [install Hostfacts](/docs/setup/hostfacts.md) server in your cluster.
+Now, install Searchlight operator in your cluster following the steps [here](/docs/setup/install.md). To use `pod-volume` command, please also [install Hostfacts](/docs/setup/hostfacts.md) server in your cluster.
 
 To keep things isolated, this tutorial uses a separate namespace called `demo` throughout this tutorial. Run the following command to prepare your cluster for this tutorial:
 
@@ -57,7 +57,7 @@ demo          Active    4m
 ### Check volume of pods with matching labels
 In this tutorial, a PodAlert will be used check volume stats of pods with matching labels by setting `spec.selector` field.
 ```yaml
-$ cat ./docs/examples/pod-alerts/pod_volume/demo-0.yaml
+$ cat ./docs/examples/pod-alerts/pod-volume/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
@@ -68,7 +68,7 @@ spec:
   selector:
     matchLabels:
       app: nginx
-  check: pod_volume
+  check: pod-volume
   vars:
     volumeName: www
     warning: '70'
@@ -82,7 +82,7 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/pod-alerts/pod_volume/demo-1.yaml
+$ kubectl apply -f ./docs/examples/pod-alerts/pod-volume/demo-1.yaml
 persistentvolumeclaim "boxclaim" created
 pod "busybox" created
 podalert "pod-volume-demo-1" created
@@ -104,16 +104,16 @@ Events:
   11m		11m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-0"
 ```
 
-Voila! `pod_volume` command has been synced to Icinga2. Please visit [here](/docs/guides/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@pod@minikube` and Icinga service `pod-volume-demo-0`.
+Voila! `pod-volume` command has been synced to Icinga2. Please visit [here](/docs/guides/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@pod@minikube` and Icinga service `pod-volume-demo-0`.
 
-![check-pods-by-label](/docs/images/pod-alerts/pod_volume/demo-0.png)
+![check-pods-by-label](/docs/images/pod-alerts/pod-volume/demo-0.png)
 
 
 ### Check volume stats of a specific pod
 In this tutorial, a PodAlert will be used check volume stats of a pod by name by setting `spec.podName` field.
 
 ```yaml
-$ cat ./docs/examples/pod-alerts/pod_volume/demo-1.yaml
+$ cat ./docs/examples/pod-alerts/pod-volume/demo-1.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: PodAlert
@@ -122,7 +122,7 @@ metadata:
   namespace: demo
 spec:
   podName: busybox
-  check: pod_volume
+  check: pod-volume
   vars:
     volumeName: mypd
     warning: '70'
@@ -136,7 +136,7 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/pod-alerts/pod_volume/demo-1.yaml
+$ kubectl apply -f ./docs/examples/pod-alerts/pod-volume/demo-1.yaml
 persistentvolumeclaim "boxclaim" created
 pod "busybox" created
 podalert "pod-volume-demo-1" created
@@ -152,7 +152,7 @@ Events:
   1m		1m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-1"
   1m		1m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-1"
 ```
-![check-by-pod-name](/docs/images/pod-alerts/pod_volume/demo-1.png)
+![check-by-pod-name](/docs/images/pod-alerts/pod-volume/demo-1.png)
 
 
 ### Cleaning up

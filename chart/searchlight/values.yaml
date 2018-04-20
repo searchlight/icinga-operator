@@ -5,7 +5,7 @@
 operator:
   registry: appscode
   repository: searchlight
-  tag: 6.0.0-alpha.0
+  tag: 6.0.0-rc.0
 
 ido:
   registry: appscode
@@ -15,7 +15,7 @@ ido:
 icinga:
   registry: appscode
   repository: icinga
-  tag: 6.0.0-alpha.0-k8s
+  tag: 6.0.0-rc.0-k8s
 
 ## Optionally specify an array of imagePullSecrets.
 ## Secrets must be manually created in the namespace.

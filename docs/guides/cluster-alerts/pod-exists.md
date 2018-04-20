@@ -1,25 +1,25 @@
 ---
 title: Pod Exists
 menu:
-  product_searchlight_6.0.0-alpha.0:
+  product_searchlight_6.0.0-rc.0:
     identifier: guides-pod-exists
     name: Pod Exists
     parent: cluster-alert
     weight: 15
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-alpha.0
+menu_name: product_searchlight_6.0.0-rc.0
 section_menu_id: guides
 ---
 
 > New to Searchlight? Please start [here](/docs/concepts/README.md).
 
-# Check pod_exists
+# Check pod-exists
 
-Check command `pod_exists` is used to check existence of pods in a Kubernetes cluster.
+Check command `pod-exists` is used to check existence of pods in a Kubernetes cluster.
 
 
 ## Spec
-`pod_exists` has the following variables:
+`pod-exists` has the following variables:
 
 - `selector` - Label selector for pods whose existence are checked.
 - `podName` - Name of Kubernetes pod whose existence is checked.
@@ -57,7 +57,7 @@ demo          Active    4m
 ### Check existence of pods with matching labels
 In this tutorial, a ClusterAlert will be used check existence of pods with matching labels by setting `spec.vars.selector` field.
 ```yaml
-$ cat ./docs/examples/cluster-alerts/pod_exists/demo-0.yaml
+$ cat ./docs/examples/cluster-alerts/pod-exists/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
@@ -65,7 +65,7 @@ metadata:
   name: pod-exists-demo-0
   namespace: demo
 spec:
-  check: pod_exists
+  check: pod-exists
   vars:
     selector: app=nginx
     count: '2'
@@ -78,7 +78,7 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/pod_exists/demo-0.yaml
+$ kubectl apply -f ./docs/examples/cluster-alerts/pod-exists/demo-0.yaml
 replicationcontroller "nginx" created
 clusteralert "pod-exists-demo-0" created
 
@@ -93,15 +93,15 @@ Events:
   19s		19s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "pod-exists-demo-0"
 ```
 
-Voila! `pod_exists` command has been synced to Icinga2. Please visit [here](/docs/guides/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `pod-exists-demo-0`.
+Voila! `pod-exists` command has been synced to Icinga2. Please visit [here](/docs/guides/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `pod-exists-demo-0`.
 
-![check-all-pods](/docs/images/cluster-alerts/pod_exists/demo-0.png)
+![check-all-pods](/docs/images/cluster-alerts/pod-exists/demo-0.png)
 
 
 ### Check existence of a specific pod
 In this tutorial, a ClusterAlert will be used check existence of a pod by name by setting `spec.vars.podName` field.
 ```yaml
-$ cat ./docs/examples/cluster-alerts/pod_exists/demo-1.yaml
+$ cat ./docs/examples/cluster-alerts/pod-exists/demo-1.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
@@ -109,7 +109,7 @@ metadata:
   name: pod-exists-demo-1
   namespace: demo
 spec:
-  check: pod_exists
+  check: pod-exists
   vars:
     podName: busybox
     count: '1'
@@ -122,7 +122,7 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/pod_exists/demo-1.yaml
+$ kubectl apply -f ./docs/examples/cluster-alerts/pod-exists/demo-1.yaml
 pod "busybox" created
 podalert "pod-exists-demo-1" created
 
@@ -141,7 +141,7 @@ Events:
   31s		31s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "pod-exists-demo-1"
   27s		27s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "pod-exists-demo-1"
 ```
-![check-by-pod-label](/docs/images/cluster-alerts/pod_exists/demo-1.png)
+![check-by-pod-label](/docs/images/cluster-alerts/pod-exists/demo-1.png)
 
 
 ### Cleaning up

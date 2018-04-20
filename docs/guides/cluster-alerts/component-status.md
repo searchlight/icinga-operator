@@ -1,29 +1,28 @@
 ---
-title: Node Exists
+title: Component Status
 menu:
-  product_searchlight_6.0.0-alpha.0:
-    identifier: guides-node-exists
-    name: Node Exists
+  product_searchlight_6.0.0-rc.0:
+    identifier: guides-Component-status
+    name: Component Status
     parent: cluster-alert
-    weight: 10
+    weight: 25
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-alpha.0
+menu_name: product_searchlight_6.0.0-rc.0
 section_menu_id: guides
 ---
 
 > New to Searchlight? Please start [here](/docs/concepts/README.md).
 
-# Check node_exists
+# Check component-status
 
-Check command `node_exists` is used to check existence of nodes in a Kubernetes cluster.
+Check command `component-status` is used to check status of Kubernetes components. Returns OK if components are `Healthy`, otherwise, returns Critical.
 
 
 ## Spec
-`node_exists` has the following variables:
+`component-status` has the following variables:
 
-- `selector` - Label selector for nodes whose existence are checked.
-- `nodeName` - Name of Kubernetes node whose existence is checked.
-- `count` - Number of expected Kubernetes nodes
+- `selector` - Label selector for components whose existence are checked.
+- `componentName` - Name of Kubernetes component whose existence is checked.
 
 Execution of this command can result in following states:
 
@@ -53,22 +52,18 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-
-### Check existence of nodes with matching labels
-In this tutorial, a ClusterAlert will be used check existence of nodes with matching labels by setting `spec.vars.selector` field.
+### Check status of all components
+In this tutorial, we are going to create a ClusterAlert to check status of all components.
 ```yaml
-$ cat ./docs/examples/cluster-alerts/node_exists/demo-0.yaml
+$ cat ./docs/examples/cluster-alerts/component-status/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: node-exists-demo-0
+  name: component-status-demo-0
   namespace: demo
 spec:
-  check: node_exists
-  vars:
-    selector: beta.kubernetes.io/os=linux
-    count: '1'
+  check: component-status
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
@@ -78,41 +73,39 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/node_exists/demo-0.yaml
-replicationcontroller "nginx" created
-clusteralert "node-exists-demo-0" created
+$ kubectl apply -f ./docs/examples/cluster-alerts/component-status/demo-0.yaml
+clusteralert "component-status-demo-0" created
 
-$ kubectl describe clusteralert -n demo node-exists-demo-0
-Name:		node-exists-demo-0
+$ kubectl describe clusteralert -n demo component-status-demo-0
+Name:		component-status-demo-0
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  19s		19s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "node-exists-demo-0". Reason: secrets "notifier-config" not found
-  19s		19s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "node-exists-demo-0"
+  6s		6s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "component-status-demo-0"
 ```
 
-Voila! `node_exists` command has been synced to Icinga2. Please visit [here](/docs/guides/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `node-exists-demo-0`.
+Voila! `component-status` command has been synced to Icinga2. Please visit [here](/docs/guides/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `component-status-demo-0`.
 
-![check-all-nodes](/docs/images/cluster-alerts/node_exists/demo-0.png)
+![check-all-components](/docs/images/cluster-alerts/component-status/demo-0.png)
 
 
-### Check existence of a specific node
-In this tutorial, a ClusterAlert will be used check existence of a node by name by setting `spec.vars.nodeName` field.
+### Check status of a specific component
+In this tutorial, a ClusterAlert will be used check status of a component by name by setting `spec.componentName` field.
+
 ```yaml
-$ cat ./docs/examples/cluster-alerts/node_exists/demo-1.yaml
+$ cat ./docs/examples/cluster-alerts/component-status/demo-1.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: node-exists-demo-1
+  name: component-status-demo-1
   namespace: demo
 spec:
-  check: node_exists
+  check: component-status
   vars:
-    nodeName: minikube
-    count: '1'
+    componentName: etcd-0
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config
@@ -121,23 +114,21 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
-```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/node_exists/demo-1.yaml
-node "busybox" created
-clusteralert "node-exists-demo-1" created
 
-$ kubectl describe clusteralert -n demo node-exists-demo-1
-Name:		node-exists-demo-1
+```console
+$ kubectl apply -f ./docs/examples/cluster-alerts/component-status/demo-1.yaml
+clusteralert "component-status-demo-1" created
+
+$ kubectl describe clusteralert -n demo component-status-demo-1
+Name:		component-status-demo-1
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  31s		31s		1	Searchlight operator			Warning		BadNotifier	Bad notifier config for ClusterAlert: "node-exists-demo-1". Reason: secrets "notifier-config" not found
-  31s		31s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "node-exists-demo-1"
-  27s		27s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "node-exists-demo-1"
+  22s		22s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "component-status-demo-1"
 ```
-![check-by-node-label](/docs/images/cluster-alerts/node_exists/demo-1.png)
+![check-by-component-name](/docs/images/cluster-alerts/component-status/demo-1.png)
 
 
 ### Cleaning up

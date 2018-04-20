@@ -1,13 +1,13 @@
 ---
 title: Node Alert Overview
 menu:
-  product_searchlight_6.0.0-alpha.0:
+  product_searchlight_6.0.0-rc.0:
     identifier: node-alert-overview
     name: Node Alert
     parent: alert-types
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-alpha.0
+menu_name: product_searchlight_6.0.0-rc.0
 section_menu_id: concepts
 ---
 
@@ -30,7 +30,7 @@ metadata:
 spec:
   selector:
     beta.kubernetes.io/os: linux
-  check: node_volume
+  check: node-volume
   vars:
     warning: '70'
     critical: '95'
@@ -49,7 +49,7 @@ spec:
 This object will do the followings:
 
 - This Alert is set on nodes with matching label `beta.kubernetes.io/os=linux`.
-- Check command `node_volume` will be used.
+- Check command `node-volume` will be used.
 - Icinga will check for volume size every 5m.
 - Notifications will be sent every 3m if any problem is detected, until acknowledged.
 - When the disk is 70% full, it will reach `Warning` state and emails will be sent to _ops@example.com_ via Mailgun as notification.
@@ -66,9 +66,8 @@ Any NodeAlert can specify nodes in 2 ways:
 
 ### Check Command
 Check commands are used by Icinga to periodically test some condition. If the test return positive appropriate notifications are sent. The following check commands are supported for nodes:
-- [influx_query](/docs/guides/node-alerts/influx_query.md) - To check InfluxDB query result.
-- [node_status](/docs/guides/node-alerts/node_status.md) - To check Kubernetes Node status.
-- [node_volume](/docs/guides/node-alerts/node_volume.md) - To check Node Disk stat.
+- [node-status](/docs/guides/node-alerts/node-status.md) - To check Kubernetes Node status.
+- [node-volume](/docs/guides/node-alerts/node-volume.md) - To check Node Disk stat.
 
 Each check command has a name specified in `spec.check` field. Optionally each check command can take one or more parameters. These are specified in `spec.vars` field. To learn about the available parameters for each check command, please visit their documentation. `spec.checkInterval` specifies how frequently Icinga will perform this check. Some examples are: 30s, 5m, 6h, etc.
 
@@ -88,9 +87,8 @@ You can skip this section if you are unfamiliar with how Icinga works. Searchlig
 
 ## Next Steps
  - Visit the links below to learn about the available check commands for nodes:
-    - [influx_query](/docs/guides/node-alerts/influx_query.md) - To check InfluxDB query result.
-    - [node_status](/docs/guides/node-alerts/node_status.md) - To check Kubernetes Node status.
-    - [node_volume](/docs/guides/node-alerts/node_volume.md) - To check Node Disk stat.
+    - [node-status](/docs/guides/node-alerts/node-status.md) - To check Kubernetes Node status.
+    - [node-volume](/docs/guides/node-alerts/node-volume.md) - To check Node Disk stat.
  - To periodically run various checks on a Kubernetes cluster, use [ClusterAlerts](/docs/concepts/alert-types/cluster-alert.md).
  - To periodically run various checks on pods in a Kubernetes cluster, use [PodAlerts](/docs/concepts/alert-types/pod-alert.md).
  - See the list of supported notifiers [here](/docs/guides/notifiers.md).

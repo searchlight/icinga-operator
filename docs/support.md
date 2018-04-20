@@ -2,17 +2,17 @@
 title: Support | Searchlight
 description: Support
 menu:
-  product_searchlight_6.0.0-alpha.0:
+  product_searchlight_6.0.0-rc.0:
     identifier: support-searchlight
     name: Support
     parent: welcome
     weight: 25
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-alpha.0
+menu_name: product_searchlight_6.0.0-rc.0
 section_menu_id: welcome
-url: /products/searchlight/6.0.0-alpha.0/welcome/support/
+url: /products/searchlight/6.0.0-rc.0/welcome/support/
 aliases:
-  - /products/searchlight/6.0.0-alpha.0/support/
+  - /products/searchlight/6.0.0-rc.0/support/
 ---
 # Support
 

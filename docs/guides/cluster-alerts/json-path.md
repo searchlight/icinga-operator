@@ -1,24 +1,24 @@
 ---
 title: JSON Path
 menu:
-  product_searchlight_6.0.0-alpha.0:
+  product_searchlight_6.0.0-rc.0:
     identifier: guides-json-path
     name: JSON Path
     parent: cluster-alert
     weight: 40
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-alpha.0
+menu_name: product_searchlight_6.0.0-rc.0
 section_menu_id: guides
 ---
 
 > New to Searchlight? Please start [here](/docs/concepts/README.md).
 
-# Check json_path
+# Check json-path
 
-Check command `json_path` is used to check JSON HTTP response using [jsonpath](https://kubernetes.io/docs/reference/kubectl/jsonpath/) queries.
+Check command `json-path` is used to check JSON HTTP response using [jsonpath](https://kubernetes.io/docs/reference/kubectl/jsonpath/) queries.
 
 ## Spec
-`json_path` check command has the following variables:
+`json-path` check command has the following variables:
 
 - `url` - URL to get data
 - `secretName` - Name of Kubernetes Secret used to call HTTP api.
@@ -124,7 +124,7 @@ demo          Active    4m
 In this tutorial, a ClusterAlert will be used check JSON response of a HTTP api.
 
 ```yaml
-$ cat ./docs/examples/cluster-alerts/json_path/demo-0.yaml
+$ cat ./docs/examples/cluster-alerts/json-path/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
@@ -132,7 +132,7 @@ metadata:
   name: json-path-demo-0
   namespace: demo
 spec:
-  check: json_path
+  check: json-path
   vars:
     url: http://echo.jsontest.com/key/value/one/two
     critical: '{.one} != "one"'
@@ -146,7 +146,7 @@ spec:
 ```
 
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/json_path/demo-0.yaml
+$ kubectl apply -f ./docs/examples/cluster-alerts/json-path/demo-0.yaml
 clusteralert "json-path-demo-0" created
 
 $ kubectl describe clusteralert -n demo json-path-demo-0
@@ -159,9 +159,9 @@ Events:
   16s		16s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "json-path-demo-0"
 ```
 
-Voila! `json_path` command has been synced to Icinga2. Please visit [here](/docs/guides/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `json-path-demo-0`.
+Voila! `json-path` command has been synced to Icinga2. Please visit [here](/docs/guides/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `json-path-demo-0`.
 
-![check-all-pods](/docs/images/cluster-alerts/json_path/demo-0.png)
+![check-all-pods](/docs/images/cluster-alerts/json-path/demo-0.png)
 
 
 ### Cleaning up

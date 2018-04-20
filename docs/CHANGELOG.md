@@ -2,17 +2,17 @@
 title: Changelog | Searchlight
 description: Changelog
 menu:
-  product_searchlight_6.0.0-alpha.0:
+  product_searchlight_6.0.0-rc.0:
     identifier: changelog-searchlight
     name: Changelog
     parent: welcome
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-alpha.0
+menu_name: product_searchlight_6.0.0-rc.0
 section_menu_id: welcome
-url: /products/searchlight/6.0.0-alpha.0/welcome/changelog/
+url: /products/searchlight/6.0.0-rc.0/welcome/changelog/
 aliases:
-  - /products/searchlight/6.0.0-alpha.0/CHANGELOG/
+  - /products/searchlight/6.0.0-rc.0/CHANGELOG/
 ---
 
 # Change Log
@@ -24,6 +24,7 @@ aliases:
 **Implemented enhancements:**
 
 - Check expiration for any cert [\#275](https://github.com/appscode/searchlight/issues/275)
+- Support webhook based custom plugin [\#336](https://github.com/appscode/searchlight/pull/336) ([aerokite](https://github.com/aerokite))
 - Add tests for plugins [\#313](https://github.com/appscode/searchlight/pull/313) ([aerokite](https://github.com/aerokite))
 
 **Fixed bugs:**
@@ -35,6 +36,7 @@ aliases:
 - support removing acknowledgement [\#299](https://github.com/appscode/searchlight/issues/299)
 - Sending custom notification from IcingaWeb2 does not work [\#297](https://github.com/appscode/searchlight/issues/297)
 - Allow `pausing` alerts [\#295](https://github.com/appscode/searchlight/issues/295)
+- Support user provided plugin [\#293](https://github.com/appscode/searchlight/issues/293)
 - Record incidents and notifications via CRD/EAS [\#292](https://github.com/appscode/searchlight/issues/292)
 - Replace cfssl with client-go cert utils [\#231](https://github.com/appscode/searchlight/issues/231)
 - Add e2e test for notification [\#205](https://github.com/appscode/searchlight/issues/205)
@@ -43,6 +45,38 @@ aliases:
 
 **Merged pull requests:**
 
+- Generate non-namespaced client for plugins [\#355](https://github.com/appscode/searchlight/pull/355) ([aerokite](https://github.com/aerokite))
+- add patch permission [\#354](https://github.com/appscode/searchlight/pull/354) ([aerokite](https://github.com/aerokite))
+- Various fixes to searchlight installer [\#352](https://github.com/appscode/searchlight/pull/352) ([tamalsaha](https://github.com/tamalsaha))
+- Remove jessie icinga [\#349](https://github.com/appscode/searchlight/pull/349) ([aerokite](https://github.com/aerokite))
+- Introduce properties for plugins vars [\#348](https://github.com/appscode/searchlight/pull/348) ([aerokite](https://github.com/aerokite))
+- Migrate builtin check commands to Plugin crd [\#347](https://github.com/appscode/searchlight/pull/347) ([aerokite](https://github.com/aerokite))
+- Add RBAC instructions for GKE cluster [\#346](https://github.com/appscode/searchlight/pull/346) ([tamalsaha](https://github.com/tamalsaha))
+- Update chart repository location [\#345](https://github.com/appscode/searchlight/pull/345) ([tamalsaha](https://github.com/tamalsaha))
+- Support installing from local installer scripts [\#344](https://github.com/appscode/searchlight/pull/344) ([tamalsaha](https://github.com/tamalsaha))
+- Move swagger.json to openapi-spec folder [\#343](https://github.com/appscode/searchlight/pull/343) ([tamalsaha](https://github.com/tamalsaha))
+- Regenerate swagger.json [\#342](https://github.com/appscode/searchlight/pull/342) ([tamalsaha](https://github.com/tamalsaha))
+- Generate swagger.json [\#341](https://github.com/appscode/searchlight/pull/341) ([tamalsaha](https://github.com/tamalsaha))
+- Add install pkg for crds [\#340](https://github.com/appscode/searchlight/pull/340) ([tamalsaha](https://github.com/tamalsaha))
+- Skip setting ListKind [\#339](https://github.com/appscode/searchlight/pull/339) ([tamalsaha](https://github.com/tamalsaha))
+- Add CRD Validation [\#338](https://github.com/appscode/searchlight/pull/338) ([tamalsaha](https://github.com/tamalsaha))
+- Generate openapi spec [\#337](https://github.com/appscode/searchlight/pull/337) ([tamalsaha](https://github.com/tamalsaha))
+- Fix install script for minikube 0.24.x \(Kube 1.8.0\) [\#335](https://github.com/appscode/searchlight/pull/335) ([tamalsaha](https://github.com/tamalsaha))
+- Fix comment for LastNotificationType in IncidentStatus [\#334](https://github.com/appscode/searchlight/pull/334) ([aerokite](https://github.com/aerokite))
+- fix typo [\#333](https://github.com/appscode/searchlight/pull/333) ([aerokite](https://github.com/aerokite))
+- Garbage collect incidents older than 90 days [\#332](https://github.com/appscode/searchlight/pull/332) ([tamalsaha](https://github.com/tamalsaha))
+- Document user roles [\#331](https://github.com/appscode/searchlight/pull/331) ([tamalsaha](https://github.com/tamalsaha))
+- Update docs for json\_path [\#330](https://github.com/appscode/searchlight/pull/330) ([tamalsaha](https://github.com/tamalsaha))
+- Correctly install validation webhook [\#329](https://github.com/appscode/searchlight/pull/329) ([tamalsaha](https://github.com/tamalsaha))
+- Fix : No such file or directory: '$GOPATH/src/github.com/appscode/sea… [\#327](https://github.com/appscode/searchlight/pull/327) ([YangYongZhi](https://github.com/YangYongZhi))
+- Add docs for adding check command [\#326](https://github.com/appscode/searchlight/pull/326) ([aerokite](https://github.com/aerokite))
+- Fix build on mac [\#325](https://github.com/appscode/searchlight/pull/325) ([tamalsaha](https://github.com/tamalsaha))
+- Skip downloading onessl is already exists [\#324](https://github.com/appscode/searchlight/pull/324) ([tamalsaha](https://github.com/tamalsaha))
+- Fix installer script [\#323](https://github.com/appscode/searchlight/pull/323) ([tamalsaha](https://github.com/tamalsaha))
+- Use server cert for icinga [\#322](https://github.com/appscode/searchlight/pull/322) ([tamalsaha](https://github.com/tamalsaha))
+- Write auto-generated icinga certs to disk [\#321](https://github.com/appscode/searchlight/pull/321) ([tamalsaha](https://github.com/tamalsaha))
+- Revendor kutil and jsonpatch library [\#319](https://github.com/appscode/searchlight/pull/319) ([tamalsaha](https://github.com/tamalsaha))
+- Add changelog [\#318](https://github.com/appscode/searchlight/pull/318) ([tamalsaha](https://github.com/tamalsaha))
 - Reorg objects deleted in uninstall command [\#317](https://github.com/appscode/searchlight/pull/317) ([tamalsaha](https://github.com/tamalsaha))
 - Add tests for plugins [\#316](https://github.com/appscode/searchlight/pull/316) ([tamalsaha](https://github.com/tamalsaha))
 - Add e2e test for notifier [\#315](https://github.com/appscode/searchlight/pull/315) ([aerokite](https://github.com/aerokite))

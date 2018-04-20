@@ -2,13 +2,13 @@
 title: Check command | Icinga2
 description: How to add support of additional Check command in Searchlight
 menu:
-  product_searchlight_6.0.0-alpha.0:
+  product_searchlight_6.0.0-rc.0:
     identifier: add-check-command
     name: CheckCommand
     parent: developer-guide
     weight: 15
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-alpha.0
+menu_name: product_searchlight_6.0.0-rc.0
 section_menu_id: setup
 ---
 
@@ -50,7 +50,7 @@ Operator uses this name as Icinga2 Service attribute `check_command`. And this *
 Lets see an example CheckCommand
 
 ```text
-object CheckCommand "component_status" {
+object CheckCommand "component-status" {
   import "plugin-check-command"
   command = [ PluginDir + "/hyperalert", "check_component_status"]
 
@@ -62,7 +62,7 @@ object CheckCommand "component_status" {
 }
 ```
 
-Here, `component_status` is the name of the *check_command* provided in `spec.check`. And when Service checks its State, it executes a plugin
+Here, `component-status` is the name of the *check_command* provided in `spec.check`. And when Service checks its State, it executes a plugin
 defined as `command` in *CheckCommand* configuration.
 
 In this example, `hyperalert` plugin is called with command `check_component_status`. This plugin is called with parameters defined in arguments.
@@ -93,7 +93,7 @@ otherwise, operator will not create Icinga objects for your Alert.
 
 ```json
 {
-      "name": "component_status",
+      "name": "component-status",
       "vars": [
         {
           "flag": {
@@ -119,7 +119,7 @@ otherwise, operator will not create Icinga objects for your Alert.
      }
 ```
 
-Check command `component_status` has two custom variables and supported States are `OK`, `Critical` and `Unknown`.
+Check command `component-status` has two custom variables and supported States are `OK`, `Critical` and `Unknown`.
 
 
 # Build

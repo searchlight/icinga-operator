@@ -2,13 +2,13 @@
 title: Notifiers
 description: Notifiers
 menu:
-  product_searchlight_6.0.0-alpha.0:
+  product_searchlight_6.0.0-rc.0:
     identifier: guides-notifiers
     name: Notifiers
     parent: guides
     weight: 50
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-alpha.0
+menu_name: product_searchlight_6.0.0-rc.0
 section_menu_id: guides
 ---
 
@@ -60,7 +60,7 @@ metadata:
   name: check-ca-cert
   namespace: demo
 spec:
-  check: ca_cert
+  check: ca-cert
   vars:
     warning: 240h
     critical: 72h
@@ -126,7 +126,7 @@ metadata:
   name: check-ca-cert
   namespace: demo
 spec:
-  check: ca_cert
+  check: ca-cert
   vars:
     warning: 240h
     critical: 72h
@@ -191,7 +191,7 @@ metadata:
   name: check-ca-cert
   namespace: demo
 spec:
-  check: ca_cert
+  check: ca-cert
   vars:
     warning: 240h
     critical: 72h
@@ -254,7 +254,7 @@ metadata:
   name: check-ca-cert
   namespace: demo
 spec:
-  check: ca_cert
+  check: ca-cert
   vars:
     warning: 240h
     critical: 72h
@@ -308,7 +308,7 @@ metadata:
   name: check-ca-cert
   namespace: demo
 spec:
-  check: ca_cert
+  check: ca-cert
   vars:
     warning: 240h
     critical: 72h
@@ -370,7 +370,7 @@ metadata:
   name: check-ca-cert
   namespace: demo
 spec:
-  check: ca_cert
+  check: ca-cert
   vars:
     warning: 240h
     critical: 72h
@@ -449,7 +449,7 @@ metadata:
   name: check-ca-cert
   namespace: demo
 spec:
-  check: ca_cert
+  check: ca-cert
   vars:
     warning: 240h
     critical: 72h
@@ -512,7 +512,7 @@ metadata:
   name: check-ca-cert
   namespace: demo
 spec:
-  check: ca_cert
+  check: ca-cert
   vars:
     warning: 240h
     critical: 72h
@@ -548,7 +548,7 @@ metadata:
   name: check-ca-cert
   namespace: demo
 spec:
-  check: ca_cert
+  check: ca-cert
   vars:
     warning: 240h
     critical: 72h
@@ -615,7 +615,7 @@ metadata:
   name: check-ca-cert
   namespace: demo
 spec:
-  check: ca_cert
+  check: ca-cert
   vars:
     warning: 240h
     critical: 72h
@@ -656,7 +656,7 @@ metadata:
   name: check-ca-cert
   namespace: demo
 spec:
-  check: ca_cert
+  check: ca-cert
   vars:
     warning: 240h
     critical: 72h

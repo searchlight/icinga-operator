@@ -1,13 +1,13 @@
 ---
 title: Configure
 menu:
-  product_searchlight_6.0.0-alpha.0:
+  product_searchlight_6.0.0-rc.0:
     identifier: searchlight-configure
     name: Configure
     parent: searchlight-cli
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_6.0.0-alpha.0
+menu_name: product_searchlight_6.0.0-rc.0
 ---
 ## searchlight configure
 
