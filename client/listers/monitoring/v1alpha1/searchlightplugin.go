@@ -29,8 +29,8 @@ import (
 type SearchlightPluginLister interface {
 	// List lists all SearchlightPlugins in the indexer.
 	List(selector labels.Selector) (ret []*v1alpha1.SearchlightPlugin, err error)
-	// SearchlightPlugins returns an object that can list and get SearchlightPlugins.
-	SearchlightPlugins(namespace string) SearchlightPluginNamespaceLister
+	// Get retrieves the SearchlightPlugin from the index for a given name.
+	Get(name string) (*v1alpha1.SearchlightPlugin, error)
 	SearchlightPluginListerExpansion
 }
 
@@ -52,38 +52,9 @@ func (s *searchlightPluginLister) List(selector labels.Selector) (ret []*v1alpha
 	return ret, err
 }
 
-// SearchlightPlugins returns an object that can list and get SearchlightPlugins.
-func (s *searchlightPluginLister) SearchlightPlugins(namespace string) SearchlightPluginNamespaceLister {
-	return searchlightPluginNamespaceLister{indexer: s.indexer, namespace: namespace}
-}
-
-// SearchlightPluginNamespaceLister helps list and get SearchlightPlugins.
-type SearchlightPluginNamespaceLister interface {
-	// List lists all SearchlightPlugins in the indexer for a given namespace.
-	List(selector labels.Selector) (ret []*v1alpha1.SearchlightPlugin, err error)
-	// Get retrieves the SearchlightPlugin from the indexer for a given namespace and name.
-	Get(name string) (*v1alpha1.SearchlightPlugin, error)
-	SearchlightPluginNamespaceListerExpansion
-}
-
-// searchlightPluginNamespaceLister implements the SearchlightPluginNamespaceLister
-// interface.
-type searchlightPluginNamespaceLister struct {
-	indexer   cache.Indexer
-	namespace string
-}
-
-// List lists all SearchlightPlugins in the indexer for a given namespace.
-func (s searchlightPluginNamespaceLister) List(selector labels.Selector) (ret []*v1alpha1.SearchlightPlugin, err error) {
-	err = cache.ListAllByNamespace(s.indexer, s.namespace, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1alpha1.SearchlightPlugin))
-	})
-	return ret, err
-}
-
-// Get retrieves the SearchlightPlugin from the indexer for a given namespace and name.
-func (s searchlightPluginNamespaceLister) Get(name string) (*v1alpha1.SearchlightPlugin, error) {
-	obj, exists, err := s.indexer.GetByKey(s.namespace + "/" + name)
+// Get retrieves the SearchlightPlugin from the index for a given name.
+func (s *searchlightPluginLister) Get(name string) (*v1alpha1.SearchlightPlugin, error) {
+	obj, exists, err := s.indexer.GetByKey(name)
 	if err != nil {
 		return nil, err
 	}

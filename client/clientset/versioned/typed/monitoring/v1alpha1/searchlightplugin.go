@@ -28,7 +28,7 @@ import (
 // SearchlightPluginsGetter has a method to return a SearchlightPluginInterface.
 // A group's client should implement this interface.
 type SearchlightPluginsGetter interface {
-	SearchlightPlugins(namespace string) SearchlightPluginInterface
+	SearchlightPlugins() SearchlightPluginInterface
 }
 
 // SearchlightPluginInterface has methods to work with SearchlightPlugin resources.
@@ -47,14 +47,12 @@ type SearchlightPluginInterface interface {
 // searchlightPlugins implements SearchlightPluginInterface
 type searchlightPlugins struct {
 	client rest.Interface
-	ns     string
 }
 
 // newSearchlightPlugins returns a SearchlightPlugins
-func newSearchlightPlugins(c *MonitoringV1alpha1Client, namespace string) *searchlightPlugins {
+func newSearchlightPlugins(c *MonitoringV1alpha1Client) *searchlightPlugins {
 	return &searchlightPlugins{
 		client: c.RESTClient(),
-		ns:     namespace,
 	}
 }
 
@@ -62,7 +60,6 @@ func newSearchlightPlugins(c *MonitoringV1alpha1Client, namespace string) *searc
 func (c *searchlightPlugins) Get(name string, options v1.GetOptions) (result *v1alpha1.SearchlightPlugin, err error) {
 	result = &v1alpha1.SearchlightPlugin{}
 	err = c.client.Get().
-		Namespace(c.ns).
 		Resource("searchlightplugins").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -75,7 +72,6 @@ func (c *searchlightPlugins) Get(name string, options v1.GetOptions) (result *v1
 func (c *searchlightPlugins) List(opts v1.ListOptions) (result *v1alpha1.SearchlightPluginList, err error) {
 	result = &v1alpha1.SearchlightPluginList{}
 	err = c.client.Get().
-		Namespace(c.ns).
 		Resource("searchlightplugins").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Do().
@@ -87,7 +83,6 @@ func (c *searchlightPlugins) List(opts v1.ListOptions) (result *v1alpha1.Searchl
 func (c *searchlightPlugins) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	opts.Watch = true
 	return c.client.Get().
-		Namespace(c.ns).
 		Resource("searchlightplugins").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Watch()
@@ -97,7 +92,6 @@ func (c *searchlightPlugins) Watch(opts v1.ListOptions) (watch.Interface, error)
 func (c *searchlightPlugins) Create(searchlightPlugin *v1alpha1.SearchlightPlugin) (result *v1alpha1.SearchlightPlugin, err error) {
 	result = &v1alpha1.SearchlightPlugin{}
 	err = c.client.Post().
-		Namespace(c.ns).
 		Resource("searchlightplugins").
 		Body(searchlightPlugin).
 		Do().
@@ -109,7 +103,6 @@ func (c *searchlightPlugins) Create(searchlightPlugin *v1alpha1.SearchlightPlugi
 func (c *searchlightPlugins) Update(searchlightPlugin *v1alpha1.SearchlightPlugin) (result *v1alpha1.SearchlightPlugin, err error) {
 	result = &v1alpha1.SearchlightPlugin{}
 	err = c.client.Put().
-		Namespace(c.ns).
 		Resource("searchlightplugins").
 		Name(searchlightPlugin.Name).
 		Body(searchlightPlugin).
@@ -121,7 +114,6 @@ func (c *searchlightPlugins) Update(searchlightPlugin *v1alpha1.SearchlightPlugi
 // Delete takes name of the searchlightPlugin and deletes it. Returns an error if one occurs.
 func (c *searchlightPlugins) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
-		Namespace(c.ns).
 		Resource("searchlightplugins").
 		Name(name).
 		Body(options).
@@ -132,7 +124,6 @@ func (c *searchlightPlugins) Delete(name string, options *v1.DeleteOptions) erro
 // DeleteCollection deletes a collection of objects.
 func (c *searchlightPlugins) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
 	return c.client.Delete().
-		Namespace(c.ns).
 		Resource("searchlightplugins").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Body(options).
@@ -144,7 +135,6 @@ func (c *searchlightPlugins) DeleteCollection(options *v1.DeleteOptions, listOpt
 func (c *searchlightPlugins) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SearchlightPlugin, err error) {
 	result = &v1alpha1.SearchlightPlugin{}
 	err = c.client.Patch(pt).
-		Namespace(c.ns).
 		Resource("searchlightplugins").
 		SubResource(subresources...).
 		Name(name).

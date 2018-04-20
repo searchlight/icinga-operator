@@ -69,5 +69,5 @@ func (v *version) PodAlerts() PodAlertInformer {
 
 // SearchlightPlugins returns a SearchlightPluginInformer.
 func (v *version) SearchlightPlugins() SearchlightPluginInformer {
-	return &searchlightPluginInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+	return &searchlightPluginInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }

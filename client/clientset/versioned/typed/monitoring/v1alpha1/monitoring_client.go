@@ -53,8 +53,8 @@ func (c *MonitoringV1alpha1Client) PodAlerts(namespace string) PodAlertInterface
 	return newPodAlerts(c, namespace)
 }
 
-func (c *MonitoringV1alpha1Client) SearchlightPlugins(namespace string) SearchlightPluginInterface {
-	return newSearchlightPlugins(c, namespace)
+func (c *MonitoringV1alpha1Client) SearchlightPlugins() SearchlightPluginInterface {
+	return newSearchlightPlugins(c)
 }
 
 // NewForConfig creates a new MonitoringV1alpha1Client for the given config.
