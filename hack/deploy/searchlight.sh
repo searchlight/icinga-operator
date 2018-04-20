@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eou pipefail
 
-crds=(clusteralerts nodealerts podalerts incidents)
+crds=(clusteralerts nodealerts podalerts incidents searchlightplugins)
 apiversions=(v1alpha1.admission v1alpha1.incidents)
 
 echo "checking kubeconfig context"
@@ -51,7 +51,7 @@ export SEARCHLIGHT_NAMESPACE=kube-system
 export SEARCHLIGHT_SERVICE_ACCOUNT=searchlight-operator
 export SEARCHLIGHT_ENABLE_RBAC=true
 export SEARCHLIGHT_RUN_ON_MASTER=0
-export SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK=false
+export SEARCHLIGHT_ENABLE_VALIDATING_WEBHOOK=false
 export SEARCHLIGHT_DOCKER_REGISTRY=appscode
 export SEARCHLIGHT_IMAGE_PULL_SECRET=
 export SEARCHLIGHT_UNINSTALL=0
@@ -65,7 +65,7 @@ if [ "$APPSCODE_ENV" = "dev" ]; then
 fi
 
 KUBE_APISERVER_VERSION=$(kubectl version -o=json | $ONESSL jsonpath '{.serverVersion.gitVersion}')
-$ONESSL semver --check='<1.9.0' $KUBE_APISERVER_VERSION || { export SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK=true; }
+$ONESSL semver --check='<1.9.0' $KUBE_APISERVER_VERSION || { export SEARCHLIGHT_ENABLE_VALIDATING_WEBHOOK=true; }
 
 show_help() {
     echo "searchlight.sh - install searchlight operator"
@@ -79,7 +79,7 @@ show_help() {
     echo "    --docker-registry              docker registry used to pull searchlight images (default: appscode)"
     echo "    --image-pull-secret            name of secret used to pull searchlight operator images"
     echo "    --run-on-master                run searchlight operator on master"
-    echo "    --enable-admission-webhook     configure admission webhook for searchlight CRDs"
+    echo "    --enable-validating-webhook    enable/disable validating webhooks for Searchlight CRDs"
     echo "    --enable-analytics             send usage events to Google Analytics (default: true)"
     echo "    --uninstall                    uninstall searchlight"
     echo "    --purge                        purges searchlight crd objects and crds"
@@ -114,10 +114,10 @@ while test $# -gt 0; do
             export SEARCHLIGHT_IMAGE_PULL_SECRET="name: '$secret'"
             shift
             ;;
-        --enable-admission-webhook*)
+        --enable-validating-webhook*)
             val=`echo $1 | sed -e 's/^[^=]*=//g'`
             if [ "$val" = "false" ]; then
-                export SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK=false
+                export SEARCHLIGHT_ENABLE_VALIDATING_WEBHOOK=false
             fi
             shift
             ;;
@@ -242,8 +242,8 @@ if [ "$SEARCHLIGHT_RUN_ON_MASTER" -eq 1 ]; then
       --patch="$(${SCRIPT_LOCATION}hack/deploy/run-on-master.yaml)"
 fi
 
-if [ "$SEARCHLIGHT_ENABLE_ADMISSION_WEBHOOK" = true ]; then
-    ${SCRIPT_LOCATION}hack/deploy/admission.yaml | $ONESSL envsubst | kubectl apply -f -
+if [ "$SEARCHLIGHT_ENABLE_VALIDATING_WEBHOOK" = true ]; then
+    ${SCRIPT_LOCATION}hack/deploy/validating-webhook-configuration.yaml | $ONESSL envsubst | kubectl apply -f -
 fi
 
 echo

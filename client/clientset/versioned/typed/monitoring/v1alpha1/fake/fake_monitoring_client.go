@@ -42,8 +42,8 @@ func (c *FakeMonitoringV1alpha1) PodAlerts(namespace string) v1alpha1.PodAlertIn
 	return &FakePodAlerts{c, namespace}
 }
 
-func (c *FakeMonitoringV1alpha1) SearchlightPlugins(namespace string) v1alpha1.SearchlightPluginInterface {
-	return &FakeSearchlightPlugins{c, namespace}
+func (c *FakeMonitoringV1alpha1) SearchlightPlugins() v1alpha1.SearchlightPluginInterface {
+	return &FakeSearchlightPlugins{c}
 }
 
 // RESTClient returns a RESTClient that is used to communicate

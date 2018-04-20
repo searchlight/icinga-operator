@@ -29,7 +29,6 @@ import (
 // FakeSearchlightPlugins implements SearchlightPluginInterface
 type FakeSearchlightPlugins struct {
 	Fake *FakeMonitoringV1alpha1
-	ns   string
 }
 
 var searchlightpluginsResource = schema.GroupVersionResource{Group: "monitoring.appscode.com", Version: "v1alpha1", Resource: "searchlightplugins"}
@@ -39,8 +38,7 @@ var searchlightpluginsKind = schema.GroupVersionKind{Group: "monitoring.appscode
 // Get takes name of the searchlightPlugin, and returns the corresponding searchlightPlugin object, and an error if there is any.
 func (c *FakeSearchlightPlugins) Get(name string, options v1.GetOptions) (result *v1alpha1.SearchlightPlugin, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewGetAction(searchlightpluginsResource, c.ns, name), &v1alpha1.SearchlightPlugin{})
-
+		Invokes(testing.NewRootGetAction(searchlightpluginsResource, name), &v1alpha1.SearchlightPlugin{})
 	if obj == nil {
 		return nil, err
 	}
@@ -50,8 +48,7 @@ func (c *FakeSearchlightPlugins) Get(name string, options v1.GetOptions) (result
 // List takes label and field selectors, and returns the list of SearchlightPlugins that match those selectors.
 func (c *FakeSearchlightPlugins) List(opts v1.ListOptions) (result *v1alpha1.SearchlightPluginList, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewListAction(searchlightpluginsResource, searchlightpluginsKind, c.ns, opts), &v1alpha1.SearchlightPluginList{})
-
+		Invokes(testing.NewRootListAction(searchlightpluginsResource, searchlightpluginsKind, opts), &v1alpha1.SearchlightPluginList{})
 	if obj == nil {
 		return nil, err
 	}
@@ -72,15 +69,13 @@ func (c *FakeSearchlightPlugins) List(opts v1.ListOptions) (result *v1alpha1.Sea
 // Watch returns a watch.Interface that watches the requested searchlightPlugins.
 func (c *FakeSearchlightPlugins) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
-		InvokesWatch(testing.NewWatchAction(searchlightpluginsResource, c.ns, opts))
-
+		InvokesWatch(testing.NewRootWatchAction(searchlightpluginsResource, opts))
 }
 
 // Create takes the representation of a searchlightPlugin and creates it.  Returns the server's representation of the searchlightPlugin, and an error, if there is any.
 func (c *FakeSearchlightPlugins) Create(searchlightPlugin *v1alpha1.SearchlightPlugin) (result *v1alpha1.SearchlightPlugin, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewCreateAction(searchlightpluginsResource, c.ns, searchlightPlugin), &v1alpha1.SearchlightPlugin{})
-
+		Invokes(testing.NewRootCreateAction(searchlightpluginsResource, searchlightPlugin), &v1alpha1.SearchlightPlugin{})
 	if obj == nil {
 		return nil, err
 	}
@@ -90,8 +85,7 @@ func (c *FakeSearchlightPlugins) Create(searchlightPlugin *v1alpha1.SearchlightP
 // Update takes the representation of a searchlightPlugin and updates it. Returns the server's representation of the searchlightPlugin, and an error, if there is any.
 func (c *FakeSearchlightPlugins) Update(searchlightPlugin *v1alpha1.SearchlightPlugin) (result *v1alpha1.SearchlightPlugin, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewUpdateAction(searchlightpluginsResource, c.ns, searchlightPlugin), &v1alpha1.SearchlightPlugin{})
-
+		Invokes(testing.NewRootUpdateAction(searchlightpluginsResource, searchlightPlugin), &v1alpha1.SearchlightPlugin{})
 	if obj == nil {
 		return nil, err
 	}
@@ -101,14 +95,13 @@ func (c *FakeSearchlightPlugins) Update(searchlightPlugin *v1alpha1.SearchlightP
 // Delete takes name of the searchlightPlugin and deletes it. Returns an error if one occurs.
 func (c *FakeSearchlightPlugins) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
-		Invokes(testing.NewDeleteAction(searchlightpluginsResource, c.ns, name), &v1alpha1.SearchlightPlugin{})
-
+		Invokes(testing.NewRootDeleteAction(searchlightpluginsResource, name), &v1alpha1.SearchlightPlugin{})
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
 func (c *FakeSearchlightPlugins) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(searchlightpluginsResource, c.ns, listOptions)
+	action := testing.NewRootDeleteCollectionAction(searchlightpluginsResource, listOptions)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SearchlightPluginList{})
 	return err
@@ -117,8 +110,7 @@ func (c *FakeSearchlightPlugins) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched searchlightPlugin.
 func (c *FakeSearchlightPlugins) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SearchlightPlugin, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewPatchSubresourceAction(searchlightpluginsResource, c.ns, name, data, subresources...), &v1alpha1.SearchlightPlugin{})
-
+		Invokes(testing.NewRootPatchSubresourceAction(searchlightpluginsResource, name, data, subresources...), &v1alpha1.SearchlightPlugin{})
 	if obj == nil {
 		return nil, err
 	}

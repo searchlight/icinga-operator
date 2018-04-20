@@ -3,15 +3,18 @@
 # Declare variables to be passed into your templates.
 
 operator:
-  image: appscode/searchlight
+  registry: appscode
+  repository: searchlight
   tag: 6.0.0-alpha.0
 
 ido:
-  image: appscode/postgres
+  registry: appscode
+  repository: postgres
   tag: 9.5-alpine
 
 icinga:
-  image: appscode/icinga
+  registry: appscode
+  repository: icinga
   tag: 6.0.0-alpha.0-k8s
 
 ## Optionally specify an array of imagePullSecrets.
@@ -81,6 +84,20 @@ serviceAccount:
   # The name of the ServiceAccount to use.
   # If not set and create is true, a name is generated using the fullname template
   name:
+
+apiserver:
+  # groupPriorityMinimum is the minimum priority the group should have. Please see
+  # https://github.com/kubernetes/kube-aggregator/blob/release-1.9/pkg/apis/apiregistration/v1beta1/types.go#L58-L64
+  # for more information on proper values of this field.
+  groupPriorityMinimum: 10000
+  # versionPriority is the ordering of this API inside of the group. Please see
+  # https://github.com/kubernetes/kube-aggregator/blob/release-1.9/pkg/apis/apiregistration/v1beta1/types.go#L66-L70
+  # for more information on proper values of this field
+  versionPriority: 15
+  # enableValidatingWebhook is used to configure apiserver as ValidationWebhook for Voyager CRDs
+  enableValidatingWebhook: false
+  # CA certificate used by main Kubernetes api server
+  ca:
 
 # Send usage events to Google Analytics
 enableAnalytics: true

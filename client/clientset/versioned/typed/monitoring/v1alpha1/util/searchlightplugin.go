@@ -16,10 +16,10 @@ import (
 )
 
 func CreateOrPatchSearchlightPlugin(c cs.MonitoringV1alpha1Interface, meta metav1.ObjectMeta, transform func(alert *api.SearchlightPlugin) *api.SearchlightPlugin) (*api.SearchlightPlugin, kutil.VerbType, error) {
-	cur, err := c.SearchlightPlugins(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
+	cur, err := c.SearchlightPlugins().Get(meta.Name, metav1.GetOptions{})
 	if kerr.IsNotFound(err) {
 		glog.V(3).Infof("Creating SearchlightPlugin %s/%s.", meta.Namespace, meta.Name)
-		out, err := c.SearchlightPlugins(meta.Namespace).Create(transform(&api.SearchlightPlugin{
+		out, err := c.SearchlightPlugins().Create(transform(&api.SearchlightPlugin{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       "SearchlightPlugin",
 				APIVersion: api.SchemeGroupVersion.String(),
@@ -56,7 +56,7 @@ func PatchSearchlightPluginObject(c cs.MonitoringV1alpha1Interface, cur, mod *ap
 		return cur, kutil.VerbUnchanged, nil
 	}
 	glog.V(3).Infof("Patching SearchlightPlugin %s/%s with %s.", cur.Namespace, cur.Name, string(patch))
-	out, err := c.SearchlightPlugins(cur.Namespace).Patch(cur.Name, types.MergePatchType, patch)
+	out, err := c.SearchlightPlugins().Patch(cur.Name, types.MergePatchType, patch)
 	return out, kutil.VerbPatched, err
 }
 
@@ -64,11 +64,11 @@ func TryUpdateSearchlightPlugin(c cs.MonitoringV1alpha1Interface, meta metav1.Ob
 	attempt := 0
 	err = wait.PollImmediate(kutil.RetryInterval, kutil.RetryTimeout, func() (bool, error) {
 		attempt++
-		cur, e2 := c.SearchlightPlugins(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
+		cur, e2 := c.SearchlightPlugins().Get(meta.Name, metav1.GetOptions{})
 		if kerr.IsNotFound(e2) {
 			return false, e2
 		} else if e2 == nil {
-			result, e2 = c.SearchlightPlugins(cur.Namespace).Update(transform(cur.DeepCopy()))
+			result, e2 = c.SearchlightPlugins().Update(transform(cur.DeepCopy()))
 			return e2 == nil, nil
 		}
 		glog.Errorf("Attempt %d failed to update SearchlightPlugin %s/%s due to %v.", attempt, cur.Namespace, cur.Name, e2)
