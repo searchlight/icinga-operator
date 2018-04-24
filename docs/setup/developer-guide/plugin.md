@@ -14,4 +14,10 @@ section_menu_id: setup
 
 ## Searchlight Plugin
 
+* Step 1: Add Searchlight Plugin
+
 <img src="/docs/images/plugin/add-plugin.svg">
+
+* Step 2: Add Cluster Alert
+
+<img src="/docs/images/plugin/add-alert.svg">
