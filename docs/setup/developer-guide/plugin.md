@@ -21,3 +21,8 @@ section_menu_id: setup
 * Step 2: Add Cluster Alert
 
 <img src="/docs/images/plugin/add-alert.svg">
+
+
+### Webhook
+
+<img src="/docs/images/plugin/call-webhook.svg">
