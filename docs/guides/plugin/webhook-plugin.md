@@ -11,6 +11,7 @@ menu_name: product_searchlight_6.0.0-rc.0
 section_menu_id: guides
 ---
 
+> New to SearchlightPlugin? Please start [here](/docs/setup/developer-guide/webhook-plugin.md).
 
 # Check Custom Webhook
 
@@ -131,3 +132,4 @@ And this plugin will call your webhook you have registered in your SearchlightPl
 </p>
 
 In the example above, Service State will be **Warning**.
+

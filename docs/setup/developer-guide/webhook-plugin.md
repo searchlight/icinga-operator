@@ -12,6 +12,8 @@ menu_name: product_searchlight_6.0.0-rc.0
 section_menu_id: setup
 ---
 
+> New to Searchlight? Please start [here](/docs/concepts/README.md).
+
 ## Webhook Plugin
 
 Command `check_webhook` calls a HTTP server with user provided variables and receives response to determine Service State.
