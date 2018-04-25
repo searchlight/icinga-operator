@@ -38,7 +38,7 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 
 		args = append(args, arg{
 			key: "url",
-			val: fmt.Sprintf("http://%s.%s.svc", webhook.Name, namespace),
+			val: fmt.Sprintf("http://%s.%s.svc/%s", webhook.Name, namespace, plugin.Name),
 		})
 	}
 
@@ -72,12 +72,17 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 	}
 
 	var command string
-	parts := strings.Split(plugin.Spec.Command, " ")
-	for i, part := range parts {
-		if i == 0 {
-			command = command + fmt.Sprintf(`"/%s"`, part)
-		} else {
-			command = command + fmt.Sprintf(`, "%s"`, part)
+
+	if plugin.Spec.Webhook != nil {
+		command = "/hyperalert check_webhook"
+	} else {
+		parts := strings.Split(plugin.Spec.Command, " ")
+		for i, part := range parts {
+			if i == 0 {
+				command = command + fmt.Sprintf(`"/%s"`, part)
+			} else {
+				command = command + fmt.Sprintf(`, "%s"`, part)
+			}
 		}
 	}
 
