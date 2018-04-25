@@ -146,3 +146,4 @@ Here,
 ## Next Steps
 
 - Learn how to use this [webhook with Searchlight](/docs/guides/plugin/webhook-plugin.md).
+- For some demo searchlight-plugin, visit [this](https://github.com/appscode/searchlight-plugin).
