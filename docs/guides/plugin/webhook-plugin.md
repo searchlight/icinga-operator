@@ -15,7 +15,7 @@ section_menu_id: guides
 # Check Custom Webhook
 
 Searchlight supports adding custom check using SearchlightPlugin CRD. No longer you have to build binary and attach it inside Icinga container.
-Simply you can write a HTTP server and tell your Check command to call that HTTP server.
+Simply you can write a HTTP server and tell your check command to call that HTTP server.
 
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
@@ -44,7 +44,7 @@ spec:
 Here,
 
 - `metadata.name` will be the name of CheckCommand
-- `spec.webhook` states Service information of Webhook
+- `spec.webhook` states Kubernetes Service information of Webhook
 - `spec.alertKinds` determines which kinds of alerts will support this CheckCommand
 - `spec.arguments` provides variables information those user will provide to create alert.
 - `spec.state` is support Service State to set notifier receivers
@@ -58,17 +58,19 @@ searchlightplugin "check-pod-count" created
   <img alt="lifecycle"  src="/docs/images/plugin/add-plugin.svg" width="581" height="362">
 </p>
 
-CheckCommand `check-pod-count` is added in Icinga2 configuration. Here, you can `vars.Item` from `spec.arguments` is added as arguments in CheckCommand.
+CheckCommand `check-pod-count` is added in Icinga2 configuration. Here, `vars.Item` from `spec.arguments` are added as arguments in CheckCommand.
 
 Few things to be noted here:
 
-- Webhook will be called with URL formatted as `http://<spec.webhook.name>.<spec.webhook.namespace>.svc/<metadata.name>`
+- Webhook will be called with URL formatted as bellow:
+  
+  `http://<spec.webhook.name>.<spec.webhook.namespace>.svc/<metadata.name>`
 - Items in `spec.arguments.vars` for example `warning` and `critical` are registered as custom variables. User can provide values for these variables while creating alerts.
 - Items in `spec.arguments.host` are added in Icinga CheckCommand arguments.
 
 ### Use Icinga Host Variables
 
-You can pass Icinga host variables to your webhook. [Here is the list](https://www.icinga.com/docs/icinga2/latest/doc/03-monitoring-basics/#host-runtime-macros) of host variables.
+You can pass Icinga host variables to your webhook. [Here is the list](https://www.icinga.com/docs/icinga2/latest/doc/03-monitoring-basics/#host-runtime-macros) of available host variables.
 Suppose, you need `host.check_attempt` to be forwarded to your webhook, you can add like this
 
 ```yaml
@@ -109,7 +111,8 @@ spec:
 
 Here,
 
-- `spec.vars` are variables those are registered when SearchlightPlugin is created as `spec.arguments.vars`
+- `spec.check` is the name of your custom check you added as SearchlightPlugin
+- `spec.vars` are variables those are registered when SearchlightPlugin is created with `spec.arguments.vars`
 
 ```console
 $ kubectl apply -f ./docs/examples/cluster-alerts/count-all-pods/demo-0.yaml
@@ -126,3 +129,5 @@ And this plugin will call your webhook you have registered in your SearchlightPl
 <p align="center">
   <img alt="lifecycle"  src="/docs/images/plugin/call-webhook.svg" width="581" height="362">
 </p>
+
+In the example above, Service State will be **Warning**.
