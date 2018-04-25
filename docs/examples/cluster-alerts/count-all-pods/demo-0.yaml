@@ -1,0 +1,20 @@
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: ClusterAlert
+metadata:
+  name: count-all-pods-demo-0
+  namespace: demo
+spec:
+  check: check-pod-count
+  vars:
+    warning: 10
+    critical: 15
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: Mailgun
+    state: Warning
+    to: ["ops@example.com"]
+  - notifier: Mailgun
+    state: Critical
+    to: ["ops@example.com"]

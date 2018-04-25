@@ -1,0 +1,21 @@
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  name: check-pod-count
+spec:
+  webhook:
+    namespace: default
+    name: searchlight-plugin
+  alertKinds:
+  - ClusterAlert
+  arguments:
+    vars:
+      Item:
+        warning:
+          type: interger
+        critical:
+          type: interger
+  state:
+  - OK
+  - Critical
+  - Unknown

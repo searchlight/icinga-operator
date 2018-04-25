@@ -141,17 +141,6 @@ Here,
 
 - Service `searchlight-plugin` in Namespace `default` will be used in SearchlightPlugin
 
+## Next Steps
 
-
-* Step 1: Add Searchlight Plugin
-
-<img src="/docs/images/plugin/add-plugin.svg">
-
-* Step 2: Add Cluster Alert
-
-<img src="/docs/images/plugin/add-alert.svg">
-
-
-### Webhook
-
-<img src="/docs/images/plugin/call-webhook.svg">
+- Learn how to use this [webhook with Searchlight](/docs/guides/plugin/webhook-plugin.md).
