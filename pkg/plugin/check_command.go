@@ -38,7 +38,7 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 
 		args = append(args, arg{
 			key: "url",
-			val: fmt.Sprintf("http://%s.%s.svc", webhook.Name, namespace),
+			val: fmt.Sprintf("http://%s.%s.svc/%s", webhook.Name, namespace, plugin.Name),
 		})
 	}
 
