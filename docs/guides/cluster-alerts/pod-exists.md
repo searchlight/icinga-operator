@@ -53,6 +53,37 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
+### Create SearchlightPlugin
+
+Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create ClusterAlert to check `pod-exists`.
+
+```yaml
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: pod-exists
+spec:
+  alertKinds:
+  - ClusterAlert
+  arguments:
+    host:
+      host: name
+      v: vars.verbosity
+    vars:
+      Item:
+        count:
+          type: integer
+        podName:
+          type: string
+        selector:
+          type: string
+  command: hyperalert check_pod_exists
+  state:
+  - OK
+  - Critical
+  - Unknown
+```
 
 ### Check existence of pods with matching labels
 In this tutorial, a ClusterAlert will be used check existence of pods with matching labels by setting `spec.vars.selector` field.

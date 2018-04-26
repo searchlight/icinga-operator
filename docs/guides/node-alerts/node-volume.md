@@ -20,7 +20,7 @@ Check command `node-volume` is used to check percentage of available space in Ku
 ## Spec
 `node-volume` check command has the following variables:
 
-- `mountpoint` - Mountpoint of volume whose usage stats will be checked
+- `mountPoint` - Mountpoint of volume whose usage stats will be checked
 - `secretName` - Name of Kubernetes Secret used to pass [hostfacts auth info](/docs/setup/hostfacts.md#create-hostfacts-secret)
 - `warning` - Warning level value (usage percentage defaults to 80.0)
 - `critical` - Critical level value (usage percentage defaults to 95.0)
@@ -54,6 +54,42 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
+### Create SearchlightPlugin
+
+Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create NodeAlert to check `node-volume`.
+
+```yaml
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: node-volume
+spec:
+  alertKinds:
+  - NodeAlert
+  arguments:
+    host:
+      host: name
+      v: vars.verbosity
+    vars:
+      Item:
+        critical:
+          type: number
+        mountPoint:
+          type: string
+        secretName:
+          type: string
+        warning:
+          type: number
+      required:
+      - mountPoint
+  command: hyperalert check_volume
+  state:
+  - OK
+  - Critical
+  - Unknown
+```
+
 ### Check volume stats of all nodes
 In this tutorial, we are going to create a NodeAlert to check volume stats of all nodes.
 ```yaml
@@ -67,7 +103,7 @@ metadata:
 spec:
   check: node-volume
   vars:
-    mountpoint: /mnt/sda1
+    mountPoint: /mnt/sda1
     warning: '70'
     critical: '95'
   checkInterval: 5m
@@ -113,7 +149,7 @@ spec:
     beta.kubernetes.io/os: linux
   check: node-volume
   vars:
-    mountpoint: /mnt/sda1
+    mountPoint: /mnt/sda1
     warning: '70'
     critical: '95'
   checkInterval: 5m
@@ -155,7 +191,7 @@ spec:
   nodeName: minikube
   check: node-volume
   vars:
-    mountpoint: /mnt/sda1
+    mountPoint: /mnt/sda1
     warning: '70'
     critical: '95'
   checkInterval: 5m

@@ -47,6 +47,30 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
+### Create SearchlightPlugin
+
+Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create PodAlert to check `pod-status`.
+
+```yaml
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: pod-status
+spec:
+  alertKinds:
+  - PodAlert
+  arguments:
+    host:
+      host: name
+      v: vars.verbosity
+  command: hyperalert check_pod_status
+  state:
+  - OK
+  - Critical
+  - Unknown
+```
+
 ### Check status of pods with matching labels
 In this tutorial, a PodAlert will be used check status of pods with matching labels by setting `spec.selector` field.
 ```yaml

@@ -1,9 +1,9 @@
 ---
-title: CA Cert
+title: Cert
 menu:
   product_searchlight_6.0.0-rc.0:
-    identifier: guides-ca-cert
-    name: CA Cert
+    identifier: guides-cert
+    name: Cert
     parent: cluster-alert
     weight: 20
 product_name: searchlight
@@ -13,15 +13,18 @@ section_menu_id: guides
 
 > New to Searchlight? Please start [here](/docs/concepts/README.md).
 
-# Check ca-cert
+# Check cert
 
-Check command `ca-cert` checks the expiration timestamp of Kubernetes api server CA certificate. No longer you have to get a surprise that the CA certificate for your cluster has expired.
+Check command `cert` checks the expiration timestamp of any certificate from Secrets. No longer you have to get a surprise that your certificates have expired.
 
 ## Spec
-`ca-cert` check command has the following variables:
+`cert` check command has the following variables:
 
-- `warning` - Condition for warning, compare with tiem left before expiration. (Default: TTL < 360h)
-- `critical` - Condition for critical, compare with tiem left before expiration. (Default: TTL < 120h)
+- `selector` - Selector (label query) to filter on, supports '=', '==', and '!='
+- `secretName` - Name of secret from where certificates are checked
+- `secretKey` - Name of secret key where certificates are kept
+- `warning` - Remaining duration for Warning state. [Default: 360h]
+- `critical` - Remaining duration for Critical state. [Default: 120h]
 
 Execution of this command can result in following states:
 
@@ -54,27 +57,34 @@ demo          Active    4m
 
 ### Create SearchlightPlugin
 
-Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create ClusterAlert to check `ca-cert`.
+Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create ClusterAlert to check `cert`.
 
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: SearchlightPlugin
 metadata:
   creationTimestamp: null
-  name: ca-cert
+  name: cert
 spec:
   alertKinds:
   - ClusterAlert
   arguments:
     host:
+      host: name
       v: vars.verbosity
     vars:
       Item:
         critical:
           type: duration
+        secretKey:
+          type: string
+        secretName:
+          type: string
+        selector:
+          type: string
         warning:
           type: duration
-  command: hyperalert check_ca_cert
+  command: hyperalert check_cert
   state:
   - OK
   - Warning
@@ -83,17 +93,17 @@ spec:
 ```
 
 ### Create Alert
-In this tutorial, we are going to create an alert to check `ca-cert`.
+In this tutorial, we are going to create an alert to check `cert`.
 ```yaml
-$ cat ./docs/examples/cluster-alerts/ca-cert/demo-0.yaml
+$ cat ./docs/examples/cluster-alerts/cert/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: ca-cert-demo-0
+  name: cert-demo-0
   namespace: demo
 spec:
-  check: ca-cert
+  check: cert
   vars:
     warning: 240h
     critical: 72h
@@ -106,22 +116,20 @@ spec:
     to: ["ops@example.com"]
 ```
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/ca-cert/demo-0.yaml 
-clusteralert "ca-cert-demo-0" created
+$ kubectl apply -f ./docs/examples/cluster-alerts/cert/demo-0.yaml
+clusteralert "cert-demo-0" created
 
-$ kubectl describe clusteralert ca-cert-demo-0 -n demo
-Name:		ca-cert-demo-0
+$ kubectl describe clusteralert cert-demo-0 -n demo
+Name:		cert-demo-0
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  9s		9s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "ca-cert-demo-0"
+  9s		9s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "cert-demo-0"
 ```
 
-Voila! `ca-cert` command has been synced to Icinga2. Please visit [here](/docs/guides/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `ca-cert-demo-0`.
-
-![check ca-cert](/docs/images/cluster-alerts/ca-cert/demo-0.png)
+Voila! `cert` command has been synced to Icinga2. Please visit [here](/docs/guides/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `ca-cert-demo-0`.
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:

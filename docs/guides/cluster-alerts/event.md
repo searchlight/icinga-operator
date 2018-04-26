@@ -54,6 +54,41 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
+### Create SearchlightPlugin
+
+Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create ClusterAlert to check `event`.
+
+```yaml
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: event
+spec:
+  alertKinds:
+  - ClusterAlert
+  arguments:
+    host:
+      host: name
+      v: vars.verbosity
+    vars:
+      Item:
+        clockSkew:
+          type: duration
+        involvedObjectKind:
+          type: string
+        involvedObjectName:
+          type: string
+        involvedObjectNamespace:
+          type: string
+        involvedObjectUID:
+          type: string
+  command: hyperalert check_event
+  state:
+  - OK
+  - Warning
+  - Unknown
+```
 
 ### Check existence of any warning event
 In this tutorial, a ClusterAlert will be used check existence of warning events occurred in the last check interval.

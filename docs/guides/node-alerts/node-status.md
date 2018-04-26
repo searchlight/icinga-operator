@@ -46,6 +46,30 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
+### Create SearchlightPlugin
+
+Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create NodeAlert to check `node-status`.
+
+```yaml
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: node-status
+spec:
+  alertKinds:
+  - NodeAlert
+  arguments:
+    host:
+      host: name
+      v: vars.verbosity
+  command: hyperalert check_node_status
+  state:
+  - OK
+  - Critical
+  - Unknown
+```
+
 ### Check status of all nodes
 In this tutorial, we are going to create a NodeAlert to check status of all nodes.
 ```yaml

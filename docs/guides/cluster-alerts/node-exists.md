@@ -53,6 +53,36 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
+### Create SearchlightPlugin
+
+Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create ClusterAlert to check `node-exists`.
+
+```yaml
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: node-exists
+spec:
+  alertKinds:
+  - ClusterAlert
+  arguments:
+    host:
+      v: vars.verbosity
+    vars:
+      Item:
+        count:
+          type: integer
+        nodeName:
+          type: string
+        selector:
+          type: string
+  command: hyperalert check_node_exists
+  state:
+  - OK
+  - Critical
+  - Unknown
+```
 
 ### Check existence of nodes with matching labels
 In this tutorial, a ClusterAlert will be used check existence of nodes with matching labels by setting `spec.vars.selector` field.

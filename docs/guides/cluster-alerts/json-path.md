@@ -119,6 +119,42 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
+### Create SearchlightPlugin
+
+Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create ClusterAlert to check `json-path`.
+
+```yaml
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: SearchlightPlugin
+metadata:
+  creationTimestamp: null
+  name: json-path
+spec:
+  alertKinds:
+  - ClusterAlert
+  arguments:
+    host:
+      host: name
+      v: vars.verbosity
+    vars:
+      Item:
+        critical:
+          type: string
+        secretName:
+          type: string
+        url:
+          type: string
+        warning:
+          type: string
+      required:
+      - url
+  command: hyperalert check_json_path
+  state:
+  - OK
+  - Warning
+  - Critical
+  - Unknown
+```
 
 ### Check JSON response of HTTP api
 In this tutorial, a ClusterAlert will be used check JSON response of a HTTP api.
