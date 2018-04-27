@@ -41,9 +41,9 @@ type options struct {
 	kubeconfigPath string
 	contextName    string
 	// Event check information
-	namespace     string
-	checkInterval time.Duration
-	clockSkew     time.Duration
+	namespace         string
+	checkIntervalSecs int
+	clockSkew         time.Duration
 	// Involved object information
 	involvedObjectName      string
 	involvedObjectNamespace string
@@ -63,6 +63,11 @@ func (o *options) complete(cmd *cobra.Command) (err error) {
 		return errors.New("invalid icinga host.name")
 	}
 	o.namespace = o.host.AlertNamespace
+
+	o.checkIntervalSecs, err = cmd.Flags().GetInt(plugins.FlagCheckInterval)
+	if err != nil {
+		return
+	}
 
 	o.kubeconfigPath, err = cmd.Flags().GetString(plugins.FlagKubeConfig)
 	if err != nil {
@@ -99,7 +104,9 @@ type serviceOutput struct {
 func (p *plugin) Check() (icinga.State, interface{}) {
 	opts := p.options
 
-	checkTime := time.Now().Add(-(opts.checkInterval + opts.clockSkew))
+	var checkInterval = time.Second * time.Duration(opts.checkIntervalSecs)
+
+	checkTime := time.Now().Add(-(checkInterval + opts.clockSkew))
 	eventInfoList := make([]*eventInfo, 0)
 
 	var objName, objNamespace, objKind, objUID *string
@@ -157,10 +164,6 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 	}
 }
 
-const (
-	flagCheckInterval = "checkInterval"
-)
-
 func NewCmd() *cobra.Command {
 	var opts options
 
@@ -169,7 +172,7 @@ func NewCmd() *cobra.Command {
 		Short: "Check kubernetes events for all namespaces",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			flags.EnsureRequiredFlags(cmd, plugins.FlagHost, flagCheckInterval)
+			flags.EnsureRequiredFlags(cmd, plugins.FlagHost, plugins.FlagCheckInterval)
 
 			if err := opts.complete(cmd); err != nil {
 				icinga.Output(icinga.Unknown, err)
@@ -186,7 +189,6 @@ func NewCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringP(plugins.FlagHost, "H", "", "Icinga host name")
-	cmd.Flags().DurationVarP(&opts.checkInterval, flagCheckInterval, "c", time.Second*0, "Icinga check_interval in duration. [Format: 30s, 5m]")
 	cmd.Flags().DurationVarP(&opts.clockSkew, "clockSkew", "s", time.Second*30, "Add skew with check_interval in duration. [Default: 30s]")
 
 	cmd.Flags().StringVar(&opts.involvedObjectName, "involvedObjectName", "", "Involved object name used to select events")

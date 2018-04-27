@@ -15,7 +15,7 @@ section_menu_id: setup
 > New to Searchlight? Please start [here](/docs/concepts/README.md).
 
 # Hostfacts
-[Hostfacts](/docs/reference/hostfacts/hostfacts_run.md) is a http server used to expose various [node metrics](https://github.com/appscode/searchlight/blob/29d4d2150116a284d74368931e6fdfe58efc7e6e/pkg/hostfacts/server.go#L32). This is a wrapper around the wonderful [shirou/gopsutil](https://github.com/shirou/gopsutil) library. This is used by [`check_node_volume`](/docs/guides/node-alerts/node_volume.md) and [`check_pod_volume`](/docs/guides/pod-alerts/pod_volume.md) commands to detect disk usage stats. To use these check commands, hostfacts must be installed directly on every node in the cluster. Hostfacts can't be deployed using DaemonSet. This guide will walk you through how to deploy hostfacts as a Systemd service.
+[Hostfacts](/docs/reference/hostfacts/hostfacts_run.md) is a http server used to expose various [node metrics](https://github.com/appscode/searchlight/blob/29d4d2150116a284d74368931e6fdfe58efc7e6e/pkg/hostfacts/server.go#L32). This is a wrapper around the wonderful [shirou/gopsutil](https://github.com/shirou/gopsutil) library. This is used by [`check_node_volume`](/docs/guides/node-alerts/node-volume.md) and [`check_pod_volume`](/docs/guides/pod-alerts/pod-volume.md) commands to detect disk usage stats. To use these check commands, hostfacts must be installed directly on every node in the cluster. Hostfacts can't be deployed using DaemonSet. This guide will walk you through how to deploy hostfacts as a Systemd service.
 
 ## Installation Guide
 First ssh into a Kubernetes node. If you are using [Minikube](https://github.com/kubernetes/minikube), run the following command:
@@ -104,8 +104,9 @@ If your cluster is running inside a shared network (eg, DigitalOcean), you shoul
 ```ini
 # Basic auth
 ExecStart=/usr/bin/hostfacts run --v=3 --username="<username>" --password="<password>" --caCertFile="<path to ca cert file>" --certFile="<path to server cert file>" --keyFile="<path to server key file>"
+```
 
-
+```ini
 # Bearer token
 ExecStart=/usr/bin/hostfacts run --v=3 --token="<token>" --caCertFile="<path to ca cert file>" --certFile="<path to server cert file>" --keyFile="<path to server key file>"
 ```

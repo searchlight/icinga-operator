@@ -33,7 +33,6 @@ Execution of this command can result in following states:
 - Warning
 - Unknown
 
-
 ## Tutorial
 
 ### Before You Begin

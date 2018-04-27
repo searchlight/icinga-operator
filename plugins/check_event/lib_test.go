@@ -1,8 +1,6 @@
 package check_event
 
 import (
-	"time"
-
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/searchlight/pkg/icinga"
 	. "github.com/onsi/ginkgo"
@@ -36,7 +34,7 @@ var _ = XDescribe("check_event", func() {
 		client = cs.CoreV1().Events(pod.Namespace)
 		opts = options{
 			namespace:               pod.Namespace,
-			checkInterval:           time.Minute,
+			checkIntervalSecs:       60,
 			involvedObjectName:      pod.Name,
 			involvedObjectNamespace: pod.Namespace,
 			involvedObjectKind:      "Pod",

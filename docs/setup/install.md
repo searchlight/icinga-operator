@@ -51,7 +51,7 @@ options:
     --docker-registry              docker registry used to pull searchlight images (default: appscode)
     --image-pull-secret            name of secret used to pull searchlight operator images
     --run-on-master                run searchlight operator on master
-    --enable-admission-webhook     configure admission webhook for searchlight CRDs
+    --enable-validating-webhook    enable/disable validating webhooks for Searchlight CRD
     --enable-analytics             send usage events to Google Analytics (default: true)
     --uninstall                    uninstall searchlight
     --purge                        purges searchlight crd objects and crds
@@ -86,21 +86,58 @@ $ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-rc.0/h
     | bash -s -- --docker-registry=MY_REGISTRY [--image-pull-secret=SECRET_NAME] [--rbac]
 ```
 
-Searchlight implements a [validating admission webhook](https://kubernetes.io/docs/admin/admission-controllers/#validatingadmissionwebhook-alpha-in-18-beta-in-19) to validate Searchlight CRDs. This is enabled by default for Kubernetes 1.9.0 or later releases. To disable this feature, pass the `--enable-admission-webhook=false` flag.
+Searchlight implements a [validating admission webhook](https://kubernetes.io/docs/admin/admission-controllers/#validatingadmissionwebhook-alpha-in-18-beta-in-19) to validate Searchlight CRDs. This is enabled by default for Kubernetes 1.9.0 or later releases. To disable this feature, pass the `--enable-validating-webhook=false` flag.
 
 ```console
 $ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-rc.0/hack/deploy/searchlight.sh \
     | bash -s -- --enable-admission-webhook [--rbac]
 ```
 
-
 ## Using Helm
-Searchlight can be installed via [Helm](https://helm.sh/) using the [chart](https://github.com/appscode/searchlight/blob/master/chart/stable/searchlight) included in this repository. To install the chart with the release name `my-release`:
+Searchlight can be installed via [Helm](https://helm.sh/) using the [chart](https://github.com/appscode/searchlight/blob/master/chart/searchlight) from [AppsCode Charts Repository](https://github.com/appscode/charts). To install the chart with the release name `my-release`:
+
 ```console
+# Mac OSX amd64:
+curl -fsSL -o onessl https://github.com/kubepack/onessl/releases/download/0.1.0/onessl-darwin-amd64 \
+  && chmod +x onessl \
+  && sudo mv onessl /usr/local/bin/
+
+# Linux amd64:
+curl -fsSL -o onessl https://github.com/kubepack/onessl/releases/download/0.1.0/onessl-linux-amd64 \
+  && chmod +x onessl \
+  && sudo mv onessl /usr/local/bin/
+
+# Linux arm64:
+curl -fsSL -o onessl https://github.com/kubepack/onessl/releases/download/0.1.0/onessl-linux-arm64 \
+  && chmod +x onessl \
+  && sudo mv onessl /usr/local/bin/
+
+# Kubernetes 1.8.x
+$ helm repo add appscode https://charts.appscode.com/stable/
 $ helm repo update
-$ helm install stable/searchlight --name my-release
+$ helm install appscode/searchlight --name my-release
+
+# Kubernetes 1.9.0 or later
+$ helm repo add appscode https://charts.appscode.com/stable/
+$ helm repo update
+$ helm install appscode/searchlight --name my-release \
+  --set apiserver.ca="$(onessl get kube-ca)" \
+  --set apiserver.enableValidatingWebhook=true
 ```
-To see the detailed configuration options, visit [here](https://github.com/appscode/searchlight/tree/master/chart/stable/searchlight).
+
+To see the detailed configuration options, visit [here](https://github.com/appscode/searchlight/tree/master/chart/searchlight).
+
+### Installing in GKE Cluster
+
+If you are installing Searchlight on a GKE cluster, you will need cluster admin permissions to install Searchlight operator. Run the following command to grant admin permision to the cluster.
+
+```console
+# get current google identity
+$ gcloud info | grep Account
+Account: [user@example.org]
+
+$ kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=user@example.org
+```
 
 
 ## Verify installation
@@ -162,6 +199,24 @@ searchlight-operator-1987091405-ghj5b   3/3       Running   0          1m
 $ kubectl delete pods -n kube-system searchlight-operator-1987091405-ghj5b
 pod "searchlight-operator-1987091405-ghj5b" deleted
 ```
+
+## Configuring RBAC
+Searchlight introduces the following Kubernetes objects:
+
+| API Group                         | Kinds             |
+|-----------------------------------|-------------------|
+| monitoring.appscode.com           | `ClusterAlert`<br/>`NodeAlert`<br/>`PodAlert`<br/>`Incident` |
+| incidents.monitoring.appscode.com | `Acknowledgement` |
+
+Searchlight installer will create 3 user facing cluster roles:
+
+| ClusterRole               | Aggregates To | Desription                            |
+|---------------------------|---------------|---------------------------------------|
+| appscode:searchlight:edit | admin         | Allows admin access to Searchlight objects, intended to be granted within a namespace using a RoleBinding. This grants ability to create incidents manually.|
+| appscode:searchlight:edit | edit          | Allows edit access to Searchlight objects, intended to be granted within a namespace using a RoleBinding.      |
+| appscode:searchlight:view | view          | Allows read-only access to Searchlight objects, intended to be granted within a namespace using a RoleBinding. |
+
+These user facing roles supports [ClusterRole Aggregation](https://kubernetes.io/docs/admin/authorization/rbac/#aggregated-clusterroles) feature in Kubernetes 1.9 or later clusters.
 
 ## Using kubectl
 ```console

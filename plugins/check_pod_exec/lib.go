@@ -124,8 +124,8 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 		Param("container", opts.container).
 		Param("command", opts.command).
 		Param("stdin", "true").
-		Param("stdout", "false").
-		Param("stderr", "false").
+		Param("stdout", "true").
+		Param("stderr", "true").
 		Param("tty", "false")
 
 	exec, err := remotecommand.NewSPDYExecutor(p.config, "POST", execRequest.URL())
@@ -133,7 +133,7 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 		return icinga.Unknown, err
 	}
 
-	stdIn := newStringReader([]string{"-c", opts.arg})
+	stdIn := newStringReader([]string{opts.arg})
 	stdOut := new(Writer)
 	stdErr := new(Writer)
 

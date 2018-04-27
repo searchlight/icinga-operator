@@ -28,7 +28,7 @@ spec:
         app: searchlight
     spec:
       containers:
-      - image: appscode/icinga:incident-k8s
+      - image: aerokite/icinga:6.0.0-k8s
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3

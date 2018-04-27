@@ -91,27 +91,23 @@ def version():
 
 
 def fmt():
-    libbuild.ungroup_go_imports('apis', 'client', 'cmd', 'data', 'pkg', 'plugins', 'test')
-    die(call('goimports -w apis client cmd data pkg plugins test'))
-    call('gofmt -s -w apis client cmd data pkg plugins test')
+    libbuild.ungroup_go_imports('apis', 'client', 'cmd', 'pkg', 'plugins', 'test')
+    die(call('goimports -w apis client cmd pkg plugins test'))
+    call('gofmt -s -w apis client cmd pkg plugins test')
 
 
 def vet():
-    call('go vet ./apis/... ./client/... ./cmd/... ./data/... ./pkg/... ./plugins/... ./test/...')
+    call('go vet ./apis/... ./client/... ./cmd/... ./pkg/... ./plugins/... ./test/...')
 
 
 def lint():
     call('golint ./apis/...')
     call('golint ./client/...')
     call('golint ./cmd/...')
-    call('golint ./data/...')
+
     call('golint ./pkg/...')
     call('golint ./plugins/...')
     call('golint ./test/...')
-
-
-def gen_assets():
-    die(call('go-bindata -ignore=\\.go -ignore=\\.DS_Store -mode=0644 -modtime=1453795200 -o bindata.go -pkg files ./...', cwd=libbuild.REPO_ROOT + '/data/files'))
 
 
 def gen_extpoints():
@@ -119,7 +115,6 @@ def gen_extpoints():
 
 
 def gen():
-    gen_assets()
     gen_extpoints()
     fmt()
 

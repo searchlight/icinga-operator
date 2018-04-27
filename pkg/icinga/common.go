@@ -172,6 +172,23 @@ func (h *commonHost) deleteIcingaService(svc string, kh IcingaHost) error {
 	return errors.Errorf("Fail to delete service. Status: %d", resp.Status)
 }
 
+func (h *commonHost) deleteIcingaServiceForCheckCommand(name string) error {
+	param := map[string]string{
+		"cascade": "1",
+	}
+	in := fmt.Sprintf(`{"filter": "match(\"%s\",service.check_command)"}`, name)
+
+	resp := h.IcingaClient.Service("").Delete([]string{}, in).Params(param).Do()
+	if resp.Err != nil {
+		return errors.Wrap(resp.Err, "Failed to delete Icinga Service")
+	}
+	if resp.Status == 200 || resp.Status == 404 {
+		return nil
+	}
+
+	return errors.Errorf("Fail to delete service. Status: %d", resp.Status)
+}
+
 func (h *commonHost) checkIcingaService(svc string, kh IcingaHost) (bool, error) {
 	in := h.IcingaServiceSearchQuery(svc, kh)
 	var respService ResponseObject

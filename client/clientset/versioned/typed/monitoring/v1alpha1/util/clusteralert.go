@@ -34,12 +34,16 @@ func CreateOrPatchClusterAlert(c cs.MonitoringV1alpha1Interface, meta metav1.Obj
 }
 
 func PatchClusterAlert(c cs.MonitoringV1alpha1Interface, cur *api.ClusterAlert, transform func(*api.ClusterAlert) *api.ClusterAlert) (*api.ClusterAlert, kutil.VerbType, error) {
+	return PatchClusterAlertObject(c, cur, transform(cur.DeepCopy()))
+}
+
+func PatchClusterAlertObject(c cs.MonitoringV1alpha1Interface, cur, mod *api.ClusterAlert) (*api.ClusterAlert, kutil.VerbType, error) {
 	curJson, err := json.Marshal(cur)
 	if err != nil {
 		return nil, kutil.VerbUnchanged, err
 	}
 
-	modJson, err := json.Marshal(transform(cur.DeepCopy()))
+	modJson, err := json.Marshal(mod)
 	if err != nil {
 		return nil, kutil.VerbUnchanged, err
 	}

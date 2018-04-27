@@ -51,7 +51,8 @@ func (h *ClusterHost) Apply(alert *api.ClusterAlert) error {
 	if alertSpec.CheckInterval.Seconds() > 0 {
 		attrs["check_interval"] = alertSpec.CheckInterval.Seconds()
 	}
-	commandVars := api.ClusterCommands[alertSpec.Check].Vars
+	cmd, _ := api.ClusterCommands.Get(alertSpec.Check)
+	commandVars := cmd.Vars.Items
 	for key, val := range alertSpec.Vars {
 		if _, found := commandVars[key]; found {
 			attrs[IVar(key)] = val
@@ -78,4 +79,8 @@ func (h *ClusterHost) Delete(namespace, name string) error {
 		return err
 	}
 	return h.deleteIcingaHost(kh)
+}
+
+func (h *ClusterHost) DeleteChecks(cmd string) error {
+	return h.deleteIcingaServiceForCheckCommand(cmd)
 }

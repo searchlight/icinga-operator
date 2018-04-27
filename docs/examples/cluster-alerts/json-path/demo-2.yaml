@@ -1,0 +1,17 @@
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: ClusterAlert
+metadata:
+  name: json-path-demo-2
+  namespace: demo
+spec:
+  check: json-path
+  vars:
+    url: "http://validate.jsontest.com/?json=[ok,warning,critical]"
+    critical: '{.validate} != true'
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: Mailgun
+    state: Critical
+    to: ["ops@example.com"]

@@ -75,7 +75,7 @@ const (
 	stateOK       = "OK"
 	stateWarning  = "Warning"
 	stateCritical = "Critical"
-	stateUnknown  = "unknown"
+	stateUnknown  = "Unknown"
 )
 
 func (o *options) complete(cmd *cobra.Command) (err error) {

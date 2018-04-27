@@ -6,6 +6,7 @@ const (
 	FlagKubeConfig        = "kubeconfig"
 	FlagKubeConfigContext = "context"
 	FlagHost              = "host"
+	FlagCheckInterval     = "icinga.checkInterval"
 )
 
 type PluginInterface interface {
