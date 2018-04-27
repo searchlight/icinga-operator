@@ -1,0 +1,17 @@
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: ClusterAlert
+metadata:
+  name: node-exists-demo-1
+  namespace: demo
+spec:
+  check: node-exists
+  vars:
+    nodeName: minikube
+    count: '1'
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: Mailgun
+    state: Critical
+    to: ["ops@example.com"]

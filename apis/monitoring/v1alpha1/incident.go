@@ -27,10 +27,10 @@ type Incident struct {
 }
 
 type IncidentStatus struct {
-	// state of incident, such as Critical, Warning, OK
+	// Type of last notification, such as problem, acknowledgement, recovery or custom
 	LastNotificationType IncidentNotificationType `json:"lastNotificationType"`
 
-	// Notifications for the incident, such as problem or acknowledge.
+	// Notifications for the incident, such as problem or acknowledgement.
 	// +optional
 	Notifications []IncidentNotification `json:"notifications,omitempty"`
 }
@@ -53,7 +53,7 @@ type IncidentNotification struct {
 	CheckOutput string `json:"checkOutput"`
 	// name of user making comment
 	// +optional
-	Author *string `json:"comment,omitempty"`
+	Author *string `json:"author,omitempty"`
 	// comment made by user
 	// +optional
 	Comment *string `json:"comment,omitempty"`

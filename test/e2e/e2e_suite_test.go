@@ -62,6 +62,7 @@ var _ = BeforeSuite(func() {
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
 	Expect(err).NotTo(HaveOccurred())
 	// Clients
+	Expect(err).NotTo(HaveOccurred())
 	kubeClient := kubernetes.NewForConfigOrDie(config)
 	apiExtKubeClient := crd_cs.NewForConfigOrDie(config)
 	extClient := cs.NewForConfigOrDie(config)
@@ -122,13 +123,19 @@ var _ = BeforeSuite(func() {
 	fmt.Println("Login password: ", ICINGA_WEB_UI_PASSWORD)
 	fmt.Println()
 
+	opc := &operator.OperatorConfig{
+		Config: operator.Config{
+			MaxNumRequeues: 3,
+			NumThreads:     3,
+			Verbosity:      "6",
+		},
+		KubeClient:   kubeClient,
+		CRDClient:    apiExtKubeClient,
+		ExtClient:    extClient,
+		IcingaClient: icingaClient,
+	}
 	// Controller
-	op = operator.New(kubeClient, apiExtKubeClient, extClient, icingaClient, operator.Config{
-		MaxNumRequeues: 3,
-		NumThreads:     3,
-		Verbosity:      "6",
-	})
-	err = op.Setup()
+	op, err = opc.New()
 	Expect(err).NotTo(HaveOccurred())
 	go op.RunWatchers(nil)
 })

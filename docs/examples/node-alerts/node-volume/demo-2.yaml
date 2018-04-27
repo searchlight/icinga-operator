@@ -1,0 +1,19 @@
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: NodeAlert
+metadata:
+  name: node-volume-demo-2
+  namespace: demo
+spec:
+  nodeName: minikube
+  check: node-volume
+  vars:
+    mountPoint: /mnt/sda1
+    warning: '70'
+    critical: '95'
+  checkInterval: 5m
+  alertInterval: 3m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: Mailgun
+    state: Critical
+    to: ["ops@example.com"]

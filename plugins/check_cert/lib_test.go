@@ -8,7 +8,6 @@ import (
 	"math/big"
 	"time"
 
-	. "github.com/appscode/searchlight/data"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins"
 	. "github.com/onsi/ginkgo"
@@ -270,23 +269,6 @@ var _ = Describe("check_cert", func() {
 
 				state, _ := newPlugin(client, opts).Check()
 				Expect(state).Should(BeIdenticalTo(icinga.Warning))
-			})
-		})
-	})
-
-	Describe("Check bindata support", func() {
-		Context("bindata contain plugin info", func() {
-			It("should be succeeded", func() {
-				ic, err := LoadClusterChecks()
-				Expect(err).ShouldNot(HaveOccurred())
-				found := false
-				for _, c := range ic.Command {
-					if c.Name == "cert" {
-						found = true
-						break
-					}
-				}
-				Expect(found).Should(BeTrue())
 			})
 		})
 	})

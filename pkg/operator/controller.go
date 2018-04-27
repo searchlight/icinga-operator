@@ -12,7 +12,6 @@ import (
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	mon_informers "github.com/appscode/searchlight/client/informers/externalversions"
 	mon_listers "github.com/appscode/searchlight/client/listers/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/golang/glog"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -22,6 +21,7 @@ import (
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	core_listers "k8s.io/client-go/listers/core/v1"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
 )
@@ -29,6 +29,7 @@ import (
 type Operator struct {
 	Config
 
+	clientConfig *rest.Config
 	kubeClient   kubernetes.Interface
 	crdClient    ecs.ApiextensionsV1beta1Interface
 	extClient    cs.Interface
@@ -70,35 +71,11 @@ type Operator struct {
 	paQueue    *queue.Worker
 	paInformer cache.SharedIndexInformer
 	paLister   mon_listers.PodAlertLister
-}
 
-func New(kubeClient kubernetes.Interface, crdClient ecs.ApiextensionsV1beta1Interface, extClient cs.Interface, icingaClient *icinga.Client, opt Config) *Operator {
-	return &Operator{
-		kubeClient:          kubeClient,
-		kubeInformerFactory: informers.NewSharedInformerFactory(kubeClient, opt.ResyncPeriod),
-		crdClient:           crdClient,
-		extClient:           extClient,
-		monInformerFactory:  mon_informers.NewSharedInformerFactory(extClient, opt.ResyncPeriod),
-		icingaClient:        icingaClient,
-		Config:              opt,
-		clusterHost:         icinga.NewClusterHost(icingaClient, opt.Verbosity),
-		nodeHost:            icinga.NewNodeHost(icingaClient, opt.Verbosity),
-		podHost:             icinga.NewPodHost(icingaClient, opt.Verbosity),
-		recorder:            eventer.NewEventRecorder(kubeClient, "Searchlight operator"),
-	}
-}
-
-func (op *Operator) Setup() error {
-	if err := op.ensureCustomResourceDefinitions(); err != nil {
-		return err
-	}
-	op.initNamespaceWatcher()
-	op.initNodeWatcher()
-	op.initPodWatcher()
-	op.initClusterAlertWatcher()
-	op.initNodeAlertWatcher()
-	op.initPodAlertWatcher()
-	return nil
+	// SearchlightPlugin
+	pluginQueue    *queue.Worker
+	pluginInformer cache.SharedIndexInformer
+	pluginLister   mon_listers.SearchlightPluginLister
 }
 
 func (op *Operator) ensureCustomResourceDefinitions() error {
@@ -107,6 +84,7 @@ func (op *Operator) ensureCustomResourceDefinitions() error {
 		api.NodeAlert{}.CustomResourceDefinition(),
 		api.PodAlert{}.CustomResourceDefinition(),
 		api.Incident{}.CustomResourceDefinition(),
+		api.SearchlightPlugin{}.CustomResourceDefinition(),
 	}
 	return apiext_util.RegisterCRDs(op.crdClient, crds)
 }
@@ -138,12 +116,19 @@ func (op *Operator) RunWatchers(stopCh <-chan struct{}) {
 	op.caQueue.Run(stopCh)
 	op.naQueue.Run(stopCh)
 	op.paQueue.Run(stopCh)
+	op.pluginQueue.Run(stopCh)
 
 	<-stopCh
 	glog.Info("Stopping Searchlight controller")
 }
 
 func (op *Operator) Run(stopCh <-chan struct{}) error {
+	err := op.MigrateAlerts()
+	if err != nil {
+		return err
+	}
+
+	op.gcIncidents()
 	go op.RunWatchers(stopCh)
 
 	m := pat.New()

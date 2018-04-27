@@ -21,6 +21,7 @@ type Config struct {
 	ResyncPeriod     time.Duration
 	MaxNumRequeues   int
 	NumThreads       int
+	IncidentTTL      time.Duration
 	// V logging level, the value of the -v flag
 	Verbosity string
 }
@@ -45,6 +46,7 @@ func NewOperatorConfig(clientConfig *rest.Config) *OperatorConfig {
 func (c *OperatorConfig) New() (*Operator, error) {
 	op := &Operator{
 		Config:              c.Config,
+		clientConfig:        c.ClientConfig,
 		kubeClient:          c.KubeClient,
 		kubeInformerFactory: informers.NewSharedInformerFactory(c.KubeClient, c.ResyncPeriod),
 		crdClient:           c.CRDClient,
@@ -66,6 +68,6 @@ func (c *OperatorConfig) New() (*Operator, error) {
 	op.initClusterAlertWatcher()
 	op.initNodeAlertWatcher()
 	op.initPodAlertWatcher()
-
+	op.initPluginWatcher()
 	return op, nil
 }

@@ -1,0 +1,16 @@
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: NodeAlert
+metadata:
+  name: node-status-demo-1
+  namespace: demo
+spec:
+  check: node-status
+  selector:
+    beta.kubernetes.io/os: linux
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: Mailgun
+    state: Critical
+    to: ["ops@example.com"]

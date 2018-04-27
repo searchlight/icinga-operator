@@ -4,7 +4,7 @@ metadata:
   name: pod-exists
   namespace: demo
 spec:
-  check: pod_exists
+  check: pod-exists
   vars:
     selector: app=nginx
     count: '2'

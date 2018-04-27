@@ -238,7 +238,7 @@ var _ = Describe("PodAlert", func() {
 			go f.DeletePod(pod.ObjectMeta)
 		})
 
-		// Check "pod_status" and basic searchlight functionality
+		// Check "pod-status" and basic searchlight functionality
 		Context("check_pod_status", func() {
 			BeforeEach(func() {
 				alert.Spec.Check = api.CheckPodStatus

@@ -24,6 +24,19 @@ chown -R icinga:icinga $DATADIR/icinga2
 rm -rf /var/lib/icinga2
 ln -sv -T $DATADIR/icinga2 /var/lib/icinga2
 
+mkdir -p $DATADIR/custom.d
+chown -R icinga:icinga $DATADIR/custom.d
+rm -rf /etc/icinga2/custom.d
+ln -sv -T $DATADIR/custom.d /etc/icinga2/custom.d
+
+cat >>/etc/icinga2/icinga2.conf <<EOL
+/**
+ * Used to add configuration for user defined Commands.
+ * Each of these files must have the file extension ".conf".
+ */
+include_recursive "custom.d"
+EOL
+
 chown -R icinga:icinga /usr/lib/nagios/plugins
 chmod -R 755 /usr/lib/nagios/plugins
 

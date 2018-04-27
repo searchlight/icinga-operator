@@ -34,12 +34,16 @@ func CreateOrPatchNodeAlert(c cs.MonitoringV1alpha1Interface, meta metav1.Object
 }
 
 func PatchNodeAlert(c cs.MonitoringV1alpha1Interface, cur *api.NodeAlert, transform func(*api.NodeAlert) *api.NodeAlert) (*api.NodeAlert, kutil.VerbType, error) {
+	return PatchNodeAlertObject(c, cur, transform(cur.DeepCopy()))
+}
+
+func PatchNodeAlertObject(c cs.MonitoringV1alpha1Interface, cur, mod *api.NodeAlert) (*api.NodeAlert, kutil.VerbType, error) {
 	curJson, err := json.Marshal(cur)
 	if err != nil {
 		return nil, kutil.VerbUnchanged, err
 	}
 
-	modJson, err := json.Marshal(transform(cur.DeepCopy()))
+	modJson, err := json.Marshal(mod)
 	if err != nil {
 		return nil, kutil.VerbUnchanged, err
 	}
