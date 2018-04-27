@@ -13,10 +13,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
-	hostUtil "github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
-	macaron "gopkg.in/macaron.v1"
+	"gopkg.in/macaron.v1"
 )
 
 type Server struct {
@@ -57,15 +56,6 @@ func (s Server) ListenAndServe() {
 	})
 	m.Get("/swap_mem", func(ctx *macaron.Context) {
 		r, _ := mem.SwapMemory()
-		ctx.JSON(200, r)
-	})
-
-	m.Get("/host", func(ctx *macaron.Context) {
-		r, _ := hostUtil.Info()
-		ctx.JSON(200, r)
-	})
-	m.Get("/uptime", func(ctx *macaron.Context) {
-		r, _ := hostUtil.Uptime()
 		ctx.JSON(200, r)
 	})
 
