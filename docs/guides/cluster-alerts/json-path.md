@@ -163,6 +163,21 @@ Voila! `json-path` command has been synced to Icinga2. Please visit [here](/docs
 
 ![check-all-pods](/docs/images/cluster-alerts/json-path/demo-0.png)
 
+### Pause Alert
+
+To pause alert, edit ClusterAlert `json-path-demo-0` to set `spec.paused` to be `true`
+
+```bash
+$ kubectl edit clusteralert json-path-demo-0 -n demo
+```
+
+```yaml
+spec:
+  pause: true
+```
+
+Searchlight operator will delete Icinga Services for this alert. To resume, edit and set `spec.paused` to be `false`
+
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:

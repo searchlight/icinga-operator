@@ -163,6 +163,22 @@ Events:
 ![check-by-node-name](/docs/images/node-alerts/node-status/demo-2.png)
 
 
+### Pause Alert
+
+To pause alert, edit NodeAlert `node-status-demo-2` to set `spec.paused` to be `true`
+
+```bash
+$ kubectl edit nodealert node-status-demo-2 -n demo
+```
+
+```yaml
+spec:
+  pause: true
+```
+
+Searchlight operator will delete Icinga Services for this alert. To resume, edit and set `spec.paused` to be `false`
+
+
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
 ```console

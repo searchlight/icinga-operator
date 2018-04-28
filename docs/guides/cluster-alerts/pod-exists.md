@@ -143,6 +143,21 @@ Events:
 ```
 ![check-by-pod-label](/docs/images/cluster-alerts/pod-exists/demo-1.png)
 
+### Pause Alert
+
+To pause alert, edit ClusterAlert `pod-exists-demo-1` to set `spec.paused` to be `true`
+
+```bash
+$ kubectl edit clusteralert pod-exists-demo-1 -n demo
+```
+
+```yaml
+spec:
+  pause: true
+```
+
+Searchlight operator will delete Icinga Services for this alert. To resume, edit and set `spec.paused` to be `false`
+
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:

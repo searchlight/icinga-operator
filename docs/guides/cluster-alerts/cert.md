@@ -93,6 +93,24 @@ Voila! `ca_cert` command has been synced to Icinga2. Please visit [here](/docs/g
 
 ![check ca_cert](/docs/images/cluster-alerts/ca_cert/demo-0.png)
 
+
+### Pause Alert
+
+To pause alert, edit ClusterAlert `ca-cert-demo-0` to set `spec.paused` to be `true`
+
+```bash
+$ kubectl edit clusteralert ca-cert-demo-0 -n demo
+```
+
+
+```yaml
+spec:
+  pause: true
+```
+
+Searchlight operator will delete Icinga Services for this alert. To resume, edit and set `spec.paused` to be `false`
+
+
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
 ```console
