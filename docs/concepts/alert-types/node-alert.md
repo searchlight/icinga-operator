@@ -84,6 +84,17 @@ When a check fails, Icinga will keep sending notifications until acknowledged vi
 ## Icinga Objects
 You can skip this section if you are unfamiliar with how Icinga works. Searchlight operator watches for NodeAlert objects and turns them into [Icinga objects](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/) accordingly. For each Kubernetes Node which has an NodeAlert configured, an [Icinga Host](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#host) is created with the name `{namespace}@node@{node-name}` and address matching the internal IP of the Node. Now for each NodeAlert, an [Icinga service](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#service) is created with name matching the NodeAlert name.
 
+## Pause NodeAlert
+
+You can pause a NodeAlert by setting `spec.pause` to `true`. If you already have a NodeAlert created, you can edit it to set `spec.pause`. Searchlight operator will delete all Icinga Services related to this NodeAlert. That's how, periodical checks by Icinga will be stopped.
+
+```yaml
+spec:
+  pause: true
+```
+
+You can resume the process again by setting `spec.pause` to `false`. Then Searchlight operator will create Icinga Services again for this NodeAlert.
+
 
 ## Next Steps
  - Visit the links below to learn about the available check commands for nodes:

@@ -76,6 +76,17 @@ When a check fails, Icinga will keep sending notifications until acknowledged vi
 ## Icinga Objects
 You can skip this section if you are unfamiliar with how Icinga works. Searchlight operator watches for ClusterAlert objects and turns them into [Icinga objects](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/) accordingly. A single [Icinga Host](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#host) is created with the name `{namespace}@cluster` and address `127.0.0.1` for all ClusterAlerts in a Kubernetes namespace. Now for each ClusterAlert, an [Icinga service](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#service) is created with name matching the ClusterAlert name.
 
+## Pause ClusterAlert
+
+You can pause a ClusterAlert by setting `spec.pause` to `true`. If you already have a ClusterAlert created, you can edit it to set `spec.pause`. Searchlight operator will delete all Icinga Services related to this ClusterAlert. That's how, periodical checks by Icinga will be stopped.
+
+```yaml
+spec:
+  pause: true
+```
+
+You can resume the process again by setting `spec.pause` to `false`. Then Searchlight operator will create Icinga Services again for this ClusterAlert.
+
 
 ## Next Steps
  - Visit the links below to learn about the available check commands for a cluster:
