@@ -37,6 +37,7 @@ func NewSearchlightOptions(out, errOut io.Writer) *SearchlightOptions {
 		StdErr:             errOut,
 	}
 	o.RecommendedOptions.Etcd = nil
+	o.RecommendedOptions.Admission = nil
 
 	return o
 }
