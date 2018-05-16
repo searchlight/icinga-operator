@@ -53,42 +53,9 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Create SearchlightPlugin
-
-Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create PodAlert to check `pod-exec`.
-
-```yaml
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: SearchlightPlugin
-metadata:
-  creationTimestamp: null
-  name: pod-exec
-spec:
-  alertKinds:
-  - PodAlert
-  arguments:
-    host:
-      host: name
-      v: vars.verbosity
-    vars:
-      Item:
-        argv:
-          type: string
-        cmd:
-          type: string
-        container:
-          type: string
-      required:
-      - argv
-  command: hyperalert check_pod_exec
-  state:
-  - OK
-  - Critical
-  - Unknown
-```
-
 ### Check status of pods with matching labels
 In this tutorial, a PodAlert will be used check status of pods with matching labels by setting `spec.selector` field.
+
 ```yaml
 $ cat ./docs/examples/pod-alerts/pod-exec/demo-0.yaml
 
@@ -112,6 +79,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/pod-alerts/pod-exec/demo-0.yaml
 replicationcontroller "nginx" created
@@ -141,6 +109,7 @@ Voila! `pod-exec` command has been synced to Icinga2. Please visit [here](/docs/
 
 ### Check status of a specific pod
 In this tutorial, a PodAlert will be used check status of a pod by name by setting `spec.podName` field.
+
 ```yaml
 $ cat ./docs/examples/pod-alerts/pod-exec/demo-1.yaml
 
@@ -162,6 +131,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/pod-alerts/pod-exec/demo-1.yaml
 pod "busybox" created
@@ -187,6 +157,7 @@ Events:
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
+
 ```console
 $ kubectl delete ns demo
 ```

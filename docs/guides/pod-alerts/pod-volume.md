@@ -54,45 +54,9 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Create SearchlightPlugin
-
-Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create PodAlert to check `pod-volume`.
-
-```yaml
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: SearchlightPlugin
-metadata:
-  creationTimestamp: null
-  name: pod-volume
-spec:
-  alertKinds:
-  - PodAlert
-  arguments:
-    host:
-      host: name
-      v: vars.verbosity
-    vars:
-      Item:
-        critical:
-          type: number
-        secretName:
-          type: string
-        volumeName:
-          type: string
-        warning:
-          type: number
-      required:
-      - volumeName
-  command: hyperalert check_volume
-  state:
-  - OK
-  - Critical
-  - Unknown
-```
-
-
 ### Check volume of pods with matching labels
 In this tutorial, a PodAlert will be used check volume stats of pods with matching labels by setting `spec.selector` field.
+
 ```yaml
 $ cat ./docs/examples/pod-alerts/pod-volume/demo-0.yaml
 
@@ -118,6 +82,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/pod-alerts/pod-volume/demo-1.yaml
 persistentvolumeclaim "boxclaim" created
@@ -172,6 +137,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/pod-alerts/pod-volume/demo-1.yaml
 persistentvolumeclaim "boxclaim" created
@@ -194,6 +160,7 @@ Events:
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
+
 ```console
 $ kubectl delete ns demo
 ```

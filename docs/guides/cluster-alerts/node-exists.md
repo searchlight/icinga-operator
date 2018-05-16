@@ -53,39 +53,9 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Create SearchlightPlugin
-
-Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create ClusterAlert to check `node-exists`.
-
-```yaml
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: SearchlightPlugin
-metadata:
-  creationTimestamp: null
-  name: node-exists
-spec:
-  alertKinds:
-  - ClusterAlert
-  arguments:
-    host:
-      v: vars.verbosity
-    vars:
-      Item:
-        count:
-          type: integer
-        nodeName:
-          type: string
-        selector:
-          type: string
-  command: hyperalert check_node_exists
-  state:
-  - OK
-  - Critical
-  - Unknown
-```
-
 ### Check existence of nodes with matching labels
 In this tutorial, a ClusterAlert will be used check existence of nodes with matching labels by setting `spec.vars.selector` field.
+
 ```yaml
 $ cat ./docs/examples/cluster-alerts/node-exists/demo-0.yaml
 
@@ -130,6 +100,7 @@ Voila! `node-exists` command has been synced to Icinga2. Please visit [here](/do
 
 ### Check existence of a specific node
 In this tutorial, a ClusterAlert will be used check existence of a node by name by setting `spec.vars.nodeName` field.
+
 ```yaml
 $ cat ./docs/examples/cluster-alerts/node-exists/demo-1.yaml
 
@@ -151,6 +122,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/cluster-alerts/node-exists/demo-1.yaml
 node "busybox" created
@@ -172,6 +144,7 @@ Events:
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
+
 ```console
 $ kubectl delete ns demo
 ```

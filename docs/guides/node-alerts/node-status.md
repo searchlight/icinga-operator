@@ -46,32 +46,9 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Create SearchlightPlugin
-
-Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create NodeAlert to check `node-status`.
-
-```yaml
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: SearchlightPlugin
-metadata:
-  creationTimestamp: null
-  name: node-status
-spec:
-  alertKinds:
-  - NodeAlert
-  arguments:
-    host:
-      host: name
-      v: vars.verbosity
-  command: hyperalert check_node_status
-  state:
-  - OK
-  - Critical
-  - Unknown
-```
-
 ### Check status of all nodes
 In this tutorial, we are going to create a NodeAlert to check status of all nodes.
+
 ```yaml
 $ cat ./docs/examples/node-alerts/node-status/demo-0.yaml
 
@@ -90,6 +67,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/node-alerts/node-status/demo-0.yaml
 nodealert "node-status-demo-0" created
@@ -132,6 +110,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/node-alerts/node-status/demo-1.yaml
 nodealert "node-status-demo-1" created
@@ -189,6 +168,7 @@ Events:
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
+
 ```console
 $ kubectl delete ns demo
 ```

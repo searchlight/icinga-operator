@@ -53,40 +53,9 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Create SearchlightPlugin
-
-Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create ClusterAlert to check `pod-exists`.
-
-```yaml
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: SearchlightPlugin
-metadata:
-  creationTimestamp: null
-  name: pod-exists
-spec:
-  alertKinds:
-  - ClusterAlert
-  arguments:
-    host:
-      host: name
-      v: vars.verbosity
-    vars:
-      Item:
-        count:
-          type: integer
-        podName:
-          type: string
-        selector:
-          type: string
-  command: hyperalert check_pod_exists
-  state:
-  - OK
-  - Critical
-  - Unknown
-```
-
 ### Check existence of pods with matching labels
 In this tutorial, a ClusterAlert will be used check existence of pods with matching labels by setting `spec.vars.selector` field.
+
 ```yaml
 $ cat ./docs/examples/cluster-alerts/pod-exists/demo-0.yaml
 
@@ -108,6 +77,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/cluster-alerts/pod-exists/demo-0.yaml
 replicationcontroller "nginx" created
@@ -131,6 +101,7 @@ Voila! `pod-exists` command has been synced to Icinga2. Please visit [here](/doc
 
 ### Check existence of a specific pod
 In this tutorial, a ClusterAlert will be used check existence of a pod by name by setting `spec.vars.podName` field.
+
 ```yaml
 $ cat ./docs/examples/cluster-alerts/pod-exists/demo-1.yaml
 
@@ -152,6 +123,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/cluster-alerts/pod-exists/demo-1.yaml
 pod "busybox" created
@@ -177,6 +149,7 @@ Events:
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
+
 ```console
 $ kubectl delete ns demo
 ```

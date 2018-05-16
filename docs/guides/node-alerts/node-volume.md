@@ -54,44 +54,9 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Create SearchlightPlugin
-
-Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create NodeAlert to check `node-volume`.
-
-```yaml
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: SearchlightPlugin
-metadata:
-  creationTimestamp: null
-  name: node-volume
-spec:
-  alertKinds:
-  - NodeAlert
-  arguments:
-    host:
-      host: name
-      v: vars.verbosity
-    vars:
-      Item:
-        critical:
-          type: number
-        mountPoint:
-          type: string
-        secretName:
-          type: string
-        warning:
-          type: number
-      required:
-      - mountPoint
-  command: hyperalert check_volume
-  state:
-  - OK
-  - Critical
-  - Unknown
-```
-
 ### Check volume stats of all nodes
 In this tutorial, we are going to create a NodeAlert to check volume stats of all nodes.
+
 ```yaml
 $ cat ./docs/examples/node-alerts/node-volume/demo-0.yaml
 
@@ -114,6 +79,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/node-alerts/node-volume/demo-0.yaml
 nodealert "node-volume-demo-0" created
@@ -160,6 +126,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/node-alerts/node-volume/demo-1.yaml
 nodealert "node-volume-demo-1" created
@@ -221,6 +188,7 @@ Events:
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
+
 ```console
 $ kubectl delete ns demo
 ```

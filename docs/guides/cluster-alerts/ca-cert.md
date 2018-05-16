@@ -52,38 +52,9 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Create SearchlightPlugin
-
-Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create ClusterAlert to check `ca-cert`.
-
-```yaml
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: SearchlightPlugin
-metadata:
-  creationTimestamp: null
-  name: ca-cert
-spec:
-  alertKinds:
-  - ClusterAlert
-  arguments:
-    host:
-      v: vars.verbosity
-    vars:
-      Item:
-        critical:
-          type: duration
-        warning:
-          type: duration
-  command: hyperalert check_ca_cert
-  state:
-  - OK
-  - Warning
-  - Critical
-  - Unknown
-```
-
 ### Create Alert
 In this tutorial, we are going to create an alert to check `ca-cert`.
+
 ```yaml
 $ cat ./docs/examples/cluster-alerts/ca-cert/demo-0.yaml
 
@@ -105,8 +76,9 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/ca-cert/demo-0.yaml 
+$ kubectl apply -f ./docs/examples/cluster-alerts/ca-cert/demo-0.yaml
 clusteralert "ca-cert-demo-0" created
 
 $ kubectl describe clusteralert ca-cert-demo-0 -n demo
@@ -125,6 +97,7 @@ Voila! `ca-cert` command has been synced to Icinga2. Please visit [here](/docs/g
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
+
 ```console
 $ kubectl delete ns demo
 ```

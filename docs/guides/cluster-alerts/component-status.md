@@ -52,37 +52,9 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Create SearchlightPlugin
-
-Create following SearchlightPlugin object to register CheckCommand. Then you will be able to create ClusterAlert to check `component-status`.
-
-```yaml
-apiVersion: monitoring.appscode.com/v1alpha1
-kind: SearchlightPlugin
-metadata:
-  creationTimestamp: null
-  name: component-status
-spec:
-  alertKinds:
-  - ClusterAlert
-  arguments:
-    host:
-      v: vars.verbosity
-    vars:
-      Item:
-        componentName:
-          type: string
-        selector:
-          type: string
-  command: hyperalert check_component_status
-  state:
-  - OK
-  - Critical
-  - Unknown
-```
-
 ### Check status of all components
 In this tutorial, we are going to create a ClusterAlert to check status of all components.
+
 ```yaml
 $ cat ./docs/examples/cluster-alerts/component-status/demo-0.yaml
 
@@ -162,6 +134,7 @@ Events:
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
+
 ```console
 $ kubectl delete ns demo
 ```
