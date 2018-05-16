@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"sort"
 )
 
 var checkCommandTemplate = `object CheckCommand "%s" {
@@ -15,6 +16,11 @@ var checkCommandTemplate = `object CheckCommand "%s" {
 	%s
   }
 }`
+
+type HostArgument struct {
+	Key   string
+	Value string
+}
 
 func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 	type arg struct {
@@ -57,6 +63,10 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 			val: fmt.Sprintf("$host.%s$", val),
 		})
 	}
+
+	sort.Slice(args, func(i, j int) bool {
+		return args[i].key < args[j].key
+	})
 
 	flagList := make([]string, 0)
 
