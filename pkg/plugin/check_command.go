@@ -17,11 +17,6 @@ var checkCommandTemplate = `object CheckCommand "%s" {
   }
 }`
 
-type HostArgument struct {
-	Key   string
-	Value string
-}
-
 func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 	type arg struct {
 		key string
