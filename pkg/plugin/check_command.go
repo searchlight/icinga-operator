@@ -2,10 +2,10 @@ package plugin
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"sort"
 )
 
 var checkCommandTemplate = `object CheckCommand "%s" {
