@@ -13,10 +13,9 @@ section_menu_id: guides
 
 > New to SearchlightPlugin? Please start [here](/docs/setup/developer-guide/webhook-plugin.md).
 
-# Check Custom Webhook
+# Custom Webhook Check Command
 
-Searchlight supports adding custom check using SearchlightPlugin CRD. No longer you have to build binary and attach it inside Icinga container.
-Simply you can write a HTTP server and tell your check command to call that HTTP server.
+Searchlight supports adding custom check using SearchlightPlugin CRD. No longer you have to build binary and attach it inside Icinga container. Simply you can write a HTTP server and register your check command with Searchlight.
 
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
@@ -31,12 +30,12 @@ spec:
   - ClusterAlert
   arguments:
     vars:
-      Item:
+      items:
         warning:
           type: interger
         critical:
           type: interger
-  state:
+  states:
   - OK
   - Critical
   - Unknown
@@ -44,14 +43,14 @@ spec:
 
 Here,
 
-- `metadata.name` will be the name of CheckCommand
-- `spec.webhook` states Kubernetes Service information of Webhook
-- `spec.alertKinds` determines which kinds of alerts will support this CheckCommand
+- `metadata.name` will be the name of `CheckCommand`.
+- `spec.webhook` provides the namespace and name of Kubernetes `Service` that provides the webhook server.
+- `spec.alertKinds` determines which kinds of alerts will support this `CheckCommand`. Possible values are: ClusterAlert, NodeAlert and PodAlert.
 - `spec.arguments` provides variables information those user will provide to create alert.
-- `spec.state` is support Service State to set notifier receivers
+- `spec.states` are the supported states for this command. Different notification receivers can be set for each state.
 
 ```console
-$ kubectl apply -f ./docs/examples/plugins/webhook/demo-0.yaml 
+$ kubectl apply -f ./docs/examples/plugins/webhook/demo-0.yaml
 searchlightplugin "check-pod-count" created
 ```
 
@@ -64,7 +63,7 @@ CheckCommand `check-pod-count` is added in Icinga2 configuration. Here, `vars.It
 Few things to be noted here:
 
 - Webhook will be called with URL formatted as bellow:
-  
+
   `http://<spec.webhook.name>.<spec.webhook.namespace>.svc/<metadata.name>`
 - Items in `spec.arguments.vars` for example `warning` and `critical` are registered as custom variables. User can provide values for these variables while creating alerts.
 - Items in `spec.arguments.host` are added in Icinga CheckCommand arguments.

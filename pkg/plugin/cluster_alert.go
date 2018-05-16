@@ -29,7 +29,7 @@ func GetComponentStatusPlugin() *api.SearchlightPlugin {
 					"v": "vars.verbosity",
 				},
 			},
-			State: []string{stateOK, stateCritical, stateUnknown},
+			States: []string{stateOK, stateCritical, stateUnknown},
 		},
 	}
 }
@@ -66,7 +66,7 @@ func GetJsonPathPlugin() *api.SearchlightPlugin {
 					"v":    "vars.verbosity",
 				},
 			},
-			State: []string{stateOK, stateWarning, stateCritical, stateUnknown},
+			States: []string{stateOK, stateWarning, stateCritical, stateUnknown},
 		},
 	}
 }
@@ -98,7 +98,7 @@ func GetNodeExistsPlugin() *api.SearchlightPlugin {
 					"v": "vars.verbosity",
 				},
 			},
-			State: []string{stateOK, stateCritical, stateUnknown},
+			States: []string{stateOK, stateCritical, stateUnknown},
 		},
 	}
 }
@@ -131,7 +131,7 @@ func GetPodExistsPlugin() *api.SearchlightPlugin {
 					"v":    "vars.verbosity",
 				},
 			},
-			State: []string{stateOK, stateCritical, stateUnknown},
+			States: []string{stateOK, stateCritical, stateUnknown},
 		},
 	}
 }
@@ -170,7 +170,7 @@ func GetEventPlugin() *api.SearchlightPlugin {
 					"v":    "vars.verbosity",
 				},
 			},
-			State: []string{stateOK, stateWarning, stateUnknown},
+			States: []string{stateOK, stateWarning, stateUnknown},
 		},
 	}
 }
@@ -199,7 +199,7 @@ func GetCACertPlugin() *api.SearchlightPlugin {
 					"v": "vars.verbosity",
 				},
 			},
-			State: []string{stateOK, stateWarning, stateCritical, stateUnknown},
+			States: []string{stateOK, stateWarning, stateCritical, stateUnknown},
 		},
 	}
 }
@@ -238,7 +238,7 @@ func GetCertPlugin() *api.SearchlightPlugin {
 					"v":    "vars.verbosity",
 				},
 			},
-			State: []string{stateOK, stateWarning, stateCritical, stateUnknown},
+			States: []string{stateOK, stateWarning, stateCritical, stateUnknown},
 		},
 	}
 }

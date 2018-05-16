@@ -10,12 +10,12 @@ spec:
   - ClusterAlert
   arguments:
     vars:
-      Item:
+      items:
         warning:
           type: interger
         critical:
           type: interger
-  state:
+  states:
   - OK
   - Critical
   - Unknown

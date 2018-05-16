@@ -1783,18 +1783,18 @@ spec:
                   type: object
                 vars:
                   properties:
-                    Item:
+                    items:
                       type: object
                     required:
                       items:
                         type: string
                       type: array
                   required:
-                  - Item
+                  - items
             command:
               description: Check Command
               type: string
-            state:
+            states:
               description: Supported Icinga Service State
               items:
                 type: string
@@ -1811,7 +1811,7 @@ spec:
               - name
           required:
           - alertKinds
-          - state
+          - states
   version: v1alpha1
 status:
   acceptedNames:

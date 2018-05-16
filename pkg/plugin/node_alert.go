@@ -20,7 +20,7 @@ func GetNodeStatusPlugin() *api.SearchlightPlugin {
 					"v":    "vars.verbosity",
 				},
 			},
-			State: []string{stateOK, stateCritical, stateUnknown},
+			States: []string{stateOK, stateCritical, stateUnknown},
 		},
 	}
 }
@@ -57,7 +57,7 @@ func GetNodeVolumePlugin() *api.SearchlightPlugin {
 					"v":    "vars.verbosity",
 				},
 			},
-			State: []string{stateOK, stateCritical, stateUnknown},
+			States: []string{stateOK, stateCritical, stateUnknown},
 		},
 	}
 }
