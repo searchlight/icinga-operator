@@ -37,6 +37,7 @@ func NewSearchlightOptions(out, errOut io.Writer) *SearchlightOptions {
 		StdErr:             errOut,
 	}
 	o.RecommendedOptions.Etcd = nil
+	o.RecommendedOptions.Admission = nil
 
 	return o
 }
@@ -62,7 +63,7 @@ func (o SearchlightOptions) Config() (*server.SearchlightConfig, error) {
 	}
 
 	serverConfig := genericapiserver.NewRecommendedConfig(server.Codecs)
-	if err := o.RecommendedOptions.ApplyTo(serverConfig); err != nil {
+	if err := o.RecommendedOptions.ApplyTo(serverConfig, server.Scheme); err != nil {
 		return nil, err
 	}
 	serverConfig.OpenAPIConfig = genericapiserver.DefaultOpenAPIConfig(incidentsv1alpha1.GetOpenAPIDefinitions, server.Scheme)

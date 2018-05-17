@@ -27,7 +27,7 @@ type REST struct {
 }
 
 var _ rest.Creater = &REST{}
-var _ rest.Deleter = &REST{}
+var _ rest.GracefulDeleter = &REST{}
 var _ rest.GroupVersionKindProvider = &REST{}
 
 func NewREST(config *restconfig.Config, ic *icinga.Client) *REST {
@@ -101,15 +101,15 @@ func validate(o *api.Acknowledgement) field.ErrorList {
 	return errs
 }
 
-func (r *REST) Delete(ctx apirequest.Context, name string) (runtime.Object, error) {
+func (r *REST) Delete(ctx apirequest.Context, name string, options *metav1.DeleteOptions) (runtime.Object, bool, error) {
 	namespace, ok := apirequest.NamespaceFrom(ctx)
 	if !ok {
-		return nil, apierrors.NewBadRequest("namespace missing")
+		return nil, false, apierrors.NewBadRequest("namespace missing")
 	}
 
 	host, service, err := r.getIcingaObjects(namespace, name)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	mp := make(map[string]interface{})
@@ -117,20 +117,20 @@ func (r *REST) Delete(ctx apirequest.Context, name string) (runtime.Object, erro
 	mp["filter"] = fmt.Sprintf(`service.name == "%s" && host.name == "%s"`, service, host)
 	ack, err := json.Marshal(mp)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	response := r.ic.Actions("remove-acknowledgement").Update([]string{}, string(ack)).Do()
 	if response.Err != nil {
-		return nil, response.Err
+		return nil, false, response.Err
 	}
 	var icingaResp icinga.APIResponse
 	status, err := response.Into(&icingaResp)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	if status != 200 {
-		return nil, errors.New(string(icingaResp.ResponseBody))
+		return nil, false, errors.New(string(icingaResp.ResponseBody))
 	}
 
 	resp := &api.Acknowledgement{
@@ -143,7 +143,7 @@ func (r *REST) Delete(ctx apirequest.Context, name string) (runtime.Object, erro
 		},
 	}
 
-	return resp, nil
+	return resp, true, nil
 }
 
 func (r *REST) getIcingaObjects(namespace, name string) (host string, service string, err error) {
