@@ -15,7 +15,7 @@ section_menu_id: guides
 
 # Custom Webhook Check Command
 
-Searchlight supports adding custom check using SearchlightPlugin CRD. No longer you have to build binary and attach it inside Icinga container. Simply you can write a HTTP server and register your check command with Searchlight.
+Since 7.0.0 release, Searchlight supports adding custom check commands using http webhook server. No longer you have to build binary and attach it inside Icinga container. Simply you can write a HTTP server and register your check command with Searchlight using `SearchlightPlugin` CRD.
 
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1
@@ -49,8 +49,7 @@ The `.spec` section determines how the webhook server will be used by Searchligh
 
 **spec.command**
 
-`spec.command` defines the check command which will be called by Icinga.
-To use the webhook server, the fixed value of `hyperalert check_webhook` is used as `spec.command`.
+`spec.command` defines the check command which will be called by Icinga. To use the webhook server, skip the command field.
 
 **spec.webhook**
 
@@ -70,7 +69,7 @@ Possible values are: ClusterAlert, NodeAlert and PodAlert.
 
 - `spec.arguments.vars` defines user-defined arguments. These arguments can be provided to create alerts.
 
-    - `spec.arguments.vars.Items` is the required field which provides the list of arguments with their `description` and `type`. Here,
+    - `spec.arguments.vars.items` is the required field which provides the list of arguments with their `description` and `type`. Here,
 
           arguments:
             vars:
@@ -82,17 +81,17 @@ Possible values are: ClusterAlert, NodeAlert and PodAlert.
 
         `warning` and `critical` are registered as user-defined variables. User can provide values for these variables while creating alerts.
 
-        - `spec.arguments.vars.Items[].type` is required field used to define variable's data type
-        - `spec.arguments.vars.Items[].description` describes the variable.
+        - `spec.arguments.vars.items[].type` is required field used to define variable's data type. Possible values are `integer`, `number`, `boolean`, `string`, `duration`.
+        - `spec.arguments.vars.items[].description` describes the variable.
 
-    - `spec.arguments.vars.required` represents the list of user-defined arguments those are required to create Alert. If any of these required arguments is not provided, Searchlight will give validation error.
+    - `spec.arguments.vars.required` represents the list of user-defined arguments required to create Alert. If any of these required arguments is not provided, Searchlight will give validation error.
 
-    From above example, none of these variables are required.To make variable `warning` required, need to add following
+    From above example, none of these variables are required. To make variable `critical` required, need to add following
 
               arguments:
                 vars:
                   required:
-                  - warning
+                  - critical
 
 - `spec.arguments.host` represents the list of Icinga host variables which will be passed to check command. [Here is the list](https://www.icinga.com/docs/icinga2/latest/doc/03-monitoring-basics/#host-runtime-macros) of available host variables.
 
