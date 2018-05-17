@@ -129,7 +129,9 @@ searchlightplugin "check-pod-count" created
 CheckCommand `check-pod-count` is added in Icinga2 configuration. Here, `vars.Item` from `spec.arguments` are added as arguments in CheckCommand.
 
 
-> Note: Webhook will be called with URL formatted as ` http://<spec.webhook.name>.<spec.webhook.namespace>.svc/<metadata.name>`
+> Note: Webhook will be called with URL formatted as bellow:
+
+`http://<spec.webhook.name>.<spec.webhook.namespace>.svc/<metadata.name>`
 
 ### Create ClusterAlert
 
