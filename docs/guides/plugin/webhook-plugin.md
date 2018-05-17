@@ -176,3 +176,131 @@ And this plugin will call your webhook you have registered in your SearchlightPl
 </p>
 
 In the example above, Service State will be **Warning**.
+
+
+## Writing Webhook Server
+
+Command `check_webhook` calls a HTTP server with user provided variables and receives response to determine service state. In this tutorial, we will see how we can write a webhook server for Searchlight. The most important part for this webhook is its `Response` type.
+
+```go
+package main
+
+type State int32
+
+const (
+  OK       State = iota // 0
+  Warning               // 1
+  Critical              // 2
+  Unknown               // 3
+)
+
+type Response struct {
+  Code    State  `json:"code"`
+  Message string `json:"message,omitempty"`
+}
+```
+
+Icinga2 Service State is determined according to `Code` in `Response`.
+
+> Note: Webhook may not have any `Request` option.
+
+Add HTTP handler to serve request.
+
+```go
+package main
+
+import (
+  "fmt"
+  "net/http"
+)
+
+func main() {
+  http.HandleFunc("/check-pod-count", func(w http.ResponseWriter, r *http.Request) {
+    switch r.Method {
+    case http.MethodPost:
+      fmt.Println("do your stuff")
+      fmt.Println("write response with code")
+    default:
+      http.Error(w, "", http.StatusNotImplemented)
+      return
+    }
+  })
+  http.ListenAndServe(":80", http.DefaultServeMux)
+}
+```
+
+Here,
+
+- Path `/check-pod-count` only serves POST request. And return Response according to its check.
+
+> Note: This webhook should listen on `80` port and serve POST request.
+
+
+Now build this server code.
+
+```bash
+go build -o webhook main.go
+```
+
+And build docker image and push to your registry.
+
+```dockerfile
+FROM ubuntu
+
+RUN set -x \
+  && apt-get update
+RUN set -x \
+  && apt-get install -y ca-certificates
+
+COPY webhook /usr/bin/webhook
+
+ENTRYPOINT ["webhook"]
+EXPOSE 80
+```
+
+Now deploy this server in Kubernetes
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: searchlight-plugin
+  labels:
+    app: searchlight-plugin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: searchlight-plugin
+  template:
+    metadata:
+      labels:
+        app: searchlight-plugin
+    spec:
+      containers:
+      - name: webhook
+        image: appscode/searchlight-plugin-go
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: searchlight-plugin
+  labels:
+    app: searchlight-plugin
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  selector:
+    app: searchlight-plugin
+```
+
+Here,
+
+- Service `searchlight-plugin` in Namespace `default` will be used in SearchlightPlugin
+
+For a fully working version of this tutorial, visit [this](https://github.com/appscode/searchlight-plugin). Please note that the webhook server can be written in any programming language your prefer as long as the `Response` json format is maintained.
