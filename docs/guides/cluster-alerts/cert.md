@@ -76,7 +76,7 @@ secret "server-cert" created
 ```
 
 ```bash
-$ kubectl get secret -n demo server-cert
+$ kubectl get secret -n demo server-cert -o yaml
 ```
 
 ```yaml
