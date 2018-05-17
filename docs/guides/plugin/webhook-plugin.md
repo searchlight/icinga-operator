@@ -41,37 +41,61 @@ spec:
   - Unknown
 ```
 
-Here,
+The `.spec` section has following parts:
 
-- `metadata.name` will be the name of `CheckCommand`.
-- `spec.webhook` provides the namespace and name of Kubernetes `Service` that provides the webhook server.
-- `spec.alertKinds` determines which kinds of alerts will support this `CheckCommand`. Possible values are: ClusterAlert, NodeAlert and PodAlert.
-- `spec.arguments` provides variables information those user will provide to create alert.
-- `spec.states` are the supported states for this command. Different notification receivers can be set for each state.
+## Spec
 
-```console
-$ kubectl apply -f ./docs/examples/plugins/webhook/demo-0.yaml
-searchlightplugin "check-pod-count" created
-```
+The `.spec` section determines how the webhook server will be used by Searchlight.
 
-<p align="center">
-  <img alt="lifecycle"  src="/docs/images/plugin/add-plugin.svg" width="581" height="362">
-</p>
+**spec.command**
 
-CheckCommand `check-pod-count` is added in Icinga2 configuration. Here, `vars.Item` from `spec.arguments` are added as arguments in CheckCommand.
+`spec.command` defines the check command which will be called by Icinga.
+To use the webhook server, the fixed value of `hyperalert check_webhook` is used as `spec.command`.
 
-Few things to be noted here:
+**spec.webhook**
 
-- Webhook will be called with URL formatted as bellow:
+`spec.webhook` provides information of Kubernetes `Service` of the webhook server.
 
-  `http://<spec.webhook.name>.<spec.webhook.namespace>.svc/<metadata.name>`
-- Items in `spec.arguments.vars` for example `warning` and `critical` are registered as custom variables. User can provide values for these variables while creating alerts.
-- Items in `spec.arguments.host` are added in Icinga CheckCommand arguments.
+- `spec.webhook.namespace` represents the namespace of Service.
+- `spec.webhook.name` represents the name of Service.
 
-### Use Icinga Host Variables
+**spec.alertKinds**
 
-You can pass Icinga host variables to your webhook. [Here is the list](https://www.icinga.com/docs/icinga2/latest/doc/03-monitoring-basics/#host-runtime-macros) of available host variables.
-Suppose, you need `host.check_attempt` to be forwarded to your webhook, you can add like this
+`spec.alertKinds` is a required field that specifies which kinds of alerts will support this `CheckCommand`.
+Possible values are: ClusterAlert, NodeAlert and PodAlert.
+
+**spec.arguments**
+
+`spec.arguments` defines arguments which will be passed to check command by Icinga.
+
+- `spec.arguments.vars` defines user-defined arguments. These arguments can be provided to create alerts.
+
+    - `spec.arguments.vars.Items` provides the list of arguments with their `description` and `type`. Here,
+
+          arguments:
+            vars:
+              items:
+                warning:
+                  type: interger
+                critical:
+                  type: interger
+
+        `warning` and `critical` are registered as user-defined variables. User can provide values for these variables while creating alerts.
+
+         Fields `type` and `description` are used to define variable's data type and it's description respectively.
+
+    - `spec.arguments.vars.required` represents the list of user-defined arguments those are required to create Alert. If any of these required arguments is not provided, Searchlight will give validation error.
+
+    From above example, none of these variables are required.To make variable `warning` required, need to add following
+
+              arguments:
+                vars:
+                  required:
+                  - warning
+
+- `spec.arguments.host` represents the list of Icinga host variables which will be passed to check command. [Here is the list](https://www.icinga.com/docs/icinga2/latest/doc/03-monitoring-basics/#host-runtime-macros) of available host variables.
+
+Suppose, you need `host.check_attempt` to be forwarded to check command, you can add like this
 
 ```yaml
 spec:
@@ -86,6 +110,25 @@ Here,
 
 > Note: User can't provided value for these variables.
 
+**spec.states**
+
+`spec.state` are the supported states for this command. Different notification receivers can be set for each state.
+
+Lets create above SearchlightPlugin
+
+```console
+$ kubectl apply -f ./docs/examples/plugins/webhook/demo-0.yaml
+searchlightplugin "check-pod-count" created
+```
+
+<p align="center">
+  <img alt="lifecycle"  src="/docs/images/plugin/add-plugin.svg" width="581" height="362">
+</p>
+
+CheckCommand `check-pod-count` is added in Icinga2 configuration. Here, `vars.Item` from `spec.arguments` are added as arguments in CheckCommand.
+
+
+> Note: Webhook will be called with URL formatted as ` http://<spec.webhook.name>.<spec.webhook.namespace>.svc/<metadata.name>`
 
 ### Create ClusterAlert
 
@@ -131,4 +174,3 @@ And this plugin will call your webhook you have registered in your SearchlightPl
 </p>
 
 In the example above, Service State will be **Warning**.
-
