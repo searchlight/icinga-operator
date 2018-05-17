@@ -54,7 +54,7 @@ To use the webhook server, the fixed value of `hyperalert check_webhook` is used
 
 **spec.webhook**
 
-`spec.webhook` provides information of Kubernetes `Service` of the webhook server.
+`spec.webhook` provides information of Kubernetes `Service` for the webhook server.
 
 - `spec.webhook.namespace` represents the namespace of Service.
 - `spec.webhook.name` represents the name of Service.
@@ -70,7 +70,7 @@ Possible values are: ClusterAlert, NodeAlert and PodAlert.
 
 - `spec.arguments.vars` defines user-defined arguments. These arguments can be provided to create alerts.
 
-    - `spec.arguments.vars.Items` provides the list of arguments with their `description` and `type`. Here,
+    - `spec.arguments.vars.Items` is the required field which provides the list of arguments with their `description` and `type`. Here,
 
           arguments:
             vars:
@@ -82,7 +82,8 @@ Possible values are: ClusterAlert, NodeAlert and PodAlert.
 
         `warning` and `critical` are registered as user-defined variables. User can provide values for these variables while creating alerts.
 
-         Fields `type` and `description` are used to define variable's data type and it's description respectively.
+        - `spec.arguments.vars.Items[].type` is required field used to define variable's data type
+        - `spec.arguments.vars.Items[].description` describes the variable.
 
     - `spec.arguments.vars.required` represents the list of user-defined arguments those are required to create Alert. If any of these required arguments is not provided, Searchlight will give validation error.
 
