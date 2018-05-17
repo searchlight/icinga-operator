@@ -55,8 +55,44 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
+### Create a Secret
+
+In this tutorial, we are going to use `onessl` to issue certificates. Download `onessl` from [kubepack/onessl](https://github.com/kubepack/onessl/releases).
+
+```bash
+$ onessl create ca-cert
+$ onessl create server-cert
+```
+
+Now, we have two certificates `ca.crt` and `server.crt`.
+
+Lets create a Secret with these Certificates.
+
+```bash
+$ kubectl create secret generic server-cert -n demo \
+        --from-file=./ca.crt --from-file=./server.crt
+
+secret "server-cert" created
+```
+
+```bash
+$ kubectl get secret -n demo server-cert
+```
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: server-cert
+  namespace: demo
+type: Opaque
+data:
+  ca.crt: Y2EuY3J0Cg==
+  server.crt: c2VydmVyLmNydAo=
+```
+
 ### Create Alert
-In this tutorial, we are going to create an alert to check `cert`.
+In this tutorial, we are going to create an alert to check certificates in Secret.
 
 ```yaml
 $ cat ./docs/examples/cluster-alerts/cert/demo-0.yaml
@@ -69,6 +105,8 @@ metadata:
 spec:
   check: cert
   vars:
+    secretName: server-cert
+    secretKey: "ca.crt,server.crt"
     warning: 240h
     critical: 72h
   checkInterval: 30s
@@ -79,6 +117,17 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
+Here,
+
+- `spec.check` provides check command name. In this case, it is `cert`.
+- `spec.vars` supports following variables
+
+    - `selector` - Label selector for secrets where certificates are stored. Supports '=', '==', and '!='
+    - `secretName` - Name of secret from where certificates are checked.
+    - `secretKey` - List of secret keys where certificates are kept
+    - `warning` - Remaining duration for Warning state. [Default: 360h]
+    - `critical` - Remaining duration for Critical state. [Default: 120h]
 
 ```console
 $ kubectl apply -f ./docs/examples/cluster-alerts/cert/demo-0.yaml
@@ -95,6 +144,11 @@ Events:
 ```
 
 Voila! `cert` command has been synced to Icinga2. Please visit [here](/docs/guides/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `ca-cert-demo-0`.
+
+Following notes are important:
+
+- If `secretName` and `selector` both are not provided, all secrets in same namespace will be checked.
+- If `secretKey` is not provided in the alert, and SecretType of a secret is `SecretTypeTLS`, TLS certificate in `tls.crt"` will be checked.
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
