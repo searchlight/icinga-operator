@@ -47,10 +47,10 @@ The following table lists the configurable parameters of the Searchlight chart a
 | `replicaCount`                      | Number of searchlight Operator replicas to create (only 1 is supported) | `1`                |
 | `operator.registry`                 | Docker registry used to pull Operator image                             | `appscode`         |
 | `operator.repository`               | Operator container image                                                | `searchlight`      |
-| `operator.tag`                      | Operator image tag                                                      | `6.0.0-rc.0`       |
+| `operator.tag`                      | Operator image tag                                                      | `7.0.0-rc.0`       |
 | `icinga.registry`                   | Docker registry used to pull Icinga image                               | `appscode`         |
 | `icinga.repository`                 | Icinga container image                                                  | `icinga`           |
-| `icinga.tag`                        | icinga container image tag                                              | `6.0.0-rc.0-k8s`   |
+| `icinga.tag`                        | icinga container image tag                                              | `7.0.0-rc.0-k8s`   |
 | `ido.registry`                      | Docker registry used to pull PostgreSQL image                           | `appscode`         |
 | `ido.repository`                    | PostgreSQL container image                                              | `postgress`        |
 | `ido.tag`                           | ido container image tag                                                 | `9.5-alpine`       |

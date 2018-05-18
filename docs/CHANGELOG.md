@@ -2,24 +2,24 @@
 title: Changelog | Searchlight
 description: Changelog
 menu:
-  product_searchlight_6.0.0-rc.0:
+  product_searchlight_7.0.0-rc.0:
     identifier: changelog-searchlight
     name: Changelog
     parent: welcome
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-rc.0
+menu_name: product_searchlight_7.0.0-rc.0
 section_menu_id: welcome
-url: /products/searchlight/6.0.0-rc.0/welcome/changelog/
+url: /products/searchlight/7.0.0-rc.0/welcome/changelog/
 aliases:
-  - /products/searchlight/6.0.0-rc.0/CHANGELOG/
+  - /products/searchlight/7.0.0-rc.0/CHANGELOG/
 ---
 
 # Change Log
 
 ## [Unreleased](https://github.com/appscode/searchlight/tree/HEAD)
 
-[Full Changelog](https://github.com/appscode/searchlight/compare/6.0.0-rc.0...HEAD)
+[Full Changelog](https://github.com/appscode/searchlight/compare/7.0.0-rc.0...HEAD)
 
 **Implemented enhancements:**
 
@@ -97,11 +97,11 @@ aliases:
 - Record incidents and notifications via CRD/EAS [\#296](https://github.com/appscode/searchlight/pull/296) ([tamalsaha](https://github.com/tamalsaha))
 - Merge admission webhook and operator into one binary [\#291](https://github.com/appscode/searchlight/pull/291) ([tamalsaha](https://github.com/tamalsaha))
 - Remove individual binaries for plugins [\#290](https://github.com/appscode/searchlight/pull/290) ([tamalsaha](https://github.com/tamalsaha))
-- Update readme to 6.0.0-rc.0 release [\#287](https://github.com/appscode/searchlight/pull/287) ([tamalsaha](https://github.com/tamalsaha))
+- Update readme to 7.0.0-rc.0 release [\#287](https://github.com/appscode/searchlight/pull/287) ([tamalsaha](https://github.com/tamalsaha))
 - Use workqueue [\#230](https://github.com/appscode/searchlight/pull/230) ([tamalsaha](https://github.com/tamalsaha))
 
-## [6.0.0-rc.0](https://github.com/appscode/searchlight/tree/6.0.0-rc.0) (2018-03-06)
-[Full Changelog](https://github.com/appscode/searchlight/compare/5.1.0...6.0.0-rc.0)
+## [7.0.0-rc.0](https://github.com/appscode/searchlight/tree/7.0.0-rc.0) (2018-03-06)
+[Full Changelog](https://github.com/appscode/searchlight/compare/5.1.0...7.0.0-rc.0)
 
 **Fixed bugs:**
 
@@ -118,7 +118,7 @@ aliases:
 
 **Merged pull requests:**
 
-- Prepare docs for 6.0.0-rc.0 release [\#286](https://github.com/appscode/searchlight/pull/286) ([tamalsaha](https://github.com/tamalsaha))
+- Prepare docs for 7.0.0-rc.0 release [\#286](https://github.com/appscode/searchlight/pull/286) ([tamalsaha](https://github.com/tamalsaha))
 - Make it clear that installer is a single command [\#284](https://github.com/appscode/searchlight/pull/284) ([tamalsaha](https://github.com/tamalsaha))
 - Fix installer [\#283](https://github.com/appscode/searchlight/pull/283) ([tamalsaha](https://github.com/tamalsaha))
 - Update chart to match RBAC best practices for charts [\#281](https://github.com/appscode/searchlight/pull/281) ([tamalsaha](https://github.com/tamalsaha))
@@ -134,7 +134,7 @@ aliases:
 - Use ${} form for onessl envsubst [\#269](https://github.com/appscode/searchlight/pull/269) ([tamalsaha](https://github.com/tamalsaha))
 - Merge uninstall script into installer [\#268](https://github.com/appscode/searchlight/pull/268) ([tamalsaha](https://github.com/tamalsaha))
 - Copy generic-admission-server into pkg [\#267](https://github.com/appscode/searchlight/pull/267) ([tamalsaha](https://github.com/tamalsaha))
-- Cut 6.0.0-rc.0 [\#265](https://github.com/appscode/searchlight/pull/265) ([tamalsaha](https://github.com/tamalsaha))
+- Cut 7.0.0-rc.0 [\#265](https://github.com/appscode/searchlight/pull/265) ([tamalsaha](https://github.com/tamalsaha))
 - Add ValidatingAdmissionWebhook for CRDs [\#264](https://github.com/appscode/searchlight/pull/264) ([tamalsaha](https://github.com/tamalsaha))
 - Fix instructions for using private docker registry [\#263](https://github.com/appscode/searchlight/pull/263) ([tamalsaha](https://github.com/tamalsaha))
 - Use installer script [\#262](https://github.com/appscode/searchlight/pull/262) ([tamalsaha](https://github.com/tamalsaha))

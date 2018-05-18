@@ -2,13 +2,13 @@
 title: Install
 description: Searchlight Install
 menu:
-  product_searchlight_6.0.0-rc.0:
+  product_searchlight_7.0.0-rc.0:
     identifier: install-searchlight
     name: Install
     parent: setup
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-rc.0
+menu_name: product_searchlight_7.0.0-rc.0
 section_menu_id: setup
 ---
 
@@ -24,7 +24,7 @@ Searchlight operator can be installed via a script or as a Helm chart.
 To install Searchlight in your Kubernetes cluster, run the following command:
 
 ```console
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-rc.0/hack/deploy/searchlight.sh | bash
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0-rc.0/hack/deploy/searchlight.sh | bash
 ```
 
 After successful installation, you should have a `searchlight-operator-***` pod running in the `kube-system` namespace.
@@ -36,10 +36,10 @@ searchlight-operator-6945bcd777-4jdv7   3/3       Running   0          2m
 
 ### Customizing Installer
 
-The installer script and associated yaml files can be found in the [/hack/deploy](https://github.com/appscode/searchlight/tree/6.0.0-rc.0/hack/deploy) folder. You can see the full list of flags available to installer using `-h` flag.
+The installer script and associated yaml files can be found in the [/hack/deploy](https://github.com/appscode/searchlight/tree/7.0.0-rc.0/hack/deploy) folder. You can see the full list of flags available to installer using `-h` flag.
 
 ```console
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-rc.0/hack/deploy/searchlight.sh | bash -s -- -h
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0-rc.0/hack/deploy/searchlight.sh | bash -s -- -h
 searchlight.sh - install searchlight operator
 
 searchlight.sh [options]
@@ -60,7 +60,7 @@ options:
 If you would like to run Searchlight operator pod in `master` instances, pass the `--run-on-master` flag:
 
 ```console
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-rc.0/hack/deploy/searchlight.sh \
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0-rc.0/hack/deploy/searchlight.sh \
     | bash -s -- --run-on-master [--rbac]
 ```
 
@@ -68,7 +68,7 @@ Searchlight operator will be installed in a `kube-system` namespace by default. 
 
 ```console
 $ kubectl create namespace searchlight
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-rc.0/hack/deploy/searchlight.sh \
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0-rc.0/hack/deploy/searchlight.sh \
     | bash -s -- --namespace=searchlight [--run-on-master] [--rbac]
 ```
 
@@ -82,14 +82,14 @@ To pass the address of your private registry and optionally a image pull secret 
 
 ```console
 $ kubectl create namespace searchlight
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-rc.0/hack/deploy/searchlight.sh \
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0-rc.0/hack/deploy/searchlight.sh \
     | bash -s -- --docker-registry=MY_REGISTRY [--image-pull-secret=SECRET_NAME] [--rbac]
 ```
 
 Searchlight implements a [validating admission webhook](https://kubernetes.io/docs/admin/admission-controllers/#validatingadmissionwebhook-alpha-in-18-beta-in-19) to validate Searchlight CRDs. This is enabled by default for Kubernetes 1.9.0 or later releases. To disable this feature, pass the `--enable-validating-webhook=false` flag.
 
 ```console
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/6.0.0-rc.0/hack/deploy/searchlight.sh \
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0-rc.0/hack/deploy/searchlight.sh \
     | bash -s -- --enable-admission-webhook [--rbac]
 ```
 
@@ -245,12 +245,12 @@ $ POD_NAMESPACE=kube-system
 $ POD_NAME=$(kubectl get pods -n $POD_NAMESPACE -l app=searchlight -o jsonpath={.items[0].metadata.name})
 $ kubectl exec -it $POD_NAME -c operator -n $POD_NAMESPACE searchlight version
 
-Version = 6.0.0-rc.0
+Version = 7.0.0-rc.0
 VersionStrategy = tag
 Os = alpine
 Arch = amd64
 CommitHash = 9442863beb09a50a2c3818ab586fa5b1541fddf1
 GitBranch = release-4.0
-GitTag = 6.0.0-rc.0
+GitTag = 7.0.0-rc.0
 CommitTimestamp = 2017-09-26T03:00:58
 ```
