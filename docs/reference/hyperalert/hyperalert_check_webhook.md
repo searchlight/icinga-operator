@@ -24,47 +24,49 @@ hyperalert check_webhook [flags]
 ### Options
 
 ```
-  -h, --help            help for check_webhook
-      --key.0 string    
-      --key.1 string    
-      --key.10 string   
-      --key.11 string   
-      --key.12 string   
-      --key.13 string   
-      --key.14 string   
-      --key.15 string   
-      --key.16 string   
-      --key.17 string   
-      --key.18 string   
-      --key.19 string   
-      --key.2 string    
-      --key.3 string    
-      --key.4 string    
-      --key.5 string    
-      --key.6 string    
-      --key.7 string    
-      --key.8 string    
-      --key.9 string    
-      --val.0 string    
-      --val.1 string    
-      --val.10 string   
-      --val.11 string   
-      --val.12 string   
-      --val.13 string   
-      --val.14 string   
-      --val.15 string   
-      --val.16 string   
-      --val.17 string   
-      --val.18 string   
-      --val.19 string   
-      --val.2 string    
-      --val.3 string    
-      --val.4 string    
-      --val.5 string    
-      --val.6 string    
-      --val.7 string    
-      --val.8 string    
-      --val.9 string    
+      --check_command string   SearchlightPlugin name for this webhook check
+  -h, --help                   help for check_webhook
+      --key.0 string           
+      --key.1 string           
+      --key.10 string          
+      --key.11 string          
+      --key.12 string          
+      --key.13 string          
+      --key.14 string          
+      --key.15 string          
+      --key.16 string          
+      --key.17 string          
+      --key.18 string          
+      --key.19 string          
+      --key.2 string           
+      --key.3 string           
+      --key.4 string           
+      --key.5 string           
+      --key.6 string           
+      --key.7 string           
+      --key.8 string           
+      --key.9 string           
+      --val.0 string           
+      --val.1 string           
+      --val.10 string          
+      --val.11 string          
+      --val.12 string          
+      --val.13 string          
+      --val.14 string          
+      --val.15 string          
+      --val.16 string          
+      --val.17 string          
+      --val.18 string          
+      --val.19 string          
+      --val.2 string           
+      --val.3 string           
+      --val.4 string           
+      --val.5 string           
+      --val.6 string           
+      --val.7 string           
+      --val.8 string           
+      --val.9 string           
+      --webhook_url string     Call the webhook server using this URL
 ```
 
 ### Options inherited from parent commands
