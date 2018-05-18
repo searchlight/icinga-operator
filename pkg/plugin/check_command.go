@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"github.com/appscode/searchlight/plugins/check_webhook"
 )
 
 var checkCommandTemplate = `object CheckCommand "%s" {
@@ -30,18 +31,6 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 	})
 
 	webhook := plugin.Spec.Webhook
-	if webhook != nil {
-		namespace := "default"
-
-		if webhook.Namespace != "" {
-			namespace = webhook.Namespace
-		}
-
-		args = append(args, arg{
-			key: "url",
-			val: fmt.Sprintf("http://%s.%s.svc/%s", webhook.Name, namespace, plugin.Name),
-		})
-	}
 
 	if plugin.Spec.Arguments.Vars != nil {
 		for key := range plugin.Spec.Arguments.Vars.Items {
@@ -63,24 +52,11 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 		return args[i].key < args[j].key
 	})
 
+	var command string
 	flagList := make([]string, 0)
 
 	if webhook == nil {
-		for _, f := range args {
-			flagList = append(flagList, fmt.Sprintf(`"--%s" = "%s"`, f.key, f.val))
-		}
-	} else {
-		for i, f := range args {
-			flagList = append(flagList, fmt.Sprintf(`"--key.%d" = "%s"`, i, f.key))
-			flagList = append(flagList, fmt.Sprintf(`"--val.%d" = "%s"`, i, f.val))
-		}
-	}
-
-	var command string
-
-	if plugin.Spec.Webhook != nil {
-		command = "/hyperalert check_webhook"
-	} else {
+		// Command in CheckCommand
 		parts := strings.Split(plugin.Spec.Command, " ")
 		for i, part := range parts {
 			if i == 0 {
@@ -88,6 +64,29 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 			} else {
 				command = command + fmt.Sprintf(`, "%s"`, part)
 			}
+		}
+
+		// Arguments in CheckCommand
+		for _, f := range args {
+			flagList = append(flagList, fmt.Sprintf(`"--%s" = "%s"`, f.key, f.val))
+		}
+	} else {
+		// Command in CheckCommand
+		command = "/hyperalert check_webhook"
+
+		// URL for webhook
+		namespace := "default"
+		if webhook.Namespace != "" {
+			namespace = webhook.Namespace
+		}
+		url := fmt.Sprintf("http://%s.%s.svc/%s", webhook.Name, namespace, plugin.Name)
+		flagList = append(flagList, fmt.Sprintf(`"--%s" = "%s"`, check_webhook.FlagWebhookURL, url))
+		flagList = append(flagList, fmt.Sprintf(`"--%s" = "%s"`, check_webhook.FlagCheckCommand, plugin.Name))
+
+		// Arguments in CheckCommand
+		for i, f := range args {
+			flagList = append(flagList, fmt.Sprintf(`"--key.%d" = "%s"`, i, f.key))
+			flagList = append(flagList, fmt.Sprintf(`"--val.%d" = "%s"`, i, f.val))
 		}
 	}
 

@@ -6,16 +6,26 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 
+	"github.com/appscode/go/flags"
+	"github.com/appscode/kutil/tools/clientcmd"
+	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
+	cs "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
+	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
-	totalFlag    = 20
-	flagURL      = "url"
-	stateUnknown = 3
+	totalFlag        = 20
+	FlagCheckCommand = "check_command"
+	FlagWebhookURL   = "webhook_url"
+	stateUnknown     = 3
 )
 
 type webhookResp struct {
@@ -23,76 +33,178 @@ type webhookResp struct {
 	Message interface{} `json:"message,omitempty"`
 }
 
-func NewCmd() *cobra.Command {
+type param struct {
+	key string
+	val string
+}
 
-	type flag struct {
-		key string
-		val string
+type plugin struct {
+	client  v1alpha1.SearchlightPluginInterface
+	options options
+}
+
+var _ plugins.PluginInterface = &plugin{}
+
+func newPlugin(client v1alpha1.SearchlightPluginInterface, opts options) *plugin {
+	return &plugin{client, opts}
+}
+
+func newPluginFromConfig(opts options) (*plugin, error) {
+	config, err := clientcmd.BuildConfigFromContext(opts.kubeconfigPath, opts.contextName)
+	if err != nil {
+		return nil, err
+	}
+	monitoringClient, err := cs.NewForConfig(config)
+	if err != nil {
+		return nil, err
+	}
+	return newPlugin(monitoringClient.SearchlightPlugins(), opts), nil
+}
+
+type options struct {
+	kubeconfigPath string
+	contextName    string
+	// options
+	webhookURL   string
+	checkCommand string
+	params       []param
+}
+
+func (o *options) complete(cmd *cobra.Command) error {
+	var err error
+
+	o.kubeconfigPath, err = cmd.Flags().GetString(plugins.FlagKubeConfig)
+	if err != nil {
+		return err
+	}
+	o.contextName, err = cmd.Flags().GetString(plugins.FlagKubeConfigContext)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *options) validate() error {
+	return nil
+}
+
+func (p *plugin) Check() (icinga.State, interface{}) {
+	opts := p.options
+
+	sp, err := p.client.Get(opts.checkCommand, metav1.GetOptions{})
+	if err != nil {
+		return icinga.Unknown, err
 	}
 
-	flags := make([]flag, totalFlag)
+	data := make(map[string]interface{})
+
+	vars := sp.Spec.Arguments.Vars
+	if vars != nil {
+		for _, p := range opts.params {
+			if item, found := vars.Items[p.key]; found {
+				switch item.Type {
+				case api.VarTypeInteger:
+					val, err := strconv.ParseInt(p.val, 10, 64)
+					if err != nil {
+						return icinga.Unknown, fmt.Errorf(`failed to parse value for key "%s" to Int64`, p.key)
+					}
+					data[p.key] = val
+				case api.VarTypeNumber:
+					val, err := strconv.ParseFloat(p.val, 64)
+					if err != nil {
+						return icinga.Unknown, fmt.Errorf(`failed to parse value for key "%s" to Float64`, p.key)
+					}
+					data[p.key] = val
+				case api.VarTypeString:
+					data[p.key] = p.val
+				case api.VarTypeBoolean:
+					val, err := strconv.ParseBool(p.val)
+					if err != nil {
+						return icinga.Unknown, fmt.Errorf(`failed to parse value for key "%s" to Bool`, p.key)
+					}
+					data[p.key] = val
+				case api.VarTypeDuration:
+					duration, err := time.ParseDuration(p.val)
+					if err != nil {
+						return icinga.Unknown, fmt.Errorf(`failed to parse value for key "%s" to Duration`, p.key)
+					}
+					data[p.key] = int64(duration.Round(time.Millisecond))
+				}
+			} else {
+				data[p.key] = p.val
+			}
+		}
+	} else {
+		for _, p := range opts.params {
+			data[p.key] = p.val
+		}
+	}
+
+	reqData, err := json.Marshal(data)
+	if err != nil {
+		return stateUnknown, err
+	}
+
+	b := strings.NewReader(string(reqData))
+	resp, err := http.Post(opts.webhookURL, "application/json", b)
+	if err != nil {
+		return stateUnknown, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return stateUnknown, fmt.Sprintf("status code: %d", resp.StatusCode)
+	}
+
+	respDataByte, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return stateUnknown, err
+	}
+
+	var respData webhookResp
+	if err := json.Unmarshal(respDataByte, &respData); err != nil {
+		return stateUnknown, err
+	}
+
+	if respData.Code == nil {
+		return stateUnknown, errors.New("can't identify State")
+	}
+
+	return icinga.State(*respData.Code), respData.Message
+}
+
+func NewCmd() *cobra.Command {
+	opts := options{
+		params: make([]param, totalFlag),
+	}
 
 	cmd := &cobra.Command{
 		Use:   "check_webhook",
 		Short: "Check webhook result",
 
 		Run: func(cmd *cobra.Command, args []string) {
-			var url string
+			flags.EnsureRequiredFlags(cmd, FlagCheckCommand, FlagWebhookURL)
 
-			data := make(map[string]string)
-
-			for _, v := range flags {
-				if v.key == "" {
-					continue
-				}
-
-				if v.key == flagURL {
-					url = v.val
-				}
-				data[v.key] = v.val
+			if err := opts.complete(cmd); err != nil {
+				icinga.Output(icinga.Unknown, err)
 			}
-
-			if url == "" {
-				icinga.Output(stateUnknown, errors.New("webhook URL missing"))
+			if err := opts.validate(); err != nil {
+				icinga.Output(icinga.Unknown, err)
 			}
-
-			reqData, err := json.Marshal(data)
+			plugin, err := newPluginFromConfig(opts)
 			if err != nil {
-				icinga.Output(stateUnknown, err)
+				icinga.Output(icinga.Unknown, err)
 			}
-
-			b := strings.NewReader(string(reqData))
-			resp, err := http.Post(url, "application/json", b)
-			if err != nil {
-				icinga.Output(stateUnknown, err)
-			}
-			defer resp.Body.Close()
-
-			if resp.StatusCode != 200 {
-				icinga.Output(stateUnknown, fmt.Sprintf("status code: %d", resp.StatusCode))
-			}
-
-			respDataByte, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				icinga.Output(stateUnknown, err)
-			}
-
-			var respData webhookResp
-			if err := json.Unmarshal(respDataByte, &respData); err != nil {
-				icinga.Output(stateUnknown, err)
-			}
-
-			if respData.Code == nil {
-				icinga.Output(stateUnknown, errors.New("can't identify State"))
-			}
-
-			icinga.Output(icinga.State(*respData.Code), respData.Message)
+			icinga.Output(plugin.Check())
 		},
 	}
 
+	cmd.Flags().StringVar(&opts.webhookURL, FlagWebhookURL, "", "Call the webhook server using this URL")
+	cmd.Flags().StringVar(&opts.checkCommand, FlagCheckCommand, "", "SearchlightPlugin name for this webhook check")
+
 	for i := 0; i < totalFlag; i++ {
-		cmd.Flags().StringVar(&flags[i].key, fmt.Sprintf("key.%d", i), "", "")
-		cmd.Flags().StringVar(&flags[i].val, fmt.Sprintf("val.%d", i), "", "")
+		cmd.Flags().StringVar(&opts.params[i].key, fmt.Sprintf("key.%d", i), "", "")
+		cmd.Flags().StringVar(&opts.params[i].val, fmt.Sprintf("val.%d", i), "", "")
 	}
 
 	return cmd
