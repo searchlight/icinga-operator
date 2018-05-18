@@ -27,13 +27,13 @@ Please pick a version of Searchlight that matches your Kubernetes installation.
 | [3.0.1](https://github.com/appscode/searchlight/releases/tag/3.0.1) (uses TPR)           | [User Guide](https://github.com/appscode/searchlight/tree/3.0.1/docs)      | 1.5.x - 1.7.x      |
 
 ## Installation
-To install Searchlight, please follow the guide [here](https://appscode.com/products/searchlight/7.0.0-rc.0/setup/install).
+To install Searchlight, please follow the guide [here](https://appscode.com/products/searchlight/5.1.1/setup/install).
 
 ## Using Searchlight
-Want to learn how to use Searchlight? Please start [here](https://appscode.com/products/searchlight/7.0.0-rc.0).
+Want to learn how to use Searchlight? Please start [here](https://appscode.com/products/searchlight/5.1.1).
 
 ## Contribution guidelines
-Want to help improve Searchlight? Please start [here](https://appscode.com/products/searchlight/7.0.0-rc.0/welcome/contributing).
+Want to help improve Searchlight? Please start [here](https://appscode.com/products/searchlight/5.1.1/welcome/contributing).
 
 ---
 
