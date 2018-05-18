@@ -53,9 +53,9 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-
 ### Check existence of pods with matching labels
 In this tutorial, a ClusterAlert will be used check existence of pods with matching labels by setting `spec.vars.selector` field.
+
 ```yaml
 $ cat ./docs/examples/cluster-alerts/pod-exists/demo-0.yaml
 
@@ -77,6 +77,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/cluster-alerts/pod-exists/demo-0.yaml
 replicationcontroller "nginx" created
@@ -100,6 +101,7 @@ Voila! `pod-exists` command has been synced to Icinga2. Please visit [here](/doc
 
 ### Check existence of a specific pod
 In this tutorial, a ClusterAlert will be used check existence of a pod by name by setting `spec.vars.podName` field.
+
 ```yaml
 $ cat ./docs/examples/cluster-alerts/pod-exists/demo-1.yaml
 
@@ -121,6 +123,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/cluster-alerts/pod-exists/demo-1.yaml
 pod "busybox" created
@@ -161,6 +164,7 @@ Searchlight operator will delete Icinga Services for this alert. To resume, edit
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
+
 ```console
 $ kubectl delete ns demo
 ```

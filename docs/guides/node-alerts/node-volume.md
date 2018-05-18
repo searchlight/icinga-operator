@@ -20,7 +20,7 @@ Check command `node-volume` is used to check percentage of available space in Ku
 ## Spec
 `node-volume` check command has the following variables:
 
-- `mountpoint` - Mountpoint of volume whose usage stats will be checked
+- `mountPoint` - Mountpoint of volume whose usage stats will be checked
 - `secretName` - Name of Kubernetes Secret used to pass [hostfacts auth info](/docs/setup/hostfacts.md#create-hostfacts-secret)
 - `warning` - Warning level value (usage percentage defaults to 80.0)
 - `critical` - Critical level value (usage percentage defaults to 95.0)
@@ -56,6 +56,7 @@ demo          Active    4m
 
 ### Check volume stats of all nodes
 In this tutorial, we are going to create a NodeAlert to check volume stats of all nodes.
+
 ```yaml
 $ cat ./docs/examples/node-alerts/node-volume/demo-0.yaml
 
@@ -67,7 +68,7 @@ metadata:
 spec:
   check: node-volume
   vars:
-    mountpoint: /mnt/sda1
+    mountPoint: /mnt/sda1
     warning: '70'
     critical: '95'
   checkInterval: 5m
@@ -78,6 +79,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/node-alerts/node-volume/demo-0.yaml
 nodealert "node-volume-demo-0" created
@@ -113,7 +115,7 @@ spec:
     beta.kubernetes.io/os: linux
   check: node-volume
   vars:
-    mountpoint: /mnt/sda1
+    mountPoint: /mnt/sda1
     warning: '70'
     critical: '95'
   checkInterval: 5m
@@ -124,6 +126,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/node-alerts/node-volume/demo-1.yaml
 nodealert "node-volume-demo-1" created
@@ -155,7 +158,7 @@ spec:
   nodeName: minikube
   check: node-volume
   vars:
-    mountpoint: /mnt/sda1
+    mountPoint: /mnt/sda1
     warning: '70'
     critical: '95'
   checkInterval: 5m
@@ -200,6 +203,7 @@ Searchlight operator will delete Icinga Services for this alert. To resume, edit
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
+
 ```console
 $ kubectl delete ns demo
 ```

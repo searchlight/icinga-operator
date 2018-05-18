@@ -1,9 +1,9 @@
 ---
-title: CA Cert
+title: Cert
 menu:
   product_searchlight_6.0.0-rc.0:
-    identifier: guides-ca-cert
-    name: CA Cert
+    identifier: guides-cert
+    name: Cert
     parent: cluster-alert
     weight: 20
 product_name: searchlight
@@ -13,15 +13,18 @@ section_menu_id: guides
 
 > New to Searchlight? Please start [here](/docs/concepts/README.md).
 
-# Check ca_cert
+# Check cert
 
-Check command `ca_cert` checks the expiration timestamp of Kubernetes api server CA certificate. No longer you have to get a surprise that the CA certificate for your cluster has expired.
+Check command `cert` checks the expiration timestamp of any certificate from Secrets. No longer you have to get a surprise that your certificates have expired.
 
 ## Spec
-`ca_cert` check command has the following variables:
+`cert` check command has the following variables:
 
-- `warning` - Condition for warning, compare with tiem left before expiration. (Default: TTL < 360h)
-- `critical` - Condition for critical, compare with tiem left before expiration. (Default: TTL < 120h)
+- `selector` - Selector (label query) to filter on, supports '=', '==', and '!='
+- `secretName` - Name of secret from where certificates are checked
+- `secretKey` - Name of secret key where certificates are kept
+- `warning` - Remaining duration for Warning state. [Default: 360h]
+- `critical` - Remaining duration for Critical state. [Default: 120h]
 
 Execution of this command can result in following states:
 
@@ -52,19 +55,58 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-### Create Alert
-In this tutorial, we are going to create an alert to check `ca_cert`.
+### Create a Secret
+
+In this tutorial, we are going to use `onessl` to issue certificates. Download `onessl` from [kubepack/onessl](https://github.com/kubepack/onessl/releases).
+
+```bash
+$ onessl create ca-cert
+$ onessl create server-cert
+```
+
+Now, we have two certificates `ca.crt` and `server.crt`.
+
+Lets create a Secret with these Certificates.
+
+```bash
+$ kubectl create secret generic server-cert -n demo \
+        --from-file=./ca.crt --from-file=./server.crt
+
+secret "server-cert" created
+```
+
+```bash
+$ kubectl get secret -n demo server-cert -o yaml
+```
+
 ```yaml
-$ cat ./docs/examples/cluster-alerts/ca_cert/demo-0.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: server-cert
+  namespace: demo
+type: Opaque
+data:
+  ca.crt: Y2EuY3J0Cg==
+  server.crt: c2VydmVyLmNydAo=
+```
+
+### Create Alert
+In this tutorial, we are going to create an alert to check certificates in Secret.
+
+```yaml
+$ cat ./docs/examples/cluster-alerts/cert/demo-0.yaml
 
 apiVersion: monitoring.appscode.com/v1alpha1
 kind: ClusterAlert
 metadata:
-  name: ca-cert-demo-0
+  name: cert-demo-0
   namespace: demo
 spec:
-  check: ca_cert
+  check: cert
   vars:
+    secretName: server-cert
+    secretKey: "ca.crt,server.crt"
     warning: 240h
     critical: 72h
   checkInterval: 30s
@@ -75,44 +117,42 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
-```console
-$ kubectl apply -f ./docs/examples/cluster-alerts/ca_cert/demo-0.yaml 
-clusteralert "ca-cert-demo-0" created
 
-$ kubectl describe clusteralert ca-cert-demo-0 -n demo
-Name:		ca-cert-demo-0
+Here,
+
+- `spec.check` provides check command name. In this case, it is `cert`.
+- `spec.vars` supports following variables
+
+    - `selector` - Label selector for secrets where certificates are stored. Supports '=', '==', and '!='
+    - `secretName` - Name of secret from where certificates are checked.
+    - `secretKey` - List of secret keys where certificates are kept
+    - `warning` - Remaining duration for Warning state. [Default: 360h]
+    - `critical` - Remaining duration for Critical state. [Default: 120h]
+
+```console
+$ kubectl apply -f ./docs/examples/cluster-alerts/cert/demo-0.yaml
+clusteralert "cert-demo-0" created
+
+$ kubectl describe clusteralert cert-demo-0 -n demo
+Name:		cert-demo-0
 Namespace:	demo
 Labels:		<none>
 Events:
   FirstSeen	LastSeen	Count	From			SubObjectPath	Type		Reason		Message
   ---------	--------	-----	----			-------------	--------	------		-------
-  9s		9s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "ca-cert-demo-0"
+  9s		9s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "cert-demo-0"
 ```
 
-Voila! `ca_cert` command has been synced to Icinga2. Please visit [here](/docs/guides/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `ca-cert-demo-0`.
+Voila! `cert` command has been synced to Icinga2. Please visit [here](/docs/guides/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `ca-cert-demo-0`.
 
-![check ca_cert](/docs/images/cluster-alerts/ca_cert/demo-0.png)
+Following notes are important:
 
-
-### Pause Alert
-
-To pause alert, edit ClusterAlert `ca-cert-demo-0` to set `spec.paused` to be `true`
-
-```bash
-$ kubectl edit clusteralert ca-cert-demo-0 -n demo
-```
-
-
-```yaml
-spec:
-  pause: true
-```
-
-Searchlight operator will delete Icinga Services for this alert. To resume, edit and set `spec.paused` to be `false`
-
+- If `secretName` and `selector` both are not provided, all secrets in same namespace will be checked.
+- If `secretKey` is not provided in the alert, and SecretType of a secret is `SecretTypeTLS`, TLS certificate in `tls.crt"` will be checked.
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
+
 ```console
 $ kubectl delete ns demo
 ```

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: server-cert
+  namespace: demo
+type: Opaque
+data:
+  ca.crt: Y2EuY3J0Cg==
+  server.crt: c2VydmVyLmNydAo=

@@ -20,7 +20,7 @@ func GetPodStatusPlugin() *api.SearchlightPlugin {
 					"v":    "vars.verbosity",
 				},
 			},
-			State: []string{stateOK, stateCritical, stateUnknown},
+			States: []string{stateOK, stateCritical, stateUnknown},
 		},
 	}
 }
@@ -57,7 +57,7 @@ func GetPodVolumePlugin() *api.SearchlightPlugin {
 					"v":    "vars.verbosity",
 				},
 			},
-			State: []string{stateOK, stateCritical, stateUnknown},
+			States: []string{stateOK, stateCritical, stateUnknown},
 		},
 	}
 }
@@ -91,7 +91,7 @@ func GetPodExecPlugin() *api.SearchlightPlugin {
 					"v":    "vars.verbosity",
 				},
 			},
-			State: []string{stateOK, stateCritical, stateUnknown},
+			States: []string{stateOK, stateCritical, stateUnknown},
 		},
 	}
 }

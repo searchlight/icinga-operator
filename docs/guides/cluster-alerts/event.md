@@ -54,9 +54,9 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-
 ### Check existence of any warning event
 In this tutorial, a ClusterAlert will be used check existence of warning events occurred in the last check interval.
+
 ```yaml
 $ cat ./docs/examples/cluster-alerts/event/demo-0.yaml
 
@@ -75,6 +75,7 @@ spec:
     state: Warning
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/cluster-alerts/event/demo-0.yaml
 replicationcontroller "nginx" created
@@ -107,6 +108,7 @@ Voila! `event` command has been synced to Icinga2. Please visit [here](/docs/gui
 
 ### Check existence of events for a specific object
 In this tutorial, a ClusterAlert will be used check existence of events for a specific object by setting one or more `spec.vars.involvedObject*` fields.
+
 ```yaml
 $ cat ./docs/examples/cluster-alerts/event/demo-1.yaml
 
@@ -128,6 +130,7 @@ spec:
     state: Warning
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/cluster-alerts/event/demo-1.yaml
 pod "busybox" created
@@ -183,6 +186,7 @@ Searchlight operator will delete Icinga Services for this alert. To resume, edit
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
+
 ```console
 $ kubectl delete ns demo
 ```

@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
@@ -57,6 +58,10 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 			val: fmt.Sprintf("$host.%s$", val),
 		})
 	}
+
+	sort.Slice(args, func(i, j int) bool {
+		return args[i].key < args[j].key
+	})
 
 	flagList := make([]string, 0)
 

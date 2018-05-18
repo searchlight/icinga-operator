@@ -28,8 +28,8 @@ spec:
       imagePullSecrets: [${SEARCHLIGHT_IMAGE_PULL_SECRET}]
       containers:
       - name: operator
-        image: ${SEARCHLIGHT_DOCKER_REGISTRY}/searchlight:6.0.0-rc.0
-        imagePullPolicy: IfNotPresent
+        image: ${SEARCHLIGHT_DOCKER_REGISTRY}/searchlight:${SEARCHLIGHT_OPERATOR_TAG}
+        imagePullPolicy: ${SEARCHLIGHT_IMAGE_PULL_POLICY}
         args:
         - run
         - --v=3
@@ -55,8 +55,8 @@ spec:
             port: 8443
             scheme: HTTPS
       - name: icinga
-        image: ${SEARCHLIGHT_DOCKER_REGISTRY}/icinga:6.0.0-rc.0-k8s
-        imagePullPolicy: IfNotPresent
+        image: ${SEARCHLIGHT_DOCKER_REGISTRY}/icinga:${SEARCHLIGHT_ICINGA_TAG}
+        imagePullPolicy: ${SEARCHLIGHT_IMAGE_PULL_POLICY}
         ports:
         - containerPort: 5665
         - containerPort: 60006

@@ -49,6 +49,7 @@ demo          Active    4m
 
 ### Check status of pods with matching labels
 In this tutorial, a PodAlert will be used check status of pods with matching labels by setting `spec.selector` field.
+
 ```yaml
 $ cat ./docs/examples/pod-alerts/pod-status/demo-0.yaml
 
@@ -70,6 +71,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/pod-alerts/pod-status/demo-0.yaml
 replicationcontroller "nginx" created
@@ -99,6 +101,7 @@ Voila! `pod-status` command has been synced to Icinga2. Please visit [here](/doc
 
 ### Check status of a specific pod
 In this tutorial, a PodAlert will be used check status of a pod by name by setting `spec.podName` field.
+
 ```yaml
 $ cat ./docs/examples/pod-alerts/pod-status/demo-1.yaml
 
@@ -118,6 +121,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/pod-alerts/pod-status/demo-1.yaml
 pod "busybox" created
@@ -158,6 +162,7 @@ Searchlight operator will delete Icinga Services for this alert. To resume, edit
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
+
 ```console
 $ kubectl delete ns demo
 ```

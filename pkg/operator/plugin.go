@@ -73,7 +73,7 @@ func (op *Operator) ensureCheckCommand(wp *api.SearchlightPlugin) error {
 	}
 
 	ic.Vars = wp.Spec.Arguments.Vars
-	ic.States = wp.Spec.State
+	ic.States = wp.Spec.States
 
 	for _, t := range wp.Spec.AlertKinds {
 		if t == api.ResourceKindClusterAlert {

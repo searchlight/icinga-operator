@@ -11,13 +11,13 @@ spec:
     host:
       v: vars.verbosity
     vars:
-      Item:
+      items:
         componentName:
           type: string
         selector:
           type: string
   command: hyperalert check_component_status
-  state:
+  states:
   - OK
   - Critical
   - Unknown
@@ -35,7 +35,7 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-      Item:
+      items:
         critical:
           type: string
         secretName:
@@ -47,7 +47,7 @@ spec:
       required:
       - url
   command: hyperalert check_json_path
-  state:
+  states:
   - OK
   - Warning
   - Critical
@@ -65,7 +65,7 @@ spec:
     host:
       v: vars.verbosity
     vars:
-      Item:
+      items:
         count:
           type: integer
         nodeName:
@@ -73,7 +73,7 @@ spec:
         selector:
           type: string
   command: hyperalert check_node_exists
-  state:
+  states:
   - OK
   - Critical
   - Unknown
@@ -91,7 +91,7 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-      Item:
+      items:
         count:
           type: integer
         podName:
@@ -99,7 +99,7 @@ spec:
         selector:
           type: string
   command: hyperalert check_pod_exists
-  state:
+  states:
   - OK
   - Critical
   - Unknown
@@ -117,7 +117,7 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-      Item:
+      items:
         clockSkew:
           type: duration
         involvedObjectKind:
@@ -129,7 +129,7 @@ spec:
         involvedObjectUID:
           type: string
   command: hyperalert check_event
-  state:
+  states:
   - OK
   - Warning
   - Unknown
@@ -146,13 +146,13 @@ spec:
     host:
       v: vars.verbosity
     vars:
-      Item:
+      items:
         critical:
           type: duration
         warning:
           type: duration
   command: hyperalert check_ca_cert
-  state:
+  states:
   - OK
   - Warning
   - Critical
@@ -171,7 +171,7 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-      Item:
+      items:
         critical:
           type: duration
         secretKey:
@@ -183,7 +183,7 @@ spec:
         warning:
           type: duration
   command: hyperalert check_cert
-  state:
+  states:
   - OK
   - Warning
   - Critical
@@ -202,7 +202,7 @@ spec:
       host: name
       v: vars.verbosity
   command: hyperalert check_node_status
-  state:
+  states:
   - OK
   - Critical
   - Unknown
@@ -220,7 +220,7 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-      Item:
+      items:
         critical:
           type: number
         mountPoint:
@@ -232,7 +232,7 @@ spec:
       required:
       - mountPoint
   command: hyperalert check_volume
-  state:
+  states:
   - OK
   - Critical
   - Unknown
@@ -250,7 +250,7 @@ spec:
       host: name
       v: vars.verbosity
   command: hyperalert check_pod_status
-  state:
+  states:
   - OK
   - Critical
   - Unknown
@@ -268,7 +268,7 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-      Item:
+      items:
         critical:
           type: number
         secretName:
@@ -280,7 +280,7 @@ spec:
       required:
       - volumeName
   command: hyperalert check_volume
-  state:
+  states:
   - OK
   - Critical
   - Unknown
@@ -298,7 +298,7 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-      Item:
+      items:
         argv:
           type: string
         cmd:
@@ -308,7 +308,7 @@ spec:
       required:
       - argv
   command: hyperalert check_pod_exec
-  state:
+  states:
   - OK
   - Critical
   - Unknown

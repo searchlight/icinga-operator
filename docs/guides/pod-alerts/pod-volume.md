@@ -56,6 +56,7 @@ demo          Active    4m
 
 ### Check volume of pods with matching labels
 In this tutorial, a PodAlert will be used check volume stats of pods with matching labels by setting `spec.selector` field.
+
 ```yaml
 $ cat ./docs/examples/pod-alerts/pod-volume/demo-0.yaml
 
@@ -81,6 +82,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/pod-alerts/pod-volume/demo-1.yaml
 persistentvolumeclaim "boxclaim" created
@@ -135,6 +137,7 @@ spec:
     state: Critical
     to: ["ops@example.com"]
 ```
+
 ```console
 $ kubectl apply -f ./docs/examples/pod-alerts/pod-volume/demo-1.yaml
 persistentvolumeclaim "boxclaim" created
@@ -172,6 +175,7 @@ Searchlight operator will delete Icinga Services for this alert. To resume, edit
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
+
 ```console
 $ kubectl delete ns demo
 ```

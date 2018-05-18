@@ -39,6 +39,7 @@ And also you can use [jsonpath](https://kubernetes.io/docs/reference/kubectl/jso
 #### Examples
 
 Lets assume, we get following JSON from provided URL.
+
 ```json
 {
    "Book":[
@@ -119,7 +120,6 @@ kube-system   Active    6h
 demo          Active    4m
 ```
 
-
 ### Check JSON response of HTTP api
 In this tutorial, a ClusterAlert will be used check JSON response of a HTTP api.
 
@@ -181,6 +181,7 @@ Searchlight operator will delete Icinga Services for this alert. To resume, edit
 
 ### Cleaning up
 To cleanup the Kubernetes resources created by this tutorial, run:
+
 ```console
 $ kubectl delete ns demo
 ```
