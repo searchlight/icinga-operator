@@ -81,6 +81,7 @@ func generateSwaggerJson() {
 			slitev1alpha1.SchemeGroupVersion.WithResource(slitev1alpha1.ResourcePluralNodeAlert),
 			slitev1alpha1.SchemeGroupVersion.WithResource(slitev1alpha1.ResourcePluralPodAlert),
 			slitev1alpha1.SchemeGroupVersion.WithResource(slitev1alpha1.ResourcePluralIncident),
+			slitev1alpha1.SchemeGroupVersion.WithResource(slitev1alpha1.ResourcePluralSearchlightPlugin),
 		},
 		CDResources: []schema.GroupVersionResource{
 			incidentv1alpha1.SchemeGroupVersion.WithResource(incidentv1alpha1.ResourcePluralAcknowledgement),
