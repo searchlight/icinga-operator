@@ -1,13 +1,13 @@
 ---
 title: JSON Path
 menu:
-  product_searchlight_6.0.0-rc.0:
+  product_searchlight_7.0.0-rc.0:
     identifier: guides-json-path
     name: JSON Path
     parent: cluster-alert
     weight: 40
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-rc.0
+menu_name: product_searchlight_7.0.0-rc.0
 section_menu_id: guides
 ---
 
@@ -162,6 +162,21 @@ Events:
 Voila! `json-path` command has been synced to Icinga2. Please visit [here](/docs/guides/notifiers.md) to learn how to configure notifier secret. Now, open IcingaWeb2 in your browser. You should see a Icinga host `demo@cluster` and Icinga service `json-path-demo-0`.
 
 ![check-all-pods](/docs/images/cluster-alerts/json-path/demo-0.png)
+
+### Pause Alert
+
+To pause alert, edit ClusterAlert `json-path-demo-0` to set `spec.paused` to be `true`
+
+```bash
+$ kubectl edit clusteralert json-path-demo-0 -n demo
+```
+
+```yaml
+spec:
+  pause: true
+```
+
+Searchlight operator will delete Icinga Services for this alert. To resume, edit and set `spec.paused` to be `false`
 
 
 ### Cleaning up

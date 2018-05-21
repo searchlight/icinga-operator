@@ -1,13 +1,13 @@
 ---
 title: Node Status
 menu:
-  product_searchlight_6.0.0-rc.0:
+  product_searchlight_7.0.0-rc.0:
     identifier: node-status
     name: Node Status
     parent: node-alert
     weight: 25
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-rc.0
+menu_name: product_searchlight_7.0.0-rc.0
 section_menu_id: guides
 ---
 
@@ -164,6 +164,22 @@ Events:
   22s		22s		1	Searchlight operator			Normal		SuccessfulSync	Applied NodeAlert: "node-status-demo-2"
 ```
 ![check-by-node-name](/docs/images/node-alerts/node-status/demo-2.png)
+
+
+### Pause Alert
+
+To pause alert, edit NodeAlert `node-status-demo-2` to set `spec.paused` to be `true`
+
+```bash
+$ kubectl edit nodealert node-status-demo-2 -n demo
+```
+
+```yaml
+spec:
+  pause: true
+```
+
+Searchlight operator will delete Icinga Services for this alert. To resume, edit and set `spec.paused` to be `false`
 
 
 ### Cleaning up

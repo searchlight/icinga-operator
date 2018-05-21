@@ -1,13 +1,13 @@
 ---
 title: Component Status
 menu:
-  product_searchlight_6.0.0-rc.0:
+  product_searchlight_7.0.0-rc.0:
     identifier: guides-Component-status
     name: Component Status
     parent: cluster-alert
     weight: 25
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-rc.0
+menu_name: product_searchlight_7.0.0-rc.0
 section_menu_id: guides
 ---
 
@@ -130,6 +130,21 @@ Events:
   22s		22s		1	Searchlight operator			Normal		SuccessfulSync	Applied ClusterAlert: "component-status-demo-1"
 ```
 ![check-by-component-name](/docs/images/cluster-alerts/component-status/demo-1.png)
+
+### Pause Alert
+
+To pause alert, edit ClusterAlert `component-status-demo-1` to set `spec.paused` to be `true`
+
+```bash
+$ kubectl edit clusteralert component-status-demo-1 -n demo
+```
+
+```yaml
+spec:
+  pause: true
+```
+
+Searchlight operator will delete Icinga Services for this alert. To resume, edit and set `spec.paused` to be `false`
 
 
 ### Cleaning up

@@ -1,6 +1,10 @@
 hash: 20ff2f27426d06dafa5e5ed1abc457fbb8876a28c3fe52dc2a4fcf59f6ca3c97
-updated: 2018-05-05T12:29:42.2817736-07:00
+updated: 2018-05-17T22:19:39.854150275-07:00
 imports:
+- name: bitbucket.org/atlassian/go-stride
+  version: 8846b835cb45ec8707e6694533a2b6180861cdbe
+  subpackages:
+  - pkg/stride
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
 - name: cloud.google.com/go
@@ -29,7 +33,7 @@ imports:
   - util/errors
   - version
 - name: github.com/appscode/go-notify
-  version: 223b426de3481d50ab14384a0e899bfa26768c30
+  version: 17078f08a5bafdaaa93a7bdef2d689326bd57b3a
   subpackages:
   - discord
   - hipchat
@@ -39,6 +43,7 @@ imports:
   - pushover
   - slack
   - smtp
+  - stride
   - telegram
   - twilio
   - unified
@@ -51,7 +56,7 @@ imports:
   - admission/v1beta1
   - registry/admissionreview/v1beta1
 - name: github.com/appscode/kutil
-  version: ed8d181d523ddd37e5cb7a23fa457b4c370a5140
+  version: 58e34c2195a0b9eee67eea40701f7f7759f3f79f
   subpackages:
   - apiextensions/v1beta1
   - core/v1
@@ -366,6 +371,12 @@ imports:
   version: 8a290539e2e8629dbc4e6bad948158f790ec31f4
 - name: github.com/PuerkitoBio/urlesc
   version: 5bd2802263f21d8788851d5305584c82a5c75d7e
+- name: github.com/rs/zerolog
+  version: ea197802eb218ea675a8286a77c13e132aa9a21c
+  subpackages:
+  - internal/cbor
+  - internal/json
+  - log
 - name: github.com/russross/blackfriday
   version: 300106c228d52c8941d4b3de6054a6062a86dda3
 - name: github.com/sergi/go-diff
@@ -887,7 +898,7 @@ imports:
   - util/retry
   - util/workqueue
 - name: k8s.io/kube-openapi
-  version: f08db293d3ef80052d6513ece19792642a289fea
+  version: b3f03f55328800731ce03a164b80973014ecd455
   subpackages:
   - pkg/builder
   - pkg/common

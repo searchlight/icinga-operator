@@ -2,24 +2,23 @@
 title: Changelog | Searchlight
 description: Changelog
 menu:
-  product_searchlight_6.0.0-rc.0:
+  product_searchlight_7.0.0-rc.0:
     identifier: changelog-searchlight
     name: Changelog
     parent: welcome
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-rc.0
+menu_name: product_searchlight_7.0.0-rc.0
 section_menu_id: welcome
-url: /products/searchlight/6.0.0-rc.0/welcome/changelog/
+url: /products/searchlight/7.0.0-rc.0/welcome/changelog/
 aliases:
-  - /products/searchlight/6.0.0-rc.0/CHANGELOG/
+  - /products/searchlight/7.0.0-rc.0/CHANGELOG/
 ---
 
 # Change Log
 
-## [Unreleased](https://github.com/appscode/searchlight/tree/HEAD)
-
-[Full Changelog](https://github.com/appscode/searchlight/compare/5.1.1...HEAD)
+## [7.0.0-rc.0](https://github.com/appscode/searchlight/tree/7.0.0-rc.0) (2018-05-18)
+[Full Changelog](https://github.com/appscode/searchlight/compare/5.1.1...7.0.0-rc.0)
 
 **Implemented enhancements:**
 
@@ -29,6 +28,7 @@ aliases:
 
 **Fixed bugs:**
 
+- Permission missing for /healthz request in Rbac roles [\#351](https://github.com/appscode/searchlight/issues/351)
 - Fix HTTP client with incluster config [\#166](https://github.com/appscode/searchlight/issues/166)
 
 **Closed issues:**
@@ -38,6 +38,7 @@ aliases:
 - Allow `pausing` alerts [\#295](https://github.com/appscode/searchlight/issues/295)
 - Support user provided plugin [\#293](https://github.com/appscode/searchlight/issues/293)
 - Record incidents and notifications via CRD/EAS [\#292](https://github.com/appscode/searchlight/issues/292)
+- Add test for plugins [\#289](https://github.com/appscode/searchlight/issues/289)
 - Replace cfssl with client-go cert utils [\#231](https://github.com/appscode/searchlight/issues/231)
 - Add e2e test for notification [\#205](https://github.com/appscode/searchlight/issues/205)
 - Handle Node conditions [\#198](https://github.com/appscode/searchlight/issues/198)
@@ -45,8 +46,19 @@ aliases:
 
 **Merged pull requests:**
 
+- Revendor go-notify [\#365](https://github.com/appscode/searchlight/pull/365) ([tamalsaha](https://github.com/tamalsaha))
+- sort arguments in CheckCommand [\#364](https://github.com/appscode/searchlight/pull/364) ([aerokite](https://github.com/aerokite))
+- Don't panic if admission options is nil [\#363](https://github.com/appscode/searchlight/pull/363) ([tamalsaha](https://github.com/tamalsaha))
+- Disable admission controllers for webhook server [\#362](https://github.com/appscode/searchlight/pull/362) ([tamalsaha](https://github.com/tamalsaha))
+- Add Update\*\*\*Status helpers [\#361](https://github.com/appscode/searchlight/pull/361) ([tamalsaha](https://github.com/tamalsaha))
+- Update to client-go 7.0.0 [\#360](https://github.com/appscode/searchlight/pull/360) ([tamalsaha](https://github.com/tamalsaha))
+- Improve installer [\#359](https://github.com/appscode/searchlight/pull/359) ([tamalsaha](https://github.com/tamalsaha))
+- Master to doc [\#358](https://github.com/appscode/searchlight/pull/358) ([aerokite](https://github.com/aerokite))
+- add command for webhook plugin [\#357](https://github.com/appscode/searchlight/pull/357) ([aerokite](https://github.com/aerokite))
+- Add documentation for custom plugin [\#356](https://github.com/appscode/searchlight/pull/356) ([aerokite](https://github.com/aerokite))
 - Generate non-namespaced client for plugins [\#355](https://github.com/appscode/searchlight/pull/355) ([aerokite](https://github.com/aerokite))
 - add patch permission [\#354](https://github.com/appscode/searchlight/pull/354) ([aerokite](https://github.com/aerokite))
+- Fix docs [\#353](https://github.com/appscode/searchlight/pull/353) ([aerokite](https://github.com/aerokite))
 - Various fixes to searchlight installer [\#352](https://github.com/appscode/searchlight/pull/352) ([tamalsaha](https://github.com/tamalsaha))
 - Remove jessie icinga [\#349](https://github.com/appscode/searchlight/pull/349) ([aerokite](https://github.com/aerokite))
 - Introduce properties for plugins vars [\#348](https://github.com/appscode/searchlight/pull/348) ([aerokite](https://github.com/aerokite))
@@ -75,6 +87,7 @@ aliases:
 - Fix installer script [\#323](https://github.com/appscode/searchlight/pull/323) ([tamalsaha](https://github.com/tamalsaha))
 - Use server cert for icinga [\#322](https://github.com/appscode/searchlight/pull/322) ([tamalsaha](https://github.com/tamalsaha))
 - Write auto-generated icinga certs to disk [\#321](https://github.com/appscode/searchlight/pull/321) ([tamalsaha](https://github.com/tamalsaha))
+- Prepare docs for 7.0.0-rc.0 [\#320](https://github.com/appscode/searchlight/pull/320) ([tamalsaha](https://github.com/tamalsaha))
 - Revendor kutil and jsonpatch library [\#319](https://github.com/appscode/searchlight/pull/319) ([tamalsaha](https://github.com/tamalsaha))
 - Add changelog [\#318](https://github.com/appscode/searchlight/pull/318) ([tamalsaha](https://github.com/tamalsaha))
 - Reorg objects deleted in uninstall command [\#317](https://github.com/appscode/searchlight/pull/317) ([tamalsaha](https://github.com/tamalsaha))

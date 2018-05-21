@@ -1,13 +1,13 @@
 ---
 title: Pod Volume
 menu:
-  product_searchlight_6.0.0-rc.0:
+  product_searchlight_7.0.0-rc.0:
     identifier: pod-pod-volume
     name: Pod Volume
     parent: pod-alert
     weight: 40
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-rc.0
+menu_name: product_searchlight_7.0.0-rc.0
 section_menu_id: guides
 ---
 
@@ -156,6 +156,21 @@ Events:
   1m		1m		1	Searchlight operator			Normal		SuccessfulSync	Applied PodAlert: "pod-volume-demo-1"
 ```
 ![check-by-pod-name](/docs/images/pod-alerts/pod-volume/demo-1.png)
+
+### Pause Alert
+
+To pause alert, edit PodAlert `pod-volume-demo-1` to set `spec.paused` to be `true`
+
+```bash
+$ kubectl edit podalert pod-volume-demo-1 -n demo
+```
+
+```yaml
+spec:
+  pause: true
+```
+
+Searchlight operator will delete Icinga Services for this alert. To resume, edit and set `spec.paused` to be `false`
 
 
 ### Cleaning up

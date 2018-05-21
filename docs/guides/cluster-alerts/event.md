@@ -1,13 +1,13 @@
 ---
 title: Event
 menu:
-  product_searchlight_6.0.0-rc.0:
+  product_searchlight_7.0.0-rc.0:
     identifier: guides-event
     name: Event
     parent: cluster-alert
     weight: 30
 product_name: searchlight
-menu_name: product_searchlight_6.0.0-rc.0
+menu_name: product_searchlight_7.0.0-rc.0
 section_menu_id: guides
 ---
 
@@ -167,6 +167,21 @@ LASTSEEN   FIRSTSEEN   COUNT     NAME      KIND      SUBOBJECT                  
 3s         3s          1         busybox   Pod                                  Warning   FailedSync   kubelet, minikube   Error syncing pod, skipping: failed to "StartContainer" for "busybox" with rpc error: code = 2 desc = failed to start container "8ef27cb9fd83b61a6a99b838bc55fb61b1f76c33f0a55b25b104ccb08e743e28": Error response from daemon: Container command 'bad' not found or does not exist.: "Start Container Failed"
 ```
 ![check-by-pod-label](/docs/images/cluster-alerts/event/demo-1.png)
+
+### Pause Alert
+
+To pause alert, edit ClusterAlert `event-demo-1` to set `spec.paused` to be `true`
+
+```bash
+$ kubectl edit clusteralert event-demo-1 -n demo
+```
+
+```yaml
+spec:
+  pause: true
+```
+
+Searchlight operator will delete Icinga Services for this alert. To resume, edit and set `spec.paused` to be `false`
 
 
 ### Cleaning up
