@@ -67,7 +67,7 @@ func (op *Operator) ensureCheckCommand(wp *api.SearchlightPlugin) error {
 	ic := api.IcingaCommand{
 		Name: wp.Name,
 		Vars: &api.PluginVars{
-			Items:    make(map[string]api.PluginVarItem),
+			Fields:   make(map[string]api.PluginVarField),
 			Required: make([]string, 0),
 		},
 	}
