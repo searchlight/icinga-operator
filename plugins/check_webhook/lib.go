@@ -101,7 +101,7 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 	vars := sp.Spec.Arguments.Vars
 	if vars != nil {
 		for _, p := range opts.params {
-			if item, found := vars.Items[p.key]; found {
+			if item, found := vars.Fields[p.key]; found {
 				switch item.Type {
 				case api.VarTypeInteger:
 					val, err := strconv.ParseInt(p.val, 10, 64)

@@ -16,7 +16,7 @@ func GetComponentStatusPlugin() *api.SearchlightPlugin {
 			AlertKinds: []string{api.ResourceKindClusterAlert},
 			Arguments: api.PluginArguments{
 				Vars: &api.PluginVars{
-					Items: map[string]api.PluginVarItem{
+					Fields: map[string]api.PluginVarField{
 						"selector": {
 							Type: api.VarTypeString,
 						},
@@ -45,7 +45,7 @@ func GetJsonPathPlugin() *api.SearchlightPlugin {
 			AlertKinds: []string{api.ResourceKindClusterAlert},
 			Arguments: api.PluginArguments{
 				Vars: &api.PluginVars{
-					Items: map[string]api.PluginVarItem{
+					Fields: map[string]api.PluginVarField{
 						"url": {
 							Type: api.VarTypeString,
 						},
@@ -82,7 +82,7 @@ func GetNodeExistsPlugin() *api.SearchlightPlugin {
 			AlertKinds: []string{api.ResourceKindClusterAlert},
 			Arguments: api.PluginArguments{
 				Vars: &api.PluginVars{
-					Items: map[string]api.PluginVarItem{
+					Fields: map[string]api.PluginVarField{
 						"selector": {
 							Type: api.VarTypeString,
 						},
@@ -114,7 +114,7 @@ func GetPodExistsPlugin() *api.SearchlightPlugin {
 			AlertKinds: []string{api.ResourceKindClusterAlert},
 			Arguments: api.PluginArguments{
 				Vars: &api.PluginVars{
-					Items: map[string]api.PluginVarItem{
+					Fields: map[string]api.PluginVarField{
 						"selector": {
 							Type: api.VarTypeString,
 						},
@@ -147,7 +147,7 @@ func GetEventPlugin() *api.SearchlightPlugin {
 			AlertKinds: []string{api.ResourceKindClusterAlert},
 			Arguments: api.PluginArguments{
 				Vars: &api.PluginVars{
-					Items: map[string]api.PluginVarItem{
+					Fields: map[string]api.PluginVarField{
 						"clockSkew": {
 							Type: api.VarTypeDuration,
 						},
@@ -186,7 +186,7 @@ func GetCACertPlugin() *api.SearchlightPlugin {
 			AlertKinds: []string{api.ResourceKindClusterAlert},
 			Arguments: api.PluginArguments{
 				Vars: &api.PluginVars{
-					Items: map[string]api.PluginVarItem{
+					Fields: map[string]api.PluginVarField{
 						"warning": {
 							Type: api.VarTypeDuration,
 						},
@@ -215,7 +215,7 @@ func GetCertPlugin() *api.SearchlightPlugin {
 			AlertKinds: []string{api.ResourceKindClusterAlert},
 			Arguments: api.PluginArguments{
 				Vars: &api.PluginVars{
-					Items: map[string]api.PluginVarItem{
+					Fields: map[string]api.PluginVarField{
 						"selector": {
 							Type: api.VarTypeString,
 						},

@@ -36,7 +36,7 @@ func GetPodVolumePlugin() *api.SearchlightPlugin {
 			AlertKinds: []string{api.ResourceKindPodAlert},
 			Arguments: api.PluginArguments{
 				Vars: &api.PluginVars{
-					Items: map[string]api.PluginVarItem{
+					Fields: map[string]api.PluginVarField{
 						"volumeName": {
 							Type: api.VarTypeString,
 						},
@@ -73,7 +73,7 @@ func GetPodExecPlugin() *api.SearchlightPlugin {
 			AlertKinds: []string{api.ResourceKindPodAlert},
 			Arguments: api.PluginArguments{
 				Vars: &api.PluginVars{
-					Items: map[string]api.PluginVarItem{
+					Fields: map[string]api.PluginVarField{
 						"container": {
 							Type: api.VarTypeString,
 						},

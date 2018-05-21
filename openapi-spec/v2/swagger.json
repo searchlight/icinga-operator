@@ -5205,7 +5205,7 @@
         }
       }
     },
-    "com.github.appscode.searchlight.apis.monitoring.v1alpha1.PluginVarItem": {
+    "com.github.appscode.searchlight.apis.monitoring.v1alpha1.PluginVarField": {
       "required": [
         "type"
       ],
@@ -5220,13 +5220,13 @@
     },
     "com.github.appscode.searchlight.apis.monitoring.v1alpha1.PluginVars": {
       "required": [
-        "items"
+        "fields"
       ],
       "properties": {
-        "items": {
+        "fields": {
           "type": "object",
           "additionalProperties": {
-            "$ref": "#/definitions/com.github.appscode.searchlight.apis.monitoring.v1alpha1.PluginVarItem"
+            "$ref": "#/definitions/com.github.appscode.searchlight.apis.monitoring.v1alpha1.PluginVarField"
           }
         },
         "required": {

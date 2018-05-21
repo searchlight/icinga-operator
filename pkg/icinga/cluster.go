@@ -52,7 +52,7 @@ func (h *ClusterHost) Apply(alert *api.ClusterAlert) error {
 		attrs["check_interval"] = alertSpec.CheckInterval.Seconds()
 	}
 	cmd, _ := api.ClusterCommands.Get(alertSpec.Check)
-	commandVars := cmd.Vars.Items
+	commandVars := cmd.Vars.Fields
 	for key, val := range alertSpec.Vars {
 		if _, found := commandVars[key]; found {
 			attrs[IVar(key)] = val

@@ -89,7 +89,7 @@ func (a SearchlightPlugin) CustomResourceDefinition() *apiextensions.CustomResou
 			LabelsMap: map[string]string{"app": "searchlight"},
 		},
 		SpecDefinitionName:    "github.com/appscode/searchlight/apis/monitoring/v1alpha1.SearchlightPlugin",
-		EnableValidation:      false,
+		EnableValidation:      true,
 		GetOpenAPIDefinitions: GetOpenAPIDefinitions,
 	})
 }

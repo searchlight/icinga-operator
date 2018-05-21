@@ -36,7 +36,7 @@ func GetNodeVolumePlugin() *api.SearchlightPlugin {
 			AlertKinds: []string{api.ResourceKindNodeAlert},
 			Arguments: api.PluginArguments{
 				Vars: &api.PluginVars{
-					Items: map[string]api.PluginVarItem{
+					Fields: map[string]api.PluginVarField{
 						"mountPoint": {
 							Type: api.VarTypeString,
 						},

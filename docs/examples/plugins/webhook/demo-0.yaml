@@ -10,7 +10,7 @@ spec:
   - ClusterAlert
   arguments:
     vars:
-      items:
+      fields:
         warning:
           type: interger
         critical:

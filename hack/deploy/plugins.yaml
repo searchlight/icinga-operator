@@ -11,7 +11,7 @@ spec:
     host:
       v: vars.verbosity
     vars:
-      items:
+      fields:
         componentName:
           type: string
         selector:
@@ -35,7 +35,7 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-      items:
+      fields:
         critical:
           type: string
         secretName:
@@ -65,7 +65,7 @@ spec:
     host:
       v: vars.verbosity
     vars:
-      items:
+      fields:
         count:
           type: integer
         nodeName:
@@ -91,7 +91,7 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-      items:
+      fields:
         count:
           type: integer
         podName:
@@ -117,7 +117,7 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-      items:
+      fields:
         clockSkew:
           type: duration
         involvedObjectKind:
@@ -146,7 +146,7 @@ spec:
     host:
       v: vars.verbosity
     vars:
-      items:
+      fields:
         critical:
           type: duration
         warning:
@@ -171,7 +171,7 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-      items:
+      fields:
         critical:
           type: duration
         secretKey:
@@ -220,7 +220,7 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-      items:
+      fields:
         critical:
           type: number
         mountPoint:
@@ -268,7 +268,7 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-      items:
+      fields:
         critical:
           type: number
         secretName:
@@ -298,7 +298,7 @@ spec:
       host: name
       v: vars.verbosity
     vars:
-      items:
+      fields:
         argv:
           type: string
         cmd:

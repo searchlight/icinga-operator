@@ -33,7 +33,7 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 	webhook := plugin.Spec.Webhook
 
 	if plugin.Spec.Arguments.Vars != nil {
-		for key := range plugin.Spec.Arguments.Vars.Items {
+		for key := range plugin.Spec.Arguments.Vars.Fields {
 			args = append(args, arg{
 				key: key,
 				val: fmt.Sprintf("$%s$", key),
