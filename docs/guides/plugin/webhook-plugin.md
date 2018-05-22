@@ -32,9 +32,9 @@ spec:
     vars:
       fields:
         warning:
-          type: interger
+          type: integer
         critical:
-          type: interger
+          type: integer
   states:
   - OK
   - Critical
@@ -75,9 +75,9 @@ Possible values are: ClusterAlert, NodeAlert and PodAlert.
             vars:
               fields:
                 warning:
-                  type: interger
+                  type: integer
                 critical:
-                  type: interger
+                  type: integer
 
         `warning` and `critical` are registered as user-defined variables. User can provide values for these variables while creating alerts.
 
