@@ -104,37 +104,39 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 			if p.key == "" || p.val == "" {
 				continue
 			}
-			if item, found := vars.Fields[p.key]; found {
-				switch item.Type {
-				case api.VarTypeInteger:
-					val, err := strconv.ParseInt(p.val, 10, 64)
-					if err != nil {
-						return icinga.Unknown, fmt.Errorf(`failed to parse value for key "%s" to Int64`, p.key)
-					}
-					data[p.key] = val
-				case api.VarTypeNumber:
-					val, err := strconv.ParseFloat(p.val, 64)
-					if err != nil {
-						return icinga.Unknown, fmt.Errorf(`failed to parse value for key "%s" to Float64`, p.key)
-					}
-					data[p.key] = val
-				case api.VarTypeString:
-					data[p.key] = p.val
-				case api.VarTypeBoolean:
-					val, err := strconv.ParseBool(p.val)
-					if err != nil {
-						return icinga.Unknown, fmt.Errorf(`failed to parse value for key "%s" to Bool`, p.key)
-					}
-					data[p.key] = val
-				case api.VarTypeDuration:
-					duration, err := time.ParseDuration(p.val)
-					if err != nil {
-						return icinga.Unknown, fmt.Errorf(`failed to parse value for key "%s" to Duration`, p.key)
-					}
-					data[p.key] = int64(duration.Nanoseconds() / 1000000)
-				}
-			} else {
+
+			item, found := vars.Fields[p.key]
+			if !found {
 				return stateUnknown, fmt.Errorf(`var "%s" is not registered in SearchlightPlugin`, p.key)
+			}
+
+			switch item.Type {
+			case api.VarTypeInteger:
+				val, err := strconv.ParseInt(p.val, 10, 64)
+				if err != nil {
+					return icinga.Unknown, fmt.Errorf(`failed to parse value for key "%s" to Int64`, p.key)
+				}
+				data[p.key] = val
+			case api.VarTypeNumber:
+				val, err := strconv.ParseFloat(p.val, 64)
+				if err != nil {
+					return icinga.Unknown, fmt.Errorf(`failed to parse value for key "%s" to Float64`, p.key)
+				}
+				data[p.key] = val
+			case api.VarTypeString:
+				data[p.key] = p.val
+			case api.VarTypeBoolean:
+				val, err := strconv.ParseBool(p.val)
+				if err != nil {
+					return icinga.Unknown, fmt.Errorf(`failed to parse value for key "%s" to Bool`, p.key)
+				}
+				data[p.key] = val
+			case api.VarTypeDuration:
+				duration, err := time.ParseDuration(p.val)
+				if err != nil {
+					return icinga.Unknown, fmt.Errorf(`failed to parse value for key "%s" to Duration`, p.key)
+				}
+				data[p.key] = int64(duration.Nanoseconds() / 1000000)
 			}
 		}
 	} else {
