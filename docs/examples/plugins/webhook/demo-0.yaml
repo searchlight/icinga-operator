@@ -12,9 +12,9 @@ spec:
     vars:
       fields:
         warning:
-          type: interger
+          type: integer
         critical:
-          type: interger
+          type: integer
   states:
   - OK
   - Critical

@@ -72,7 +72,7 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 		}
 	} else {
 		// Command in CheckCommand
-		command = "/hyperalert check_webhook"
+		command = `"/hyperalert", "check_webhook"`
 
 		// URL for webhook
 		namespace := "default"

@@ -30,7 +30,7 @@ spec:
   - ClusterAlert
   arguments:
     vars:
-      items:
+      fields:
         warning:
           type: interger
         critical:
@@ -69,11 +69,11 @@ Possible values are: ClusterAlert, NodeAlert and PodAlert.
 
 - `spec.arguments.vars` defines user-defined arguments. These arguments can be provided to create alerts.
 
-    - `spec.arguments.vars.items` is the required field which provides the list of arguments with their `description` and `type`. Here,
+    - `spec.arguments.vars.fields` is the required field which provides the list of arguments with their `description` and `type`. Here,
 
           arguments:
             vars:
-              items:
+              fields:
                 warning:
                   type: interger
                 critical:
@@ -81,8 +81,8 @@ Possible values are: ClusterAlert, NodeAlert and PodAlert.
 
         `warning` and `critical` are registered as user-defined variables. User can provide values for these variables while creating alerts.
 
-        - `spec.arguments.vars.items[].type` is required field used to define variable's data type. Possible values are `integer`, `number`, `boolean`, `string`, `duration`.
-        - `spec.arguments.vars.items[].description` describes the variable.
+        - `spec.arguments.vars.fields[].type` is required field used to define variable's data type. Possible values are `integer`, `number`, `boolean`, `string`, `duration`.
+        - `spec.arguments.vars.fields[].description` describes the variable.
 
     - `spec.arguments.vars.required` represents the list of user-defined arguments required to create Alert. If any of these required arguments is not provided, Searchlight will give validation error.
 
@@ -125,7 +125,7 @@ searchlightplugin "check-pod-count" created
   <img alt="lifecycle"  src="/docs/images/plugin/add-plugin.svg" width="581" height="362">
 </p>
 
-CheckCommand `check-pod-count` is added in Icinga2 configuration. Here, `vars.Item` from `spec.arguments` are added as arguments in CheckCommand.
+CheckCommand `check-pod-count` is added in Icinga2 configuration. Here, `vars.fields` from `spec.arguments` are added as arguments in CheckCommand.
 
 
 > Note: Webhook will be called with URL formatted as bellow:

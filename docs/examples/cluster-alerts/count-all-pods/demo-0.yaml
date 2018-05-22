@@ -6,8 +6,8 @@ metadata:
 spec:
   check: check-pod-count
   vars:
-    warning: 10
-    critical: 15
+    warning: "10"
+    critical: "15"
   checkInterval: 30s
   alertInterval: 2m
   notifierSecretName: notifier-config

@@ -101,6 +101,9 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 	vars := sp.Spec.Arguments.Vars
 	if vars != nil {
 		for _, p := range opts.params {
+			if p.key == "" || p.val == "" {
+				continue
+			}
 			if item, found := vars.Fields[p.key]; found {
 				switch item.Type {
 				case api.VarTypeInteger:
@@ -128,7 +131,7 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 					if err != nil {
 						return icinga.Unknown, fmt.Errorf(`failed to parse value for key "%s" to Duration`, p.key)
 					}
-					data[p.key] = int64(duration.Round(time.Millisecond))
+					data[p.key] = int64(duration.Nanoseconds() / 1000000)
 				}
 			} else {
 				data[p.key] = p.val
