@@ -82,6 +82,7 @@ Possible values are: ClusterAlert, NodeAlert and PodAlert.
         `warning` and `critical` are registered as user-defined variables. User can provide values for these variables while creating alerts.
 
         - `spec.arguments.vars.fields[].type` is required field used to define variable's data type. Possible values are `integer`, `number`, `boolean`, `string`, `duration`.
+        > Note: duration will be converted to millisecond and will be passed to webhook as Int64. Example: 5m -> 300000. 
         - `spec.arguments.vars.fields[].description` describes the variable.
 
     - `spec.arguments.vars.required` represents the list of user-defined arguments required to create Alert. If any of these required arguments is not provided, Searchlight will give validation error.

@@ -134,7 +134,7 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 					data[p.key] = int64(duration.Nanoseconds() / 1000000)
 				}
 			} else {
-				data[p.key] = p.val
+				return stateUnknown, fmt.Errorf(`var "%s" is not registered in SearchlightPlugin`, p.key)
 			}
 		}
 	} else {
