@@ -96,7 +96,8 @@ var _ = BeforeSuite(func() {
 	}
 
 	cfg.BasicAuth.Username = ICINGA_API_USER
-	cfg.BasicAuth.Password = ICINGA_API_PASSWORD
+	cfg.BasicAuth.Password, err = root.Invoke().GetIcingaApiPassword(om)
+	Expect(err).NotTo(HaveOccurred())
 
 	// Icinga Client
 	icingaClient := icinga.NewClient(*cfg)
