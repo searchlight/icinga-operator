@@ -294,9 +294,5 @@ func (op *Operator) createBuiltinSearchlightPlugin() error {
 		}
 	}
 
-	if len(errs) > 0 {
-		return utilerrors.NewAggregate(errs)
-	}
-
-	return nil
+	return utilerrors.NewAggregate(errs)
 }
