@@ -5,7 +5,8 @@ import (
 	"fmt"
 
 	"github.com/appscode/go/log"
-	api "github.com/appscode/searchlight/apis/incidents/v1alpha1"
+	"github.com/appscode/searchlight/apis/incidents"
+	"github.com/appscode/searchlight/apis/incidents/v1alpha1"
 	monitoring "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/client/clientset/versioned"
 	"github.com/appscode/searchlight/pkg/icinga"
@@ -28,7 +29,6 @@ type REST struct {
 
 var _ rest.Creater = &REST{}
 var _ rest.GracefulDeleter = &REST{}
-var _ rest.GroupVersionKindProvider = &REST{}
 
 func NewREST(config *restconfig.Config, ic *icinga.Client) *REST {
 	return &REST{
@@ -38,18 +38,14 @@ func NewREST(config *restconfig.Config, ic *icinga.Client) *REST {
 }
 
 func (r *REST) New() runtime.Object {
-	return &api.Acknowledgement{}
-}
-
-func (r *REST) GroupVersionKind(containingGV schema.GroupVersion) schema.GroupVersionKind {
-	return api.SchemeGroupVersion.WithKind(api.ResourceKindAcknowledgement)
+	return &incidents.Acknowledgement{}
 }
 
 func (r *REST) Create(ctx apirequest.Context, obj runtime.Object, _ rest.ValidateObjectFunc, _ bool) (runtime.Object, error) {
-	req := obj.(*api.Acknowledgement)
+	req := obj.(*incidents.Acknowledgement)
 
 	if errs := validate(req); len(errs) > 0 {
-		return nil, apierrors.NewInvalid(schema.GroupKind{Group: api.GroupName, Kind: api.ResourceKindAcknowledgement}, req.Name, errs)
+		return nil, apierrors.NewInvalid(schema.GroupKind{Group: incidents.GroupName, Kind: v1alpha1.ResourceKindAcknowledgement}, req.Name, errs)
 	}
 
 	host, service, err := r.getIcingaObjects(req.Namespace, req.Name)
@@ -82,13 +78,13 @@ func (r *REST) Create(ctx apirequest.Context, obj runtime.Object, _ rest.Validat
 	if status != 200 {
 		return nil, errors.New(string(icingaresp.ResponseBody))
 	}
-	req.Response = api.AcknowledgementResponse{
+	req.Response = incidents.AcknowledgementResponse{
 		Timestamp: metav1.Now(),
 	}
 	return req, nil
 }
 
-func validate(o *api.Acknowledgement) field.ErrorList {
+func validate(o *incidents.Acknowledgement) field.ErrorList {
 	log.Infof("Validating fields for Acknowledgement %s\n", o.Name)
 	errs := field.ErrorList{}
 
@@ -133,12 +129,12 @@ func (r *REST) Delete(ctx apirequest.Context, name string, options *metav1.Delet
 		return nil, false, errors.New(string(icingaResp.ResponseBody))
 	}
 
-	resp := &api.Acknowledgement{
+	resp := &incidents.Acknowledgement{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
 			Namespace: namespace,
 		},
-		Response: api.AcknowledgementResponse{
+		Response: incidents.AcknowledgementResponse{
 			Timestamp: metav1.Now(),
 		},
 	}
