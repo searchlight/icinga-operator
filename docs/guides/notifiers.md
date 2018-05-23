@@ -73,6 +73,137 @@ spec:
     to: ["ops-alerts"]
 ```
 
+## Stride
+To receive chat notifications in Stride, create a Secret with the following key:
+
+| Name                          | Description                                                  |
+|-------------------------------|--------------------------------------------------------------|
+| STRIDE_CLOUD_ID               | `Required` You can get stride cloud_id from your organization's URL   |
+| STRIDE_ROOM_TOKEN             | `Optional` Stride [room token](https://developer.atlassian.com/cloud/stride/security/authentication/#using-room-tokens)   |
+
+If you login into your stride web app, you will see an URL with this format `https://app.stride.com/{{cloud ID}}/lobby`. From here, you will get cloud_id.
+
+```console
+$ echo -n 'your-stride-cloud-id' > STRIDE_CLOUD_ID
+$ echo -n 'your-stride-room-token' > STRIDE_ROOM_TOKEN
+$ kubectl create secret generic notifier-config -n demo \
+    --from-file=./STRIDE_CLOUD_ID \
+    --from-file=./STRIDE_ROOM_TOKEN
+secret "notifier-config" created
+```
+
+```yaml
+apiVersion: v1
+data:
+  STRIDE_CLOUD_ID: eW91ci1zdHJpZGUtY2xvdWQtaWQ=
+  STRIDE_ROOM_TOKEN: eW91ci1zdHJpZGUtcm9vbS10b2tlbg==
+kind: Secret
+metadata:
+  creationTimestamp: 2017-07-25T01:54:37Z
+  name: notifier-config
+  namespace: demo
+  resourceVersion: "2244"
+  selfLink: /api/v1/namespaces/demo/secrets/notifier-config
+  uid: 372bc159-70dc-11e7-9b0b-080027503732
+type: Opaque
+```
+
+Now, to receiver notifications via Stride, configure receiver as below:
+
+- notifier: `Stride`
+- to: a single room names
+
+```yaml
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: ClusterAlert
+metadata:
+  name: check-ca-cert
+  namespace: demo
+spec:
+  check: ca-cert
+  vars:
+    warning: 240h
+    critical: 72h
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: Stride
+    state: Critical
+    to: ["ops-alerts"]
+```
+
+#### Using Stride App
+
+You can also use [Stride App](https://developer.atlassian.com/cloud/stride/security/authentication/#building-an-app) as client to send notification.
+
+You need to do followings:
+
+- [Create an App](https://developer.atlassian.com/apps/create) and get `{clientId}` and `{clientSecret}`.
+- [Install this app](https://developer.atlassian.com/cloud/stride/getting-started/#install-the-app) in conversations. 
+
+To receive chat notifications in stride using App, create a Secret with the following key:
+
+| Name                          | Description                                                           |
+|-------------------------------|-----------------------------------------------------------------------|
+| STRIDE_CLOUD_ID               | `Required` You can get stride cloud_id from your organization's URL   |
+| STRIDE_CLIENT_ID              | `Optional` Stride App clientId                                        |
+| STRIDE_CLIENT_SECRET          | `Optional` Stride App clientSecret                                    |
+
+
+```console
+$ echo -n 'your-stride-cloud-id' > STRIDE_CLOUD_ID
+$ echo -n 'your-stride-app-client-id' > STRIDE_CLIENT_ID
+$ echo -n 'your-stride-app-client-secret' > STRIDE_CLIENT_SECRET
+
+$ kubectl create secret generic notifier-config -n demo \
+    --from-file=./STRIDE_CLOUD_ID \
+    --from-file=./STRIDE_CLIENT_ID \
+    --from-file=./STRIDE_CLIENT_SECRET
+secret "notifier-config" created
+```
+
+```yaml
+apiVersion: v1
+data:
+  STRIDE_CLOUD_ID: eW91ci1zdHJpZGUtY2xvdWQtaWQ=
+  STRIDE_CLIENT_ID: eW91ci1zdHJpZGUtYXBwLWNsaWVudC1pZA==
+  STRIDE_CLIENT_SECRET: eW91ci1zdHJpZGUtYXBwLWNsaWVudC1zZWNyZXQ=
+kind: Secret
+metadata:
+  creationTimestamp: 2017-07-25T01:54:37Z
+  name: notifier-config
+  namespace: demo
+  resourceVersion: "2244"
+  selfLink: /api/v1/namespaces/demo/secrets/notifier-config
+  uid: 372bc159-70dc-11e7-9b0b-080027503732
+type: Opaque
+```
+
+Now, to receiver notifications via Stride App, configure receiver as below:
+
+- notifier: `Stride`
+- to: a list room names where this App is installed
+
+```yaml
+apiVersion: monitoring.appscode.com/v1alpha1
+kind: ClusterAlert
+metadata:
+  name: check-ca-cert
+  namespace: demo
+spec:
+  check: ca-cert
+  vars:
+    warning: 240h
+    critical: 72h
+  checkInterval: 30s
+  alertInterval: 2m
+  notifierSecretName: notifier-config
+  receivers:
+  - notifier: Stride
+    state: Critical
+    to: ["ops-alerts", "dev-alerts"]
+```
 
 ## Mailgun
 To receive email notifications via Mailgun, create a Secret with the following keys:
