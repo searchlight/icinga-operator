@@ -40,7 +40,7 @@ rules:
   - pods
   - nodes
   - namespaces
-  verbs: ["get", "list", "watch"]
+  verbs: ["get", "list", "patch", "watch"]
 - apiGroups: [""]
   resources:
   - events

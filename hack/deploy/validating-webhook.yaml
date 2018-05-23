@@ -22,5 +22,7 @@ webhooks:
     apiVersions:
     - "*"
     resources:
-    - "*"
+    - clusteralerts
+    - nodealerts
+    - podalerts
   failurePolicy: Fail

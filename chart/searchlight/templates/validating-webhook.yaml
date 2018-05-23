@@ -8,6 +8,9 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
 webhooks:
 - name: admission.monitoring.appscode.com
   clientConfig:
@@ -25,6 +28,8 @@ webhooks:
     apiVersions:
     - "*"
     resources:
-    - "*"
+    - clusteralerts
+    - nodealerts
+    - podalerts
   failurePolicy: Fail
 {{ end }}

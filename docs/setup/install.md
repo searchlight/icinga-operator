@@ -97,32 +97,38 @@ $ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0-rc.0/h
 Searchlight can be installed via [Helm](https://helm.sh/) using the [chart](https://github.com/appscode/searchlight/blob/master/chart/searchlight) from [AppsCode Charts Repository](https://github.com/appscode/charts). To install the chart with the release name `my-release`:
 
 ```console
+$ helm repo add appscode https://charts.appscode.com/stable/
+$ helm repo update
+$ helm search appscode/searchlight
+NAME            CHART VERSION APP VERSION DESCRIPTION
+appscode/searchlight  7.0.0-rc.0    7.0.0-rc.0  Stash by AppsCode - Backup your Kubernetes Volumes
+
+# Kubernetes 1.8.x
+$ helm install appscode/searchlight --name searchlight-operator --version 7.0.0-rc.0
+
+# Kubernetes 1.9.0 or later
+$ helm install appscode/searchlight --name searchlight-operator  --version 7.0.0-rc.0 \
+  --set apiserver.ca="$(onessl get kube-ca)" \
+  --set apiserver.enableValidatingWebhook=true
+```
+
+To install `onessl`, run the following commands:
+
+```console
 # Mac OSX amd64:
-curl -fsSL -o onessl https://github.com/kubepack/onessl/releases/download/0.1.0/onessl-darwin-amd64 \
+curl -fsSL -o onessl https://github.com/kubepack/onessl/releases/download/0.3.0/onessl-darwin-amd64 \
   && chmod +x onessl \
   && sudo mv onessl /usr/local/bin/
 
 # Linux amd64:
-curl -fsSL -o onessl https://github.com/kubepack/onessl/releases/download/0.1.0/onessl-linux-amd64 \
+curl -fsSL -o onessl https://github.com/kubepack/onessl/releases/download/0.3.0/onessl-linux-amd64 \
   && chmod +x onessl \
   && sudo mv onessl /usr/local/bin/
 
 # Linux arm64:
-curl -fsSL -o onessl https://github.com/kubepack/onessl/releases/download/0.1.0/onessl-linux-arm64 \
+curl -fsSL -o onessl https://github.com/kubepack/onessl/releases/download/0.3.0/onessl-linux-arm64 \
   && chmod +x onessl \
   && sudo mv onessl /usr/local/bin/
-
-# Kubernetes 1.8.x
-$ helm repo add appscode https://charts.appscode.com/stable/
-$ helm repo update
-$ helm install appscode/searchlight --name my-release
-
-# Kubernetes 1.9.0 or later
-$ helm repo add appscode https://charts.appscode.com/stable/
-$ helm repo update
-$ helm install appscode/searchlight --name my-release \
-  --set apiserver.ca="$(onessl get kube-ca)" \
-  --set apiserver.enableValidatingWebhook=true
 ```
 
 To see the detailed configuration options, visit [here](https://github.com/appscode/searchlight/tree/master/chart/searchlight).

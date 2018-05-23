@@ -203,34 +203,6 @@ while test $# -gt 0; do
 done
 
 if [ "$SEARCHLIGHT_UNINSTALL" -eq 1 ]; then
-    # https://github.com/kubernetes/kubernetes/issues/60538
-    if [ "$SEARCHLIGHT_PURGE" -eq 1 ]; then
-        for crd in "${crds[@]}"; do
-            pairs=($(kubectl get ${crd}.monitoring.appscode.com --all-namespaces -o jsonpath='{range .items[*]}{.metadata.name} {.metadata.namespace} {end}' || true))
-            total=${#pairs[*]}
-
-            # save objects
-            if [ $total -gt 0 ]; then
-                echo "dumping ${crd} objects into ${crd}.yaml"
-                kubectl get ${crd}.monitoring.appscode.com --all-namespaces -o yaml > ${crd}.yaml
-            fi
-
-            for (( i=0; i<$total; i+=2 )); do
-                name=${pairs[$i]}
-                namespace=${pairs[$i + 1]}
-                # delete crd object
-                echo "deleting ${crd} $namespace/$name"
-                kubectl delete ${crd}.monitoring.appscode.com $name -n $namespace
-            done
-
-            # delete crd
-            kubectl delete crd ${crd}.monitoring.appscode.com || true
-        done
-
-        echo "waiting 5 seconds ..."
-        sleep 5;
-    fi
-
     # delete webhooks and apiservices
     kubectl delete validatingwebhookconfiguration -l app=searchlight || true
     kubectl delete mutatingwebhookconfiguration -l app=searchlight || true
@@ -255,6 +227,34 @@ if [ "$SEARCHLIGHT_UNINSTALL" -eq 1 ]; then
         fi
        sleep 2
     done
+
+    # https://github.com/kubernetes/kubernetes/issues/60538
+    if [ "$SEARCHLIGHT_PURGE" -eq 1 ]; then
+        for crd in "${crds[@]}"; do
+            pairs=($(kubectl get ${crd}.monitoring.appscode.com --all-namespaces -o jsonpath='{range .items[*]}{.metadata.name} {.metadata.namespace} {end}' || true))
+            total=${#pairs[*]}
+
+            # save objects
+            if [ $total -gt 0 ]; then
+                echo "dumping ${crd} objects into ${crd}.yaml"
+                kubectl get ${crd}.monitoring.appscode.com --all-namespaces -o yaml > ${crd}.yaml
+            fi
+
+            for (( i=0; i<$total; i+=2 )); do
+                name=${pairs[$i]}
+                namespace=${pairs[$i + 1]}
+                # delete crd object
+                echo "deleting ${crd} $namespace/$name"
+                kubectl delete ${crd}.monitoring.appscode.com $name -n $namespace
+            done
+
+            # delete crd
+            kubectl delete crd ${crd}.monitoring.appscode.com || true
+        done
+
+        # delete user roles
+        kubectl delete clusterroles appscode:searchlight:admin appscode:searchlight:edit appscode:searchlight:view
+    fi
 
     echo
     echo "Successfully uninstalled Searchlight!"
