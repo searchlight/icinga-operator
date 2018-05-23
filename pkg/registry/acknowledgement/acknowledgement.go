@@ -1,4 +1,4 @@
-package v1alpha1
+package acknowledgement
 
 import (
 	"encoding/json"
