@@ -18,7 +18,7 @@ webhooks:
       namespace: default
       name: kubernetes
       path: /apis/admission.monitoring.appscode.com/v1alpha1/admissionreviews
-    caBundle: ${KUBE_CA}
+    caBundle: {{ b64enc .Values.apiserver.ca }}
   rules:
   - operations:
     - CREATE

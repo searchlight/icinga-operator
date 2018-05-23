@@ -21,14 +21,14 @@ spec:
 {{- end }}
     spec:
       serviceAccountName: {{ template "searchlight.serviceAccountName" . }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 6 }}
+      {{- end }}
       containers:
       - name: operator
         image: {{ .Values.operator.registry }}/{{ .Values.operator.repository }}:{{ .Values.operator.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
-        {{- if .Values.imagePullSecrets }}
-        imagePullSecrets:
-{{ toYaml .Values.imagePullSecrets | indent 8 }}
-        {{- end }}
         args:
         - run
         - --v={{ .Values.logLevel }}
@@ -56,10 +56,6 @@ spec:
       - name: icinga
         image: {{ .Values.icinga.registry }}/{{ .Values.icinga.repository }}:{{ .Values.icinga.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
-        {{- if .Values.imagePullSecrets }}
-        imagePullSecrets:
-{{ toYaml .Values.imagePullSecrets | indent 8 }}
-        {{- end }}
         ports:
         - containerPort: 5665
         - containerPort: 60006
@@ -82,10 +78,6 @@ spec:
       - name: ido
         image: {{ .Values.ido.registry }}/{{ .Values.ido.repository }}:{{ .Values.ido.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
-        {{- if .Values.imagePullSecrets }}
-        imagePullSecrets:
-{{ toYaml .Values.imagePullSecrets | indent 8 }}
-        {{- end }}
         env:
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
@@ -100,7 +92,7 @@ spec:
       - name: serving-cert
         secret:
           defaultMode: 420
-          secretName: searchlight-server-cert
+          secretName: {{ template "searchlight.fullname" . }}-apiserver-cert
 {{- if and .Values.criticalAddon (eq .Release.Namespace "kube-system") }}
       tolerations:
       - key: "CriticalAddonsOnly"
