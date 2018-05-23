@@ -131,6 +131,11 @@ func (op *Operator) Run(stopCh <-chan struct{}) error {
 	op.gcIncidents()
 	go op.RunWatchers(stopCh)
 
+	// Create build-in SearchlighPlugin
+	if err := op.createBuiltinSearchlightPlugin(); err != nil {
+		return err
+	}
+
 	m := pat.New()
 	m.Get("/metrics", promhttp.Handler())
 	http.Handle("/", m)

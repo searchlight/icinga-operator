@@ -266,3 +266,37 @@ func (op *Operator) executeCommand(pod *core.Pod, podExecOptions *core.PodExecOp
 
 	return execOut.String(), nil
 }
+
+func (op *Operator) createBuiltinSearchlightPlugin() error {
+	plugins := []*api.SearchlightPlugin{
+		plugin.GetComponentStatusPlugin(),
+		plugin.GetJsonPathPlugin(),
+		plugin.GetNodeExistsPlugin(),
+		plugin.GetPodExistsPlugin(),
+		plugin.GetEventPlugin(),
+		plugin.GetCACertPlugin(),
+		plugin.GetCertPlugin(),
+		plugin.GetNodeStatusPlugin(),
+		plugin.GetNodeVolumePlugin(),
+		plugin.GetPodStatusPlugin(),
+		plugin.GetPodVolumePlugin(),
+		plugin.GetPodExecPlugin(),
+	}
+
+	var errs []error
+	for _, p := range plugins {
+		_, _, err := util.CreateOrPatchSearchlightPlugin(op.extClient.MonitoringV1alpha1(), p.ObjectMeta, func(sp *api.SearchlightPlugin) *api.SearchlightPlugin {
+			sp.Spec = p.Spec
+			return sp
+		})
+		if err != nil {
+			errs = append(errs, err)
+		}
+	}
+
+	if len(errs) > 0 {
+		return utilerrors.NewAggregate(errs)
+	}
+
+	return nil
+}

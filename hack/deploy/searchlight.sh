@@ -315,8 +315,5 @@ for crd in "${crds[@]}"; do
     $ONESSL wait-until-ready crd ${crd}.monitoring.appscode.com || { echo "$crd crd failed to be ready"; exit 1; }
 done
 
-echo "creating built-in plugins"
-${SCRIPT_LOCATION}hack/deploy/plugins.yaml| kubectl apply -f -
-
 echo
 echo "Successfully installed Searchlight in $SEARCHLIGHT_NAMESPACE namespace!"
