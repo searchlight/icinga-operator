@@ -42,9 +42,6 @@ logLevel: 3
 icinga2web:
   password: changeit
 
-icinga2:
-  password: VDYBqn3wtc-MNdlX
-
 notifier:
   hipchat:
     authToken: ''
