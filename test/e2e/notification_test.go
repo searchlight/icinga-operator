@@ -32,6 +32,10 @@ var _ = Describe("notification", func() {
 	)
 
 	BeforeEach(func() {
+		if root.Provider != "minikube" {
+			Skip("notification test is only allowed in minikube")
+		}
+
 		f = root.Invoke()
 		rs = f.ReplicaSet()
 		clusterAlert = f.ClusterAlert()
@@ -75,7 +79,6 @@ var _ = Describe("notification", func() {
 				server.Close()
 			})
 			It("with webhook receiver", func() {
-
 				By("Create notifier secret: " + secret.Name)
 				err := f.CreateWebHookSecret(secret)
 				Expect(err).NotTo(HaveOccurred())

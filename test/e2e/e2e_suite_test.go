@@ -13,7 +13,6 @@ import (
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/operator"
 	"github.com/appscode/searchlight/test/e2e/framework"
-	. "github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/reporters"
 	. "github.com/onsi/gomega"
@@ -26,15 +25,15 @@ import (
 )
 
 var (
-	provider       string
-	storageClass   string
-	providedIcinga string
+	provider           string
+	storageClass       string
+	searchlightService string
 )
 
 func init() {
 	flag.StringVar(&provider, "provider", "minikube", "Kubernetes cloud provider")
 	flag.StringVar(&storageClass, "storageclass", "", "Kubernetes StorageClass name")
-	flag.StringVar(&providedIcinga, "provided-icinga", "", "Running Icinga reference")
+	flag.StringVar(&searchlightService, "searchlight-service", "", "Running searchlight reference")
 }
 
 const (
@@ -56,6 +55,9 @@ func TestE2e(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
+
+	Expect(searchlightService).ShouldNot(BeEmpty())
+
 	// Kubernetes config
 	kubeconfigPath := filepath.Join(homedir.HomeDir(), ".kube/config")
 	By("Using kubeconfig from " + kubeconfigPath)
@@ -75,28 +77,13 @@ var _ = BeforeSuite(func() {
 	err = root.CreateNamespace()
 	Expect(err).NotTo(HaveOccurred())
 
-	var slService *core.Service
-	if providedIcinga == "" {
-		// Create Searchlight deployment
-		slDeployment := root.Invoke().DeploymentSearchlight()
-		err = root.CreateDeployment(slDeployment)
-		Expect(err).NotTo(HaveOccurred())
-		By("Waiting for Running pods")
-		root.EventuallyDeployment(slDeployment.ObjectMeta).Should(HaveRunningPods(*slDeployment.Spec.Replicas))
-		// Create Searchlight service
-		slService = root.Invoke().ServiceSearchlight()
-		err = root.CreateService(slService)
-		Expect(err).NotTo(HaveOccurred())
-		root.EventuallyServiceLoadBalancer(slService.ObjectMeta, "icinga").Should(BeTrue())
-
-	} else {
-		parts := strings.Split(providedIcinga, "@")
-		om := metav1.ObjectMeta{
-			Name:      parts[0],
-			Namespace: parts[1],
-		}
-		slService = &core.Service{ObjectMeta: om}
+	parts := strings.Split(searchlightService, "@")
+	Expect(len(parts)).Should(BeIdenticalTo(2))
+	om := metav1.ObjectMeta{
+		Name:      parts[0],
+		Namespace: parts[1],
 	}
+	slService := &core.Service{ObjectMeta: om}
 
 	// Get Icinga Ingress Hostname
 	endpoint, err := root.GetServiceEndpoint(slService.ObjectMeta, "icinga")
@@ -123,21 +110,6 @@ var _ = BeforeSuite(func() {
 	fmt.Println("Login password: ", ICINGA_WEB_UI_PASSWORD)
 	fmt.Println()
 
-	opc := &operator.OperatorConfig{
-		Config: operator.Config{
-			MaxNumRequeues: 3,
-			NumThreads:     3,
-			Verbosity:      "6",
-		},
-		KubeClient:   kubeClient,
-		CRDClient:    apiExtKubeClient,
-		ExtClient:    extClient,
-		IcingaClient: icingaClient,
-	}
-	// Controller
-	op, err = opc.New()
-	Expect(err).NotTo(HaveOccurred())
-	go op.RunWatchers(nil)
 })
 
 var _ = AfterSuite(func() {
