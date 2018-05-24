@@ -3,9 +3,9 @@ package matcher
 import (
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/onsi/gomega/types"
-	"strings"
 )
 
 func ReceiveNotification(expected string) types.GomegaMatcher {

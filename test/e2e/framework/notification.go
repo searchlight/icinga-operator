@@ -3,12 +3,12 @@ package framework
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	incident_api "github.com/appscode/searchlight/apis/incidents/v1alpha1"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
-	"time"
 )
 
 func (f *Framework) ForceCheckClusterAlert(meta metav1.ObjectMeta, hostname string, times int) error {

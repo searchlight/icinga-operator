@@ -78,7 +78,7 @@ var _ = Describe("notification", func() {
 			AfterEach(func() {
 				server.Close()
 			})
-			FIt("with webhook receiver", func() {
+			It("with webhook receiver", func() {
 				By("Create notifier secret: " + secret.Name)
 				err := f.CreateWebHookSecret(secret)
 				Expect(err).NotTo(HaveOccurred())
