@@ -10,7 +10,7 @@ import (
 	"github.com/appscode/searchlight/apis/incidents/install"
 	"github.com/appscode/searchlight/apis/incidents/v1alpha1"
 	"github.com/appscode/searchlight/pkg/operator"
-	ackregistry "github.com/appscode/searchlight/pkg/registry/acknowledgement/v1alpha1"
+	ackregistry "github.com/appscode/searchlight/pkg/registry/acknowledgement"
 	admission "k8s.io/api/admission/v1beta1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/apimachinery"
