@@ -40,14 +40,9 @@ func (f *Framework) EventuallyHTTPServerResponse(serverURL string) GomegaAsyncAs
 	return Eventually(
 		func() string {
 			resp, err := http.Get(serverURL)
-			if err != nil {
-				return err.Error()
-			}
-
+			Expect(err).NotTo(HaveOccurred())
 			data, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				return err.Error()
-			}
+			Expect(err).NotTo(HaveOccurred())
 
 			return string(data)
 		},
