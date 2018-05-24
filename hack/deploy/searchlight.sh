@@ -91,6 +91,7 @@ export SEARCHLIGHT_NAMESPACE=kube-system
 export SEARCHLIGHT_SERVICE_ACCOUNT=searchlight-operator
 export SEARCHLIGHT_ENABLE_RBAC=true
 export SEARCHLIGHT_RUN_ON_MASTER=0
+export SEARCHLIGHT_ICINGA_API_PASSWORD=
 export SEARCHLIGHT_ENABLE_VALIDATING_WEBHOOK=false
 export SEARCHLIGHT_DOCKER_REGISTRY=appscode
 export SEARCHLIGHT_OPERATOR_TAG=7.0.0-rc.0
@@ -127,6 +128,7 @@ show_help() {
     echo "    --image-pull-secret            name of secret used to pull searchlight operator images"
     echo "    --run-on-master                run searchlight operator on master"
     echo "    --enable-validating-webhook    enable/disable validating webhooks for Searchlight CRDs"
+    echo "    --icinga-api-password          password used by icinga2 api (if unset, a random password will be generated and used)"
     echo "    --enable-analytics             send usage events to Google Analytics (default: true)"
     echo "    --uninstall                    uninstall searchlight"
     echo "    --purge                        purges searchlight crd objects and crds"
@@ -185,6 +187,12 @@ while test $# -gt 0; do
             ;;
         --run-on-master)
             export SEARCHLIGHT_RUN_ON_MASTER=1
+            shift
+            ;;
+        --icinga-api-password*)
+            pass=`echo $1 | sed -e 's/^[^=]*=//g'`
+            pass_b64=`echo -n $pass | $ONESSL base64`
+            export SEARCHLIGHT_ICINGA_API_PASSWORD="ICINGA_API_PASSWORD: '$pass_b64'"
             shift
             ;;
         --uninstall)

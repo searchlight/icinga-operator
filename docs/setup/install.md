@@ -52,6 +52,7 @@ options:
     --image-pull-secret            name of secret used to pull searchlight operator images
     --run-on-master                run searchlight operator on master
     --enable-validating-webhook    enable/disable validating webhooks for Searchlight CRD
+    --icinga-api-password          password used by icinga2 api (if unset, a random password will be generated and used)
     --enable-analytics             send usage events to Google Analytics (default: true)
     --uninstall                    uninstall searchlight
     --purge                        purges searchlight crd objects and crds
