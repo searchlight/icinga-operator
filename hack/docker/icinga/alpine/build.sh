@@ -43,7 +43,7 @@ build() {
     fi
     chmod 755 plugins/*
 
-    local cmd="docker build -t appscode/$IMG:$TAG-k8s ."
+    local cmd="docker build -t $DOCKER_REGISTRY/$IMG:$TAG-k8s ."
     echo $cmd; $cmd
 
     rm -rf  icingaweb2 plugins

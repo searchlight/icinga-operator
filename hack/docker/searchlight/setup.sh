@@ -49,7 +49,7 @@ COPY searchlight /usr/bin/searchlight
 
 ENTRYPOINT ["searchlight"]
 EOL
-	local cmd="docker build -t appscode/$IMG:$TAG ."
+	local cmd="docker build -t $DOCKER_REGISTRY/$IMG:$TAG ."
 	echo $cmd; $cmd
 
 	rm searchlight Dockerfile
