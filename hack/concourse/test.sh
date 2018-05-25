@@ -66,10 +66,10 @@ export DOCKER_REGISTRY=appscodeci
 ./hack/make.py build searchlight
 ./hack/make.py build hyperalert
 
-./hack/docker/searchlight/setup.sh build
+./hack/docker/searchlight/setup.sh
 ./hack/docker/searchlight/setup.sh push
 
-./hack/docker/icinga/alpine/build.sh build
+./hack/docker/icinga/alpine/build.sh
 ./hack/docker/icinga/alpine/build.sh push
 popd
 
@@ -112,4 +112,4 @@ pushd $GOPATH/src/github.com/appscode/searchlight
 
 # run tests
 ./hack/deploy/searchlight.sh --docker-registry=appscodeci --enable-validating-webhook=true --rbac=true --icinga-api-password=1234
-./hack/make.py test e2e --searchlight-service=kube-system
+./hack/make.py test e2e --searchlight-service=kube-system/searchlight-operator
