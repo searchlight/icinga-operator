@@ -9,7 +9,7 @@ docker run hello-world
 
 # install python pip
 apt-get update > /dev/null
-apt-get install -y python python-pip > /dev/null
+apt-get install -y python python-pip gsutil git libwww-perl > /dev/null
 
 # install kubectl
 curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl &> /dev/null
@@ -54,6 +54,11 @@ pushd $GOPATH/src/github.com/appscode/searchlight
 NAME=searchlight-$(git rev-parse --short HEAD)
 
 ./hack/builddeps.sh
+go get -u golang.org/x/tools/cmd/goimports
+go get github.com/Masterminds/glide
+go get github.com/sgotti/glide-vc
+go get github.com/onsi/ginkgo/ginkgo
+go install github.com/onsi/ginkgo/ginkgo
 
 export APPSCODE_ENV=dev
 export DOCKER_REGISTRY=appscodeci

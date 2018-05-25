@@ -23,7 +23,7 @@ resources:
 - name: creds
   type: s3
   source:
-    bucket: appscode
+    bucket: kubedbci
     access_key_id: ((s3-access-key))
     secret_access_key: ((s3-secret))
     versioned_file: gcs.zip
