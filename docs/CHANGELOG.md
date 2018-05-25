@@ -17,7 +17,7 @@ aliases:
 
 # Change Log
 
-## [7.0.0-rc.0](https://github.com/appscode/searchlight/tree/7.0.0-rc.0) (2018-05-18)
+## [7.0.0-rc.0](https://github.com/appscode/searchlight/tree/7.0.0-rc.0) (2018-05-25)
 [Full Changelog](https://github.com/appscode/searchlight/compare/5.1.1...7.0.0-rc.0)
 
 **Implemented enhancements:**
@@ -46,6 +46,16 @@ aliases:
 
 **Merged pull requests:**
 
+- Refactor acknowledgement storage implementation [\#377](https://github.com/appscode/searchlight/pull/377) ([tamalsaha](https://github.com/tamalsaha))
+- Use internal type to implement storage [\#376](https://github.com/appscode/searchlight/pull/376) ([tamalsaha](https://github.com/tamalsaha))
+- Add api password for e2e-test [\#375](https://github.com/appscode/searchlight/pull/375) ([aerokite](https://github.com/aerokite))
+- fix NotificationCommand arguments [\#374](https://github.com/appscode/searchlight/pull/374) ([aerokite](https://github.com/aerokite))
+- provide pods/exec resource permission [\#373](https://github.com/appscode/searchlight/pull/373) ([aerokite](https://github.com/aerokite))
+- add documentation for usage of stride notifier [\#372](https://github.com/appscode/searchlight/pull/372) ([aerokite](https://github.com/aerokite))
+- create all built-in SearchlightPlugin at runtime [\#371](https://github.com/appscode/searchlight/pull/371) ([aerokite](https://github.com/aerokite))
+- Fix chart [\#369](https://github.com/appscode/searchlight/pull/369) ([tamalsaha](https://github.com/tamalsaha))
+- Various installer improvements [\#368](https://github.com/appscode/searchlight/pull/368) ([tamalsaha](https://github.com/tamalsaha))
+- update webhook plugin [\#366](https://github.com/appscode/searchlight/pull/366) ([aerokite](https://github.com/aerokite))
 - Revendor go-notify [\#365](https://github.com/appscode/searchlight/pull/365) ([tamalsaha](https://github.com/tamalsaha))
 - sort arguments in CheckCommand [\#364](https://github.com/appscode/searchlight/pull/364) ([aerokite](https://github.com/aerokite))
 - Don't panic if admission options is nil [\#363](https://github.com/appscode/searchlight/pull/363) ([tamalsaha](https://github.com/tamalsaha))
