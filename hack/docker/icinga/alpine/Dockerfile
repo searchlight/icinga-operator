@@ -1,5 +1,7 @@
 FROM alpine:3.6
 
+COPY runit.sh /runit.sh
+
 ENV DATADIR /srv
 
 # Install Icinga2 ###################################
@@ -111,7 +113,6 @@ ADD sv /etc/sv/
 RUN ln -s /etc/sv /etc/service
 
 COPY sv /etc/sv/
-COPY runit.sh /runit.sh
 
 ENV TZ     :/etc/localtime
 ENV LANG   en_US.utf8

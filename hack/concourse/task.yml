@@ -8,7 +8,6 @@ image_resource:
 
 inputs:
 - name: searchlight
-- name: creds
 
 run:
   path: searchlight/hack/concourse/test.sh

@@ -66,11 +66,12 @@ export DOCKER_REGISTRY=appscodeci
 ./hack/make.py build searchlight
 ./hack/make.py build hyperalert
 
+./hack/docker/icinga/alpine/build.sh
+./hack/docker/icinga/alpine/build.sh push
+
 ./hack/docker/searchlight/setup.sh
 ./hack/docker/searchlight/setup.sh push
 
-./hack/docker/icinga/alpine/build.sh
-./hack/docker/icinga/alpine/build.sh push
 popd
 
 #create credential file for pharmer
@@ -105,8 +106,6 @@ EOF
 kubectl create -f sc.yaml
 sleep 120
 kubectl get storageclass
-
-export CRED_DIR=$(pwd)/creds/gcs/gcs.json
 
 pushd $GOPATH/src/github.com/appscode/searchlight
 
