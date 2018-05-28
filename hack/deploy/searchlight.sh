@@ -311,7 +311,7 @@ fi
 
 echo
 echo "waiting until searchlight operator deployment is ready"
-$ONESSL wait-until-ready deployment searchlight-operator --namespace $SEARCHLIGHT_NAMESPACE || { echo "Searchlight operator deployment failed to be ready"; exit 1; }
+$ONESSL wait-until-ready deployment searchlight-operator --timeout=10m --namespace $SEARCHLIGHT_NAMESPACE || { echo "Searchlight operator deployment failed to be ready"; exit 1; }
 
 echo "waiting until searchlight apiservice is available"
 for gv in "${apiversions[@]}"; do

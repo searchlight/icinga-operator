@@ -33,14 +33,15 @@ function cleanup {
     pharmer get cluster || true
     pharmer delete cluster $NAME || true
     pharmer get cluster || true
-    sleep 120 || true
+    sleep 300 || true
     pharmer apply $NAME || true
     pharmer get cluster || true
 
     # delete docker image on exit
     curl -LO https://raw.githubusercontent.com/appscodelabs/libbuild/master/docker.py || true
     chmod +x docker.py || true
-    ./docker.py del_tag appscodeci searchlight $CUSTOM_OPERATOR_TAG || true
+    ./docker.py del_tag appscodeci searchlight $SEARCHLIGHT_OPERATOR_TAG || true
+    ./docker.py del_tag appscodeci icinga $SEARCHLIGHT_ICINGA_TAG || true
 }
 trap cleanup EXIT
 
@@ -110,5 +111,5 @@ kubectl get storageclass
 pushd $GOPATH/src/github.com/appscode/searchlight
 
 # run tests
-./hack/deploy/searchlight.sh --docker-registry=appscodeci --enable-validating-webhook=true --rbac=true --icinga-api-password=1234
-./hack/make.py test e2e --searchlight-service=kube-system/searchlight-operator
+source ./hack/deploy/searchlight.sh --docker-registry=appscodeci --enable-validating-webhook=true --rbac=true --icinga-api-password=1234
+./hack/make.py test e2e --searchlight-service=searchlight-operator@kube-system

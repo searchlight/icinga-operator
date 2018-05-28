@@ -22,7 +22,7 @@ clean() {
 
 build() {
 	pushd $REPO_ROOT/hack/docker/postgres
-	local cmd="docker build -t appscode/$IMG:$TAG ."
+	local cmd="docker build -t $DOCKER_REGISTRY/$IMG:$TAG ."
 	echo $cmd; $cmd
 	popd
 }

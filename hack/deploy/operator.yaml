@@ -121,6 +121,7 @@ metadata:
   labels:
     app: searchlight
 spec:
+  type: LoadBalancer
   ports:
   - name: ui
     port: 80
