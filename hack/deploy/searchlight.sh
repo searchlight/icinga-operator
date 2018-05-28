@@ -8,11 +8,14 @@ echo "checking kubeconfig context"
 kubectl config current-context || { echo "Set a context (kubectl use-context <context>) out of the following:"; echo; kubectl config get-contexts; exit 1; }
 echo ""
 
-# http://redsymbol.net/articles/bash-exit-traps/
-function cleanup {
-    rm -rf $ONESSL ca.crt ca.key server.crt server.key
-}
-trap cleanup EXIT
+APPSCODE_TEST=${APPSCODE_TEST:-minikube}
+if [ "$APPSCODE_TEST" != "concourse" ]; then
+    # http://redsymbol.net/articles/bash-exit-traps/
+    function cleanup {
+        rm -rf $ONESSL ca.crt ca.key server.crt server.key
+    }
+    trap cleanup EXIT
+fi
 
 # ref: https://github.com/appscodelabs/libbuild/blob/master/common/lib.sh#L55
 inside_git_repo() {
@@ -93,7 +96,7 @@ export SEARCHLIGHT_ENABLE_RBAC=true
 export SEARCHLIGHT_RUN_ON_MASTER=0
 export SEARCHLIGHT_ICINGA_API_PASSWORD=
 export SEARCHLIGHT_ENABLE_VALIDATING_WEBHOOK=false
-export SEARCHLIGHT_DOCKER_REGISTRY=appscode
+export SEARCHLIGHT_DOCKER_REGISTRY=${DOCKER_REGISTRY:-appscode}
 export SEARCHLIGHT_OPERATOR_TAG=7.0.0-rc.0
 export SEARCHLIGHT_ICINGA_TAG=7.0.0-rc.0-k8s
 export SEARCHLIGHT_IMAGE_PULL_SECRET=
