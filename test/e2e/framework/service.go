@@ -52,9 +52,7 @@ func (f *Framework) GetServiceEndpoint(meta metav1.ObjectMeta, portName string) 
 			}
 			host = strings.TrimRight(string(ip), "\n")
 		}
-	}
-
-	if strings.ToLower(f.Provider) == "aws" {
+	} else {
 		for _, ingress := range service.Status.LoadBalancer.Ingress {
 			if ingress.Hostname != "" {
 				host = ingress.Hostname

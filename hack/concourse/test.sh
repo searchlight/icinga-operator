@@ -112,4 +112,5 @@ pushd $GOPATH/src/github.com/appscode/searchlight
 
 # run tests
 source ./hack/deploy/searchlight.sh --docker-registry=appscodeci --enable-validating-webhook=true --rbac=true --icinga-api-password=1234
-./hack/make.py test e2e --searchlight-service=searchlight-operator@kube-system
+./hack/make.py test e2e --searchlight-service=searchlight-operator@kube-system --provider=do
+
