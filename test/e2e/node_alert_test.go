@@ -64,9 +64,7 @@ var _ = Describe("NodeAlert", func() {
 		// Check "node_volume"
 		Context("node_volume", func() {
 			BeforeEach(func() {
-				if strings.ToLower(f.Provider) == "minikube" {
-					skippingMessage = `"node_volume will not work in minikube"`
-				}
+				skippingMessage = `"node_volume will not work without hostfact"`
 				alert.Spec.Check = api.CheckNodeVolume
 			})
 

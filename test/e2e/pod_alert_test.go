@@ -332,9 +332,7 @@ var _ = Describe("PodAlert", func() {
 				go f.DeleteStatefulSet(ss)
 			})
 			BeforeEach(func() {
-				if strings.ToLower(f.Provider) == "minikube" {
-					skippingMessage = `"check_pod_volume" will not work in minikube"`
-				}
+				skippingMessage = `"node_volume will not work without hostfact"`
 
 				ss.Spec.Template.Spec.Containers[0].Command = []string{
 					"/bin/sh",
