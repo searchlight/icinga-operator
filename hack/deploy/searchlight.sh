@@ -294,8 +294,7 @@ export TLS_SERVING_KEY=$(cat server.key | $ONESSL base64)
 ${SCRIPT_LOCATION}hack/deploy/operator.yaml | $ONESSL envsubst | kubectl apply -f -
 
 if [ "$SEARCHLIGHT_ENABLE_RBAC" = true ]; then
-    kubectl create serviceaccount $SEARCHLIGHT_SERVICE_ACCOUNT --namespace $SEARCHLIGHT_NAMESPACE
-    kubectl label serviceaccount $SEARCHLIGHT_SERVICE_ACCOUNT app=searchlight --namespace $SEARCHLIGHT_NAMESPACE
+    ${SCRIPT_LOCATION}hack/deploy/service-account.yaml | $ONESSL envsubst | kubectl apply -f -
     ${SCRIPT_LOCATION}hack/deploy/rbac-list.yaml | $ONESSL envsubst | kubectl auth reconcile -f -
     ${SCRIPT_LOCATION}hack/deploy/user-roles.yaml | $ONESSL envsubst | kubectl auth reconcile -f -
 fi
@@ -313,10 +312,12 @@ echo
 echo "waiting until searchlight operator deployment is ready"
 $ONESSL wait-until-ready deployment searchlight-operator --namespace $SEARCHLIGHT_NAMESPACE || { echo "Searchlight operator deployment failed to be ready"; exit 1; }
 
-echo "waiting until searchlight apiservice is available"
-for gv in "${apiversions[@]}"; do
-    $ONESSL wait-until-ready apiservice ${gv}.monitoring.appscode.com || { echo "${gv}.monitoring.appscode.com apiservice failed to be ready"; exit 1; }
-done
+if [ "$SEARCHLIGHT_ENABLE_VALIDATING_WEBHOOK" = true ]; then
+    echo "waiting until searchlight apiservice is available"
+    for gv in "${apiversions[@]}"; do
+        $ONESSL wait-until-ready apiservice ${gv}.monitoring.appscode.com || { echo "${gv}.monitoring.appscode.com apiservice failed to be ready"; exit 1; }
+    done
+fi
 
 echo "waiting until searchlight crds are ready"
 for crd in "${crds[@]}"; do
