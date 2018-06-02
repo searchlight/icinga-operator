@@ -1,8 +1,6 @@
 package e2e
 
 import (
-	"strings"
-
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/go/types"
 	kutil_core "github.com/appscode/kutil/core/v1"

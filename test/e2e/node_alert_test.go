@@ -1,8 +1,6 @@
 package e2e
 
 import (
-	"strings"
-
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/test/e2e/framework"
 	. "github.com/appscode/searchlight/test/e2e/matcher"
