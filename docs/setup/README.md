@@ -2,17 +2,17 @@
 title: Table of Contents | Setup
 description: Table of Contents | Setup
 menu:
-  product_searchlight_7.0.0-rc.0:
+  product_searchlight_7.0.0:
     identifier: setup-readme
     name: Readme
     parent: setup
     weight: -1
 product_name: searchlight
-menu_name: product_searchlight_7.0.0-rc.0
+menu_name: product_searchlight_7.0.0
 section_menu_id: setup
-url: /products/searchlight/7.0.0-rc.0/setup/
+url: /products/searchlight/7.0.0/setup/
 aliases:
-  - /products/searchlight/7.0.0-rc.0/setup/README/
+  - /products/searchlight/7.0.0/setup/README/
 ---
 # Setup
 

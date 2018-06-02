@@ -2,20 +2,31 @@
 title: Changelog | Searchlight
 description: Changelog
 menu:
-  product_searchlight_7.0.0-rc.0:
+  product_searchlight_7.0.0:
     identifier: changelog-searchlight
     name: Changelog
     parent: welcome
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_7.0.0-rc.0
+menu_name: product_searchlight_7.0.0
 section_menu_id: welcome
-url: /products/searchlight/7.0.0-rc.0/welcome/changelog/
+url: /products/searchlight/7.0.0/welcome/changelog/
 aliases:
-  - /products/searchlight/7.0.0-rc.0/CHANGELOG/
+  - /products/searchlight/7.0.0/CHANGELOG/
 ---
 
 # Change Log
+
+## [Unreleased](https://github.com/appscode/searchlight/tree/HEAD)
+
+[Full Changelog](https://github.com/appscode/searchlight/compare/7.0.0-rc.0...HEAD)
+
+**Merged pull requests:**
+
+- Revendor [\#382](https://github.com/appscode/searchlight/pull/382) ([tamalsaha](https://github.com/tamalsaha))
+- Improve installer [\#381](https://github.com/appscode/searchlight/pull/381) ([tamalsaha](https://github.com/tamalsaha))
+- concourse [\#379](https://github.com/appscode/searchlight/pull/379) ([tahsinrahman](https://github.com/tahsinrahman))
+- Update changelog [\#378](https://github.com/appscode/searchlight/pull/378) ([tamalsaha](https://github.com/tamalsaha))
 
 ## [7.0.0-rc.0](https://github.com/appscode/searchlight/tree/7.0.0-rc.0) (2018-05-25)
 [Full Changelog](https://github.com/appscode/searchlight/compare/5.1.1...7.0.0-rc.0)

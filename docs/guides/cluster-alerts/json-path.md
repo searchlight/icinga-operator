@@ -1,13 +1,13 @@
 ---
 title: JSON Path
 menu:
-  product_searchlight_7.0.0-rc.0:
+  product_searchlight_7.0.0:
     identifier: guides-json-path
     name: JSON Path
     parent: cluster-alert
     weight: 40
 product_name: searchlight
-menu_name: product_searchlight_7.0.0-rc.0
+menu_name: product_searchlight_7.0.0
 section_menu_id: guides
 ---
 

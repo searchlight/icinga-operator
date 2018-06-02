@@ -1,13 +1,13 @@
 ---
 title: Webhook SearchlightPlugin
 menu:
-  product_searchlight_7.0.0-rc.0:
+  product_searchlight_7.0.0:
     identifier: guides-webhook-searchlight-plugin
     name: Webhook SearchlightPlugin
     parent: searchlight-plugin
     weight: 20
 product_name: searchlight
-menu_name: product_searchlight_7.0.0-rc.0
+menu_name: product_searchlight_7.0.0
 section_menu_id: guides
 ---
 
