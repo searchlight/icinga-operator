@@ -109,6 +109,8 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 		msg.DiskPressure == core.ConditionTrue ||
 		msg.NetworkUnavailable == core.ConditionTrue {
 		state = icinga.Critical
+	} else if msg.Ready == core.ConditionUnknown {
+		state = icinga.Unknown
 	}
 
 	output, err := json.MarshalIndent(msg, "", " ")
