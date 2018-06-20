@@ -304,28 +304,12 @@ spec:
             to create.
           properties:
             alertInterval:
-              description: Duration is a wrapper around time.Duration which supports
-                correct marshaling to YAML and JSON. In particular, it marshals into
-                strings, which can be used as map keys in json.
-              properties:
-                Duration:
-                  format: int64
-                  type: integer
-              required:
-              - Duration
+              type: string
             check:
               description: Icinga CheckCommand name
               type: string
             checkInterval:
-              description: Duration is a wrapper around time.Duration which supports
-                correct marshaling to YAML and JSON. In particular, it marshals into
-                strings, which can be used as map keys in json.
-              properties:
-                Duration:
-                  format: int64
-                  type: integer
-              required:
-              - Duration
+              type: string
             notifierSecretName:
               description: Secret containing notifier credentials
               type: string
@@ -663,28 +647,12 @@ spec:
           description: NodeAlertSpec describes the NodeAlert the user wishes to create.
           properties:
             alertInterval:
-              description: Duration is a wrapper around time.Duration which supports
-                correct marshaling to YAML and JSON. In particular, it marshals into
-                strings, which can be used as map keys in json.
-              properties:
-                Duration:
-                  format: int64
-                  type: integer
-              required:
-              - Duration
+              type: string
             check:
               description: Icinga CheckCommand name
               type: string
             checkInterval:
-              description: Duration is a wrapper around time.Duration which supports
-                correct marshaling to YAML and JSON. In particular, it marshals into
-                strings, which can be used as map keys in json.
-              properties:
-                Duration:
-                  format: int64
-                  type: integer
-              required:
-              - Duration
+              type: string
             nodeName:
               type: string
             notifierSecretName:
@@ -1026,28 +994,12 @@ spec:
           description: PodAlertSpec describes the PodAlert the user wishes to create.
           properties:
             alertInterval:
-              description: Duration is a wrapper around time.Duration which supports
-                correct marshaling to YAML and JSON. In particular, it marshals into
-                strings, which can be used as map keys in json.
-              properties:
-                Duration:
-                  format: int64
-                  type: integer
-              required:
-              - Duration
+              type: string
             check:
               description: Icinga CheckCommand name
               type: string
             checkInterval:
-              description: Duration is a wrapper around time.Duration which supports
-                correct marshaling to YAML and JSON. In particular, it marshals into
-                strings, which can be used as map keys in json.
-              properties:
-                Duration:
-                  format: int64
-                  type: integer
-              required:
-              - Duration
+              type: string
             notifierSecretName:
               description: Secret containing notifier credentials
               type: string

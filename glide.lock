@@ -1,8 +1,8 @@
-hash: 20ff2f27426d06dafa5e5ed1abc457fbb8876a28c3fe52dc2a4fcf59f6ca3c97
-updated: 2018-06-01T23:22:50.778724555-07:00
+hash: 443dff86cb84e92abeb82ff096e200591fe19f58a0287c30547e4402bb8c4476
+updated: 2018-06-20T10:28:52.948194808-07:00
 imports:
 - name: bitbucket.org/atlassian/go-stride
-  version: 8846b835cb45ec8707e6694533a2b6180861cdbe
+  version: 78855f0a5d80b2683b11f3825a580a87e32a9f71
   subpackages:
   - pkg/stride
 - name: bitbucket.org/ww/goautoneg
@@ -15,7 +15,7 @@ imports:
 - name: github.com/appscode/envconfig
   version: 183bbe643a2875eaa69c85627ac6b25813983203
 - name: github.com/appscode/go
-  version: 230e0e4622c682b5d117db8c28a66404ed874ed5
+  version: 578091d435e848d79527d8b911fdf1dd5423b227
   subpackages:
   - analytics
   - context
@@ -49,14 +49,14 @@ imports:
   - unified
   - webhook
 - name: github.com/appscode/jsonpatch
-  version: 58a38a46ddb591a543c6b1003213353e29331c5a
+  version: 1359b374de83fa14fd58ab10aa8ea4935f84d249
 - name: github.com/appscode/kubernetes-webhook-util
   version: 5a1b68c81878cdb4e07a7b5dbdbb6c88e7f5fa04
   subpackages:
   - admission/v1beta1
   - registry/admissionreview/v1beta1
 - name: github.com/appscode/kutil
-  version: 5fbfa91a3f029faeda0520507a7bfe07df3eedbd
+  version: 85abe6c009de4b732e5963cb1ec82950efd2fdda
   subpackages:
   - apiextensions/v1beta1
   - core/v1
@@ -86,7 +86,7 @@ imports:
   subpackages:
   - quantile
 - name: github.com/bwmarrin/discordgo
-  version: 4a33b9bc7c56cfdb9bb244e33e83cb3941fe2bdc
+  version: 73f6772a2b7cc95e29c462e4f15bf07cbe0d3854
 - name: github.com/cenkalti/backoff
   version: 2ea60e5f094469f9e65adb9cd103795b73ae743e
 - name: github.com/codegangsta/inject
@@ -203,7 +203,7 @@ imports:
 - name: github.com/evanphx/json-patch
   version: 944e07253867aacae43c04b2e6a239005443f33a
 - name: github.com/fsnotify/fsnotify
-  version: f12c6236fe7b5cf6bcf30e5935d08cb079d78334
+  version: c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9
 - name: github.com/ghodss/yaml
   version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
 - name: github.com/go-macaron/auth
@@ -223,7 +223,7 @@ imports:
 - name: github.com/go-openapi/jsonreference
   version: 13c6e3589ad90f49bd3e3bbe2c2cb3d7a4142272
 - name: github.com/go-openapi/loads
-  version: a80dea3052f00e5f032e860dd7355cd0cc67e24d
+  version: 2a2b323bab96e6b1fdee110e57d959322446e9c9
 - name: github.com/go-openapi/spec
   version: 1de3e0542de65ad8d75452a595886fdd0befb363
 - name: github.com/go-openapi/swag
@@ -242,11 +242,13 @@ imports:
 - name: github.com/golang/protobuf
   version: 1643683e1b54a9e88ad26d98f81400c8c9d9f4f9
   subpackages:
+  - jsonpb
   - proto
   - protoc-gen-go/descriptor
   - ptypes
   - ptypes/any
   - ptypes/duration
+  - ptypes/struct
   - ptypes/timestamp
 - name: github.com/google/go-cmp
   version: 5411ab924f9ffa6566244a9e504bc347edacffd3
@@ -279,7 +281,7 @@ imports:
   - openstack/utils
   - pagination
 - name: github.com/gorilla/websocket
-  version: 6eb6ad425a89d9da7a5549bc6da8f79ba5c17844
+  version: 5ed622c449da6d44c3c8329331ff47a9e5844f71
 - name: github.com/hashicorp/go-version
   version: 53932f80ddea12bea96be074f9fb2dc545806aba
   repo: https://github.com/appscode/go-version.git
@@ -297,7 +299,7 @@ imports:
 - name: github.com/influxdata/influxdb
   version: 6ac835404e7e64ea7299a6eebcce1ab1ef15fe3c
 - name: github.com/jaytaylor/html2text
-  version: 64a82a6d140778896f13303121a49d8cb8007034
+  version: 57d518f124b0cf46ea2021f25a01396b3522e6fb
 - name: github.com/jpillora/go-ogle-analytics
   version: 14b04e0594ef6a9fd943363b135656f0ec8c9d0e
 - name: github.com/json-iterator/go
@@ -305,7 +307,7 @@ imports:
 - name: github.com/Knetic/govaluate
   version: d216395917cc49052c7c7094cf57f09657ca08a8
 - name: github.com/mailgun/mailgun-go
-  version: 369a1fa57ce6fb314e627087b9fff0db5c266c0f
+  version: 15f93e2afc54c83d7664adcfd233be4e68606a09
 - name: github.com/mailru/easyjson
   version: 2f5df55504ebc322e4d52d34df6a1f5b503bf26d
   subpackages:
@@ -313,17 +315,17 @@ imports:
   - jlexer
   - jwriter
 - name: github.com/mattn/go-runewidth
-  version: 9e777a8366cce605130a531d2cd6363d07ad7317
+  version: ce7b0b5c7b45a81508558cd1dba6bb1e4ddb51bb
 - name: github.com/matttproud/golang_protobuf_extensions
   version: fc2b8d3a73c4867e51861bbdd5ae3c1f0869dd6a
   subpackages:
   - pbutil
 - name: github.com/nlopes/slack
-  version: 8ab4d0b364ef1e9af5d102531da20d5ec902b6c4
+  version: 2123bd8e3090415072d6bfdab8a9096dea25ac20
 - name: github.com/NYTimes/gziphandler
   version: 56545f4a5d46df9a6648819d1664c3a03a13ffdb
 - name: github.com/olekukonko/tablewriter
-  version: cca8bbc0798408af109aaaa239cbd2634846b340
+  version: d4647c9c7a84d847478d890b816b7d8b62b0b279
 - name: github.com/onsi/gomega
   version: 003f63b7f4cff3fc95357005358af2de0f5fe152
   subpackages:
@@ -372,7 +374,7 @@ imports:
 - name: github.com/PuerkitoBio/urlesc
   version: 5bd2802263f21d8788851d5305584c82a5c75d7e
 - name: github.com/rs/zerolog
-  version: dabc72c15b2adeeb6abc68bfdb798ebd29ea48a8
+  version: 1a88fbfdd0e441d7f77f13647adb40548a8bb59b
   subpackages:
   - internal/cbor
   - internal/json
@@ -402,13 +404,13 @@ imports:
   subpackages:
   - doc
 - name: github.com/spf13/pflag
-  version: 583c0c0531f06d5278b7d917446061adc344b5cd
+  version: 3ebe029320b2676d667ae88da602a5f854788a8a
 - name: github.com/ssor/bom
   version: 6386211fdfcf24c0bfbdaceafd02849ed9a8a509
 - name: github.com/StackExchange/wmi
   version: cdffdb33acae0e14efff2628f9bae377b597840e
 - name: github.com/tbruyelle/hipchat-go
-  version: 749fb9e14beb9995f677c101a754393cecb64b0f
+  version: 35aebc99209aa41498ab4823a83e254037f062fd
   subpackages:
   - hipchat
 - name: github.com/ugorji/go
@@ -416,7 +418,7 @@ imports:
   subpackages:
   - codec
 - name: github.com/Unknwon/com
-  version: 7677a1d7c1137cd3dd5ba7a076d0c898a1ef4520
+  version: da59b551951d50441ca26b7a8cd81317f34df87f
 - name: github.com/vaughan0/go-ini
   version: a98ad7ee00ec53921f08832bc06ecf7fd600e6a1
 - name: github.com/yudai/gojsondiff
@@ -582,7 +584,9 @@ imports:
   - pkg/client/clientset/clientset/scheme
   - pkg/client/clientset/clientset/typed/apiextensions/v1beta1
 - name: k8s.io/apimachinery
-  version: 302974c03f7e50f16561ba237db776ab93594ef6
+  version: 2d462cff08891d952e216b5372464180933fc26c
+  repo: https://github.com/pharmer/apimachinery.git
+  vcs: git
   subpackages:
   - pkg/api/equality
   - pkg/api/errors
@@ -898,7 +902,7 @@ imports:
   - util/retry
   - util/workqueue
 - name: k8s.io/kube-openapi
-  version: 8a9b82f00b3a86eac24681da3f9fe6c34c01cea2
+  version: bf40560368791a7dddfeea9b3cfcf89b34139f44
   subpackages:
   - pkg/builder
   - pkg/common
