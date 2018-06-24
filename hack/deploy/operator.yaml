@@ -36,7 +36,6 @@ spec:
         - --v=3
         - --config-dir=/srv
         - --config-secret-name=searchlight-operator
-        - --ops-address=:56790
         - --secure-port=8443
         - --audit-log-path=-
         - --tls-cert-file=/var/serving-cert/tls.crt
@@ -44,7 +43,6 @@ spec:
         - --enable-analytics=${SEARCHLIGHT_ENABLE_ANALYTICS}
         ports:
         - containerPort: 8443
-        - containerPort: 56790
         volumeMounts:
         - mountPath: /srv
           name: data
@@ -132,9 +130,6 @@ spec:
   - name: icinga
     port: 5665
     targetPort: 5665
-  - name: ops
-    port: 56790
-    targetPort: 56790
   selector:
     app: searchlight
 ---

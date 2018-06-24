@@ -2,19 +2,15 @@ package operator
 
 import (
 	"fmt"
-	"net/http"
 
-	"github.com/appscode/go/log"
 	apiext_util "github.com/appscode/kutil/apiextensions/v1beta1"
 	"github.com/appscode/kutil/tools/queue"
-	"github.com/appscode/pat"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	mon_informers "github.com/appscode/searchlight/client/informers/externalversions"
 	mon_listers "github.com/appscode/searchlight/client/listers/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/golang/glog"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	crd_api "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	ecs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
 	"k8s.io/apimachinery/pkg/util/runtime"
@@ -129,16 +125,12 @@ func (op *Operator) Run(stopCh <-chan struct{}) error {
 	}
 
 	op.gcIncidents()
-	go op.RunWatchers(stopCh)
 
 	// Create build-in SearchlighPlugin
 	if err := op.createBuiltinSearchlightPlugin(); err != nil {
 		return err
 	}
 
-	m := pat.New()
-	m.Get("/metrics", promhttp.Handler())
-	http.Handle("/", m)
-	log.Infoln("Listening on", op.OpsAddress)
-	return http.ListenAndServe(op.OpsAddress, nil)
+	op.RunWatchers(stopCh)
+	return nil
 }

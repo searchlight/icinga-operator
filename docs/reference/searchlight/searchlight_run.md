@@ -63,7 +63,6 @@ searchlight run [flags]
       --http2-max-streams-per-connection int                    The limit that the server gives to clients for the maximum number of streams in an HTTP/2 connection. Zero means to use golang's default. (default 1000)
       --incident-ttl duration                                   Garbage collects incidents older than this duration. Set to 0 to disable garbage collection. (default 2160h0m0s)
       --kubeconfig string                                       kubeconfig file pointing at the 'core' kubernetes server.
-      --ops-address string                                      Address to listen on for web interface and telemetry. (default ":56790")
       --profiling                                               Enable profiling via web interface host:port/debug/pprof/ (default true)
       --requestheader-allowed-names strings                     List of client certificate common names to allow to provide usernames in headers specified by --requestheader-username-headers. If empty, any client certificate validated by the authorities in --requestheader-client-ca-file is allowed.
       --requestheader-client-ca-file string                     Root certificate bundle to use to verify client certificates on incoming requests before trusting usernames in headers specified by --requestheader-username-headers

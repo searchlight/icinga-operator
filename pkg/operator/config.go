@@ -17,7 +17,6 @@ import (
 type Config struct {
 	ConfigRoot       string
 	ConfigSecretName string
-	OpsAddress       string
 	ResyncPeriod     time.Duration
 	MaxNumRequeues   int
 	NumThreads       int

@@ -19,9 +19,6 @@ spec:
   - name: api
     port: 8080
     targetPort: api
-  - name: web
-    port: 56790
-    targetPort: web
   selector:
     app: "{{ template "searchlight.name" . }}"
     release: "{{ .Release.Name }}"
