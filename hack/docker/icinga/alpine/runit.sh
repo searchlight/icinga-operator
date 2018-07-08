@@ -5,20 +5,24 @@ set -o errexit
 set -o pipefail
 
 echo "Waiting for icinga configuration ..."
-until [ -f /srv/searchlight/config.ini ] > /dev/null; do echo '.'; sleep 5; cat /srv/searchlight/config.ini; done
+until [ -f /srv/searchlight/config.ini ] >/dev/null; do
+  echo '.'
+  sleep 5
+  cat /srv/searchlight/config.ini
+done
 export $(cat /srv/searchlight/config.ini | xargs)
 
 if [ ! -f "/scripts/.icingaweb2" ]; then
-    envsubst < /scripts/icingaweb2/authentication.ini > /etc/icingaweb2/authentication.ini
-    envsubst < /scripts/icingaweb2/config.ini > /etc/icingaweb2/config.ini
-    envsubst < /scripts/icingaweb2/groups.ini > /etc/icingaweb2/groups.ini
-    envsubst < /scripts/icingaweb2/resources.ini > /etc/icingaweb2/resources.ini
-    touch /scripts/.icingaweb2
+  envsubst </scripts/icingaweb2/authentication.ini >/etc/icingaweb2/authentication.ini
+  envsubst </scripts/icingaweb2/config.ini >/etc/icingaweb2/config.ini
+  envsubst </scripts/icingaweb2/groups.ini >/etc/icingaweb2/groups.ini
+  envsubst </scripts/icingaweb2/resources.ini >/etc/icingaweb2/resources.ini
+  touch /scripts/.icingaweb2
 fi
 
 if [ ! -f "$DATADIR/.lib_icinga2" ]; then
-    mv /scripts/lib $DATADIR/icinga2
-    touch $DATADIR/.lib_icinga2
+  mv /scripts/lib $DATADIR/icinga2
+  touch $DATADIR/.lib_icinga2
 fi
 chown -R icinga:icinga $DATADIR/icinga2
 rm -rf /var/lib/icinga2
@@ -44,7 +48,7 @@ chmod -R 755 /usr/lib/nagios/plugins
 # sed -i 's/\/sbin\/openrc-run/\/bin\/bash/g' /etc/init.d/icinga2
 
 mkdir -p $DATADIR/scripts
-cp /usr/share/icinga2-ido-pgsql/schema/pgsql.sql     $DATADIR/scripts/icinga2-ido.schema.sql
+cp /usr/share/icinga2-ido-pgsql/schema/pgsql.sql $DATADIR/scripts/icinga2-ido.schema.sql
 cp /usr/share/icingaweb2/etc/schema/pgsql.schema.sql $DATADIR/scripts/icingaweb2.schema.sql
 
 cat >$DATADIR/scripts/.initdb.sh <<EOL
@@ -67,7 +71,7 @@ EOL
 
 # Set icingaweb2 UI admin password, if provided
 if [ -n "$ICINGA_WEB_UI_PASSWORD" ]; then
-    cat >>$DATADIR/scripts/.initdb.sh <<EOL
+  cat >>$DATADIR/scripts/.initdb.sh <<EOL
 passhash=\$(openssl passwd -1 "$ICINGA_WEB_UI_PASSWORD")
 psql -U $ICINGA_WEB_USER -d $ICINGA_WEB_DB <<EOF
 INSERT INTO icingaweb_user (name, active, password_hash) VALUES ('admin', 1, '\$passhash');
@@ -81,19 +85,23 @@ chmod 755 $DATADIR/scripts/*
 mv $DATADIR/scripts/.initdb.sh $DATADIR/scripts/initdb.sh
 
 # IcingaWeb reads namespace and api_endpoint from configmap
-mkdir -p /var/run/config/appscode; chmod -R 0755 /var/run/config/appscode
+mkdir -p /var/run/config/appscode
+chmod -R 0755 /var/run/config/appscode
 
 # Wait for postgres to start
 # ref: http://unix.stackexchange.com/a/5279
 echo "Waiting for postgres to become ready ..."
-until pg_isready -h 127.0.0.1 > /dev/null; do echo '.'; sleep 5; done
+until pg_isready -h 127.0.0.1 >/dev/null; do
+  echo '.'
+  sleep 5
+done
 
 # Ensure icinga plugins can read ENV cars
-echo "export KUBERNETES_SERVICE_HOST=${KUBERNETES_SERVICE_HOST}" >> /etc/profile.d/icinga2
-echo "export KUBERNETES_SERVICE_PORT=${KUBERNETES_SERVICE_PORT}" >> /etc/profile.d/icinga2
-echo "export APPSCODE_ANALYTICS_CLIENT_ID=$(/usr/lib/monitoring-plugins/hyperalert analytics_id)" >> /etc/profile.d/icinga2
+echo "export KUBERNETES_SERVICE_HOST=${KUBERNETES_SERVICE_HOST}" >>/etc/profile.d/icinga2
+echo "export KUBERNETES_SERVICE_PORT=${KUBERNETES_SERVICE_PORT}" >>/etc/profile.d/icinga2
+echo "export APPSCODE_ANALYTICS_CLIENT_ID=$(/usr/lib/monitoring-plugins/hyperalert analytics_id)" >>/etc/profile.d/icinga2
 
-export > /etc/envvars
+export >/etc/envvars
 
 echo "Starting runit..."
 exec /sbin/runsvdir -P /etc/service

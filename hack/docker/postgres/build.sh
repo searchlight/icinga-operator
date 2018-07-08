@@ -16,31 +16,31 @@ TAG=9.5-alpine
 DIST=$REPO_ROOT/dist
 
 clean() {
-    pushd $REPO_ROOT/hack/docker/postgres
-	popd
+  pushd $REPO_ROOT/hack/docker/postgres
+  popd
 }
 
 build() {
-	pushd $REPO_ROOT/hack/docker/postgres
-	local cmd="docker build -t $DOCKER_REGISTRY/$IMG:$TAG ."
-	echo $cmd; $cmd
-	popd
+  pushd $REPO_ROOT/hack/docker/postgres
+  local cmd="docker build -t $DOCKER_REGISTRY/$IMG:$TAG ."
+  echo $cmd; $cmd
+  popd
 }
 
 docker_push() {
-    if [ "$APPSCODE_ENV" = "prod" ]; then
-        echo "Nothing to do in prod env. Are you trying to 'release' binaries to prod?"
-        exit 1
-    fi
-    hub_canary
+  if [ "$APPSCODE_ENV" = "prod" ]; then
+    echo "Nothing to do in prod env. Are you trying to 'release' binaries to prod?"
+    exit 1
+  fi
+  hub_canary
 }
 
 docker_release() {
-    if [ "$APPSCODE_ENV" != "prod" ]; then
-        echo "'release' only works in PROD env."
-        exit 1
-    fi
-    TAG=$TAG-k8s hub_up
+  if [ "$APPSCODE_ENV" != "prod" ]; then
+    echo "'release' only works in PROD env."
+    exit 1
+  fi
+  TAG=$TAG-k8s hub_up
 }
 
 binary_repo $@
