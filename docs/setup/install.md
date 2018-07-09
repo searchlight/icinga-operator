@@ -62,8 +62,9 @@ options:
     --docker-registry              docker registry used to pull searchlight images (default: appscode)
     --image-pull-secret            name of secret used to pull searchlight operator images
     --run-on-master                run searchlight operator on master
-    --enable-validating-webhook    enable/disable validating webhooks for Searchlight CRD
+    --enable-validating-webhook    enable/disable validating webhooks for Searchlight crds
     --icinga-api-password          password used by icinga2 api (if unset, a random password will be generated and used)
+    --enable-status-subresource    If enabled, uses status sub resource for Searchlight crds
     --enable-analytics             send usage events to Google Analytics (default: true)
     --uninstall                    uninstall searchlight
     --purge                        purges searchlight crd objects and crds
@@ -105,6 +106,8 @@ $ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0/hack/d
     | bash -s -- --enable-admission-webhook [--rbac]
 ```
 
+Searchlight 8.0.0 or later releases can use status sub resource for CustomResourceDefintions. This is enabled by default for Kubernetes 1.11.0 or later releases. To disable this feature, pass the `--enable-status-subresource=false` flag.
+
 </div>
 <div class="tab-pane fade" id="helm" role="tabpanel" aria-labelledby="helm-tab">
 
@@ -121,11 +124,18 @@ appscode/searchlight  7.0.0    7.0.0  Searchlight by AppsCode - Alerts for Kuber
 # Kubernetes 1.8.x
 $ helm install appscode/searchlight --name searchlight-operator --version 7.0.0 --namespace kube-system
 
-# Kubernetes 1.9.0 or later
+# Kubernetes 1.9.x - 1.10.x
 $ helm install appscode/searchlight --name searchlight-operator  --version 7.0.0 \
   --namespace kube-system \
   --set apiserver.ca="$(onessl get kube-ca)" \
   --set apiserver.enableValidatingWebhook=true
+
+# Kubernetes 1.11.0 or later
+$ helm install appscode/searchlight --name searchlight-operator  --version 7.0.0 \
+  --namespace kube-system \
+  --set apiserver.ca="$(onessl get kube-ca)" \
+  --set apiserver.enableValidatingWebhook=true \
+  --set apiserver.enableStatusSubresource=true
 ```
 
 To install `onessl`, run the following commands:

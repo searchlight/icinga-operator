@@ -5,6 +5,7 @@ import (
 	"time"
 
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/util"
 	"github.com/appscode/searchlight/pkg/icinga"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -94,10 +95,24 @@ func (n *notifier) reconcileIncident() error {
 		incident.Status.Notifications = notifications
 
 		if api.AlertType(opts.notificationType) == api.NotificationRecovery {
-			incident.Labels[api.LabelKeyProblemRecovered] = "true"
+			_, _, err = util.PatchIncident(n.extClient, incident, func(in *api.Incident) *api.Incident {
+				if in.Labels == nil {
+					in.Labels = map[string]string{}
+				}
+				in.Labels[api.LabelKeyProblemRecovered] = "true"
+				return in
+			})
+			if err != nil {
+				return err
+			}
 		}
 
-		if _, err := n.extClient.Incidents(incident.Namespace).Update(incident); err != nil {
+		_, err = util.UpdateIncidentStatus(n.extClient, incident, func(in *api.IncidentStatus) *api.IncidentStatus {
+			in.LastNotificationType = api.AlertType(opts.notificationType)
+			in.Notifications = notifications
+			return in
+		}, api.EnableStatusSubresource)
+		if err != nil {
 			return err
 		}
 	} else {

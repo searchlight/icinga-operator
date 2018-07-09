@@ -7,6 +7,7 @@ import (
 	"github.com/appscode/go/log"
 	hooks "github.com/appscode/kubernetes-webhook-util/admission/v1beta1"
 	"github.com/appscode/kutil/meta"
+	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	"github.com/appscode/searchlight/pkg/admission/plugin"
 	"github.com/appscode/searchlight/pkg/icinga"
@@ -46,6 +47,8 @@ func (s *OperatorOptions) AddGoFlags(fs *flag.FlagSet) {
 	fs.StringVar(&s.ConfigSecretName, "config-secret-name", s.ConfigSecretName, "Name of Kubernetes secret used to pass icinga credentials.")
 	fs.DurationVar(&s.ResyncPeriod, "resync-period", s.ResyncPeriod, "If non-zero, will re-list this often. Otherwise, re-list will be delayed aslong as possible (until the upstream source closes the watch or times out.")
 	fs.DurationVar(&s.IncidentTTL, "incident-ttl", s.IncidentTTL, "Garbage collects incidents older than this duration. Set to 0 to disable garbage collection.")
+
+	fs.BoolVar(&api.EnableStatusSubresource, "enable-status-subresource", api.EnableStatusSubresource, "If true, uses sub resource for Voyager crds.")
 }
 
 func (s *OperatorOptions) AddFlags(fs *pflag.FlagSet) {

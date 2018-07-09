@@ -64,6 +64,7 @@ The following table lists the configurable parameters of the Searchlight chart a
 | `apiserver.versionPriority`         | The ordering of this API inside of the group.                           | 15                 |
 | `apiserver.enableValidatingWebhook` | Enable validating webhooks for Searchlight CRDs                         | false              |
 | `apiserver.ca`                      | CA certificate used by main Kubernetes api server                       | ``                 |
+| `apiserver.enableStatusSubresource` | If true, uses status sub resource for Searchlight crds                  | `false`            |
 | `enableAnalytics`                   | Send usage events to Google Analytics                                   | `true`             |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:

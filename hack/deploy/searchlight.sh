@@ -110,6 +110,7 @@ export SEARCHLIGHT_IMAGE_PULL_POLICY=IfNotPresent
 export SEARCHLIGHT_ENABLE_ANALYTICS=true
 export SEARCHLIGHT_UNINSTALL=0
 export SEARCHLIGHT_PURGE=0
+export SEARCHLIGHT_ENABLE_STATUS_SUBRESOURCE=false
 
 export SCRIPT_LOCATION="curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0/"
 if [[ "$APPSCODE_ENV" == "dev" || "$APPSCODE_ENV" == "test-concourse" ]]; then
@@ -122,6 +123,7 @@ fi
 
 KUBE_APISERVER_VERSION=$(kubectl version -o=json | $ONESSL jsonpath '{.serverVersion.gitVersion}')
 $ONESSL semver --check='<1.9.0' $KUBE_APISERVER_VERSION || { export SEARCHLIGHT_ENABLE_VALIDATING_WEBHOOK=true; }
+$ONESSL semver --check='<1.11.0' $KUBE_APISERVER_VERSION || { export SEARCHLIGHT_ENABLE_STATUS_SUBRESOURCE=true; }
 
 show_help() {
   echo "searchlight.sh - install searchlight operator"
@@ -135,8 +137,9 @@ show_help() {
   echo "    --docker-registry              docker registry used to pull searchlight images (default: appscode)"
   echo "    --image-pull-secret            name of secret used to pull searchlight operator images"
   echo "    --run-on-master                run searchlight operator on master"
-  echo "    --enable-validating-webhook    enable/disable validating webhooks for Searchlight CRDs"
+  echo "    --enable-validating-webhook    enable/disable validating webhooks for Searchlight crds"
   echo "    --icinga-api-password          password used by icinga2 api (if unset, a random password will be generated and used)"
+  echo "    --enable-status-subresource    If enabled, uses status sub resource for Searchlight crds"
   echo "    --enable-analytics             send usage events to Google Analytics (default: true)"
   echo "    --uninstall                    uninstall searchlight"
   echo "    --purge                        purges searchlight crd objects and crds"
@@ -175,6 +178,13 @@ while test $# -gt 0; do
       val=$(echo $1 | sed -e 's/^[^=]*=//g')
       if [ "$val" = "false" ]; then
         export SEARCHLIGHT_ENABLE_VALIDATING_WEBHOOK=false
+      fi
+      shift
+      ;;
+    --enable-status-subresource*)
+      val=$(echo $1 | sed -e 's/^[^=]*=//g')
+      if [ "$val" = "false" ]; then
+        export SEARCHLIGHT_ENABLE_STATUS_SUBRESOURCE=false
       fi
       shift
       ;;

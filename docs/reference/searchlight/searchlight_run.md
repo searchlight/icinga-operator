@@ -66,6 +66,7 @@ searchlight run [flags]
       --config-dir string                                       Path to directory containing icinga2 config. This should be an emptyDir inside Kubernetes. (default "/srv")
       --config-secret-name string                               Name of Kubernetes secret used to pass icinga credentials. (default "searchlight-operator")
       --contention-profiling                                    Enable lock contention profiling, if profiling is enabled
+      --enable-status-subresource                               If true, uses sub resource for Voyager crds.
       --enable-swagger-ui                                       Enables swagger ui on the apiserver at /swagger-ui
   -h, --help                                                    help for run
       --http2-max-streams-per-connection int                    The limit that the server gives to clients for the maximum number of streams in an HTTP/2 connection. Zero means to use golang's default. (default 1000)
