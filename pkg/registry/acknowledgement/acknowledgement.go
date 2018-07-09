@@ -1,6 +1,7 @@
 package acknowledgement
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -28,6 +29,7 @@ type REST struct {
 }
 
 var _ rest.Creater = &REST{}
+var _ rest.Scoper = &REST{}
 var _ rest.GracefulDeleter = &REST{}
 
 func NewREST(config *restconfig.Config, ic *icinga.Client) *REST {
@@ -37,11 +39,15 @@ func NewREST(config *restconfig.Config, ic *icinga.Client) *REST {
 	}
 }
 
+func (r *REST) NamespaceScoped() bool {
+	return true
+}
+
 func (r *REST) New() runtime.Object {
 	return &incidents.Acknowledgement{}
 }
 
-func (r *REST) Create(ctx apirequest.Context, obj runtime.Object, _ rest.ValidateObjectFunc, _ bool) (runtime.Object, error) {
+func (r *REST) Create(ctx context.Context, obj runtime.Object, _ rest.ValidateObjectFunc, _ bool) (runtime.Object, error) {
 	req := obj.(*incidents.Acknowledgement)
 
 	if errs := validate(req); len(errs) > 0 {
@@ -97,7 +103,7 @@ func validate(o *incidents.Acknowledgement) field.ErrorList {
 	return errs
 }
 
-func (r *REST) Delete(ctx apirequest.Context, name string, options *metav1.DeleteOptions) (runtime.Object, bool, error) {
+func (r *REST) Delete(ctx context.Context, name string, options *metav1.DeleteOptions) (runtime.Object, bool, error) {
 	namespace, ok := apirequest.NamespaceFrom(ctx)
 	if !ok {
 		return nil, false, apierrors.NewBadRequest("namespace missing")

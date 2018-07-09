@@ -15,10 +15,7 @@ import (
 	"github.com/go-openapi/spec"
 	"github.com/golang/glog"
 	crd_api "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
-	"k8s.io/apimachinery/pkg/apimachinery/announced"
-	"k8s.io/apimachinery/pkg/apimachinery/registered"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/kube-openapi/pkg/common"
 	"path/filepath"
@@ -47,17 +44,14 @@ func generateCRDDefinitions() {
 
 func generateSwaggerJson() {
 	var (
-		groupFactoryRegistry = make(announced.APIGroupFactoryRegistry)
-		registry             = registered.NewOrDie("")
-		Scheme               = runtime.NewScheme()
-		Codecs               = serializer.NewCodecFactory(Scheme)
+		Scheme = runtime.NewScheme()
+		Codecs = serializer.NewCodecFactory(Scheme)
 	)
 
-	stashinstall.Install(groupFactoryRegistry, registry, Scheme)
-	repoinstall.Install(groupFactoryRegistry, registry, Scheme)
+	stashinstall.Install(Scheme)
+	repoinstall.Install(Scheme)
 
 	apispec, err := openapi.RenderOpenAPISpec(openapi.Config{
-		Registry: registry,
 		Scheme:   Scheme,
 		Codecs:   Codecs,
 		Info: spec.InfoProps{
@@ -77,15 +71,15 @@ func generateSwaggerJson() {
 			slitev1alpha1.GetOpenAPIDefinitions,
 			incidentv1alpha1.GetOpenAPIDefinitions,
 		},
-		Resources: []schema.GroupVersionResource{
-			slitev1alpha1.SchemeGroupVersion.WithResource(slitev1alpha1.ResourcePluralClusterAlert),
-			slitev1alpha1.SchemeGroupVersion.WithResource(slitev1alpha1.ResourcePluralNodeAlert),
-			slitev1alpha1.SchemeGroupVersion.WithResource(slitev1alpha1.ResourcePluralPodAlert),
-			slitev1alpha1.SchemeGroupVersion.WithResource(slitev1alpha1.ResourcePluralIncident),
-			slitev1alpha1.SchemeGroupVersion.WithResource(slitev1alpha1.ResourcePluralSearchlightPlugin),
+		Resources: []openapi.TypeInfo{
+			{slitev1alpha1.SchemeGroupVersion, slitev1alpha1.ResourcePluralClusterAlert,  slitev1alpha1.ResourceKindClusterAlert, true},
+			{slitev1alpha1.SchemeGroupVersion, slitev1alpha1.ResourcePluralNodeAlert, slitev1alpha1.ResourceKindNodeAlert, true},
+			{slitev1alpha1.SchemeGroupVersion, slitev1alpha1.ResourcePluralPodAlert, slitev1alpha1.ResourceKindPodAlert, true},
+			{slitev1alpha1.SchemeGroupVersion, slitev1alpha1.ResourcePluralIncident, slitev1alpha1.ResourceKindIncident, true},
+			{slitev1alpha1.SchemeGroupVersion, slitev1alpha1.ResourcePluralSearchlightPlugin, slitev1alpha1.ResourceKindSearchlightPlugin, true},
 		},
-		CDResources: []schema.GroupVersionResource{
-			incidentv1alpha1.SchemeGroupVersion.WithResource(incidentv1alpha1.ResourcePluralAcknowledgement),
+		CDResources: []openapi.TypeInfo{
+			{incidentv1alpha1.SchemeGroupVersion, incidentv1alpha1.ResourcePluralAcknowledgement, incidentv1alpha1.ResourceKindAcknowledgement, true},
 		},
 	})
 	if err != nil {

@@ -12,10 +12,6 @@ import (
 	"github.com/appscode/searchlight/pkg/operator"
 	ackregistry "github.com/appscode/searchlight/pkg/registry/acknowledgement"
 	admission "k8s.io/api/admission/v1beta1"
-	"k8s.io/apimachinery/pkg/api/meta"
-	"k8s.io/apimachinery/pkg/apimachinery"
-	"k8s.io/apimachinery/pkg/apimachinery/announced"
-	"k8s.io/apimachinery/pkg/apimachinery/registered"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -26,14 +22,12 @@ import (
 )
 
 var (
-	groupFactoryRegistry = make(announced.APIGroupFactoryRegistry)
-	registry             = registered.NewOrDie("")
-	Scheme               = runtime.NewScheme()
-	Codecs               = serializer.NewCodecFactory(Scheme)
+	Scheme = runtime.NewScheme()
+	Codecs = serializer.NewCodecFactory(Scheme)
 )
 
 func init() {
-	install.Install(groupFactoryRegistry, registry, Scheme)
+	install.Install(Scheme)
 	admission.AddToScheme(Scheme)
 
 	// we need to add the options to empty v1
@@ -94,7 +88,7 @@ func (c *SearchlightConfig) Complete() CompletedConfig {
 
 // New returns a new instance of SearchlightServer from the given config.
 func (c completedConfig) New() (*SearchlightServer, error) {
-	genericServer, err := c.GenericConfig.New("searchlight-server", genericapiserver.EmptyDelegate) // completion is done in Complete, no need for a second time
+	genericServer, err := c.GenericConfig.New("searchlight-server", genericapiserver.NewEmptyDelegate()) // completion is done in Complete, no need for a second time
 	if err != nil {
 		return nil, err
 	}
@@ -109,33 +103,10 @@ func (c completedConfig) New() (*SearchlightServer, error) {
 	}
 
 	for _, versionMap := range admissionHooksByGroupThenVersion(c.OperatorConfig.AdmissionHooks...) {
-		accessor := meta.NewAccessor()
-		versionInterfaces := &meta.VersionInterfaces{
-			ObjectConvertor:  Scheme,
-			MetadataAccessor: accessor,
-		}
-		interfacesFor := func(version schema.GroupVersion) (*meta.VersionInterfaces, error) {
-			if version != admission.SchemeGroupVersion {
-				return nil, fmt.Errorf("unexpected version %v", version)
-			}
-			return versionInterfaces, nil
-		}
-		restMapper := meta.NewDefaultRESTMapper([]schema.GroupVersion{admission.SchemeGroupVersion}, interfacesFor)
 		// TODO we're going to need a later k8s.io/apiserver so that we can get discovery to list a different group version for
 		// our endpoint which we'll use to back some custom storage which will consume the AdmissionReview type and give back the correct response
 		apiGroupInfo := genericapiserver.APIGroupInfo{
-			GroupMeta: apimachinery.GroupMeta{
-				// filled in later
-				//GroupVersion:  admissionVersion,
-				//GroupVersions: []schema.GroupVersion{admissionVersion},
-
-				SelfLinker:    runtime.SelfLinker(accessor),
-				RESTMapper:    restMapper,
-				InterfacesFor: interfacesFor,
-				InterfacesByVersion: map[schema.GroupVersion]*meta.VersionInterfaces{
-					admission.SchemeGroupVersion: versionInterfaces,
-				},
-			},
+			PrioritizedVersions:          []schema.GroupVersion{admission.SchemeGroupVersion},
 			VersionedResourcesStorageMap: map[string]map[string]rest.Storage{},
 			// TODO unhardcode this.  It was hardcoded before, but we need to re-evaluate
 			OptionsExternalVersion: &schema.GroupVersion{Version: "v1"},
@@ -147,17 +118,11 @@ func (c completedConfig) New() (*SearchlightServer, error) {
 		for _, admissionHooks := range versionMap {
 			for i := range admissionHooks {
 				admissionHook := admissionHooks[i]
-				admissionResource, singularResourceType := admissionHook.Resource()
+				admissionResource, _ := admissionHook.Resource()
 				admissionVersion := admissionResource.GroupVersion()
 
-				restMapper.AddSpecific(
-					admission.SchemeGroupVersion.WithKind("AdmissionReview"),
-					admissionResource,
-					admissionVersion.WithResource(singularResourceType),
-					meta.RESTScopeRoot)
-
 				// just overwrite the groupversion with a random one.  We don't really care or know.
-				apiGroupInfo.GroupMeta.GroupVersions = appendUniqueGroupVersion(apiGroupInfo.GroupMeta.GroupVersions, admissionVersion)
+				apiGroupInfo.PrioritizedVersions = appendUniqueGroupVersion(apiGroupInfo.PrioritizedVersions, admissionVersion)
 
 				admissionReview := admissionreview.NewREST(admissionHook.Admit)
 				v1alpha1storage, ok := apiGroupInfo.VersionedResourcesStorageMap[admissionVersion.Version]
@@ -168,9 +133,6 @@ func (c completedConfig) New() (*SearchlightServer, error) {
 				apiGroupInfo.VersionedResourcesStorageMap[admissionVersion.Version] = v1alpha1storage
 			}
 		}
-
-		// just prefer the first one in the list for consistency
-		apiGroupInfo.GroupMeta.GroupVersion = apiGroupInfo.GroupMeta.GroupVersions[0]
 
 		if err := s.GenericAPIServer.InstallAPIGroup(&apiGroupInfo); err != nil {
 			return nil, err
@@ -191,8 +153,7 @@ func (c completedConfig) New() (*SearchlightServer, error) {
 	}
 
 	{
-		apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(incidents.GroupName, registry, Scheme, metav1.ParameterCodec, Codecs)
-		apiGroupInfo.GroupMeta.GroupVersion = v1alpha1.SchemeGroupVersion
+		apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(incidents.GroupName, Scheme, metav1.ParameterCodec, Codecs)
 		v1alpha1storage := map[string]rest.Storage{}
 		v1alpha1storage[v1alpha1.ResourcePluralAcknowledgement] = ackregistry.NewREST(c.OperatorConfig.ClientConfig, c.OperatorConfig.IcingaClient)
 		apiGroupInfo.VersionedResourcesStorageMap["v1alpha1"] = v1alpha1storage

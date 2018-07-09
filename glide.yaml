@@ -8,10 +8,6 @@ import:
   version: master
 - package: github.com/appscode/go
   version: master
-- package: github.com/appscode/kubernetes-webhook-util
-  version: release-7.0
-- package: github.com/appscode/kutil
-  version: release-7.0
 - package: github.com/appscode/pat
 - package: github.com/codeskyblue/go-sh
   version: master
@@ -22,55 +18,54 @@ import:
 - package: github.com/golang/glog
 - package: github.com/google/go-cmp
   version: master
-- package: github.com/hashicorp/go-version
-  repo: https://github.com/appscode/go-version.git
-  vcs: git
-  version: master
 - package: github.com/influxdata/influxdb
   version: v1.5.0
 - package: github.com/jpillora/go-ogle-analytics
 - package: github.com/onsi/gomega
   version: v1.3.0
 - package: github.com/pkg/errors
-  version: master
+  version: v0.8.0
 - package: github.com/prometheus/client_golang
   version: v0.8.0
 - package: github.com/shirou/gopsutil
   version: v2.18.02
 - package: github.com/spf13/afero
-  version: v1.0.2
+  version: v1.1.0
 - package: github.com/spf13/cobra
-  version: master
+  version: v0.0.3
 - package: github.com/spf13/pflag
-  version: master
+  version: v1.0.1
 - package: github.com/vaughan0/go-ini
 - package: gopkg.in/ini.v1
-  version: v1.33.0
+  version: v1.32.0
 - package: gopkg.in/macaron.v1
   version: v1.3.1
 - package: k8s.io/api
-  version: kubernetes-1.10.0
+  version: kubernetes-1.11.0
 - package: k8s.io/apiextensions-apiserver
-  version: kubernetes-1.10.0
+  version: kubernetes-1.11.0
 - package: k8s.io/apimachinery
   repo: https://github.com/pharmer/apimachinery.git
   vcs: git
-  version: release-1.10
+  version: release-1.11
 - package: k8s.io/apiserver
-  repo: https://github.com/tamalsaha/apiserver.git
-  version: k-1.10
+  version: kubernetes-1.11.0
 - package: k8s.io/client-go
-  version: v7.0.0
+  version: v8.0.0
 - package: k8s.io/kube-openapi
   version: master
+- package: github.com/appscode/kutil
+  version: release-8.0
+- package: github.com/appscode/kubernetes-webhook-util
+  version: release-8.0
 - package: github.com/openshift/api
-  version: 09a4e3d50f1aae6613b1b86941ffb8bded21e674
+  version: 31a7bbd2266d178da3c12bb83f5274d387f775e6
 - package: github.com/openshift/client-go
-  version: b3f4c8b4682c151defdd33ce75acfbf5fb30bccc
+  version: 4688ad28de2e88110c0ea30179c51b9b205f99be
 - package: github.com/openshift/origin
-  version: 93f12e580ece30e0055f030dcd6d239116ff5cb4
+  version: fecffb2fce100260088a1b9f268c0901a778cf2b
 - package: github.com/appscode/ocutil
-  version: release-3.10
+  version: release-3.11
 - package: github.com/cpuguy83/go-md2man
   version: v1.0.4
 - package: github.com/mailru/easyjson
