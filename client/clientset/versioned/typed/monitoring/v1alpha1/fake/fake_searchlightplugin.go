@@ -59,7 +59,7 @@ func (c *FakeSearchlightPlugins) List(opts v1.ListOptions) (result *v1alpha1.Sea
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.SearchlightPluginList{}
+	list := &v1alpha1.SearchlightPluginList{ListMeta: obj.(*v1alpha1.SearchlightPluginList).ListMeta}
 	for _, item := range obj.(*v1alpha1.SearchlightPluginList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)

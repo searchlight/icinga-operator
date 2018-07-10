@@ -7,6 +7,16 @@ metadata:
     app: searchlight
   name: clusteralerts.monitoring.appscode.com
 spec:
+  additionalPrinterColumns:
+  - JSONPath: .spec.check
+    name: CheckCommand
+    type: string
+  - JSONPath: .spec.paused
+    name: Paused
+    type: boolean
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
   group: monitoring.appscode.com
   names:
     kind: ClusterAlert
@@ -45,6 +55,9 @@ spec:
                 going to ignore it if set in create or update request.
               type: string
             creationTimestamp:
+              description: Time is a wrapper around time.Time which supports correct
+                marshaling to YAML and JSON.  Wrappers are provided for many of the
+                factory methods that the time package offers.
               format: date-time
               type: string
             deletionGracePeriodSeconds:
@@ -54,6 +67,9 @@ spec:
               format: int64
               type: integer
             deletionTimestamp:
+              description: Time is a wrapper around time.Time which supports correct
+                marshaling to YAML and JSON.  Wrappers are provided for many of the
+                factory methods that the time package offers.
               format: date-time
               type: string
             finalizers:
@@ -304,11 +320,17 @@ spec:
             to create.
           properties:
             alertInterval:
+              description: Duration is a wrapper around time.Duration which supports
+                correct marshaling to YAML and JSON. In particular, it marshals into
+                strings, which can be used as map keys in json.
               type: string
             check:
               description: Icinga CheckCommand name
               type: string
             checkInterval:
+              description: Duration is a wrapper around time.Duration which supports
+                correct marshaling to YAML and JSON. In particular, it marshals into
+                strings, which can be used as map keys in json.
               type: string
             notifierSecretName:
               description: Secret containing notifier credentials
@@ -337,11 +359,10 @@ spec:
               description: Vars contains Icinga Service variables to be used in CheckCommand
               type: object
   version: v1alpha1
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: null
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -351,6 +372,16 @@ metadata:
     app: searchlight
   name: nodealerts.monitoring.appscode.com
 spec:
+  additionalPrinterColumns:
+  - JSONPath: .spec.check
+    name: CheckCommand
+    type: string
+  - JSONPath: .spec.paused
+    name: Paused
+    type: boolean
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
   group: monitoring.appscode.com
   names:
     kind: NodeAlert
@@ -389,6 +420,9 @@ spec:
                 going to ignore it if set in create or update request.
               type: string
             creationTimestamp:
+              description: Time is a wrapper around time.Time which supports correct
+                marshaling to YAML and JSON.  Wrappers are provided for many of the
+                factory methods that the time package offers.
               format: date-time
               type: string
             deletionGracePeriodSeconds:
@@ -398,6 +432,9 @@ spec:
               format: int64
               type: integer
             deletionTimestamp:
+              description: Time is a wrapper around time.Time which supports correct
+                marshaling to YAML and JSON.  Wrappers are provided for many of the
+                factory methods that the time package offers.
               format: date-time
               type: string
             finalizers:
@@ -647,11 +684,17 @@ spec:
           description: NodeAlertSpec describes the NodeAlert the user wishes to create.
           properties:
             alertInterval:
+              description: Duration is a wrapper around time.Duration which supports
+                correct marshaling to YAML and JSON. In particular, it marshals into
+                strings, which can be used as map keys in json.
               type: string
             check:
               description: Icinga CheckCommand name
               type: string
             checkInterval:
+              description: Duration is a wrapper around time.Duration which supports
+                correct marshaling to YAML and JSON. In particular, it marshals into
+                strings, which can be used as map keys in json.
               type: string
             nodeName:
               type: string
@@ -684,11 +727,10 @@ spec:
               description: Vars contains Icinga Service variables to be used in CheckCommand
               type: object
   version: v1alpha1
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: null
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -698,6 +740,16 @@ metadata:
     app: searchlight
   name: podalerts.monitoring.appscode.com
 spec:
+  additionalPrinterColumns:
+  - JSONPath: .spec.check
+    name: CheckCommand
+    type: string
+  - JSONPath: .spec.paused
+    name: Paused
+    type: boolean
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
   group: monitoring.appscode.com
   names:
     kind: PodAlert
@@ -736,6 +788,9 @@ spec:
                 going to ignore it if set in create or update request.
               type: string
             creationTimestamp:
+              description: Time is a wrapper around time.Time which supports correct
+                marshaling to YAML and JSON.  Wrappers are provided for many of the
+                factory methods that the time package offers.
               format: date-time
               type: string
             deletionGracePeriodSeconds:
@@ -745,6 +800,9 @@ spec:
               format: int64
               type: integer
             deletionTimestamp:
+              description: Time is a wrapper around time.Time which supports correct
+                marshaling to YAML and JSON.  Wrappers are provided for many of the
+                factory methods that the time package offers.
               format: date-time
               type: string
             finalizers:
@@ -994,11 +1052,17 @@ spec:
           description: PodAlertSpec describes the PodAlert the user wishes to create.
           properties:
             alertInterval:
+              description: Duration is a wrapper around time.Duration which supports
+                correct marshaling to YAML and JSON. In particular, it marshals into
+                strings, which can be used as map keys in json.
               type: string
             check:
               description: Icinga CheckCommand name
               type: string
             checkInterval:
+              description: Duration is a wrapper around time.Duration which supports
+                correct marshaling to YAML and JSON. In particular, it marshals into
+                strings, which can be used as map keys in json.
               type: string
             notifierSecretName:
               description: Secret containing notifier credentials
@@ -1071,11 +1135,10 @@ spec:
               description: Vars contains Icinga Service variables to be used in CheckCommand
               type: object
   version: v1alpha1
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: null
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -1085,6 +1148,13 @@ metadata:
     app: searchlight
   name: incidents.monitoring.appscode.com
 spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.lastNotificationType
+    name: LastNotification
+    type: string
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
   group: monitoring.appscode.com
   names:
     kind: Incident
@@ -1121,6 +1191,9 @@ spec:
                 going to ignore it if set in create or update request.
               type: string
             creationTimestamp:
+              description: Time is a wrapper around time.Time which supports correct
+                marshaling to YAML and JSON.  Wrappers are provided for many of the
+                factory methods that the time package offers.
               format: date-time
               type: string
             deletionGracePeriodSeconds:
@@ -1130,6 +1203,9 @@ spec:
               format: int64
               type: integer
             deletionTimestamp:
+              description: Time is a wrapper around time.Time which supports correct
+                marshaling to YAML and JSON.  Wrappers are provided for many of the
+                factory methods that the time package offers.
               format: date-time
               type: string
             finalizers:
@@ -1395,9 +1471,15 @@ spec:
                     description: comment made by user
                     type: string
                   firstTimestamp:
+                    description: Time is a wrapper around time.Time which supports
+                      correct marshaling to YAML and JSON.  Wrappers are provided
+                      for many of the factory methods that the time package offers.
                     format: date-time
                     type: string
                   lastTimestamp:
+                    description: Time is a wrapper around time.Time which supports
+                      correct marshaling to YAML and JSON.  Wrappers are provided
+                      for many of the factory methods that the time package offers.
                     format: date-time
                     type: string
                   state:
@@ -1414,11 +1496,10 @@ spec:
           required:
           - lastNotificationType
   version: v1alpha1
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: null
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -1428,6 +1509,13 @@ metadata:
     app: searchlight
   name: searchlightplugins.monitoring.appscode.com
 spec:
+  additionalPrinterColumns:
+  - JSONPath: .spec.command
+    name: Command
+    type: string
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
   group: monitoring.appscode.com
   names:
     kind: SearchlightPlugin
@@ -1466,6 +1554,9 @@ spec:
                 going to ignore it if set in create or update request.
               type: string
             creationTimestamp:
+              description: Time is a wrapper around time.Time which supports correct
+                marshaling to YAML and JSON.  Wrappers are provided for many of the
+                factory methods that the time package offers.
               format: date-time
               type: string
             deletionGracePeriodSeconds:
@@ -1475,6 +1566,9 @@ spec:
               format: int64
               type: integer
             deletionTimestamp:
+              description: Time is a wrapper around time.Time which supports correct
+                marshaling to YAML and JSON.  Wrappers are provided for many of the
+                factory methods that the time package offers.
               format: date-time
               type: string
             finalizers:
@@ -1765,8 +1859,7 @@ spec:
           - alertKinds
           - states
   version: v1alpha1
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: null
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true

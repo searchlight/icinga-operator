@@ -1,5 +1,5 @@
 hash: 9c61389cc7018c52b75c0a69b73a2543b9f62535f71d65c63efebcca86ae1ee0
-updated: 2018-07-08T17:46:04.100754263-07:00
+updated: 2018-07-10T12:55:07.415638851-07:00
 imports:
 - name: bitbucket.org/atlassian/go-stride
   version: 78855f0a5d80b2683b11f3825a580a87e32a9f71
@@ -58,7 +58,7 @@ imports:
   - admission/v1beta1
   - registry/admissionreview/v1beta1
 - name: github.com/appscode/kutil
-  version: ade0469e223909a181ae7a020024aa7adeb3dde6
+  version: 2f50a9a96687d25cddd29f38bf4da10ebe888eca
   subpackages:
   - apiextensions/v1beta1
   - core/v1

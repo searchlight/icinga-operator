@@ -62,7 +62,7 @@ func (c *FakePodAlerts) List(opts v1.ListOptions) (result *v1alpha1.PodAlertList
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.PodAlertList{}
+	list := &v1alpha1.PodAlertList{ListMeta: obj.(*v1alpha1.PodAlertList).ListMeta}
 	for _, item := range obj.(*v1alpha1.PodAlertList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)

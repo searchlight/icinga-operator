@@ -12,12 +12,18 @@ var (
 func (a ClusterAlert) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
 	return crdutils.NewCustomResourceDefinition(crdutils.Config{
 		Group:         SchemeGroupVersion.Group,
-		Version:       SchemeGroupVersion.Version,
 		Plural:        ResourcePluralClusterAlert,
 		Singular:      ResourceSingularClusterAlert,
 		Kind:          ResourceKindClusterAlert,
 		ShortNames:    []string{"ca"},
 		ResourceScope: string(apiextensions.NamespaceScoped),
+		Versions: []apiextensions.CustomResourceDefinitionVersion{
+			{
+				Name:    SchemeGroupVersion.Version,
+				Served:  true,
+				Storage: true,
+			},
+		},
 		Labels: crdutils.Labels{
 			LabelsMap: map[string]string{"app": "searchlight"},
 		},
@@ -25,18 +31,41 @@ func (a ClusterAlert) CustomResourceDefinition() *apiextensions.CustomResourceDe
 		EnableValidation:        true,
 		GetOpenAPIDefinitions:   GetOpenAPIDefinitions,
 		EnableStatusSubresource: EnableStatusSubresource,
+		AdditionalPrinterColumns: []apiextensions.CustomResourceColumnDefinition{
+			{
+				Name:     "CheckCommand",
+				Type:     "string",
+				JSONPath: ".spec.check",
+			},
+			{
+				Name:     "Paused",
+				Type:     "boolean",
+				JSONPath: ".spec.paused",
+			},
+			{
+				Name:     "Age",
+				Type:     "date",
+				JSONPath: ".metadata.creationTimestamp",
+			},
+		},
 	})
 }
 
 func (a NodeAlert) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
 	return crdutils.NewCustomResourceDefinition(crdutils.Config{
 		Group:         SchemeGroupVersion.Group,
-		Version:       SchemeGroupVersion.Version,
 		Plural:        ResourcePluralNodeAlert,
 		Singular:      ResourceSingularNodeAlert,
 		Kind:          ResourceKindNodeAlert,
 		ShortNames:    []string{"noa"},
 		ResourceScope: string(apiextensions.NamespaceScoped),
+		Versions: []apiextensions.CustomResourceDefinitionVersion{
+			{
+				Name:    SchemeGroupVersion.Version,
+				Served:  true,
+				Storage: true,
+			},
+		},
 		Labels: crdutils.Labels{
 			LabelsMap: map[string]string{"app": "searchlight"},
 		},
@@ -44,18 +73,41 @@ func (a NodeAlert) CustomResourceDefinition() *apiextensions.CustomResourceDefin
 		EnableValidation:        true,
 		GetOpenAPIDefinitions:   GetOpenAPIDefinitions,
 		EnableStatusSubresource: EnableStatusSubresource,
+		AdditionalPrinterColumns: []apiextensions.CustomResourceColumnDefinition{
+			{
+				Name:     "CheckCommand",
+				Type:     "string",
+				JSONPath: ".spec.check",
+			},
+			{
+				Name:     "Paused",
+				Type:     "boolean",
+				JSONPath: ".spec.paused",
+			},
+			{
+				Name:     "Age",
+				Type:     "date",
+				JSONPath: ".metadata.creationTimestamp",
+			},
+		},
 	})
 }
 
 func (a PodAlert) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
 	return crdutils.NewCustomResourceDefinition(crdutils.Config{
 		Group:         SchemeGroupVersion.Group,
-		Version:       SchemeGroupVersion.Version,
 		Plural:        ResourcePluralPodAlert,
 		Singular:      ResourceSingularPodAlert,
 		Kind:          ResourceKindPodAlert,
 		ShortNames:    []string{"poa"},
 		ResourceScope: string(apiextensions.NamespaceScoped),
+		Versions: []apiextensions.CustomResourceDefinitionVersion{
+			{
+				Name:    SchemeGroupVersion.Version,
+				Served:  true,
+				Storage: true,
+			},
+		},
 		Labels: crdutils.Labels{
 			LabelsMap: map[string]string{"app": "searchlight"},
 		},
@@ -63,17 +115,40 @@ func (a PodAlert) CustomResourceDefinition() *apiextensions.CustomResourceDefini
 		EnableValidation:        true,
 		GetOpenAPIDefinitions:   GetOpenAPIDefinitions,
 		EnableStatusSubresource: EnableStatusSubresource,
+		AdditionalPrinterColumns: []apiextensions.CustomResourceColumnDefinition{
+			{
+				Name:     "CheckCommand",
+				Type:     "string",
+				JSONPath: ".spec.check",
+			},
+			{
+				Name:     "Paused",
+				Type:     "boolean",
+				JSONPath: ".spec.paused",
+			},
+			{
+				Name:     "Age",
+				Type:     "date",
+				JSONPath: ".metadata.creationTimestamp",
+			},
+		},
 	})
 }
 
 func (a Incident) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
 	return crdutils.NewCustomResourceDefinition(crdutils.Config{
 		Group:         SchemeGroupVersion.Group,
-		Version:       SchemeGroupVersion.Version,
 		Plural:        ResourcePluralIncident,
 		Singular:      ResourceSingularIncident,
 		Kind:          ResourceKindIncident,
 		ResourceScope: string(apiextensions.NamespaceScoped),
+		Versions: []apiextensions.CustomResourceDefinitionVersion{
+			{
+				Name:    SchemeGroupVersion.Version,
+				Served:  true,
+				Storage: true,
+			},
+		},
 		Labels: crdutils.Labels{
 			LabelsMap: map[string]string{"app": "searchlight"},
 		},
@@ -81,18 +156,36 @@ func (a Incident) CustomResourceDefinition() *apiextensions.CustomResourceDefini
 		EnableValidation:        true,
 		GetOpenAPIDefinitions:   GetOpenAPIDefinitions,
 		EnableStatusSubresource: EnableStatusSubresource,
+		AdditionalPrinterColumns: []apiextensions.CustomResourceColumnDefinition{
+			{
+				Name:     "LastNotification",
+				Type:     "string",
+				JSONPath: ".status.lastNotificationType",
+			},
+			{
+				Name:     "Age",
+				Type:     "date",
+				JSONPath: ".metadata.creationTimestamp",
+			},
+		},
 	})
 }
 
 func (a SearchlightPlugin) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
 	return crdutils.NewCustomResourceDefinition(crdutils.Config{
 		Group:         SchemeGroupVersion.Group,
-		Version:       SchemeGroupVersion.Version,
 		Plural:        ResourcePluralSearchlightPlugin,
 		Singular:      ResourceSingularSearchlightPlugin,
 		Kind:          ResourceKindSearchlightPlugin,
 		ShortNames:    []string{"sp"},
 		ResourceScope: string(apiextensions.ClusterScoped),
+		Versions: []apiextensions.CustomResourceDefinitionVersion{
+			{
+				Name:    SchemeGroupVersion.Version,
+				Served:  true,
+				Storage: true,
+			},
+		},
 		Labels: crdutils.Labels{
 			LabelsMap: map[string]string{"app": "searchlight"},
 		},
@@ -100,5 +193,17 @@ func (a SearchlightPlugin) CustomResourceDefinition() *apiextensions.CustomResou
 		EnableValidation:        true,
 		GetOpenAPIDefinitions:   GetOpenAPIDefinitions,
 		EnableStatusSubresource: EnableStatusSubresource,
+		AdditionalPrinterColumns: []apiextensions.CustomResourceColumnDefinition{
+			{
+				Name:     "Command",
+				Type:     "string",
+				JSONPath: ".spec.command",
+			},
+			{
+				Name:     "Age",
+				Type:     "date",
+				JSONPath: ".metadata.creationTimestamp",
+			},
+		},
 	})
 }

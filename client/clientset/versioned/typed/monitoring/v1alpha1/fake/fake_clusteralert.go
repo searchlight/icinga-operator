@@ -62,7 +62,7 @@ func (c *FakeClusterAlerts) List(opts v1.ListOptions) (result *v1alpha1.ClusterA
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.ClusterAlertList{}
+	list := &v1alpha1.ClusterAlertList{ListMeta: obj.(*v1alpha1.ClusterAlertList).ListMeta}
 	for _, item := range obj.(*v1alpha1.ClusterAlertList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)

@@ -62,7 +62,7 @@ func (c *FakeNodeAlerts) List(opts v1.ListOptions) (result *v1alpha1.NodeAlertLi
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.NodeAlertList{}
+	list := &v1alpha1.NodeAlertList{ListMeta: obj.(*v1alpha1.NodeAlertList).ListMeta}
 	for _, item := range obj.(*v1alpha1.NodeAlertList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
