@@ -72,6 +72,7 @@ func (o SearchlightOptions) Config() (*server.SearchlightConfig, error) {
 	serverConfig.OpenAPIConfig.Info.Version = incidentsv1alpha1.SchemeGroupVersion.Version
 	serverConfig.OpenAPIConfig.IgnorePrefixes = []string{
 		"/swaggerapi",
+		"/apis/admission.monitoring.appscode.com/v1alpha1",
 		"/apis/admission.monitoring.appscode.com/v1alpha1/admissionreviews",
 	}
 	serverConfig.SwaggerConfig = genericapiserver.DefaultSwaggerConfig()

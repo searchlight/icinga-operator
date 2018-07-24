@@ -17,6 +17,7 @@ limitations under the License.
 package install
 
 import (
+	"github.com/appscode/searchlight/apis/incidents"
 	"github.com/appscode/searchlight/apis/incidents/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -24,6 +25,7 @@ import (
 
 // Install registers the API group and adds types to a scheme
 func Install(scheme *runtime.Scheme) {
+	utilruntime.Must(incidents.AddToScheme(scheme))
 	utilruntime.Must(v1alpha1.AddToScheme(scheme))
 	utilruntime.Must(scheme.SetVersionPriority(v1alpha1.SchemeGroupVersion))
 }
