@@ -23,12 +23,12 @@ import (
 
 func generateCRDDefinitions() {
 	filename := gort.GOPath() + "/src/github.com/appscode/searchlight/apis/monitoring/v1alpha1/crds.yaml"
+	os.Remove(filename)
 
-	f, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	err := os.MkdirAll(filepath.Join(gort.GOPath(), "/src/github.com/appscode/searchlight/api/crds"), 0755)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer f.Close()
 
 	crds := []*crd_api.CustomResourceDefinition{
 		slitev1alpha1.ClusterAlert{}.CustomResourceDefinition(),
@@ -38,7 +38,13 @@ func generateCRDDefinitions() {
 		slitev1alpha1.SearchlightPlugin{}.CustomResourceDefinition(),
 	}
 	for _, crd := range crds {
+		filename := filepath.Join(gort.GOPath(), "/src/github.com/appscode/searchlight/api/crds", crd.Spec.Names.Singular+".yaml")
+		f, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
 		crdutils.MarshallCrd(f, crd, "yaml")
+		f.Close()
 	}
 }
 
@@ -52,8 +58,8 @@ func generateSwaggerJson() {
 	repoinstall.Install(Scheme)
 
 	apispec, err := openapi.RenderOpenAPISpec(openapi.Config{
-		Scheme:   Scheme,
-		Codecs:   Codecs,
+		Scheme: Scheme,
+		Codecs: Codecs,
 		Info: spec.InfoProps{
 			Title:   "stash-server",
 			Version: "v0",
@@ -72,7 +78,7 @@ func generateSwaggerJson() {
 			incidentv1alpha1.GetOpenAPIDefinitions,
 		},
 		Resources: []openapi.TypeInfo{
-			{slitev1alpha1.SchemeGroupVersion, slitev1alpha1.ResourcePluralClusterAlert,  slitev1alpha1.ResourceKindClusterAlert, true},
+			{slitev1alpha1.SchemeGroupVersion, slitev1alpha1.ResourcePluralClusterAlert, slitev1alpha1.ResourceKindClusterAlert, true},
 			{slitev1alpha1.SchemeGroupVersion, slitev1alpha1.ResourcePluralNodeAlert, slitev1alpha1.ResourceKindNodeAlert, true},
 			{slitev1alpha1.SchemeGroupVersion, slitev1alpha1.ResourcePluralPodAlert, slitev1alpha1.ResourceKindPodAlert, true},
 			{slitev1alpha1.SchemeGroupVersion, slitev1alpha1.ResourcePluralIncident, slitev1alpha1.ResourceKindIncident, true},
