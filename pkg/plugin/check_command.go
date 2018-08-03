@@ -84,7 +84,6 @@ func GenerateCheckCommand(plugin *api.SearchlightPlugin) string {
 		flagList = append(flagList, fmt.Sprintf(`"--%s" = "%s"`, check_webhook.FlagCheckCommand, plugin.Name))
 
 		// Arguments in CheckCommand
-		// Arguments in CheckCommand
 		for i, f := range args {
 			if f.key == "icinga.checkInterval" {
 				flagList = append(flagList, fmt.Sprintf(`"--%s" = "%s"`, f.key, f.val))
