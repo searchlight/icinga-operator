@@ -22,6 +22,8 @@ import (
 )
 
 func generateCRDDefinitions() {
+	slitev1alpha1.EnableStatusSubresource = true
+
 	filename := gort.GOPath() + "/src/github.com/appscode/searchlight/apis/monitoring/v1alpha1/crds.yaml"
 	os.Remove(filename)
 
