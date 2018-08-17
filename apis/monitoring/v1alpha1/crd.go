@@ -16,6 +16,7 @@ func (a ClusterAlert) CustomResourceDefinition() *apiextensions.CustomResourceDe
 		Singular:      ResourceSingularClusterAlert,
 		Kind:          ResourceKindClusterAlert,
 		ShortNames:    []string{"ca"},
+		Categories:    []string{"monitoring", "appscode", "all"},
 		ResourceScope: string(apiextensions.NamespaceScoped),
 		Versions: []apiextensions.CustomResourceDefinitionVersion{
 			{
@@ -58,6 +59,7 @@ func (a NodeAlert) CustomResourceDefinition() *apiextensions.CustomResourceDefin
 		Singular:      ResourceSingularNodeAlert,
 		Kind:          ResourceKindNodeAlert,
 		ShortNames:    []string{"noa"},
+		Categories:    []string{"monitoring", "appscode", "all"},
 		ResourceScope: string(apiextensions.NamespaceScoped),
 		Versions: []apiextensions.CustomResourceDefinitionVersion{
 			{
@@ -100,6 +102,7 @@ func (a PodAlert) CustomResourceDefinition() *apiextensions.CustomResourceDefini
 		Singular:      ResourceSingularPodAlert,
 		Kind:          ResourceKindPodAlert,
 		ShortNames:    []string{"poa"},
+		Categories:    []string{"monitoring", "appscode", "all"},
 		ResourceScope: string(apiextensions.NamespaceScoped),
 		Versions: []apiextensions.CustomResourceDefinitionVersion{
 			{
@@ -141,6 +144,7 @@ func (a Incident) CustomResourceDefinition() *apiextensions.CustomResourceDefini
 		Plural:        ResourcePluralIncident,
 		Singular:      ResourceSingularIncident,
 		Kind:          ResourceKindIncident,
+		Categories:    []string{"monitoring", "appscode", "all"},
 		ResourceScope: string(apiextensions.NamespaceScoped),
 		Versions: []apiextensions.CustomResourceDefinitionVersion{
 			{
@@ -178,6 +182,7 @@ func (a SearchlightPlugin) CustomResourceDefinition() *apiextensions.CustomResou
 		Singular:      ResourceSingularSearchlightPlugin,
 		Kind:          ResourceKindSearchlightPlugin,
 		ShortNames:    []string{"sp"},
+		Categories:    []string{"monitoring", "appscode", "all"},
 		ResourceScope: string(apiextensions.ClusterScoped),
 		Versions: []apiextensions.CustomResourceDefinitionVersion{
 			{

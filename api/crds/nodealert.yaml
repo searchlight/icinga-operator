@@ -19,6 +19,10 @@ spec:
     type: date
   group: monitoring.appscode.com
   names:
+    categories:
+    - monitoring
+    - appscode
+    - all
     kind: NodeAlert
     plural: nodealerts
     shortNames:

@@ -32,6 +32,7 @@ var _ rest.Creater = &REST{}
 var _ rest.Scoper = &REST{}
 var _ rest.GracefulDeleter = &REST{}
 var _ rest.GroupVersionKindProvider = &REST{}
+var _ rest.CategoriesProvider = &REST{}
 
 func NewREST(config *restconfig.Config, ic *icinga.Client) *REST {
 	return &REST{
@@ -50,6 +51,10 @@ func (r *REST) New() runtime.Object {
 
 func (r *REST) GroupVersionKind(containingGV schema.GroupVersion) schema.GroupVersionKind {
 	return v1alpha1.SchemeGroupVersion.WithKind(v1alpha1.ResourceKindAcknowledgement)
+}
+
+func (r *REST) Categories() []string {
+	return []string{"monitoring", "appscode", "all"}
 }
 
 func (r *REST) Create(ctx context.Context, obj runtime.Object, _ rest.ValidateObjectFunc, _ bool) (runtime.Object, error) {
