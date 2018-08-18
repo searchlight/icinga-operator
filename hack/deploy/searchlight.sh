@@ -119,6 +119,7 @@ if [[ "$APPSCODE_ENV" == "dev" || "$APPSCODE_ENV" == "test-concourse" ]]; then
   export SEARCHLIGHT_OPERATOR_TAG=$TAG
   export SEARCHLIGHT_ICINGA_TAG=$TAG-k8s
   export SEARCHLIGHT_IMAGE_PULL_POLICY=Always
+  export DOCKER_IMG_TAG=$TAG
 fi
 
 KUBE_APISERVER_VERSION=$(kubectl version -o=json | $ONESSL jsonpath '{.serverVersion.gitVersion}')

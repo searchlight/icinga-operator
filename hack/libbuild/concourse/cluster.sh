@@ -53,6 +53,10 @@ function cleanup_test_stuff() {
   curl -LO https://raw.githubusercontent.com/appscodelabs/libbuild/master/docker.py
   chmod +x docker.py
   ./docker.py del_tag $DOCKER_REGISTRY $OPERATOR_NAME $TAG
+
+  for IMAGE_NAME in ${DOCKER_IMG_NAMES[@]}; do
+      ./docker.py del_tag $DOCKER_REGISTRY $IMAGE_NAME $DOCKER_IMG_TAG
+  done
 }
 trap cleanup_test_stuff EXIT
 
