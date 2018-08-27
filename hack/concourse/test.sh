@@ -37,7 +37,7 @@ go install github.com/onsi/ginkgo/ginkgo
 ./hack/docker/searchlight/setup.sh
 ./hack/docker/searchlight/setup.sh push
 
-source ./hack/deploy/searchlight.sh --docker-registry=$DOCKER_REGISTRY --enable-validating-webhook=true --rbac=true --icinga-api-password=1234
+./hack/deploy/searchlight.sh --docker-registry=$DOCKER_REGISTRY --enable-validating-webhook=true --rbac=true --icinga-api-password=1234
 ./hack/make.py test e2e --searchlight-service=searchlight-operator@kube-system --provider=do
 #./hack/make.py test e2e --searchlight-service=searchlight-operator@kube-system --provider=$ClusterProvider
 popd
