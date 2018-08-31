@@ -19,9 +19,7 @@ function cleanup() {
 }
 
 export APPSCODE_ENV=${APPSCODE_ENV:-prod}
-if [ "$APPSCODE_ENV" != "test-concourse" ]; then
-  trap cleanup EXIT
-fi
+trap cleanup EXIT
 
 # ref: https://github.com/appscodelabs/libbuild/blob/master/common/lib.sh#L55
 inside_git_repo() {
@@ -113,7 +111,7 @@ export SEARCHLIGHT_PURGE=0
 export SEARCHLIGHT_ENABLE_STATUS_SUBRESOURCE=false
 
 export SCRIPT_LOCATION="curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0/"
-if [[ "$APPSCODE_ENV" == "dev" || "$APPSCODE_ENV" == "test-concourse" ]]; then
+if [[ "$APPSCODE_ENV" == "dev" ]]; then
   detect_tag
   export SCRIPT_LOCATION="cat "
   export SEARCHLIGHT_OPERATOR_TAG=$TAG

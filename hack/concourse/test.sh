@@ -7,7 +7,7 @@ REPO_NAME=searchlight
 OPERATOR_NAME=searchlight
 APP_LABEL=searchlight #required for `kubectl describe deploy -n kube-system -l app=$APP_LABEL`
 
-export APPSCODE_ENV=test-concourse
+export APPSCODE_ENV=dev
 export DOCKER_REGISTRY=appscodeci
 
 # get concourse-common
