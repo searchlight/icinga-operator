@@ -16,11 +16,12 @@ rules:
   verbs:
   - "*"
 - apiGroups:
-  - extensions
+  - admissionregistration.k8s.io
   resources:
-  - thirdpartyresources
+  - mutatingwebhookconfigurations
+  - validatingwebhookconfigurations
   verbs:
-  - "*"
+  - delete
 - apiGroups:
   - monitoring.appscode.com
   resources: ["*"]
