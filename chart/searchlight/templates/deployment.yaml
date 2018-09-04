@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "searchlight.fullname" . }}
@@ -8,8 +8,15 @@ metadata:
     app: "{{ template "searchlight.name" . }}"
     heritage: "{{ .Release.Service }}"
     release: "{{ .Release.Name }}"
+{{- if .Values.annotations }}
+  annotations:
+{{ toYaml .Values.annotations | indent 4 }}
+{{- end }}
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ template "searchlight.name" . }}"
   template:
     metadata:
       labels:

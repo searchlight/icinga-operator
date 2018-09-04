@@ -59,6 +59,7 @@ The following table lists the configurable parameters of the Searchlight chart a
 | `criticalAddon`                     | If true, installs Searchlight operator as critical addon                | `false`            |
 | `affinity`                          | Affinity rules for pod assignment                                       | `{}`               |
 | `nodeSelector`                      | Node labels for pod assignment                                          | `{}`               |
+| `nodeSelector`                      | Node labels for pod assignment                                          | `{}`               |
 | `tolerations`                       | Tolerations used pod assignment                                         | `{}`               |
 | `rbac.create`                       | If `true`, create and use RBAC resources                                | `true`             |
 | `serviceAccount.create`             | If `true`, create a new service account                                 | `true`             |
