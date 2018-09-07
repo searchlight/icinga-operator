@@ -114,9 +114,10 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 				return nil, err
 			}
 			sans := cert.AltNames{
-				IPs: []net.IP{net.ParseIP("127.0.0.1")},
+				DNSNames: []string{"icinga"},
+				IPs:      []net.IP{net.ParseIP("127.0.0.1")},
 			}
-			serverCert, serverKey, err := store.NewServerCertPair("icinga", sans)
+			serverCert, serverKey, err := store.NewServerCertPairBytes(sans)
 			if err != nil {
 				return nil, err
 			}
@@ -195,7 +196,7 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 	}
 
 	if store.IsExists("ca") {
-		ctx.CACert = store.CACert()
+		ctx.CACert = store.CACertBytes()
 	}
 
 	return ctx, nil
