@@ -12,13 +12,13 @@ spec:
   ports:
   - name: ui
     port: 80
-    targetPort: ui
+    targetPort: 60006
+  - name: api
+    port: 443
+    targetPort: 8443
   - name: icinga
     port: 5665
-    targetPort: icinga
-  - name: api
-    port: 8080
-    targetPort: api
+    targetPort: 5665
   selector:
     app: "{{ template "searchlight.name" . }}"
     release: "{{ .Release.Name }}"
