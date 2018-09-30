@@ -42,34 +42,34 @@ The command removes all the Kubernetes components associated with the chart and 
 
 The following table lists the configurable parameters of the Searchlight chart and their default values.
 
-| Parameter                           | Description                                                             | Default            |
-| ----------------------------------- | -----------------------------------------------------------------       | ------------------ |
-| `replicaCount`                      | Number of searchlight Operator replicas to create (only 1 is supported) | `1`                |
-| `operator.registry`                 | Docker registry used to pull Operator image                             | `appscode`         |
-| `operator.repository`               | Operator container image                                                | `searchlight`      |
-| `operator.tag`                      | Operator image tag                                                      | `7.0.0`       |
-| `icinga.registry`                   | Docker registry used to pull Icinga image                               | `appscode`         |
-| `icinga.repository`                 | Icinga container image                                                  | `icinga`           |
-| `icinga.tag`                        | icinga container image tag                                              | `7.0.0-k8s`   |
-| `ido.registry`                      | Docker registry used to pull PostgreSQL image                           | `appscode`         |
-| `ido.repository`                    | PostgreSQL container image                                              | `postgress`        |
-| `ido.tag`                           | ido container image tag                                                 | `9.5-alpine`       |
-| `imagePullSecrets`                  | Specify image pull secrets                                              | `nil` (does not add image pull secrets to deployed pods) |
-| `imagePullPolicy`                   | Image pull policy                                                       | `IfNotPresent`     |
-| `criticalAddon`                     | If true, installs Searchlight operator as critical addon                | `false`            |
-| `affinity`                          | Affinity rules for pod assignment                                       | `{}`               |
-| `nodeSelector`                      | Node labels for pod assignment                                          | `{}`               |
-| `nodeSelector`                      | Node labels for pod assignment                                          | `{}`               |
-| `tolerations`                       | Tolerations used pod assignment                                         | `{}`               |
-| `rbac.create`                       | If `true`, create and use RBAC resources                                | `true`             |
-| `serviceAccount.create`             | If `true`, create a new service account                                 | `true`             |
-| `serviceAccount.name`               | Service account to be used. If not set and `serviceAccount.create` is `true`, a name is generated using the fullname template | `` |
-| `apiserver.groupPriorityMinimum`    | The minimum priority the group should have.                             | 10000              |
-| `apiserver.versionPriority`         | The ordering of this API inside of the group.                           | 15                 |
-| `apiserver.enableValidatingWebhook` | Enable validating webhooks for Searchlight CRDs                         | false              |
-| `apiserver.ca`                      | CA certificate used by main Kubernetes api server                       | ``                 |
-| `apiserver.enableStatusSubresource` | If true, uses status sub resource for Searchlight crds                  | `false`            |
-| `enableAnalytics`                   | Send usage events to Google Analytics                                   | `true`             |
+| Parameter                            | Description                                                             | Default            |
+| ------------------------------------ | -----------------------------------------------------------------       | ------------------ |
+| `replicaCount`                       | Number of searchlight Operator replicas to create (only 1 is supported) | `1`                |
+| `operator.registry`                  | Docker registry used to pull Operator image                             | `appscode`         |
+| `operator.repository`                | Operator container image                                                | `searchlight`      |
+| `operator.tag`                       | Operator image tag                                                      | `7.0.0`       |
+| `icinga.registry`                    | Docker registry used to pull Icinga image                               | `appscode`         |
+| `icinga.repository`                  | Icinga container image                                                  | `icinga`           |
+| `icinga.tag`                         | icinga container image tag                                              | `7.0.0-k8s`   |
+| `ido.registry`                       | Docker registry used to pull PostgreSQL image                           | `appscode`         |
+| `ido.repository`                     | PostgreSQL container image                                              | `postgress`        |
+| `ido.tag`                            | ido container image tag                                                 | `9.5-alpine`       |
+| `imagePullSecrets`                   | Specify image pull secrets                                              | `nil` (does not add image pull secrets to deployed pods) |
+| `imagePullPolicy`                    | Image pull policy                                                       | `IfNotPresent`     |
+| `criticalAddon`                      | If true, installs Searchlight operator as critical addon                | `false`            |
+| `affinity`                           | Affinity rules for pod assignment                                       | `{}`               |
+| `nodeSelector`                       | Node labels for pod assignment                                          | `{}`               |
+| `nodeSelector`                       | Node labels for pod assignment                                          | `{}`               |
+| `tolerations`                        | Tolerations used pod assignment                                         | `{}`               |
+| `rbac.create`                        | If `true`, create and use RBAC resources                                | `true`             |
+| `serviceAccount.create`              | If `true`, create a new service account                                 | `true`             |
+| `serviceAccount.name`                | Service account to be used. If not set and `serviceAccount.create` is `true`, a name is generated using the fullname template | `` |
+| `apiserver.groupPriorityMinimum`     | The minimum priority the group should have.                             | 10000              |
+| `apiserver.versionPriority`          | The ordering of this API inside of the group.                           | 15                 |
+| `apiserver.enableValidatingWebhook`  | Enable validating webhooks for Searchlight CRDs                         | false              |
+| `apiserver.ca`                       | CA certificate used by main Kubernetes api server                       | ``                 |
+| `apiserver.disableStatusSubresource` | If true, uses status sub resource for Searchlight crds                  | `false`            |
+| `enableAnalytics`                    | Send usage events to Google Analytics                                   | `true`             |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:
 

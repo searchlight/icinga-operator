@@ -4,6 +4,7 @@ import (
 	"time"
 
 	hooks "github.com/appscode/kubernetes-webhook-util/admission/v1beta1"
+	reg_util "github.com/appscode/kutil/admissionregistration/v1beta1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	mon_informers "github.com/appscode/searchlight/client/informers/externalversions"
 	"github.com/appscode/searchlight/pkg/eventer"
@@ -12,6 +13,10 @@ import (
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+)
+
+const (
+	validatingWebhook = "admission.monitoring.appscode.com"
 )
 
 type Config struct {
@@ -59,6 +64,9 @@ func (c *OperatorConfig) New() (*Operator, error) {
 	}
 
 	if err := op.ensureCustomResourceDefinitions(); err != nil {
+		return nil, err
+	}
+	if err := reg_util.UpdateValidatingWebhookCABundle(op.clientConfig, validatingWebhook); err != nil {
 		return nil, err
 	}
 	op.initNamespaceWatcher()

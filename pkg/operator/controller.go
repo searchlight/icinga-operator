@@ -3,6 +3,7 @@ package operator
 import (
 	"fmt"
 
+	reg_util "github.com/appscode/kutil/admissionregistration/v1beta1"
 	apiext_util "github.com/appscode/kutil/apiextensions/v1beta1"
 	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
@@ -85,7 +86,7 @@ func (op *Operator) ensureCustomResourceDefinitions() error {
 	return apiext_util.RegisterCRDs(op.crdClient, crds)
 }
 
-func (op *Operator) RunWatchers(stopCh <-chan struct{}) {
+func (op *Operator) RunInformers(stopCh <-chan struct{}) {
 	defer runtime.HandleCrash()
 
 	glog.Info("Starting Searchlight controller")
@@ -131,6 +132,12 @@ func (op *Operator) Run(stopCh <-chan struct{}) error {
 		return err
 	}
 
-	op.RunWatchers(stopCh)
+	go op.RunInformers(stopCh)
+
+	cancel, _ := reg_util.SyncValidatingWebhookCABundle(op.clientConfig, validatingWebhook)
+
+	<-stopCh
+
+	cancel()
 	return nil
 }

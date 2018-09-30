@@ -12,22 +12,12 @@ rules:
   - nodealerts
   - podalerts
   - incidents
-  verbs:
-  - create
-  - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
-  - watch
+  verbs: ["*"]
 - apiGroups:
   - incidents.monitoring.appscode.com
   resources:
   - acknowledgements
-  verbs:
-  - create
-  - delete
+  verbs: ["create", "delete"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -42,34 +32,17 @@ rules:
   - clusteralerts
   - nodealerts
   - podalerts
-  verbs:
-  - create
-  - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
-  - watch
+  verbs: ["*"]
 - apiGroups:
   - monitoring.appscode.com
   resources:
   - incidents
-  verbs:
-  - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
-  - watch
+  verbs: ["delete", "deletecollection", "get", "list", "patch", "update", "watch"]
 - apiGroups:
   - incidents.monitoring.appscode.com
   resources:
   - acknowledgements
-  verbs:
-  - create
-  - delete
+  verbs: ["create", "delete"]
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
@@ -85,7 +58,4 @@ rules:
   - nodealerts
   - podalerts
   - incidents
-  verbs:
-  - get
-  - list
-  - watch
+  verbs: ["get", "list", "watch"]
