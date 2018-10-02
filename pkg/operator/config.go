@@ -5,6 +5,7 @@ import (
 
 	hooks "github.com/appscode/kubernetes-webhook-util/admission/v1beta1"
 	reg_util "github.com/appscode/kutil/admissionregistration/v1beta1"
+	"github.com/appscode/kutil/discovery"
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	mon_informers "github.com/appscode/searchlight/client/informers/externalversions"
 	"github.com/appscode/searchlight/pkg/eventer"
@@ -48,6 +49,10 @@ func NewOperatorConfig(clientConfig *rest.Config) *OperatorConfig {
 }
 
 func (c *OperatorConfig) New() (*Operator, error) {
+	if err := discovery.IsDefaultSupportedVersion(c.KubeClient); err != nil {
+		return nil, err
+	}
+
 	op := &Operator{
 		Config:              c.Config,
 		clientConfig:        c.ClientConfig,
