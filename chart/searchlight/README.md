@@ -57,6 +57,7 @@ The following table lists the configurable parameters of the Searchlight chart a
 | `imagePullSecrets`                   | Specify image pull secrets                                              | `nil` (does not add image pull secrets to deployed pods) |
 | `imagePullPolicy`                    | Image pull policy                                                       | `IfNotPresent`     |
 | `criticalAddon`                      | If true, installs Searchlight operator as critical addon                | `false`            |
+| `logLevel`                           | Log level for operator                                                  | `3`                |
 | `affinity`                           | Affinity rules for pod assignment                                       | `{}`               |
 | `nodeSelector`                       | Node labels for pod assignment                                          | `{}`               |
 | `nodeSelector`                       | Node labels for pod assignment                                          | `{}`               |
