@@ -30,7 +30,7 @@ import:
 - package: github.com/shirou/gopsutil
   version: v2.18.02
 - package: github.com/spf13/afero
-  version: v1.1.0
+  version: v1.1.2
 - package: github.com/spf13/cobra
   version: v0.0.3
 - package: github.com/spf13/pflag
@@ -41,27 +41,25 @@ import:
 - package: gopkg.in/macaron.v1
   version: v1.3.1
 - package: k8s.io/api
-  version: kubernetes-1.11.3
+  version: kubernetes-1.12.0
 - package: k8s.io/apiextensions-apiserver
-  version: kubernetes-1.11.3
+  version: kubernetes-1.12.0
 - package: k8s.io/apimachinery
-  repo: https://github.com/pharmer/apimachinery.git
+  repo: https://github.com/kmodules/apimachinery.git
   vcs: git
-  version: release-1.11.3
+  version: ac-1.12.0
 - package: k8s.io/apiserver
-  repo: https://github.com/pharmer/apiserver.git
+  repo: https://github.com/kmodules/apiserver.git
   vcs: git
-  version: release-1.11.3
+  version: ac-1.12.0
 - package: k8s.io/client-go
-  repo: https://github.com/pharmer/client-go.git
-  vcs: git
-  version: release-1.11.3
+  version: v9.0.0
 - package: k8s.io/kube-openapi
-  version: 91cfa479c814065e420cee7ed227db0f63a5854e
+  version: 0cf8f7e6ed1d2e3d47d02e3b6e559369af24d803
 - package: github.com/appscode/kutil
-  version: release-8.0
+  version: release-9.0
 - package: github.com/appscode/kubernetes-webhook-util
-  version: release-8.0
+  version: release-9.0
 - package: github.com/openshift/api
   version: 31a7bbd2266d178da3c12bb83f5274d387f775e6
 - package: github.com/openshift/client-go
@@ -84,6 +82,14 @@ import:
   version: 95c6576299259db960f6c5b9b69ea52422860fce
 - package: github.com/golang/protobuf
   version: v1.1.0
+- package: golang.org/x/crypto
+  version: de0752318171da717af4ce24d0a2e8626afaeb11
+- package: github.com/davecgh/go-spew
+  version: v1.1.1
+- package: github.com/mailgun/mailgun-go
+  version: v1.1.1
+- package: github.com/nlopes/slack
+  version: v0.2.0
 testImport:
 - package: github.com/onsi/ginkgo
   version: v1.4.0

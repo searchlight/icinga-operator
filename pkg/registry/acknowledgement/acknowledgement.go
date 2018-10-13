@@ -57,7 +57,7 @@ func (r *REST) Categories() []string {
 	return []string{"monitoring", "appscode", "all"}
 }
 
-func (r *REST) Create(ctx context.Context, obj runtime.Object, _ rest.ValidateObjectFunc, _ bool) (runtime.Object, error) {
+func (r *REST) Create(ctx context.Context, obj runtime.Object, _ rest.ValidateObjectFunc, _ *metav1.CreateOptions) (runtime.Object, error) {
 	req := obj.(*incidents.Acknowledgement)
 
 	if errs := validate(req); len(errs) > 0 {
