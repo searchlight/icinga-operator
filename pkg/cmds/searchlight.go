@@ -5,28 +5,19 @@ import (
 	"io"
 	"log"
 	"os"
-	"strings"
 
 	v "github.com/appscode/go/version"
-	"github.com/appscode/kutil/tools/analytics"
+	"github.com/appscode/kutil/tools/cli"
 	"github.com/appscode/searchlight/client/clientset/versioned/scheme"
 	"github.com/appscode/searchlight/pkg/cmds/server"
 	"github.com/golang/glog"
-	"github.com/jpillora/go-ogle-analytics"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	clientsetscheme "k8s.io/client-go/kubernetes/scheme"
 )
 
-const (
-	gaTrackingCode = "UA-62096468-20"
-)
-
 func NewCmdSearchlight() *cobra.Command {
-	var (
-		enableAnalytics = true
-	)
 	rootCmd := &cobra.Command{
 		Use:   "searchlight [command]",
 		Short: `Searchlight by AppsCode - Alerts for Kubernetes`,
@@ -34,20 +25,15 @@ func NewCmdSearchlight() *cobra.Command {
 			c.Flags().VisitAll(func(flag *pflag.Flag) {
 				log.Printf("FLAG: --%s=%q", flag.Name, flag.Value)
 			})
-			if enableAnalytics && gaTrackingCode != "" {
-				if client, err := ga.NewClient(gaTrackingCode); err == nil {
-					client.ClientID(analytics.ClientID())
-					parts := strings.Split(c.CommandPath(), " ")
-					client.Send(ga.NewEvent(parts[0], strings.Join(parts[1:], "/")).Label(v.Version.Version))
-				}
-			}
+			cli.SendAnalytics(c, v.Version.Version)
+
 			scheme.AddToScheme(clientsetscheme.Scheme)
 		},
 	}
 	rootCmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
 	// ref: https://github.com/kubernetes/kubernetes/issues/17162#issuecomment-225596212
 	flag.CommandLine.Parse([]string{})
-	rootCmd.PersistentFlags().BoolVar(&enableAnalytics, "enable-analytics", enableAnalytics, "send usage events to Google Analytics")
+	rootCmd.PersistentFlags().BoolVar(&cli.EnableAnalytics, "enable-analytics", cli.EnableAnalytics, "send usage events to Google Analytics")
 
 	stopCh := genericapiserver.SetupSignalHandler()
 	rootCmd.AddCommand(NewCmdRun(os.Stdout, os.Stderr, stopCh))
@@ -65,6 +51,9 @@ func NewCmdRun(out, errOut io.Writer, stopCh <-chan struct{}) *cobra.Command {
 		Short:             "Launch Searchlight operator",
 		Long:              "Launch Searchlight operator",
 		DisableAutoGenTag: true,
+		PreRun: func(c *cobra.Command, args []string) {
+			cli.SendPeriodicAnalytics(c, v.Version.Version)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			glog.Infof("Starting operator version %s+%s ...", v.Version.Version, v.Version.CommitHash)
 

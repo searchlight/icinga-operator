@@ -1,5 +1,5 @@
 hash: 6eb0eecb510e058d6c1cbd095bbfcc7350d4c6091873cd9513a2c8ecc18858a2
-updated: 2018-11-22T21:54:00.99914138-08:00
+updated: 2018-12-01T22:17:13.673467459-08:00
 imports:
 - name: bitbucket.org/atlassian/go-stride
   version: 78855f0a5d80b2683b11f3825a580a87e32a9f71
@@ -59,7 +59,7 @@ imports:
   - admission/v1beta1
   - registry/admissionreview/v1beta1
 - name: github.com/appscode/kutil
-  version: 5e4dc08e9e6e00fcf397b7186a3918dc4dcb9426
+  version: 239838b6231b8a27a66426e25678351ce50c4cfd
   subpackages:
   - admissionregistration/v1beta1
   - apiextensions/v1beta1
@@ -71,6 +71,7 @@ imports:
   - openapi
   - tools/analytics
   - tools/certstore
+  - tools/cli
   - tools/clientcmd
   - tools/queue
 - name: github.com/appscode/mergo
@@ -240,7 +241,7 @@ imports:
 - name: github.com/go-openapi/jsonreference
   version: 13c6e3589ad90f49bd3e3bbe2c2cb3d7a4142272
 - name: github.com/go-openapi/loads
-  version: d72cd69e9468f55c6369c5481c3d011401728c72
+  version: 74628589c3b94e3526a842d24f46589980f5ab22
 - name: github.com/go-openapi/spec
   version: 1de3e0542de65ad8d75452a595886fdd0befb363
 - name: github.com/go-openapi/swag

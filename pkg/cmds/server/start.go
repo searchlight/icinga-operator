@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/appscode/go/log/golog"
+	"github.com/appscode/kutil/tools/clientcmd"
 	incidentsv1alpha1 "github.com/appscode/searchlight/apis/incidents/v1alpha1"
 	"github.com/appscode/searchlight/pkg/operator"
 	"github.com/appscode/searchlight/pkg/server"
@@ -67,6 +68,8 @@ func (o SearchlightOptions) Config() (*server.SearchlightConfig, error) {
 	if err := o.RecommendedOptions.ApplyTo(serverConfig, server.Scheme); err != nil {
 		return nil, err
 	}
+	// Fixes https://github.com/Azure/AKS/issues/522
+	clientcmd.Fix(serverConfig.ClientConfig)
 	serverConfig.OpenAPIConfig = genericapiserver.DefaultOpenAPIConfig(incidentsv1alpha1.GetOpenAPIDefinitions, openapinamer.NewDefinitionNamer(server.Scheme))
 	serverConfig.OpenAPIConfig.Info.Title = "searchlight-server"
 	serverConfig.OpenAPIConfig.Info.Version = incidentsv1alpha1.SchemeGroupVersion.Version

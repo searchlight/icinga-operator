@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	v "github.com/appscode/go/version"
-	"github.com/appscode/kutil/tools/analytics"
+	"github.com/appscode/kutil/tools/cli"
 	"github.com/appscode/searchlight/client/clientset/versioned/scheme"
 	"github.com/appscode/searchlight/plugins"
 	"github.com/appscode/searchlight/plugins/analytics_id"
@@ -24,30 +24,17 @@ import (
 	"github.com/appscode/searchlight/plugins/check_volume"
 	"github.com/appscode/searchlight/plugins/check_webhook"
 	"github.com/appscode/searchlight/plugins/notifier"
-	"github.com/jpillora/go-ogle-analytics"
 	"github.com/spf13/cobra"
 	clientsetscheme "k8s.io/client-go/kubernetes/scheme"
 )
 
-const (
-	gaTrackingCode = "UA-62096468-20"
-)
-
 func NewCmd() *cobra.Command {
-	var (
-		enableAnalytics = strings.EqualFold(os.Getenv("ENABLE_ANALYTICS"), "true")
-	)
 	cmd := &cobra.Command{
 		Use:   "hyperalert",
 		Short: "AppsCode Icinga2 plugin",
 		PersistentPreRun: func(c *cobra.Command, args []string) {
-			if enableAnalytics && gaTrackingCode != "" {
-				if client, err := ga.NewClient(gaTrackingCode); err == nil {
-					client.ClientID(analytics.ClientID())
-					parts := strings.Split(c.CommandPath(), " ")
-					client.Send(ga.NewEvent(parts[0], strings.Join(parts[1:], "/")).Label(v.Version.Version))
-				}
-			}
+			cli.EnableAnalytics = strings.EqualFold(os.Getenv("ENABLE_ANALYTICS"), "true")
+			cli.SendAnalytics(c, v.Version.Version)
 			scheme.AddToScheme(clientsetscheme.Scheme)
 		},
 		Run: func(c *cobra.Command, args []string) {
