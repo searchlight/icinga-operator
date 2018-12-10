@@ -12,7 +12,7 @@ import (
 	"github.com/appscode/kutil/tools/certstore"
 	"github.com/pkg/errors"
 	"github.com/spf13/afero"
-	"gopkg.in/ini.v1"
+	ini "gopkg.in/ini.v1"
 	"k8s.io/client-go/util/cert"
 )
 

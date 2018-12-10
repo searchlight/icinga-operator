@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/appscode/envconfig"
-	"github.com/appscode/go-notify"
+	notify "github.com/appscode/go-notify"
 	"github.com/appscode/go-notify/unified"
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/log"
