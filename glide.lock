@@ -1,5 +1,5 @@
-hash: 23b5854562ff16fe9a597bce081644a3fa10cf88950cc9fd2c88ecd1758a6908
-updated: 2018-12-17T08:01:12.815997997-08:00
+hash: e879d52ef5948d31e2eee4219ac51944ed239db9e6adffb14839cb50bd25dfcb
+updated: 2019-01-03T13:25:39.641956299-08:00
 imports:
 - name: bitbucket.org/atlassian/go-stride
   version: 78855f0a5d80b2683b11f3825a580a87e32a9f71
@@ -59,7 +59,7 @@ imports:
   - admission/v1beta1
   - registry/admissionreview/v1beta1
 - name: github.com/appscode/kutil
-  version: d9fb2e606bf2c196a8cd8cff13097f531d686a44
+  version: c2edb24c3c1c6f97bbe8d0616dc2eee59a11c665
   subpackages:
   - admissionregistration/v1beta1
   - apiextensions/v1beta1
@@ -223,6 +223,8 @@ imports:
   version: f12c6236fe7b5cf6bcf30e5935d08cb079d78334
 - name: github.com/ghodss/yaml
   version: 0ca9ea5df5451ffdf184b4428c902747c2c11cd7
+- name: github.com/go-ini/ini
+  version: a9da9309fb4822643ceebb765f80025c35ac19a1
 - name: github.com/go-macaron/auth
   version: 884c0e6c9b92ceebf12101d6cf1417fe0f61bcac
 - name: github.com/go-macaron/inject
@@ -397,7 +399,7 @@ imports:
 - name: github.com/PuerkitoBio/urlesc
   version: 5bd2802263f21d8788851d5305584c82a5c75d7e
 - name: github.com/rs/zerolog
-  version: c482b206231df1662b9e1895a9ba17a88b11220c
+  version: aa55558e4cb2e8f05cd079342d430f77e946d00a
   subpackages:
   - internal/cbor
   - internal/json
@@ -559,7 +561,7 @@ imports:
 - name: gopkg.in/inf.v0
   version: 3887ee99ecf07df5b447e9b00d9c0b2adaa9f3e4
 - name: gopkg.in/ini.v1
-  version: 32e4c1e6bc4e7d0d8451aa6b75200d19e37a536a
+  version: a9da9309fb4822643ceebb765f80025c35ac19a1
 - name: gopkg.in/macaron.v1
   version: c1be95e6d21e769e44e1ec33cec9da5837861c10
 - name: gopkg.in/natefinch/lumberjack.v2
@@ -674,7 +676,7 @@ imports:
   - third_party/forked/golang/netutil
   - third_party/forked/golang/reflect
 - name: k8s.io/apiserver
-  version: 70f523ccd088c9dca12de68b719d9b29f8e8c7d2
+  version: 2aa1408a8c0a98b7d52911b63a98cbb7c9fd5e7c
   repo: https://github.com/kmodules/apiserver.git
   vcs: git
   subpackages:
