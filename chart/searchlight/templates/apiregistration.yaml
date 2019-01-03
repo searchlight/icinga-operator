@@ -8,10 +8,7 @@ kind: APIService
 metadata:
   name: v1alpha1.admission.monitoring.appscode.com
   labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    app: "{{ template "searchlight.name" . }}"
-    heritage: "{{ .Release.Service }}"
-    release: "{{ .Release.Name }}"
+    {{- include "searchlight.labels" . | nindent 4 }}
 spec:
   group: admission.monitoring.appscode.com
   version: v1alpha1
@@ -27,10 +24,7 @@ kind: APIService
 metadata:
   name: v1alpha1.incidents.monitoring.appscode.com
   labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    app: "{{ template "searchlight.name" . }}"
-    heritage: "{{ .Release.Service }}"
-    release: "{{ .Release.Name }}"
+    {{- include "searchlight.labels" . | nindent 4 }}
 spec:
   group: incidents.monitoring.appscode.com
   version: v1alpha1
@@ -47,10 +41,7 @@ metadata:
   name: {{ template "searchlight.fullname" . }}-apiserver-cert
   namespace: {{ .Release.Namespace }}
   labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    app: "{{ template "searchlight.name" . }}"
-    heritage: "{{ .Release.Service }}"
-    release: "{{ .Release.Name }}"
+    {{- include "searchlight.labels" . | nindent 4 }}
 type: Opaque
 data:
   tls.crt: {{ b64enc $cert.Cert }}
@@ -61,13 +52,10 @@ data:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ template "searchlight.fullname" . }}-apiserver-extension-server-authentication-reader
+  name: {{ template "searchlight.fullname" . }}-extension-server-authentication-reader
   namespace: kube-system
   labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    app: "{{ template "searchlight.name" . }}"
-    heritage: "{{ .Release.Service }}"
-    release: "{{ .Release.Name }}"
+    {{- include "searchlight.labels" . | nindent 4 }}
 roleRef:
   kind: Role
   apiGroup: rbac.authorization.k8s.io
@@ -81,12 +69,9 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ template "searchlight.fullname" . }}-apiserver-auth-delegator
+  name: {{ template "searchlight.fullname" . }}-auth-delegator
   labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    app: "{{ template "searchlight.name" . }}"
-    heritage: "{{ .Release.Service }}"
-    release: "{{ .Release.Name }}"
+    {{- include "searchlight.labels" . | nindent 4 }}
 roleRef:
   kind: ClusterRole
   apiGroup: rbac.authorization.k8s.io

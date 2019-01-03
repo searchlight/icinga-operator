@@ -3,10 +3,7 @@ kind: Job
 metadata:
   name: {{ .Release.Name }}-cleaner
   labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    app: "{{ template "searchlight.name" . }}"
-    heritage: "{{ .Release.Service }}"
-    release: "{{ .Release.Name }}"
+    {{- include "searchlight.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": pre-delete
     "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
@@ -22,10 +19,10 @@ spec:
       {{- end }}
       containers:
       - name: busybox
-        image: appscode/kubectl:v1.11
+        image: {{ .Values.cleaner.registry }}/{{ .Values.cleaner.repository }}:{{ .Values.cleaner.tag }}
         command:
           - sh
           - -c
           - "sleep 2; kubectl delete validatingwebhookconfigurations admission.monitoring.appscode.com || true"
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
       restartPolicy: Never
