@@ -7,7 +7,6 @@ import (
 	"os"
 
 	v "github.com/appscode/go/version"
-	"github.com/appscode/kutil/tools/cli"
 	"github.com/appscode/searchlight/client/clientset/versioned/scheme"
 	"github.com/appscode/searchlight/pkg/cmds/server"
 	"github.com/golang/glog"
@@ -15,6 +14,8 @@ import (
 	"github.com/spf13/pflag"
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	clientsetscheme "k8s.io/client-go/kubernetes/scheme"
+	"kmodules.xyz/client-go/logs"
+	"kmodules.xyz/client-go/tools/cli"
 )
 
 func NewCmdSearchlight() *cobra.Command {
@@ -31,8 +32,7 @@ func NewCmdSearchlight() *cobra.Command {
 		},
 	}
 	rootCmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
-	// ref: https://github.com/kubernetes/kubernetes/issues/17162#issuecomment-225596212
-	flag.CommandLine.Parse([]string{})
+	logs.ParseFlags()
 	rootCmd.PersistentFlags().BoolVar(&cli.EnableAnalytics, "enable-analytics", cli.EnableAnalytics, "send usage events to Google Analytics")
 
 	stopCh := genericapiserver.SetupSignalHandler()

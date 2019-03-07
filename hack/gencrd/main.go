@@ -6,8 +6,6 @@ import (
 
 	"github.com/appscode/go/log"
 	gort "github.com/appscode/go/runtime"
-	crdutils "github.com/appscode/kutil/apiextensions/v1beta1"
-	"github.com/appscode/kutil/openapi"
 	repoinstall "github.com/appscode/searchlight/apis/incidents/install"
 	incidentv1alpha1 "github.com/appscode/searchlight/apis/incidents/v1alpha1"
 	stashinstall "github.com/appscode/searchlight/apis/monitoring/install"
@@ -18,6 +16,8 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/kube-openapi/pkg/common"
+	crdutils "kmodules.xyz/client-go/apiextensions/v1beta1"
+	"kmodules.xyz/client-go/openapi"
 	"path/filepath"
 )
 

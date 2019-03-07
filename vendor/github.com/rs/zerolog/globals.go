@@ -1,6 +1,9 @@
 package zerolog
 
-import "time"
+import (
+	"strconv"
+	"time"
+)
 import "sync/atomic"
 
 var (
@@ -9,6 +12,11 @@ var (
 
 	// LevelFieldName is the field name used for the level field.
 	LevelFieldName = "level"
+
+	// LevelFieldMarshalFunc allows customization of global level field marshaling
+	LevelFieldMarshalFunc = func(l Level) string {
+		return l.String()
+	}
 
 	// MessageFieldName is the field name used for the message field.
 	MessageFieldName = "message"
@@ -21,6 +29,11 @@ var (
 
 	// CallerSkipFrameCount is the number of stack frames to skip to find the caller.
 	CallerSkipFrameCount = 2
+
+	// CallerMarshalFunc allows customization of global caller marshaling
+	CallerMarshalFunc = func(file string, line int) string {
+		return file + ":" + strconv.Itoa(line)
+	}
 
 	// ErrorStackFieldName is the field name used for error stacks.
 	ErrorStackFieldName = "stack"

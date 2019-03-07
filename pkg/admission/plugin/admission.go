@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"sync"
 
-	hooks "github.com/appscode/kubernetes-webhook-util/admission/v1beta1"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	admission "k8s.io/api/admission/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	hooks "kmodules.xyz/webhook-runtime/admission/v1beta1"
 )
 
 type CRDValidator struct {

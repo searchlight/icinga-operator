@@ -3,8 +3,6 @@ package e2e
 import (
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/go/types"
-	kutil_core "github.com/appscode/kutil/core/v1"
-	ext_util "github.com/appscode/kutil/extensions/v1beta1"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/util"
 	"github.com/appscode/searchlight/test/e2e/framework"
@@ -15,6 +13,8 @@ import (
 	core "k8s.io/api/core/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	kutil_core "kmodules.xyz/client-go/core/v1"
+	ext_util "kmodules.xyz/client-go/extensions/v1beta1"
 )
 
 var _ = Describe("PodAlert", func() {

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Searchlight Authors.
+Copyright 2019 The Searchlight Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -119,7 +119,7 @@ func (c *FakeClusterAlerts) DeleteCollection(options *v1.DeleteOptions, listOpti
 // Patch applies the patch and returns the patched clusterAlert.
 func (c *FakeClusterAlerts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ClusterAlert, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewPatchSubresourceAction(clusteralertsResource, c.ns, name, data, subresources...), &v1alpha1.ClusterAlert{})
+		Invokes(testing.NewPatchSubresourceAction(clusteralertsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ClusterAlert{})
 
 	if obj == nil {
 		return nil, err

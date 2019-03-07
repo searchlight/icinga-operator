@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"github.com/appscode/go/log"
-	hooks "github.com/appscode/kubernetes-webhook-util/admission/v1beta1"
-	"github.com/appscode/kutil/meta"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	"github.com/appscode/searchlight/pkg/admission/plugin"
@@ -17,6 +15,8 @@ import (
 	crd_cs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"kmodules.xyz/client-go/meta"
+	hooks "kmodules.xyz/webhook-runtime/admission/v1beta1"
 )
 
 type OperatorOptions struct {

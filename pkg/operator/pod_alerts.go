@@ -5,12 +5,12 @@ import (
 	"strings"
 
 	"github.com/appscode/go/log"
-	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/golang/glog"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/tools/cache"
+	"kmodules.xyz/client-go/tools/queue"
 )
 
 func (op *Operator) initPodAlertWatcher() {

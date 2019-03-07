@@ -6,12 +6,13 @@ import (
 	"log"
 
 	v "github.com/appscode/go/version"
-	"github.com/appscode/kutil/tools/cli"
 	"github.com/appscode/searchlight/client/clientset/versioned/scheme"
 	"github.com/appscode/searchlight/pkg/hostfacts"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	clientsetscheme "k8s.io/client-go/kubernetes/scheme"
+	"kmodules.xyz/client-go/logs"
+	"kmodules.xyz/client-go/tools/cli"
 )
 
 func NewCmdHostfacts() *cobra.Command {
@@ -28,8 +29,7 @@ func NewCmdHostfacts() *cobra.Command {
 		},
 	}
 	cmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
-	// ref: https://github.com/kubernetes/kubernetes/issues/17162#issuecomment-225596212
-	flag.CommandLine.Parse([]string{})
+	logs.ParseFlags()
 	cmd.PersistentFlags().BoolVar(&cli.EnableAnalytics, "enable-analytics", cli.EnableAnalytics, "send usage events to Google Analytics")
 
 	cmd.AddCommand(NewCmdServer())

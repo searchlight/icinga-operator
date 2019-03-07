@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Searchlight Authors.
+Copyright 2019 The Searchlight Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -119,7 +119,7 @@ func (c *FakeNodeAlerts) DeleteCollection(options *v1.DeleteOptions, listOptions
 // Patch applies the patch and returns the patched nodeAlert.
 func (c *FakeNodeAlerts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NodeAlert, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewPatchSubresourceAction(nodealertsResource, c.ns, name, data, subresources...), &v1alpha1.NodeAlert{})
+		Invokes(testing.NewPatchSubresourceAction(nodealertsResource, c.ns, name, pt, data, subresources...), &v1alpha1.NodeAlert{})
 
 	if obj == nil {
 		return nil, err

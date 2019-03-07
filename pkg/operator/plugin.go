@@ -10,8 +10,6 @@ import (
 	"github.com/appscode/go/ioutil"
 	"github.com/appscode/go/log"
 	utilerrors "github.com/appscode/go/util/errors"
-	"github.com/appscode/kutil/meta"
-	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/util"
 	"github.com/appscode/searchlight/pkg/icinga"
@@ -24,6 +22,8 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/remotecommand"
+	"kmodules.xyz/client-go/meta"
+	"kmodules.xyz/client-go/tools/queue"
 )
 
 func (op *Operator) initPluginWatcher() {

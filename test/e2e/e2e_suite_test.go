@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	logs "github.com/appscode/go/log/golog"
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/pkg/operator"
@@ -22,6 +21,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
+	"kmodules.xyz/client-go/logs"
 )
 
 var (

@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/appscode/go/flags"
-	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
@@ -17,6 +16,7 @@ import (
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/remotecommand"
 	utilexec "k8s.io/client-go/util/exec"
+	"kmodules.xyz/client-go/tools/clientcmd"
 )
 
 type plugin struct {

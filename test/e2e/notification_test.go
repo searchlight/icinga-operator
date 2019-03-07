@@ -6,7 +6,6 @@ import (
 	"net/url"
 
 	"github.com/appscode/go/types"
-	kutil_ext "github.com/appscode/kutil/extensions/v1beta1"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins/notifier"
@@ -16,6 +15,7 @@ import (
 	. "github.com/onsi/gomega"
 	core_v1 "k8s.io/api/core/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
+	kutil_ext "kmodules.xyz/client-go/extensions/v1beta1"
 )
 
 var _ = Describe("notification", func() {

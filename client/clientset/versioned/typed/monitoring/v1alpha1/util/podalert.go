@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/appscode/kutil"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
 	"github.com/golang/glog"
@@ -13,6 +12,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/jsonmergepatch"
 	"k8s.io/apimachinery/pkg/util/wait"
+	kutil "kmodules.xyz/client-go"
 )
 
 func CreateOrPatchPodAlert(c cs.MonitoringV1alpha1Interface, meta metav1.ObjectMeta, transform func(alert *api.PodAlert) *api.PodAlert) (*api.PodAlert, kutil.VerbType, error) {

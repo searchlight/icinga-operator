@@ -3,12 +3,12 @@ package check_node_exists
 import (
 	"fmt"
 
-	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
+	"kmodules.xyz/client-go/tools/clientcmd"
 )
 
 type plugin struct {

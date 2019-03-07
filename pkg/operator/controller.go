@@ -3,9 +3,6 @@ package operator
 import (
 	"fmt"
 
-	reg_util "github.com/appscode/kutil/admissionregistration/v1beta1"
-	apiext_util "github.com/appscode/kutil/apiextensions/v1beta1"
-	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned"
 	mon_informers "github.com/appscode/searchlight/client/informers/externalversions"
@@ -21,6 +18,9 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
+	reg_util "kmodules.xyz/client-go/admissionregistration/v1beta1"
+	apiext_util "kmodules.xyz/client-go/apiextensions/v1beta1"
+	"kmodules.xyz/client-go/tools/queue"
 )
 
 type Operator struct {

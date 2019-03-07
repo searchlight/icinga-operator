@@ -3,8 +3,8 @@ package analytics_id
 import (
 	"fmt"
 
-	"github.com/appscode/kutil/tools/analytics"
 	"github.com/spf13/cobra"
+	"kmodules.xyz/client-go/tools/analytics"
 )
 
 func NewCmd() *cobra.Command {

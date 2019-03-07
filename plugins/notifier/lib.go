@@ -12,8 +12,6 @@ import (
 	"github.com/appscode/go-notify/unified"
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/log"
-	logs "github.com/appscode/go/log/golog"
-	"github.com/appscode/kutil/tools/clientcmd"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/icinga"
@@ -22,6 +20,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
+	"kmodules.xyz/client-go/logs"
+	"kmodules.xyz/client-go/tools/clientcmd"
 )
 
 type notifier struct {

@@ -6,8 +6,6 @@ import (
 
 	"github.com/appscode/go/log"
 	utilerrors "github.com/appscode/go/util/errors"
-	core_util "github.com/appscode/kutil/core/v1"
-	"github.com/appscode/kutil/tools/queue"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/pkg/eventer"
 	"github.com/appscode/searchlight/pkg/icinga"
@@ -15,6 +13,8 @@ import (
 	core "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/client-go/tools/cache"
+	core_util "kmodules.xyz/client-go/core/v1"
+	"kmodules.xyz/client-go/tools/queue"
 )
 
 func (op *Operator) initPodWatcher() {

@@ -6,7 +6,6 @@ import (
 	"net"
 
 	"github.com/appscode/go/log/golog"
-	"github.com/appscode/kutil/tools/clientcmd"
 	incidentsv1alpha1 "github.com/appscode/searchlight/apis/incidents/v1alpha1"
 	"github.com/appscode/searchlight/pkg/operator"
 	"github.com/appscode/searchlight/pkg/server"
@@ -18,6 +17,8 @@ import (
 	openapinamer "k8s.io/apiserver/pkg/endpoints/openapi"
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	genericoptions "k8s.io/apiserver/pkg/server/options"
+	"kmodules.xyz/client-go/meta"
+	"kmodules.xyz/client-go/tools/clientcmd"
 )
 
 const defaultEtcdPathPrefix = "/registry/monitoring.appscode.com"
@@ -33,10 +34,14 @@ type SearchlightOptions struct {
 func NewSearchlightOptions(out, errOut io.Writer) *SearchlightOptions {
 	o := &SearchlightOptions{
 		// TODO we will nil out the etcd storage options.  This requires a later level of k8s.io/apiserver
-		RecommendedOptions: genericoptions.NewRecommendedOptions(defaultEtcdPathPrefix, server.Codecs.LegacyCodec(admissionv1beta1.SchemeGroupVersion)),
-		OperatorOptions:    NewOperatorOptions(),
-		StdOut:             out,
-		StdErr:             errOut,
+		RecommendedOptions: genericoptions.NewRecommendedOptions(
+			defaultEtcdPathPrefix,
+			server.Codecs.LegacyCodec(admissionv1beta1.SchemeGroupVersion),
+			genericoptions.NewProcessInfo("searchlight-operator", meta.Namespace()),
+		),
+		OperatorOptions: NewOperatorOptions(),
+		StdOut:          out,
+		StdErr:          errOut,
 	}
 	o.RecommendedOptions.Etcd = nil
 	o.RecommendedOptions.Admission = nil

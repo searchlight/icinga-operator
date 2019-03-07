@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/appscode/kutil/meta"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"kmodules.xyz/client-go/meta"
 )
 
 func GetGroupVersionKind(v interface{}) schema.GroupVersionKind {

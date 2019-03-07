@@ -10,13 +10,13 @@ import (
 	"github.com/appscode/envconfig"
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/net/httpclient"
-	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/util/jsonpath"
+	"kmodules.xyz/client-go/tools/clientcmd"
 )
 
 type plugin struct {

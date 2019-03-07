@@ -2,10 +2,9 @@ package main
 
 import (
 	"log"
-	"os"
 
-	logs "github.com/appscode/go/log/golog"
 	"github.com/appscode/searchlight/pkg/cmds"
+	"kmodules.xyz/client-go/logs"
 )
 
 func main() {
@@ -15,5 +14,4 @@ func main() {
 	if err := cmds.NewCmdHostfacts().Execute(); err != nil {
 		log.Fatal(err)
 	}
-	os.Exit(0)
 }

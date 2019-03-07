@@ -4,10 +4,10 @@ package main
 import (
 	"os"
 
-	logs "github.com/appscode/go/log/golog"
 	"github.com/appscode/searchlight/plugins/hyperalert"
 	_ "k8s.io/api/core/v1"
 	_ "k8s.io/client-go/kubernetes/fake"
+	"kmodules.xyz/client-go/logs"
 )
 
 func main() {
@@ -16,5 +16,4 @@ func main() {
 	if err := hyperalert.NewCmd().Execute(); err != nil {
 		os.Exit(1)
 	}
-	os.Exit(0)
 }

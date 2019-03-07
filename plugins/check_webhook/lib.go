@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/appscode/go/flags"
-	"github.com/appscode/kutil/tools/clientcmd"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
 	"github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
 	cs "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
@@ -19,6 +18,7 @@ import (
 	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"kmodules.xyz/client-go/tools/clientcmd"
 )
 
 const (

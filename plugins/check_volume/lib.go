@@ -8,13 +8,13 @@ import (
 	"github.com/appscode/envconfig"
 	"github.com/appscode/go/flags"
 	"github.com/appscode/go/net/httpclient"
-	"github.com/appscode/kutil/tools/clientcmd"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"kmodules.xyz/client-go/tools/clientcmd"
 )
 
 const (

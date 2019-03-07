@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Searchlight Authors.
+Copyright 2019 The Searchlight Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -112,7 +112,7 @@ func (c *FakeSearchlightPlugins) DeleteCollection(options *v1.DeleteOptions, lis
 // Patch applies the patch and returns the patched searchlightPlugin.
 func (c *FakeSearchlightPlugins) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SearchlightPlugin, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(searchlightpluginsResource, name, data, subresources...), &v1alpha1.SearchlightPlugin{})
+		Invokes(testing.NewRootPatchSubresourceAction(searchlightpluginsResource, name, pt, data, subresources...), &v1alpha1.SearchlightPlugin{})
 	if obj == nil {
 		return nil, err
 	}
