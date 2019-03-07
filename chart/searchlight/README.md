@@ -6,7 +6,7 @@
 ```console
 $ helm repo add appscode https://charts.appscode.com/stable/
 $ helm repo update
-$ helm install appscode/searchlight
+$ helm install appscode/searchlight --name searchlight-operator --namespace kube-system
 ```
 
 ## Introduction
@@ -15,13 +15,13 @@ This chart bootstraps a [Searchlight controller](https://github.com/appscode/sea
 
 ## Prerequisites
 
-- Kubernetes 1.8+
+- Kubernetes 1.9+
 
 ## Installing the Chart
-To install the chart with the release name `my-release`:
+To install the chart with the release name `searchlight-operator`:
 
 ```console
-$ helm install appscode/searchlight --name my-release
+$ helm install appscode/searchlight --name searchlight-operator
 ```
 
 The command deploys Searchlight operator on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
@@ -30,10 +30,10 @@ The command deploys Searchlight operator on the Kubernetes cluster in the defaul
 
 ## Uninstalling the Chart
 
-To uninstall/delete the `my-release`:
+To uninstall/delete the `searchlight-operator`:
 
 ```console
-$ helm delete my-release
+$ helm delete searchlight-operator
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
@@ -75,14 +75,14 @@ The following table lists the configurable parameters of the Searchlight chart a
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:
 
 ```console
-$ helm install --name my-release --set image.tag=v0.2.1 appscode/searchlight
+$ helm install --name searchlight-operator --set image.tag=v0.2.1 appscode/searchlight
 ```
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while
 installing the chart. For example:
 
 ```console
-$ helm install --name my-release --values values.yaml appscode/searchlight
+$ helm install --name searchlight-operator --values values.yaml appscode/searchlight
 ```
 
 ## RBAC
@@ -103,5 +103,5 @@ If the output contains "beta", you may install the chart with RBAC enabled (see 
 To enable the creation of RBAC resources (On clusters with RBAC). Do the following:
 
 ```console
-$ helm install --name my-release appscode/searchlight --set rbac.create=true
+$ helm install --name searchlight-operator appscode/searchlight --set rbac.create=true
 ```

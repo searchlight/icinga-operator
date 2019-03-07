@@ -4,10 +4,7 @@ metadata:
   name: {{ template "searchlight.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: "{{ template "searchlight.name" . }}"
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+    {{- include "searchlight.labels" . | nindent 4 }}
 spec:
   ports:
   - name: ui
