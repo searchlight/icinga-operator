@@ -26,7 +26,7 @@ From my own work-in-progress project:
 	var fssnDefault = FssnConfig {
 		networkConfig {
 			"tcp",
-			"127.0.0.1",
+			"128.0.0-rc.0.1",
 			"http",
 			31560,
 		},

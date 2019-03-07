@@ -101,7 +101,7 @@ func handleHTTP(w http.ResponseWriter, r *http.Request) {
 		r.RemoteAddr = addr
 	} else {
 		// Should not normally reach here, but pick a sensible default anyway.
-		r.RemoteAddr = "127.0.0.1"
+		r.RemoteAddr = "128.0.0-rc.0.1"
 	}
 	// The address in the headers will most likely be of these forms:
 	//	123.123.123.123

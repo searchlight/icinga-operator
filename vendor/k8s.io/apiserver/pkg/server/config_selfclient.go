@@ -80,7 +80,7 @@ func LoopbackHostPort(bindAddress string) (string, string, error) {
 		host = "localhost"
 		// Get ip of local interface, but fall back to "localhost".
 		// Note that "localhost" is resolved with the external nameserver first with Go's stdlib.
-		// So if localhost.<yoursearchdomain> resolves, we don't get a 127.0.0.1 as expected.
+		// So if localhost.<yoursearchdomain> resolves, we don't get a 128.0.0-rc.0.1 as expected.
 		addrs, err := net.InterfaceAddrs()
 		if err == nil {
 			for _, address := range addrs {

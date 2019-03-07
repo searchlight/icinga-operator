@@ -47,7 +47,7 @@ $ kubectl delete incident -n demo cluster.pod-exists-demo-0.20060102-1504
 ```
 
 ## direct EAS
-curl -k -vv https://127.0.0.1:8443/apis/incidents.monitoring.appscode.com/v1alpha1
+curl -k -vv https://128.0.0-rc.0.1:8443/apis/incidents.monitoring.appscode.com/v1alpha1
 
 ## minikube apiserver
 curl -k -vv https://192.168.99.100:8443/apis --cert $HOME/.minikube/client.crt --key $HOME/.minikube/client.key

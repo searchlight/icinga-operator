@@ -5,7 +5,7 @@
 operator:
   registry: appscode
   repository: searchlight
-  tag: 7.0.0
+  tag: 8.0.0-rc.0
 
 ido:
   registry: appscode
@@ -15,7 +15,7 @@ ido:
 icinga:
   registry: appscode
   repository: icinga
-  tag: 7.0.0-k8s
+  tag: 8.0.0-rc.0-k8s
 
 cleaner:
   registry: appscode

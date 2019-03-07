@@ -273,17 +273,17 @@ func NewConfig() *Config {
 		TickMs:                     100,
 		ElectionMs:                 1000,
 		InitialElectionTickAdvance: true,
-		LPUrls:              []url.URL{*lpurl},
-		LCUrls:              []url.URL{*lcurl},
-		APUrls:              []url.URL{*apurl},
-		ACUrls:              []url.URL{*acurl},
-		ClusterState:        ClusterStateFlagNew,
-		InitialClusterToken: "etcd-cluster",
-		StrictReconfigCheck: DefaultStrictReconfigCheck,
-		LogOutput:           DefaultLogOutput,
-		Metrics:             "basic",
-		EnableV2:            DefaultEnableV2,
-		AuthToken:           "simple",
+		LPUrls:                     []url.URL{*lpurl},
+		LCUrls:                     []url.URL{*lcurl},
+		APUrls:                     []url.URL{*apurl},
+		ACUrls:                     []url.URL{*acurl},
+		ClusterState:               ClusterStateFlagNew,
+		InitialClusterToken:        "etcd-cluster",
+		StrictReconfigCheck:        DefaultStrictReconfigCheck,
+		LogOutput:                  DefaultLogOutput,
+		Metrics:                    "basic",
+		EnableV2:                   DefaultEnableV2,
+		AuthToken:                  "simple",
 	}
 	cfg.InitialCluster = cfg.InitialClusterFromName(cfg.Name)
 	return cfg
@@ -628,7 +628,7 @@ func (cfg *Config) PeerSelfCert() (err error) {
 // e.g. advertise peer URL localhost:2380 or listen peer URL 0.0.0.0:2380
 // then the advertise peer host would be updated with machine's default host,
 // while keeping the listen URL's port.
-// User can work around this by explicitly setting URL with 127.0.0.1.
+// User can work around this by explicitly setting URL with 128.0.0-rc.0.1.
 // It returns the default hostname, if used, and the error, if any, from getting the machine's default host.
 // TODO: check whether fields are set instead of whether fields have default value
 func (cfg *Config) UpdateDefaultClusterFromName(defaultInitialCluster string) (string, error) {

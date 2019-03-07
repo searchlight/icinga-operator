@@ -2,20 +2,79 @@
 title: Changelog | Searchlight
 description: Changelog
 menu:
-  product_searchlight_7.0.0:
+  product_searchlight_8.0.0-rc.0:
     identifier: changelog-searchlight
     name: Changelog
     parent: welcome
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_7.0.0
+menu_name: product_searchlight_8.0.0-rc.0
 section_menu_id: welcome
-url: /products/searchlight/7.0.0/welcome/changelog/
+url: /products/searchlight/8.0.0-rc.0/welcome/changelog/
 aliases:
-  - /products/searchlight/7.0.0/CHANGELOG/
+  - /products/searchlight/8.0.0-rc.0/CHANGELOG/
 ---
 
 # Change Log
+
+## [8.0.0-rc.0](https://github.com/appscode/searchlight/tree/8.0.0-rc.0) (2019-03-07)
+[Full Changelog](https://github.com/appscode/searchlight/compare/7.0.0...8.0.0-rc.0)
+
+**Fixed bugs:**
+
+- Unknown : var "icinga.checkInterval" is not registered in SearchlightPlugin [\#397](https://github.com/appscode/searchlight/issues/397)
+- Correctly handle ignored openapi prefixes [\#398](https://github.com/appscode/searchlight/pull/398) ([tamalsaha](https://github.com/tamalsaha))
+
+**Closed issues:**
+
+- Helm chart is not operable [\#419](https://github.com/appscode/searchlight/issues/419)
+
+**Merged pull requests:**
+
+- Use onessl 0.10.0 [\#437](https://github.com/appscode/searchlight/pull/437) ([tamalsaha](https://github.com/tamalsaha))
+- Update Kubernetes client libraries to 1.13.0 [\#436](https://github.com/appscode/searchlight/pull/436) ([tamalsaha](https://github.com/tamalsaha))
+- Various fixes to installer [\#435](https://github.com/appscode/searchlight/pull/435) ([tamalsaha](https://github.com/tamalsaha))
+- Pin go-ini dependency [\#434](https://github.com/appscode/searchlight/pull/434) ([tamalsaha](https://github.com/tamalsaha))
+- Update webhook error message format for Kubernetes 1.13+ [\#433](https://github.com/appscode/searchlight/pull/433) ([tamalsaha](https://github.com/tamalsaha))
+- Remove openshift dependencies [\#431](https://github.com/appscode/searchlight/pull/431) ([tamalsaha](https://github.com/tamalsaha))
+- Set periodic analytics [\#430](https://github.com/appscode/searchlight/pull/430) ([tamalsaha](https://github.com/tamalsaha))
+- Update Kubernetes client libraries to 1.12.0 [\#429](https://github.com/appscode/searchlight/pull/429) ([tamalsaha](https://github.com/tamalsaha))
+- Pass image pull secrets for cleaner job in chart [\#425](https://github.com/appscode/searchlight/pull/425) ([tamalsaha](https://github.com/tamalsaha))
+- Update kubernetes client libraries to 1.12.0 [\#424](https://github.com/appscode/searchlight/pull/424) ([tamalsaha](https://github.com/tamalsaha))
+- Document LogLevel for chart [\#423](https://github.com/appscode/searchlight/pull/423) ([tamalsaha](https://github.com/tamalsaha))
+- Check if Kubernetes version is supported before running operator [\#422](https://github.com/appscode/searchlight/pull/422) ([tamalsaha](https://github.com/tamalsaha))
+- Enable webhooks by default in chart [\#421](https://github.com/appscode/searchlight/pull/421) ([tamalsaha](https://github.com/tamalsaha))
+- Fix service ports in chart [\#420](https://github.com/appscode/searchlight/pull/420) ([tamalsaha](https://github.com/tamalsaha))
+- Fixed missing "end" in helm charts secret.yaml [\#418](https://github.com/appscode/searchlight/pull/418) ([maximilize](https://github.com/maximilize))
+- Use kubernetes-1.11.3 [\#417](https://github.com/appscode/searchlight/pull/417) ([tamalsaha](https://github.com/tamalsaha))
+- Update CertStore [\#416](https://github.com/appscode/searchlight/pull/416) ([tamalsaha](https://github.com/tamalsaha))
+- Support pod annotations in chart [\#415](https://github.com/appscode/searchlight/pull/415) ([tamalsaha](https://github.com/tamalsaha))
+- Set serviceAccount for clearner job [\#414](https://github.com/appscode/searchlight/pull/414) ([tamalsaha](https://github.com/tamalsaha))
+- Cleanup webhooks when chart is deleted [\#413](https://github.com/appscode/searchlight/pull/413) ([tamalsaha](https://github.com/tamalsaha))
+- Revendor [\#412](https://github.com/appscode/searchlight/pull/412) ([tamalsaha](https://github.com/tamalsaha))
+- Update pipeline [\#411](https://github.com/appscode/searchlight/pull/411) ([tahsinrahman](https://github.com/tahsinrahman))
+- Revendor api [\#410](https://github.com/appscode/searchlight/pull/410) ([tamalsaha](https://github.com/tamalsaha))
+- fix uninstall for concourse [\#409](https://github.com/appscode/searchlight/pull/409) ([tahsinrahman](https://github.com/tahsinrahman))
+- Fix chart values file [\#408](https://github.com/appscode/searchlight/pull/408) ([tamalsaha](https://github.com/tamalsaha))
+- Improve Helm chart options [\#407](https://github.com/appscode/searchlight/pull/407) ([tamalsaha](https://github.com/tamalsaha))
+- Use concourse scripts from libbuild [\#405](https://github.com/appscode/searchlight/pull/405) ([tahsinrahman](https://github.com/tahsinrahman))
+- Add categories [\#404](https://github.com/appscode/searchlight/pull/404) ([tamalsaha](https://github.com/tamalsaha))
+- Enable status sub resource for crd yamls [\#403](https://github.com/appscode/searchlight/pull/403) ([tamalsaha](https://github.com/tamalsaha))
+- Move crds to api folder [\#402](https://github.com/appscode/searchlight/pull/402) ([tamalsaha](https://github.com/tamalsaha))
+- Fix extended apiserver issues with Kubernetes 1.11 [\#401](https://github.com/appscode/searchlight/pull/401) ([tamalsaha](https://github.com/tamalsaha))
+- fix CheckCommand generation for webhooks [\#399](https://github.com/appscode/searchlight/pull/399) ([mmta](https://github.com/mmta))
+- Use version and additional columns for crds [\#396](https://github.com/appscode/searchlight/pull/396) ([tamalsaha](https://github.com/tamalsaha))
+- Don't add admission/v1beta1 group as a prioritized version [\#395](https://github.com/appscode/searchlight/pull/395) ([tamalsaha](https://github.com/tamalsaha))
+- Enable status subresource for voyager crds [\#394](https://github.com/appscode/searchlight/pull/394) ([tamalsaha](https://github.com/tamalsaha))
+- Update client-go to v8.0.0 [\#393](https://github.com/appscode/searchlight/pull/393) ([tamalsaha](https://github.com/tamalsaha))
+- Format shell scripts [\#392](https://github.com/appscode/searchlight/pull/392) ([tamalsaha](https://github.com/tamalsaha))
+- Remove --ops-address flag [\#390](https://github.com/appscode/searchlight/pull/390) ([tamalsaha](https://github.com/tamalsaha))
+- Update searchlight version in readme [\#389](https://github.com/appscode/searchlight/pull/389) ([tamalsaha](https://github.com/tamalsaha))
+- Fix sample ack.yaml [\#388](https://github.com/appscode/searchlight/pull/388) ([tamalsaha](https://github.com/tamalsaha))
+- Fix openapi schema for metav1.Duration [\#387](https://github.com/appscode/searchlight/pull/387) ([tamalsaha](https://github.com/tamalsaha))
+- Move openapi-spec to api folder [\#386](https://github.com/appscode/searchlight/pull/386) ([tamalsaha](https://github.com/tamalsaha))
+- Add togglable tabs for Installation: Script & Helm [\#385](https://github.com/appscode/searchlight/pull/385) ([sajibcse68](https://github.com/sajibcse68))
+- Handle node status unknown for node-status checks [\#384](https://github.com/appscode/searchlight/pull/384) ([tamalsaha](https://github.com/tamalsaha))
 
 ## [7.0.0](https://github.com/appscode/searchlight/tree/7.0.0) (2018-06-02)
 [Full Changelog](https://github.com/appscode/searchlight/compare/7.0.0-rc.0...7.0.0)
@@ -74,7 +133,6 @@ aliases:
 - Add Update\*\*\*Status helpers [\#361](https://github.com/appscode/searchlight/pull/361) ([tamalsaha](https://github.com/tamalsaha))
 - Update to client-go 7.0.0 [\#360](https://github.com/appscode/searchlight/pull/360) ([tamalsaha](https://github.com/tamalsaha))
 - Improve installer [\#359](https://github.com/appscode/searchlight/pull/359) ([tamalsaha](https://github.com/tamalsaha))
-- Master to doc [\#358](https://github.com/appscode/searchlight/pull/358) ([aerokite](https://github.com/aerokite))
 - add command for webhook plugin [\#357](https://github.com/appscode/searchlight/pull/357) ([aerokite](https://github.com/aerokite))
 - Add documentation for custom plugin [\#356](https://github.com/appscode/searchlight/pull/356) ([aerokite](https://github.com/aerokite))
 - Generate non-namespaced client for plugins [\#355](https://github.com/appscode/searchlight/pull/355) ([aerokite](https://github.com/aerokite))
@@ -143,7 +201,6 @@ aliases:
 
 **Closed issues:**
 
-- failed to delete service if Pod name starts with "n" [\#282](https://github.com/appscode/searchlight/issues/282)
 - Migrate from 1.5.9 to 3.0.0 [\#194](https://github.com/appscode/searchlight/issues/194)
 - Rewrite searchlight design doc [\#172](https://github.com/appscode/searchlight/issues/172)
 - New alerts [\#169](https://github.com/appscode/searchlight/issues/169)
@@ -347,13 +404,8 @@ aliases:
 - Enable IcingaWeb2 in alpine image [\#133](https://github.com/appscode/searchlight/pull/133) ([tamalsaha](https://github.com/tamalsaha))
 - Fix alpine icinga2 image [\#132](https://github.com/appscode/searchlight/pull/132) ([tamalsaha](https://github.com/tamalsaha))
 - Remove AlertStatus [\#131](https://github.com/appscode/searchlight/pull/131) ([tamalsaha](https://github.com/tamalsaha))
-- Use authorized user to get status [\#129](https://github.com/appscode/searchlight/pull/129) ([aerokite](https://github.com/aerokite))
 - Add livenessProbe for icinga container [\#128](https://github.com/appscode/searchlight/pull/128) ([aerokite](https://github.com/aerokite))
 - Add "check\_certificate\_expiry" plugin [\#127](https://github.com/appscode/searchlight/pull/127) ([aerokite](https://github.com/aerokite))
-- Use EventTypeNormal for no error [\#125](https://github.com/appscode/searchlight/pull/125) ([aerokite](https://github.com/aerokite))
-- Rename "node\_count" to "node\_exists" [\#124](https://github.com/appscode/searchlight/pull/124) ([aerokite](https://github.com/aerokite))
-- Read Icinga host name in "req.Host" [\#122](https://github.com/appscode/searchlight/pull/122) ([aerokite](https://github.com/aerokite))
-- Pass PodExecOptions in request param [\#121](https://github.com/appscode/searchlight/pull/121) ([aerokite](https://github.com/aerokite))
 - Bad format except length of 2 & 3 [\#119](https://github.com/appscode/searchlight/pull/119) ([aerokite](https://github.com/aerokite))
 - Fix plugins [\#114](https://github.com/appscode/searchlight/pull/114) ([aerokite](https://github.com/aerokite))
 - Part 3 - User Guide [\#88](https://github.com/appscode/searchlight/pull/88) ([tamalsaha](https://github.com/tamalsaha))
@@ -464,7 +516,6 @@ aliases:
 
 **Implemented enhancements:**
 
-- Docs: Hightlight Notifier docs [\#39](https://github.com/appscode/searchlight/issues/39)
 - Add slack support as notifier [\#31](https://github.com/appscode/searchlight/issues/31)
 - Updated README to highlight supported notifier [\#42](https://github.com/appscode/searchlight/pull/42) ([aerokite](https://github.com/aerokite))
 - Added slack support as notifier [\#33](https://github.com/appscode/searchlight/pull/33) ([aerokite](https://github.com/aerokite))

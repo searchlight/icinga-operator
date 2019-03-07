@@ -2,13 +2,13 @@
 title: Install
 description: Searchlight Install
 menu:
-  product_searchlight_7.0.0:
+  product_searchlight_8.0.0-rc.0:
     identifier: install-searchlight
     name: Install
     parent: setup
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_7.0.0
+menu_name: product_searchlight_8.0.0-rc.0
 section_menu_id: setup
 ---
 
@@ -35,7 +35,7 @@ Searchlight operator can be installed via a script or as a Helm chart.
 To install Searchlight in your Kubernetes cluster, run the following command:
 
 ```console
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0/hack/deploy/searchlight.sh | bash
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/8.0.0-rc.0/hack/deploy/searchlight.sh | bash
 ```
 
 After successful installation, you should have a `searchlight-operator-***` pod running in the `kube-system` namespace.
@@ -47,10 +47,10 @@ searchlight-operator-6945bcd777-4jdv7   3/3       Running   0          2m
 
 ### Customizing Installer
 
-The installer script and associated yaml files can be found in the [/hack/deploy](https://github.com/appscode/searchlight/tree/7.0.0/hack/deploy) folder. You can see the full list of flags available to installer using `-h` flag.
+The installer script and associated yaml files can be found in the [/hack/deploy](https://github.com/appscode/searchlight/tree/8.0.0-rc.0/hack/deploy) folder. You can see the full list of flags available to installer using `-h` flag.
 
 ```console
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0/hack/deploy/searchlight.sh | bash -s -- -h
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/8.0.0-rc.0/hack/deploy/searchlight.sh | bash -s -- -h
 searchlight.sh - install searchlight operator
 
 searchlight.sh [options]
@@ -73,7 +73,7 @@ options:
 If you would like to run Searchlight operator pod in `master` instances, pass the `--run-on-master` flag:
 
 ```console
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0/hack/deploy/searchlight.sh \
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/8.0.0-rc.0/hack/deploy/searchlight.sh \
     | bash -s -- --run-on-master [--rbac]
 ```
 
@@ -81,7 +81,7 @@ Searchlight operator will be installed in a `kube-system` namespace by default. 
 
 ```console
 $ kubectl create namespace searchlight
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0/hack/deploy/searchlight.sh \
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/8.0.0-rc.0/hack/deploy/searchlight.sh \
     | bash -s -- --namespace=searchlight [--run-on-master] [--rbac]
 ```
 
@@ -95,14 +95,14 @@ To pass the address of your private registry and optionally a image pull secret 
 
 ```console
 $ kubectl create namespace searchlight
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0/hack/deploy/searchlight.sh \
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/8.0.0-rc.0/hack/deploy/searchlight.sh \
     | bash -s -- --docker-registry=MY_REGISTRY [--image-pull-secret=SECRET_NAME] [--rbac]
 ```
 
 Searchlight implements a [validating admission webhook](https://kubernetes.io/docs/admin/admission-controllers/#validatingadmissionwebhook-alpha-in-18-beta-in-19) to validate Searchlight CRDs. This is enabled by default for Kubernetes 1.9.0 or later releases. To disable this feature, pass the `--enable-validating-webhook=false` flag.
 
 ```console
-$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0/hack/deploy/searchlight.sh \
+$ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/8.0.0-rc.0/hack/deploy/searchlight.sh \
     | bash -s -- --enable-admission-webhook [--rbac]
 ```
 
@@ -119,19 +119,19 @@ $ helm repo add appscode https://charts.appscode.com/stable/
 $ helm repo update
 $ helm search appscode/searchlight
 NAME            CHART VERSION       APP VERSION DESCRIPTION
-appscode/searchlight  7.0.0    7.0.0  Searchlight by AppsCode - Alerts for Kubernetes
+appscode/searchlight  8.0.0-rc.0    8.0.0-rc.0  Searchlight by AppsCode - Alerts for Kubernetes
 
 # Kubernetes 1.8.x
-$ helm install appscode/searchlight --name searchlight-operator --version 7.0.0 --namespace kube-system
+$ helm install appscode/searchlight --name searchlight-operator --version 8.0.0-rc.0 --namespace kube-system
 
 # Kubernetes 1.9.x - 1.10.x
-$ helm install appscode/searchlight --name searchlight-operator  --version 7.0.0 \
+$ helm install appscode/searchlight --name searchlight-operator  --version 8.0.0-rc.0 \
   --namespace kube-system \
   --set apiserver.ca="$(onessl get kube-ca)" \
   --set apiserver.enableValidatingWebhook=true
 
 # Kubernetes 1.11.0 or later
-$ helm install appscode/searchlight --name searchlight-operator  --version 7.0.0 \
+$ helm install appscode/searchlight --name searchlight-operator  --version 8.0.0-rc.0 \
   --namespace kube-system \
   --set apiserver.ca="$(onessl get kube-ca)" \
   --set apiserver.enableValidatingWebhook=true \
@@ -195,14 +195,14 @@ NAME                                    READY     STATUS    RESTARTS   AGE
 searchlight-operator-1987091405-ghj5b   3/3       Running   0          1m
 
 $ kubectl port-forward searchlight-operator-1987091405-ghj5b -n kube-system 60006
-Forwarding from 127.0.0.1:60006 -> 60006
+Forwarding from 128.0.0-rc.0.1:60006 -> 60006
 E0728 04:07:28.237822   10898 portforward.go:212] Unable to create listener: Error listen tcp6 [::1]:60006: bind: cannot assign requested address
 Handling connection for 60006
 Handling connection for 60006
 ^C⏎
 ```
 
-Now, open URL http://127.0.0.1:60006 on your browser. To login, use username `admin` and password `changeit`. If you want to change the password, read the next section.
+Now, open URL http://128.0.0-rc.0.1:60006 on your browser. To login, use username `admin` and password `changeit`. If you want to change the password, read the next section.
 
 
 ## Configuring Icinga
@@ -277,12 +277,12 @@ $ POD_NAMESPACE=kube-system
 $ POD_NAME=$(kubectl get pods -n $POD_NAMESPACE -l app=searchlight -o jsonpath={.items[0].metadata.name})
 $ kubectl exec -it $POD_NAME -c operator -n $POD_NAMESPACE searchlight version
 
-Version = 7.0.0
+Version = 8.0.0-rc.0
 VersionStrategy = tag
 Os = alpine
 Arch = amd64
 CommitHash = 9442863beb09a50a2c3818ab586fa5b1541fddf1
 GitBranch = release-4.0
-GitTag = 7.0.0
+GitTag = 8.0.0-rc.0
 CommitTimestamp = 2017-09-26T03:00:58
 ```

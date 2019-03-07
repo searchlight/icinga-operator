@@ -2,12 +2,12 @@
 title: Acknowledgement Concepts
 description: Acknowledgement Concepts
 menu:
-  product_searchlight_7.0.0:
+  product_searchlight_8.0.0-rc.0:
     identifier: acknowledgement-concepts
     parent: incident
     name: Acknowledgement Concepts
     weight: 15
-menu_name: product_searchlight_7.0.0
+menu_name: product_searchlight_8.0.0-rc.0
 ---
 
 # Acknowledgement

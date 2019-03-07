@@ -91,7 +91,7 @@ chmod -R 0755 /var/run/config/appscode
 # Wait for postgres to start
 # ref: http://unix.stackexchange.com/a/5279
 echo "Waiting for postgres to become ready ..."
-until pg_isready -h 127.0.0.1 >/dev/null; do
+until pg_isready -h 128.0.0-rc.0.1 >/dev/null; do
   echo '.'
   sleep 5
 done

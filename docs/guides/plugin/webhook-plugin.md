@@ -1,13 +1,13 @@
 ---
 title: Webhook SearchlightPlugin
 menu:
-  product_searchlight_7.0.0:
+  product_searchlight_8.0.0-rc.0:
     identifier: guides-webhook-searchlight-plugin
     name: Webhook SearchlightPlugin
     parent: searchlight-plugin
     weight: 20
 product_name: searchlight
-menu_name: product_searchlight_7.0.0
+menu_name: product_searchlight_8.0.0-rc.0
 section_menu_id: guides
 ---
 
@@ -15,7 +15,7 @@ section_menu_id: guides
 
 # Custom Webhook Check Command
 
-Since 7.0.0 release, Searchlight supports adding custom check commands using http webhook server. No longer you have to build binary and attach it inside Icinga container. Simply you can write a HTTP server and register your check command with Searchlight using `SearchlightPlugin` CRD.
+Since 8.0.0-rc.0 release, Searchlight supports adding custom check commands using http webhook server. No longer you have to build binary and attach it inside Icinga container. Simply you can write a HTTP server and register your check command with Searchlight using `SearchlightPlugin` CRD.
 
 ```yaml
 apiVersion: monitoring.appscode.com/v1alpha1

@@ -99,7 +99,7 @@ type WebhookClientConfig struct {
 	// in-cluster DNS as that would be a layering violation). `host` may
 	// also be an IP address.
 	//
-	// Please note that using `localhost` or `127.0.0.1` as a `host` is
+	// Please note that using `localhost` or `128.0.0-rc.0.1` as a `host` is
 	// risky unless you take great care to run this webhook on all hosts
 	// which run an apiserver which might need to make calls to this
 	// webhook. Such installs are likely to be non-portable, i.e., not easy

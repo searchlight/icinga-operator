@@ -113,8 +113,8 @@ export SEARCHLIGHT_RUN_ON_MASTER=0
 export SEARCHLIGHT_ICINGA_API_PASSWORD=
 export SEARCHLIGHT_ENABLE_VALIDATING_WEBHOOK=false
 export SEARCHLIGHT_DOCKER_REGISTRY=${DOCKER_REGISTRY:-appscode}
-export SEARCHLIGHT_OPERATOR_TAG=7.0.0
-export SEARCHLIGHT_ICINGA_TAG=7.0.0-k8s
+export SEARCHLIGHT_OPERATOR_TAG=8.0.0-rc.0
+export SEARCHLIGHT_ICINGA_TAG=8.0.0-rc.0-k8s
 export SEARCHLIGHT_IMAGE_PULL_SECRET=
 export SEARCHLIGHT_IMAGE_PULL_POLICY=IfNotPresent
 export SEARCHLIGHT_ENABLE_ANALYTICS=true
@@ -123,7 +123,7 @@ export SEARCHLIGHT_PURGE=0
 export SEARCHLIGHT_ENABLE_STATUS_SUBRESOURCE=false
 export SEARCHLIGHT_PRIORITY_CLASS=system-cluster-critical
 
-export SCRIPT_LOCATION="curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0/"
+export SCRIPT_LOCATION="curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/8.0.0-rc.0/"
 if [[ "$APPSCODE_ENV" == "dev" ]]; then
   detect_tag
   export SCRIPT_LOCATION="cat "

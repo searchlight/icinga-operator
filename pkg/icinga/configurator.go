@@ -84,7 +84,7 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 		// auto generate the file
 		cfg := ini.Empty()
 		sec := cfg.Section("")
-		sec.NewKey(ICINGA_ADDRESS, "127.0.0.1:5665")
+		sec.NewKey(ICINGA_ADDRESS, "128.0.0-rc.0.1:5665")
 		sec.NewKey(ICINGA_API_USER, "icingaapi")
 		if v, ok := userInput(ICINGA_API_PASSWORD); ok {
 			sec.NewKey(ICINGA_API_PASSWORD, v)
@@ -115,7 +115,7 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 			}
 			sans := cert.AltNames{
 				DNSNames: []string{"icinga"},
-				IPs:      []net.IP{net.ParseIP("127.0.0.1")},
+				IPs:      []net.IP{net.ParseIP("128.0.0-rc.0.1")},
 			}
 			serverCert, serverKey, err := store.NewServerCertPairBytes(sans)
 			if err != nil {
@@ -136,7 +136,7 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 		sec.NewKey(ICINGA_SERVER_CERT, store.CertFile("icinga"))
 		sec.NewKey(ICINGA_SERVER_KEY, store.KeyFile("icinga"))
 
-		sec.NewKey(ICINGA_IDO_HOST, "127.0.0.1")
+		sec.NewKey(ICINGA_IDO_HOST, "128.0.0-rc.0.1")
 		sec.NewKey(ICINGA_IDO_PORT, "5432")
 		sec.NewKey(ICINGA_IDO_DB, "icingaidodb")
 		sec.NewKey(ICINGA_IDO_USER, "icingaido")
@@ -145,7 +145,7 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 		} else {
 			sec.NewKey(ICINGA_IDO_PASSWORD, rand.GeneratePassword())
 		}
-		sec.NewKey(ICINGA_WEB_HOST, "127.0.0.1")
+		sec.NewKey(ICINGA_WEB_HOST, "128.0.0-rc.0.1")
 		sec.NewKey(ICINGA_WEB_PORT, "5432")
 		sec.NewKey(ICINGA_WEB_DB, "icingawebdb")
 		sec.NewKey(ICINGA_WEB_USER, "icingaweb")
@@ -181,7 +181,7 @@ func (c *Configurator) LoadConfig(userInput envconfig.LoaderFunc) (*Config, erro
 		}
 	}
 
-	addr := "127.0.0.1:5665"
+	addr := "128.0.0-rc.0.1:5665"
 	if key, err := sec.GetKey(ICINGA_ADDRESS); err == nil {
 		addr = key.Value()
 	}
