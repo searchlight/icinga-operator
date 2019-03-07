@@ -121,6 +121,7 @@ export SEARCHLIGHT_ENABLE_ANALYTICS=true
 export SEARCHLIGHT_UNINSTALL=0
 export SEARCHLIGHT_PURGE=0
 export SEARCHLIGHT_ENABLE_STATUS_SUBRESOURCE=false
+export SEARCHLIGHT_PRIORITY_CLASS=system-cluster-critical
 
 export SCRIPT_LOCATION="curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/7.0.0/"
 if [[ "$APPSCODE_ENV" == "dev" ]]; then
@@ -237,6 +238,10 @@ while test $# -gt 0; do
       ;;
   esac
 done
+
+if [ "$SEARCHLIGHT_NAMESPACE" != "kube-system" ]; then
+    export SEARCHLIGHT_PRIORITY_CLASS=""
+fi
 
 if [ "$SEARCHLIGHT_UNINSTALL" -eq 1 ]; then
   # delete webhooks and apiservices
