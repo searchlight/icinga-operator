@@ -25,7 +25,7 @@ Create a Config and exchange it for a Client:
 	)
 
 	cfg := client.Config{
-		Endpoints: []string{"http://128.0.0-rc.0.1:2379"},
+		Endpoints: []string{"http://127.0.0.1:2379"},
 		Transport: DefaultTransport,
 	}
 

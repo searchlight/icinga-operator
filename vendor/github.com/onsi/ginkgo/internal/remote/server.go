@@ -37,7 +37,7 @@ type Server struct {
 
 //Create a new server, automatically selecting a port
 func NewServer(parallelTotal int) (*Server, error) {
-	listener, err := net.Listen("tcp", "128.0.0-rc.0.1:0")
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		return nil, err
 	}

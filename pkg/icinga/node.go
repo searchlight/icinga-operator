@@ -21,7 +21,7 @@ func NewNodeHost(IcingaClient *Client, verbosity string) *NodeHost {
 }
 
 func (h *NodeHost) getHost(namespace string, node *core.Node) IcingaHost {
-	nodeIP := "128.0.0-rc.0.1"
+	nodeIP := "127.0.0.1"
 	for _, ip := range node.Status.Addresses {
 		if ip.Type == internalIP {
 			nodeIP = ip.Address

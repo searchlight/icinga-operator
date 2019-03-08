@@ -73,7 +73,7 @@ func RenderOpenAPISpec(cfg Config) (string, error) {
 	recommendedOptions.Admission = nil
 
 	// TODO have a "real" external address
-	if err := recommendedOptions.SecureServing.MaybeDefaultWithSelfSignedCerts("localhost", nil, []net.IP{net.ParseIP("128.0.0-rc.0.1")}); err != nil {
+	if err := recommendedOptions.SecureServing.MaybeDefaultWithSelfSignedCerts("localhost", nil, []net.IP{net.ParseIP("127.0.0.1")}); err != nil {
 		glog.Fatal(fmt.Errorf("error creating self-signed certificates: %v", err))
 	}
 

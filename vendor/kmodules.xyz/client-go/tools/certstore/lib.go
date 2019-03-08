@@ -139,7 +139,7 @@ func (s *CertStore) createCAFromKey(key *rsa.PrivateKey) error {
 		Organization: s.organization,
 		AltNames: cert.AltNames{
 			DNSNames: []string{s.ca},
-			IPs:      []net.IP{net.ParseIP("128.0.0-rc.0.1")},
+			IPs:      []net.IP{net.ParseIP("127.0.0.1")},
 		},
 	}
 	crt, err := cert.NewSelfSignedCACert(cfg, key)
@@ -182,7 +182,7 @@ func (s *CertStore) CAKeyBytes() []byte {
 
 func (s *CertStore) NewHostCertPair() (*x509.Certificate, *rsa.PrivateKey, error) {
 	sans := cert.AltNames{
-		IPs: []net.IP{net.ParseIP("128.0.0-rc.0.1")},
+		IPs: []net.IP{net.ParseIP("127.0.0.1")},
 	}
 	publicIPs, privateIPs, _ := netz.HostIPs()
 	for _, ip := range publicIPs {
@@ -196,7 +196,7 @@ func (s *CertStore) NewHostCertPair() (*x509.Certificate, *rsa.PrivateKey, error
 
 func (s *CertStore) NewHostCertPairBytes() ([]byte, []byte, error) {
 	sans := cert.AltNames{
-		IPs: []net.IP{net.ParseIP("128.0.0-rc.0.1")},
+		IPs: []net.IP{net.ParseIP("127.0.0.1")},
 	}
 	publicIPs, privateIPs, _ := netz.HostIPs()
 	for _, ip := range publicIPs {

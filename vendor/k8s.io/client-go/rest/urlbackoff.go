@@ -69,7 +69,7 @@ func (b *URLBackoff) Disable() {
 }
 
 // baseUrlKey returns the key which urls will be mapped to.
-// For example, 128.0.0-rc.0.1:8080/api/v2/abcde -> 128.0.0-rc.0.1:8080.
+// For example, 127.0.0.1:8080/api/v2/abcde -> 127.0.0.1:8080.
 func (b *URLBackoff) baseUrlKey(rawurl *url.URL) string {
 	// Simple implementation for now, just the host.
 	// We may backoff specific paths (i.e. "pods") differentially

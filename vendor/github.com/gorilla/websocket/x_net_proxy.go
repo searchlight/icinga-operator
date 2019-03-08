@@ -105,7 +105,7 @@ func (p *proxy_PerHost) AddFromString(s string) {
 			continue
 		}
 		if strings.Contains(host, "/") {
-			// We assume that it's a CIDR address like 128.0.0-rc.0.0/8
+			// We assume that it's a CIDR address like 127.0.0.0/8
 			if _, net, err := net.ParseCIDR(host); err == nil {
 				p.AddNetwork(net)
 			}

@@ -93,7 +93,7 @@ var DebugUseAfterFinish = false
 // AuthRequest may be replaced by a program to customize its authorization requirements.
 //
 // The default AuthRequest function returns (true, true) if and only if the request
-// comes from localhost/128.0.0-rc.0.1/[::1].
+// comes from localhost/127.0.0.1/[::1].
 var AuthRequest = func(req *http.Request) (any, sensitive bool) {
 	// RemoteAddr is commonly in the form "IP" or "IP:port".
 	// If it is in the form "IP:port", split off the port.
@@ -102,7 +102,7 @@ var AuthRequest = func(req *http.Request) (any, sensitive bool) {
 		host = req.RemoteAddr
 	}
 	switch host {
-	case "localhost", "128.0.0-rc.0.1", "::1":
+	case "localhost", "127.0.0.1", "::1":
 		return true, true
 	default:
 		return false, false

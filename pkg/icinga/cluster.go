@@ -21,7 +21,7 @@ func (h *ClusterHost) getHost(namespace string) IcingaHost {
 	return IcingaHost{
 		Type:           TypeCluster,
 		AlertNamespace: namespace,
-		IP:             "128.0.0-rc.0.1",
+		IP:             "127.0.0.1",
 	}
 }
 

@@ -475,7 +475,7 @@ func isMembersEqual(membs []client.Member, wmembs []client.Member) bool {
 func newLocalListener(t *testing.T) net.Listener {
 	c := atomic.AddInt64(&localListenCount, 1)
 	// Go 1.8+ allows only numbers in port
-	addr := fmt.Sprintf("128.0.0-rc.0.1:%05d%05d", c+basePort, os.Getpid())
+	addr := fmt.Sprintf("127.0.0.1:%05d%05d", c+basePort, os.Getpid())
 	return NewListenerWithAddr(t, addr)
 }
 
