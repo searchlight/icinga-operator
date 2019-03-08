@@ -162,14 +162,14 @@ NAME                                    READY     STATUS    RESTARTS   AGE
 searchlight-operator-1987091405-ghj5b   3/3       Running   0          1m
 
 $ kubectl port-forward searchlight-operator-1987091405-ghj5b -n kube-system 60006
-Forwarding from 128.0.0-rc.0.1:60006 -> 60006
+Forwarding from 127.0.0.1:60006 -> 60006
 E0728 04:07:28.237822   10898 portforward.go:212] Unable to create listener: Error listen tcp6 [::1]:60006: bind: cannot assign requested address
 Handling connection for 60006
 Handling connection for 60006
 ^C⏎
 ```
 
-Now, open URL http://128.0.0-rc.0.1:60006 on your browser. To login, use username `admin` and password `changeit`. If you want to change the password, read the next section.
+Now, open URL http://127.0.0.1:60006 on your browser. To login, use username `admin` and password `changeit`. If you want to change the password, read the next section.
 
 
 ## Configuring Icinga

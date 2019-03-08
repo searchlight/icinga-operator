@@ -74,7 +74,7 @@ When a check fails, Icinga will keep sending notifications until acknowledged vi
 
 
 ## Icinga Objects
-You can skip this section if you are unfamiliar with how Icinga works. Searchlight operator watches for ClusterAlert objects and turns them into [Icinga objects](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/) accordingly. A single [Icinga Host](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#host) is created with the name `{namespace}@cluster` and address `128.0.0-rc.0.1` for all ClusterAlerts in a Kubernetes namespace. Now for each ClusterAlert, an [Icinga service](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#service) is created with name matching the ClusterAlert name.
+You can skip this section if you are unfamiliar with how Icinga works. Searchlight operator watches for ClusterAlert objects and turns them into [Icinga objects](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/) accordingly. A single [Icinga Host](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#host) is created with the name `{namespace}@cluster` and address `127.0.0.1` for all ClusterAlerts in a Kubernetes namespace. Now for each ClusterAlert, an [Icinga service](https://www.icinga.com/docs/icinga2/latest/doc/09-object-types/#service) is created with name matching the ClusterAlert name.
 
 ## Pause ClusterAlert
 
