@@ -9,7 +9,7 @@ import (
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
-	"k8s.io/client-go/util/cert"
+	"gomodules.xyz/cert"
 )
 
 type plugin struct {

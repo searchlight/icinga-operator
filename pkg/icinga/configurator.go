@@ -10,10 +10,10 @@ import (
 	"github.com/appscode/go/crypto/rand"
 	"github.com/pkg/errors"
 	"github.com/spf13/afero"
+	"gomodules.xyz/cert"
+	"gomodules.xyz/cert/certstore"
 	"gomodules.xyz/envconfig"
 	ini "gopkg.in/ini.v1"
-	"k8s.io/client-go/util/cert"
-	"kmodules.xyz/client-go/tools/certstore"
 )
 
 const (

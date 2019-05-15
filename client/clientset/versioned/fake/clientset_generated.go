@@ -78,17 +78,7 @@ func (c *Clientset) IncidentsV1alpha1() incidentsv1alpha1.IncidentsV1alpha1Inter
 	return &fakeincidentsv1alpha1.FakeIncidentsV1alpha1{Fake: &c.Fake}
 }
 
-// Incidents retrieves the IncidentsV1alpha1Client
-func (c *Clientset) Incidents() incidentsv1alpha1.IncidentsV1alpha1Interface {
-	return &fakeincidentsv1alpha1.FakeIncidentsV1alpha1{Fake: &c.Fake}
-}
-
 // MonitoringV1alpha1 retrieves the MonitoringV1alpha1Client
 func (c *Clientset) MonitoringV1alpha1() monitoringv1alpha1.MonitoringV1alpha1Interface {
-	return &fakemonitoringv1alpha1.FakeMonitoringV1alpha1{Fake: &c.Fake}
-}
-
-// Monitoring retrieves the MonitoringV1alpha1Client
-func (c *Clientset) Monitoring() monitoringv1alpha1.MonitoringV1alpha1Interface {
 	return &fakemonitoringv1alpha1.FakeMonitoringV1alpha1{Fake: &c.Fake}
 }

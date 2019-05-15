@@ -58,6 +58,7 @@ searchlight run [flags]
       --authentication-kubeconfig string                        kubeconfig file pointing at the 'core' kubernetes server with enough rights to create tokenaccessreviews.authentication.k8s.io.
       --authentication-skip-lookup                              If false, the authentication-kubeconfig will be used to lookup missing authentication configuration from the cluster.
       --authentication-token-webhook-cache-ttl duration         The duration to cache responses from the webhook token authenticator. (default 10s)
+      --authentication-tolerate-lookup-failure                  If true, failures to look up missing authentication configuration from the cluster are not considered fatal. Note that this can result in authentication that treats all requests as anonymous.
       --authorization-always-allow-paths strings                A list of HTTP paths to skip during authorization, i.e. these are authorized without contacting the 'core' kubernetes server.
       --authorization-kubeconfig string                         kubeconfig file pointing at the 'core' kubernetes server with enough rights to create subjectaccessreviews.authorization.k8s.io.
       --authorization-webhook-cache-authorized-ttl duration     The duration to cache 'authorized' responses from the webhook authorizer. (default 10s)
@@ -69,7 +70,6 @@ searchlight run [flags]
       --config-secret-name string                               Name of Kubernetes secret used to pass icinga credentials. (default "searchlight-operator")
       --contention-profiling                                    Enable lock contention profiling, if profiling is enabled
       --enable-status-subresource                               If true, uses sub resource for Voyager crds.
-      --enable-swagger-ui                                       Enables swagger ui on the apiserver at /swagger-ui
   -h, --help                                                    help for run
       --http2-max-streams-per-connection int                    The limit that the server gives to clients for the maximum number of streams in an HTTP/2 connection. Zero means to use golang's default. (default 1000)
       --incident-ttl duration                                   Garbage collects incidents older than this duration. Set to 0 to disable garbage collection. (default 2160h0m0s)

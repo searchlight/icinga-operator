@@ -70,7 +70,7 @@ func (o SearchlightOptions) Config() (*server.SearchlightConfig, error) {
 	}
 
 	serverConfig := genericapiserver.NewRecommendedConfig(server.Codecs)
-	if err := o.RecommendedOptions.ApplyTo(serverConfig, server.Scheme); err != nil {
+	if err := o.RecommendedOptions.ApplyTo(serverConfig); err != nil {
 		return nil, err
 	}
 	// Fixes https://github.com/Azure/AKS/issues/522
@@ -83,7 +83,6 @@ func (o SearchlightOptions) Config() (*server.SearchlightConfig, error) {
 		"/apis/admission.monitoring.appscode.com/v1alpha1",
 		"/apis/admission.monitoring.appscode.com/v1alpha1/admissionreviews",
 	}
-	serverConfig.SwaggerConfig = genericapiserver.DefaultSwaggerConfig()
 	serverConfig.EnableMetrics = true
 
 	controllerConfig := operator.NewOperatorConfig(serverConfig.ClientConfig)
