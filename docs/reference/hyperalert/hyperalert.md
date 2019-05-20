@@ -12,7 +12,7 @@ section_menu_id: reference
 menu_name: product_searchlight_8.0.0-rc.0
 url: /products/searchlight/8.0.0-rc.0/reference/hyperalert/
 aliases:
-  - products/searchlight/8.0.0-rc.0/reference/hyperalert/hyperalert/
+  - /products/searchlight/8.0.0-rc.0/reference/hyperalert/hyperalert/
 
 ---
 ## hyperalert

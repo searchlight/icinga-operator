@@ -58,7 +58,7 @@ menu_name: product_searchlight_{{ .Version }}
 {{- if .RootCmd }}
 url: /products/searchlight/{{ .Version }}/reference/hostfacts/
 aliases:
-  - products/searchlight/{{ .Version }}/reference/hostfacts/hostfacts/
+  - /products/searchlight/{{ .Version }}/reference/hostfacts/hostfacts/
 {{ end }}
 ---
 `))
@@ -151,7 +151,7 @@ menu_name: product_searchlight_{{ .Version }}
 {{- if .RootCmd }}
 url: /products/searchlight/{{ .Version }}/reference/hyperalert/
 aliases:
-  - products/searchlight/{{ .Version }}/reference/hyperalert/hyperalert/
+  - /products/searchlight/{{ .Version }}/reference/hyperalert/hyperalert/
 {{ end }}
 ---
 `))
@@ -244,7 +244,7 @@ menu_name: product_searchlight_{{ .Version }}
 {{- if .RootCmd }}
 url: /products/searchlight/{{ .Version }}/reference/searchlight/
 aliases:
-  - products/searchlight/{{ .Version }}/reference/searchlight/searchlight/
+  - /products/searchlight/{{ .Version }}/reference/searchlight/searchlight/
 {{ end }}
 ---
 `))
