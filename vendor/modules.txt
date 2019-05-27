@@ -21,7 +21,7 @@ github.com/PuerkitoBio/urlesc
 github.com/StackExchange/wmi
 # github.com/Unknwon/com v0.0.0-20190321035513-0fed4efef755
 github.com/Unknwon/com
-# github.com/appscode/go v0.0.0-20190424183524-60025f1135c9
+# github.com/appscode/go v0.0.0-20190523031839-1468ee3a76e8
 github.com/appscode/go/version
 github.com/appscode/go/log
 github.com/appscode/go/runtime
@@ -79,7 +79,7 @@ github.com/dgrijalva/jwt-go
 # github.com/docker/spdystream v0.0.0-20181023171402-6480d4af844c
 github.com/docker/spdystream
 github.com/docker/spdystream/spdy
-# github.com/emicklei/go-restful v2.9.4+incompatible
+# github.com/emicklei/go-restful v2.9.5+incompatible
 github.com/emicklei/go-restful
 github.com/emicklei/go-restful/log
 # github.com/evanphx/json-patch v4.2.0+incompatible
@@ -264,13 +264,13 @@ github.com/peterbourgon/diskv
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/prometheus/client_golang v0.9.3-0.20190127221311-3c4408c8b829
+# github.com/prometheus/client_golang v0.9.3
 github.com/prometheus/client_golang/prometheus/promhttp
 github.com/prometheus/client_golang/prometheus
 github.com/prometheus/client_golang/prometheus/internal
 # github.com/prometheus/client_model v0.0.0-20190129233127-fd36f4220a90
 github.com/prometheus/client_model/go
-# github.com/prometheus/common v0.4.0
+# github.com/prometheus/common v0.4.1
 github.com/prometheus/common/expfmt
 github.com/prometheus/common/model
 github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
@@ -294,7 +294,7 @@ github.com/shirou/gopsutil/internal/common
 # github.com/spf13/afero v1.2.2
 github.com/spf13/afero
 github.com/spf13/afero/mem
-# github.com/spf13/cobra v0.0.3
+# github.com/spf13/cobra v0.0.4
 github.com/spf13/cobra/doc
 github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.3
@@ -888,7 +888,7 @@ k8s.io/client-go/listers/storage/v1alpha1
 k8s.io/client-go/listers/storage/v1beta1
 # k8s.io/component-base v0.0.0-20190515024022-2354f2393ad4 => k8s.io/component-base v0.0.0-20190314000054-4a91899592f4
 k8s.io/component-base/cli/flag
-# k8s.io/klog v0.3.0 => k8s.io/klog v0.3.0
+# k8s.io/klog v0.3.1 => k8s.io/klog v0.3.0
 k8s.io/klog
 # k8s.io/kube-aggregator v0.0.0-20190515024249-81a6edcf70be => k8s.io/kube-aggregator v0.0.0-20190314000639-da8327669ac5
 k8s.io/kube-aggregator/pkg/apis/apiregistration/v1beta1
@@ -909,7 +909,7 @@ k8s.io/kube-openapi/pkg/schemaconv
 k8s.io/utils/integer
 k8s.io/utils/buffer
 k8s.io/utils/trace
-# kmodules.xyz/client-go v0.0.0-20190513064657-a9147783199a
+# kmodules.xyz/client-go v0.0.0-20190527113919-eb165836b702
 kmodules.xyz/client-go/apiextensions/v1beta1
 kmodules.xyz/client-go/meta
 kmodules.xyz/client-go

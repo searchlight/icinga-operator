@@ -9,10 +9,9 @@ require (
 	github.com/Knetic/govaluate v3.0.0+incompatible
 	github.com/StackExchange/wmi v0.0.0-20181212234831-e0a55b97c705 // indirect
 	github.com/Unknwon/com v0.0.0-20190321035513-0fed4efef755 // indirect
-	github.com/appscode/go v0.0.0-20190424183524-60025f1135c9
+	github.com/appscode/go v0.0.0-20190523031839-1468ee3a76e8
 	github.com/codeskyblue/go-sh v0.0.0-20190412065543-76bd3d59ff27
-	github.com/cpuguy83/go-md2man v1.0.10 // indirect
-	github.com/emicklei/go-restful v2.9.4+incompatible // indirect
+	github.com/emicklei/go-restful v2.9.5+incompatible // indirect
 	github.com/ghodss/yaml v1.0.0
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8 // indirect
 	github.com/go-macaron/auth v0.0.0-20161228062157-884c0e6c9b92
@@ -31,15 +30,17 @@ require (
 	github.com/gopherjs/gopherjs v0.0.0-20190430165422-3e4dfb77656c // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.9.0 // indirect
 	github.com/mailru/easyjson v0.0.0-20190403194419-1ea4449da983 // indirect
+	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/onsi/ginkgo v1.8.0
 	github.com/onsi/gomega v1.5.0
 	github.com/pkg/errors v0.8.1
-	github.com/prometheus/client_golang v0.9.3-0.20190127221311-3c4408c8b829
-	github.com/prometheus/common v0.4.0 // indirect
+	github.com/prometheus/client_golang v0.9.3
+	github.com/prometheus/common v0.4.1 // indirect
 	github.com/shirou/gopsutil v0.0.0-20180227225847-5776ff9c7c5d
+	github.com/sirupsen/logrus v1.4.2 // indirect
 	github.com/smartystreets/assertions v0.0.0-20190401211740-f487f9de1cd3 // indirect
 	github.com/spf13/afero v1.2.2
-	github.com/spf13/cobra v0.0.3
+	github.com/spf13/cobra v0.0.4
 	github.com/spf13/pflag v1.0.3
 	github.com/stretchr/testify v1.3.0
 	golang.org/x/crypto v0.0.0-20190513172903-22d7a77e9e5f // indirect
@@ -61,9 +62,10 @@ require (
 	k8s.io/cli-runtime v0.0.0-20190515024640-178667528169 // indirect
 	k8s.io/client-go v11.0.0+incompatible
 	k8s.io/component-base v0.0.0-20190515024022-2354f2393ad4 // indirect
+	k8s.io/klog v0.3.1 // indirect
 	k8s.io/kube-aggregator v0.0.0-20190515024249-81a6edcf70be // indirect
 	k8s.io/kube-openapi v0.0.0-20190510232812-a01b7d5d6c22
-	kmodules.xyz/client-go v0.0.0-20190513064657-a9147783199a
+	kmodules.xyz/client-go v0.0.0-20190527113919-eb165836b702
 	kmodules.xyz/webhook-runtime v0.0.0-20190508093950-b721b4eba5e5
 )
 
