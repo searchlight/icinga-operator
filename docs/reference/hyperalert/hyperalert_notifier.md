@@ -1,13 +1,13 @@
 ---
 title: Notifier
 menu:
-  product_searchlight_8.0.0-rc.0:
+  product_searchlight_8.0.0:
     identifier: hyperalert-notifier
     name: Notifier
     parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_8.0.0-rc.0
+menu_name: product_searchlight_8.0.0
 ---
 ## hyperalert notifier
 

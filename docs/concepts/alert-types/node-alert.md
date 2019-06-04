@@ -1,13 +1,13 @@
 ---
 title: Node Alert Overview
 menu:
-  product_searchlight_8.0.0-rc.0:
+  product_searchlight_8.0.0:
     identifier: node-alert-overview
     name: Node Alert
     parent: alert-types
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_8.0.0-rc.0
+menu_name: product_searchlight_8.0.0
 section_menu_id: concepts
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: Hostfacts
 menu:
-  product_searchlight_8.0.0-rc.0:
+  product_searchlight_8.0.0:
     identifier: hostfacts
     name: Hostfacts
     parent: hostfacts-cli
@@ -9,10 +9,10 @@ menu:
 
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_8.0.0-rc.0
-url: /products/searchlight/8.0.0-rc.0/reference/hostfacts/
+menu_name: product_searchlight_8.0.0
+url: /products/searchlight/8.0.0/reference/hostfacts/
 aliases:
-  - /products/searchlight/8.0.0-rc.0/reference/hostfacts/hostfacts/
+  - /products/searchlight/8.0.0/reference/hostfacts/hostfacts/
 
 ---
 ## hostfacts

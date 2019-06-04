@@ -2,23 +2,23 @@
 title: Changelog | Searchlight
 description: Changelog
 menu:
-  product_searchlight_8.0.0-rc.0:
+  product_searchlight_8.0.0:
     identifier: changelog-searchlight
     name: Changelog
     parent: welcome
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_8.0.0-rc.0
+menu_name: product_searchlight_8.0.0
 section_menu_id: welcome
-url: /products/searchlight/8.0.0-rc.0/welcome/changelog/
+url: /products/searchlight/8.0.0/welcome/changelog/
 aliases:
-  - /products/searchlight/8.0.0-rc.0/CHANGELOG/
+  - /products/searchlight/8.0.0/CHANGELOG/
 ---
 
 # Change Log
 
-## [8.0.0-rc.0](https://github.com/appscode/searchlight/tree/8.0.0-rc.0) (2019-03-07)
-[Full Changelog](https://github.com/appscode/searchlight/compare/7.0.0...8.0.0-rc.0)
+## [8.0.0](https://github.com/appscode/searchlight/tree/8.0.0) (2019-03-07)
+[Full Changelog](https://github.com/appscode/searchlight/compare/7.0.0...8.0.0)
 
 **Fixed bugs:**
 

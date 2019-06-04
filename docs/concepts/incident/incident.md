@@ -2,12 +2,12 @@
 title: Incident Concepts
 description: Incident Concepts
 menu:
-  product_searchlight_8.0.0-rc.0:
+  product_searchlight_8.0.0:
     identifier: incident-concepts
     parent: incident
     name: Incident Concepts
     weight: 15
-menu_name: product_searchlight_8.0.0-rc.0
+menu_name: product_searchlight_8.0.0
 ---
 
 # Incident
