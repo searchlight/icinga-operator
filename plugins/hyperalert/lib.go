@@ -2,8 +2,6 @@ package hyperalert
 
 import (
 	"flag"
-	"os"
-	"strings"
 
 	v "github.com/appscode/go/version"
 	"github.com/appscode/searchlight/client/clientset/versioned/scheme"
@@ -26,7 +24,6 @@ import (
 	"github.com/spf13/cobra"
 	clientsetscheme "k8s.io/client-go/kubernetes/scheme"
 	"kmodules.xyz/client-go/logs"
-	"kmodules.xyz/client-go/tools/cli"
 )
 
 func NewCmd() *cobra.Command {
@@ -34,8 +31,6 @@ func NewCmd() *cobra.Command {
 		Use:   "hyperalert",
 		Short: "AppsCode Icinga2 plugin",
 		PersistentPreRun: func(c *cobra.Command, args []string) {
-			cli.EnableAnalytics = strings.EqualFold(os.Getenv("ENABLE_ANALYTICS"), "true")
-			cli.SendAnalytics(c, v.Version.Version)
 			scheme.AddToScheme(clientsetscheme.Scheme)
 		},
 		Run: func(c *cobra.Command, args []string) {
