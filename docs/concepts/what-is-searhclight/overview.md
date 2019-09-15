@@ -2,13 +2,13 @@
 title: Searchlight Overview
 description: Searchlight Overview
 menu:
-  product_searchlight_8.0.0:
+  product_searchlight_{{ .version }}:
     identifier: overview-concepts
     name: Overview
     parent: what-is-searchlight
     weight: 10
 product_name: searchlight
-menu_name: product_searchlight_8.0.0
+menu_name: product_searchlight_{{ .version }}
 section_menu_id: concepts
 ---
 

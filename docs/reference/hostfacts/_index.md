@@ -2,10 +2,10 @@
 title: Hostfacts
 description: Searchlight Hostfacts Reference
 menu:
-  product_searchlight_8.0.0:
+  product_searchlight_{{ .version }}:
     identifier: hostfacts-cli
     name: Hostfacts
     parent: reference
     weight: 10
-menu_name: product_searchlight_8.0.0
+menu_name: product_searchlight_{{ .version }}
 ---

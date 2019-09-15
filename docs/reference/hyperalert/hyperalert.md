@@ -1,7 +1,7 @@
 ---
 title: Hyperalert
 menu:
-  product_searchlight_8.0.0:
+  product_searchlight_{{ .version }}:
     identifier: hyperalert
     name: Hyperalert
     parent: hyperalert-cli
@@ -9,10 +9,10 @@ menu:
 
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_8.0.0
-url: /products/searchlight/8.0.0/reference/hyperalert/
+menu_name: product_searchlight_{{ .version }}
+url: /products/searchlight/{{ .version }}/reference/hyperalert/
 aliases:
-  - /products/searchlight/8.0.0/reference/hyperalert/hyperalert/
+  - /products/searchlight/{{ .version }}/reference/hyperalert/hyperalert/
 
 ---
 ## hyperalert

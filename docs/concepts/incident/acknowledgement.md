@@ -2,17 +2,17 @@
 title: Acknowledgement Concepts
 description: Acknowledgement Concepts
 menu:
-  product_searchlight_8.0.0:
+  product_searchlight_{{ .version }}:
     identifier: acknowledgement-concepts
     parent: incident
     name: Acknowledgement Concepts
     weight: 15
-menu_name: product_searchlight_8.0.0
+menu_name: product_searchlight_{{ .version }}
 ---
 
 # Acknowledgement
 
-Kubernetes Extended Api Server resource **Acknowledgement** is used to acknowledge an Incident with type **Problem**. 
+Kubernetes Extended Api Server resource **Acknowledgement** is used to acknowledge an Incident with type **Problem**.
 
 Following is the example of Acknowledgement object
 

@@ -1,13 +1,13 @@
 ---
 title: Pod Alert Overview
 menu:
-  product_searchlight_8.0.0:
+  product_searchlight_{{ .version }}:
     identifier: pod-alert-overview
     name: Pod Alert
     parent: alert-types
     weight: 15
 product_name: searchlight
-menu_name: product_searchlight_8.0.0
+menu_name: product_searchlight_{{ .version }}
 section_menu_id: concepts
 ---
 
