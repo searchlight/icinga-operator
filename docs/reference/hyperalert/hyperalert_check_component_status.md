@@ -1,13 +1,13 @@
 ---
 title: Check Component Status
 menu:
-  product_searchlight_8.0.0:
+  product_searchlight_{{ .version }}:
     identifier: hyperalert-check-component-status
     name: Check Component Status
     parent: hyperalert-cli
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_8.0.0
+menu_name: product_searchlight_{{ .version }}
 ---
 ## hyperalert check_component_status
 

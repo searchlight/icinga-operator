@@ -2,17 +2,17 @@
 title: Support | Searchlight
 description: Support
 menu:
-  product_searchlight_8.0.0:
+  product_searchlight_{{ .version }}:
     identifier: support-searchlight
     name: Support
     parent: welcome
     weight: 25
 product_name: searchlight
-menu_name: product_searchlight_8.0.0
+menu_name: product_searchlight_{{ .version }}
 section_menu_id: welcome
-url: /products/searchlight/8.0.0/welcome/support/
+url: /products/searchlight/{{ .version }}/welcome/support/
 aliases:
-  - /products/searchlight/8.0.0/support/
+  - /products/searchlight/{{ .version }}/support/
 ---
 # Support
 

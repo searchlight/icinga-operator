@@ -1,13 +1,13 @@
 ---
 title: Node Status
 menu:
-  product_searchlight_8.0.0:
+  product_searchlight_{{ .version }}:
     identifier: node-status
     name: Node Status
     parent: node-alert
     weight: 25
 product_name: searchlight
-menu_name: product_searchlight_8.0.0
+menu_name: product_searchlight_{{ .version }}
 section_menu_id: guides
 ---
 

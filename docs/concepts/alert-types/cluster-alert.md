@@ -1,13 +1,13 @@
 ---
 title: Cluster Alert Overview
 menu:
-  product_searchlight_8.0.0:
+  product_searchlight_{{ .version }}:
     identifier: cluster-alert-overview
     name: Cluster Alert
     parent: alert-types
     weight: 5
 product_name: searchlight
-menu_name: product_searchlight_8.0.0
+menu_name: product_searchlight_{{ .version }}
 section_menu_id: concepts
 ---
 

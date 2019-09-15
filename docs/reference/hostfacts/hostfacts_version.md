@@ -1,13 +1,13 @@
 ---
 title: Version
 menu:
-  product_searchlight_8.0.0:
+  product_searchlight_{{ .version }}:
     identifier: hostfacts-version
     name: Version
     parent: hostfacts-cli
 product_name: searchlight
 section_menu_id: reference
-menu_name: product_searchlight_8.0.0
+menu_name: product_searchlight_{{ .version }}
 ---
 ## hostfacts version
 

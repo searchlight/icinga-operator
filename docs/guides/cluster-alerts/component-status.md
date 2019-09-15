@@ -1,13 +1,13 @@
 ---
 title: Component Status
 menu:
-  product_searchlight_8.0.0:
+  product_searchlight_{{ .version }}:
     identifier: guides-Component-status
     name: Component Status
     parent: cluster-alert
     weight: 25
 product_name: searchlight
-menu_name: product_searchlight_8.0.0
+menu_name: product_searchlight_{{ .version }}
 section_menu_id: guides
 ---
 

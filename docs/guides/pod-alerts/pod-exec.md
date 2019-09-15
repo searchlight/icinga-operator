@@ -1,13 +1,13 @@
 ---
 title: Pod Exec
 menu:
-  product_searchlight_8.0.0:
+  product_searchlight_{{ .version }}:
     identifier: pod-pod-exec
     name: Pod Exec
     parent: pod-alert
     weight: 35
 product_name: searchlight
-menu_name: product_searchlight_8.0.0
+menu_name: product_searchlight_{{ .version }}
 section_menu_id: guides
 ---
 

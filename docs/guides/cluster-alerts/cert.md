@@ -1,13 +1,13 @@
 ---
 title: Cert
 menu:
-  product_searchlight_8.0.0:
+  product_searchlight_{{ .version }}:
     identifier: guides-cert
     name: Cert
     parent: cluster-alert
     weight: 20
 product_name: searchlight
-menu_name: product_searchlight_8.0.0
+menu_name: product_searchlight_{{ .version }}
 section_menu_id: guides
 ---
 
