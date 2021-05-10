@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,15 +19,18 @@ limitations under the License.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	v1alpha1 "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/tools/cache"
 )
 
 // PodAlertLister helps list PodAlerts.
+// All objects returned here must be treated as read-only.
 type PodAlertLister interface {
 	// List lists all PodAlerts in the indexer.
+	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.PodAlert, err error)
 	// PodAlerts returns an object that can list and get PodAlerts.
 	PodAlerts(namespace string) PodAlertNamespaceLister
@@ -58,10 +61,13 @@ func (s *podAlertLister) PodAlerts(namespace string) PodAlertNamespaceLister {
 }
 
 // PodAlertNamespaceLister helps list and get PodAlerts.
+// All objects returned here must be treated as read-only.
 type PodAlertNamespaceLister interface {
 	// List lists all PodAlerts in the indexer for a given namespace.
+	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.PodAlert, err error)
 	// Get retrieves the PodAlert from the indexer for a given namespace and name.
+	// Objects returned here must be treated as read-only.
 	Get(name string) (*v1alpha1.PodAlert, error)
 	PodAlertNamespaceListerExpansion
 }

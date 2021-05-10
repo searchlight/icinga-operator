@@ -1,19 +1,38 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package operator
 
 import (
+	"context"
 	"reflect"
 	"strings"
 
-	"github.com/appscode/go/log"
-	utilerrors "github.com/appscode/go/util/errors"
-	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/pkg/eventer"
-	"github.com/appscode/searchlight/pkg/icinga"
+	api "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+	"go.searchlight.dev/icinga-operator/pkg/eventer"
+	"go.searchlight.dev/icinga-operator/pkg/icinga"
+
 	"github.com/golang/glog"
 	core "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	utilerrors "k8s.io/apimachinery/pkg/util/errors"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/client-go/tools/cache"
+	"k8s.io/klog/v2"
 	core_util "kmodules.xyz/client-go/core/v1"
 	"kmodules.xyz/client-go/tools/queue"
 )
@@ -47,7 +66,7 @@ func (op *Operator) reconcileNode(key string) error {
 	}
 
 	if !exists {
-		log.Debugf("Node %s does not exist anymore\n", key)
+		klog.V(5).Infof("Node %s does not exist anymore\n", key)
 		_, name, err := cache.SplitMetaNamespaceKey(key)
 		if err != nil {
 			return err
@@ -56,12 +75,12 @@ func (op *Operator) reconcileNode(key string) error {
 		return op.forceDeleteIcingaObjectsForNode(name)
 	}
 
-	log.Infof("Sync/Add/Update for Node %s\n", key)
+	klog.Infof("Sync/Add/Update for Node %s\n", key)
 
 	node := obj.(*core.Node).DeepCopy()
 	err = op.ensureNode(node)
 	if err != nil {
-		log.Errorf("failed to reconcile alert for node %s. reason: %s", key, err)
+		klog.Errorf("failed to reconcile alert for node %s. reason: %s", key, err)
 	}
 	return err
 }
@@ -124,7 +143,7 @@ func (op *Operator) ensureNode(node *core.Node) error {
 		}
 	}
 
-	_, _, err = core_util.PatchNode(op.kubeClient, node, func(in *core.Node) *core.Node {
+	_, _, err = core_util.PatchNode(context.TODO(), op.kubeClient, node, func(in *core.Node) *core.Node {
 		if in.Annotations == nil {
 			in.Annotations = make(map[string]string, 0)
 		}
@@ -134,7 +153,7 @@ func (op *Operator) ensureNode(node *core.Node) error {
 			delete(in.Annotations, api.AnnotationKeyAlerts)
 		}
 		return in
-	})
+	}, metav1.PatchOptions{})
 	if err != nil {
 		errlist = append(errlist, err)
 	}

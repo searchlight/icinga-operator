@@ -1,12 +1,30 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package framework
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
 
-	incident_api "github.com/appscode/searchlight/apis/incidents/v1alpha1"
-	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	incident_api "go.searchlight.dev/icinga-operator/apis/incidents/v1alpha1"
+	api "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 )
@@ -48,7 +66,7 @@ func (f *Framework) AcknowledgeClusterAlertNotification(meta metav1.ObjectMeta, 
 		api.LabelKeyProblemRecovered: "false",
 	}
 
-	incidentList, err := f.extClient.MonitoringV1alpha1().Incidents(meta.Namespace).List(metav1.ListOptions{
+	incidentList, err := f.extClient.MonitoringV1alpha1().Incidents(meta.Namespace).List(context.TODO(), metav1.ListOptions{
 		LabelSelector: labels.SelectorFromSet(labelMap).String(),
 	})
 	if err != nil {
@@ -64,7 +82,7 @@ func (f *Framework) AcknowledgeClusterAlertNotification(meta metav1.ObjectMeta, 
 		}
 	}
 
-	_, err = f.extClient.IncidentsV1alpha1().Acknowledgements(incident.Namespace).Create(&incident_api.Acknowledgement{
+	_, err = f.extClient.IncidentsV1alpha1().Acknowledgements(incident.Namespace).Create(context.TODO(), &incident_api.Acknowledgement{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: incident.Namespace,
 			Name:      incident.Name,
@@ -72,7 +90,7 @@ func (f *Framework) AcknowledgeClusterAlertNotification(meta metav1.ObjectMeta, 
 		Request: incident_api.AcknowledgementRequest{
 			Comment: "test",
 		},
-	})
+	}, metav1.CreateOptions{})
 	if err != nil {
 		return err
 	}

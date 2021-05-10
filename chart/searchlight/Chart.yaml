@@ -3,10 +3,10 @@ description: 'Searchlight by AppsCode - Alerts for Kubernetes'
 name: searchlight
 version: 8.0.0
 appVersion: 8.0.0
-home: https://github.com/appscode/searchlight
+home: https://go.searchlight.dev/icinga-operator
 icon: https://cdn.appscode.com/images/icon/searchlight.png
 sources:
-  - https://github.com/appscode/searchlight
+  - https://go.searchlight.dev/icinga-operator
 maintainers:
   - name: appscode
     email: support@appscode.com

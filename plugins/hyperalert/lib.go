@@ -1,29 +1,46 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package hyperalert
 
 import (
 	"flag"
 
-	v "github.com/appscode/go/version"
-	"github.com/appscode/searchlight/client/clientset/versioned/scheme"
-	"github.com/appscode/searchlight/plugins"
-	"github.com/appscode/searchlight/plugins/analytics_id"
-	"github.com/appscode/searchlight/plugins/check_ca_cert"
-	"github.com/appscode/searchlight/plugins/check_cert"
-	"github.com/appscode/searchlight/plugins/check_component_status"
-	"github.com/appscode/searchlight/plugins/check_env"
-	"github.com/appscode/searchlight/plugins/check_event"
-	"github.com/appscode/searchlight/plugins/check_json_path"
-	"github.com/appscode/searchlight/plugins/check_node_exists"
-	"github.com/appscode/searchlight/plugins/check_node_status"
-	"github.com/appscode/searchlight/plugins/check_pod_exec"
-	"github.com/appscode/searchlight/plugins/check_pod_exists"
-	"github.com/appscode/searchlight/plugins/check_pod_status"
-	"github.com/appscode/searchlight/plugins/check_volume"
-	"github.com/appscode/searchlight/plugins/check_webhook"
-	"github.com/appscode/searchlight/plugins/notifier"
+	"go.searchlight.dev/icinga-operator/client/clientset/versioned/scheme"
+	"go.searchlight.dev/icinga-operator/plugins"
+	"go.searchlight.dev/icinga-operator/plugins/analytics_id"
+	"go.searchlight.dev/icinga-operator/plugins/check_ca_cert"
+	"go.searchlight.dev/icinga-operator/plugins/check_cert"
+	"go.searchlight.dev/icinga-operator/plugins/check_component_status"
+	"go.searchlight.dev/icinga-operator/plugins/check_env"
+	"go.searchlight.dev/icinga-operator/plugins/check_event"
+	"go.searchlight.dev/icinga-operator/plugins/check_json_path"
+	"go.searchlight.dev/icinga-operator/plugins/check_node_exists"
+	"go.searchlight.dev/icinga-operator/plugins/check_node_status"
+	"go.searchlight.dev/icinga-operator/plugins/check_pod_exec"
+	"go.searchlight.dev/icinga-operator/plugins/check_pod_exists"
+	"go.searchlight.dev/icinga-operator/plugins/check_pod_status"
+	"go.searchlight.dev/icinga-operator/plugins/check_volume"
+	"go.searchlight.dev/icinga-operator/plugins/check_webhook"
+	"go.searchlight.dev/icinga-operator/plugins/notifier"
+
 	"github.com/spf13/cobra"
+	"gomodules.xyz/kglog"
+	v "gomodules.xyz/x/version"
 	clientsetscheme "k8s.io/client-go/kubernetes/scheme"
-	"kmodules.xyz/client-go/logs"
 )
 
 func NewCmd() *cobra.Command {
@@ -38,7 +55,7 @@ func NewCmd() *cobra.Command {
 		},
 	}
 	cmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
-	logs.ParseFlags()
+	kglog.ParseFlags()
 	cmd.PersistentFlags().String(plugins.FlagKubeConfig, "", "Path to kubeconfig file with authorization information (the master location is set by the master flag).")
 	cmd.PersistentFlags().String(plugins.FlagKubeConfigContext, "", "Use the context in kubeconfig")
 	cmd.PersistentFlags().Int(plugins.FlagCheckInterval, 30, "Icinga check_interval in second. [Format: 30, 300]")

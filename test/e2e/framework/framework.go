@@ -1,10 +1,27 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package framework
 
 import (
-	"github.com/appscode/go/crypto/rand"
-	cs "github.com/appscode/searchlight/client/clientset/versioned"
-	mon_cs "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/pkg/icinga"
+	cs "go.searchlight.dev/icinga-operator/client/clientset/versioned"
+	mon_cs "go.searchlight.dev/icinga-operator/client/clientset/versioned/typed/monitoring/v1alpha1"
+	"go.searchlight.dev/icinga-operator/pkg/icinga"
+
+	"gomodules.xyz/x/crypto/rand"
 	crd_cs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
 	"k8s.io/client-go/kubernetes"
 )

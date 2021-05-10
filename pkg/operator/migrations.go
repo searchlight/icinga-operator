@@ -1,13 +1,31 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package operator
 
 import (
+	"context"
 	"strings"
 
-	utilerrors "github.com/appscode/go/util/errors"
-	"github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/util"
+	"go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+	api "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+	"go.searchlight.dev/icinga-operator/client/clientset/versioned/typed/monitoring/v1alpha1/util"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	utilerrors "k8s.io/apimachinery/pkg/util/errors"
 )
 
 func (op *Operator) MigrateAlerts() error {
@@ -26,18 +44,18 @@ func (op *Operator) MigrateAlerts() error {
 }
 
 func (op *Operator) MigrateClusterAlerts() error {
-	ca, err := op.extClient.MonitoringV1alpha1().ClusterAlerts(metav1.NamespaceAll).List(metav1.ListOptions{})
+	ca, err := op.extClient.MonitoringV1alpha1().ClusterAlerts(metav1.NamespaceAll).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
 
 	var errs []error
 	for i := range ca.Items {
-		_, _, err := util.PatchClusterAlert(op.extClient.MonitoringV1alpha1(), &ca.Items[i], func(alert *v1alpha1.ClusterAlert) *v1alpha1.ClusterAlert {
+		_, _, err := util.PatchClusterAlert(context.TODO(), op.extClient.MonitoringV1alpha1(), &ca.Items[i], func(alert *v1alpha1.ClusterAlert) *v1alpha1.ClusterAlert {
 			check := strings.Replace(alert.Spec.Check, "_", "-", -1)
 			alert.Spec.Check = check
 			return alert
-		})
+		}, metav1.PatchOptions{})
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -50,18 +68,18 @@ func (op *Operator) MigrateClusterAlerts() error {
 }
 
 func (op *Operator) MigratePodAlert() error {
-	poa, err := op.extClient.MonitoringV1alpha1().PodAlerts(metav1.NamespaceAll).List(metav1.ListOptions{})
+	poa, err := op.extClient.MonitoringV1alpha1().PodAlerts(metav1.NamespaceAll).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
 
 	var errs []error
 	for i := range poa.Items {
-		_, _, err := util.PatchPodAlert(op.extClient.MonitoringV1alpha1(), &poa.Items[i], func(alert *v1alpha1.PodAlert) *v1alpha1.PodAlert {
+		_, _, err := util.PatchPodAlert(context.TODO(), op.extClient.MonitoringV1alpha1(), &poa.Items[i], func(alert *v1alpha1.PodAlert) *v1alpha1.PodAlert {
 			check := strings.Replace(alert.Spec.Check, "_", "-", -1)
 			alert.Spec.Check = check
 			return alert
-		})
+		}, metav1.PatchOptions{})
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -74,14 +92,14 @@ func (op *Operator) MigratePodAlert() error {
 }
 
 func (op *Operator) MigrateNodeAlert() error {
-	noa, err := op.extClient.MonitoringV1alpha1().NodeAlerts(metav1.NamespaceAll).List(metav1.ListOptions{})
+	noa, err := op.extClient.MonitoringV1alpha1().NodeAlerts(metav1.NamespaceAll).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
 
 	var errs []error
 	for i := range noa.Items {
-		_, _, err := util.PatchNodeAlert(op.extClient.MonitoringV1alpha1(), &noa.Items[i], func(alert *v1alpha1.NodeAlert) *v1alpha1.NodeAlert {
+		_, _, err := util.PatchNodeAlert(context.TODO(), op.extClient.MonitoringV1alpha1(), &noa.Items[i], func(alert *v1alpha1.NodeAlert) *v1alpha1.NodeAlert {
 			check := strings.Replace(alert.Spec.Check, "_", "-", -1)
 			alert.Spec.Check = check
 
@@ -94,7 +112,7 @@ func (op *Operator) MigrateNodeAlert() error {
 			}
 
 			return alert
-		})
+		}, metav1.PatchOptions{})
 		if err != nil {
 			errs = append(errs, err)
 		}

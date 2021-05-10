@@ -1,6 +1,23 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package check_cert
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -8,8 +25,9 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/plugins"
+	"go.searchlight.dev/icinga-operator/pkg/icinga"
+	"go.searchlight.dev/icinga-operator/plugins"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/spf13/cobra"
@@ -65,7 +83,7 @@ var _ = Describe("check_cert", func() {
 
 	AfterEach(func() {
 		if client != nil {
-			client.Delete(secret.Name, &metav1.DeleteOptions{})
+			client.Delete(context.TODO(), secret.Name, metav1.DeleteOptions{})
 		}
 	})
 
@@ -84,7 +102,7 @@ var _ = Describe("check_cert", func() {
 				cert, err := generateCertificate(time.Hour * 4 * 24)
 				Expect(err).ShouldNot(HaveOccurred())
 				secret.Data["client.cert"] = cert
-				_, err = client.Create(secret)
+				_, err = client.Create(context.TODO(), secret, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 				opts.secretKey = []string{"client.cert"}
 
@@ -95,7 +113,7 @@ var _ = Describe("check_cert", func() {
 				cert, err := generateCertificate(time.Hour * 6 * 24)
 				Expect(err).ShouldNot(HaveOccurred())
 				secret.Data["client.cert"] = cert
-				_, err = client.Create(secret)
+				_, err = client.Create(context.TODO(), secret, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 				opts.secretKey = []string{"client.cert"}
 
@@ -106,7 +124,7 @@ var _ = Describe("check_cert", func() {
 				cert, err := generateCertificate(time.Hour * 10 * 24)
 				Expect(err).ShouldNot(HaveOccurred())
 				secret.Data["client.cert"] = cert
-				_, err = client.Create(secret)
+				_, err = client.Create(context.TODO(), secret, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 				opts.secretKey = []string{"client.cert"}
 
@@ -125,7 +143,7 @@ var _ = Describe("check_cert", func() {
 				cert, err := generateCertificate(time.Hour * 10 * 24)
 				Expect(err).ShouldNot(HaveOccurred())
 				secret.Data["client.cert"] = cert
-				_, err = client.Create(secret)
+				_, err = client.Create(context.TODO(), secret, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 				opts.secretKey = []string{"client.cert"}
 
@@ -152,19 +170,19 @@ var _ = Describe("check_cert", func() {
 					}
 				})
 				AfterEach(func() {
-					client.Delete(secret2.Name, &metav1.DeleteOptions{})
+					client.Delete(context.TODO(), secret2.Name, metav1.DeleteOptions{})
 				})
 				It("both contain valid certificate", func() {
 					cert, err := generateCertificate(time.Hour * 10 * 24)
 					Expect(err).ShouldNot(HaveOccurred())
 					secret.Data["client.cert"] = cert
-					_, err = client.Create(secret)
+					_, err = client.Create(context.TODO(), secret, metav1.CreateOptions{})
 					Expect(err).ShouldNot(HaveOccurred())
 
 					cert, err = generateCertificate(time.Hour * 10 * 24)
 					Expect(err).ShouldNot(HaveOccurred())
 					secret2.Data["client.cert"] = cert
-					_, err = client.Create(secret2)
+					_, err = client.Create(context.TODO(), secret2, metav1.CreateOptions{})
 					Expect(err).ShouldNot(HaveOccurred())
 
 					opts.secretKey = []string{"client.cert"}
@@ -177,13 +195,13 @@ var _ = Describe("check_cert", func() {
 					cert, err := generateCertificate(time.Hour * 10 * 24)
 					Expect(err).ShouldNot(HaveOccurred())
 					secret.Data["client.cert"] = cert
-					_, err = client.Create(secret)
+					_, err = client.Create(context.TODO(), secret, metav1.CreateOptions{})
 					Expect(err).ShouldNot(HaveOccurred())
 
 					cert, err = generateCertificate(time.Hour * 2 * 24)
 					Expect(err).ShouldNot(HaveOccurred())
 					secret2.Data["client.cert"] = cert
-					_, err = client.Create(secret2)
+					_, err = client.Create(context.TODO(), secret2, metav1.CreateOptions{})
 					Expect(err).ShouldNot(HaveOccurred())
 
 					opts.secretKey = []string{"client.cert"}
@@ -209,7 +227,7 @@ var _ = Describe("check_cert", func() {
 				cert[0] = cert[0] + 1
 				Expect(err).ShouldNot(HaveOccurred())
 				secret.Data["client.cert"] = cert
-				_, err = client.Create(secret)
+				_, err = client.Create(context.TODO(), secret, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 				opts.secretKey = []string{"client.cert"}
 
@@ -219,7 +237,7 @@ var _ = Describe("check_cert", func() {
 		})
 		Context("with invalid secret key", func() {
 			It("should be warning", func() {
-				_, err := client.Create(secret)
+				_, err := client.Create(context.TODO(), secret, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 				opts.secretKey = []string{"unknown.cert"}
 
@@ -243,7 +261,7 @@ var _ = Describe("check_cert", func() {
 				cert, err := generateCertificate(time.Hour * 10 * 24)
 				Expect(err).ShouldNot(HaveOccurred())
 				secret.Data["tls.crt"] = cert
-				_, err = client.Create(secret)
+				_, err = client.Create(context.TODO(), secret, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 				opts.secretKey = []string{"tls.crt"}
 
@@ -254,7 +272,7 @@ var _ = Describe("check_cert", func() {
 				cert, err := generateCertificate(time.Hour * 10 * 24)
 				Expect(err).ShouldNot(HaveOccurred())
 				secret.Data["tls.crt"] = cert
-				_, err = client.Create(secret)
+				_, err = client.Create(context.TODO(), secret, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				state, _ := newPlugin(client, opts).Check()
@@ -264,7 +282,7 @@ var _ = Describe("check_cert", func() {
 				cert, err := generateCertificate(time.Hour * 10 * 24)
 				Expect(err).ShouldNot(HaveOccurred())
 				secret.Data["tls-invalid.crt"] = cert
-				_, err = client.Create(secret)
+				_, err = client.Create(context.TODO(), secret, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				state, _ := newPlugin(client, opts).Check()

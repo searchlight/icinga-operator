@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,11 +19,12 @@ limitations under the License.
 package fake
 
 import (
-	clientset "github.com/appscode/searchlight/client/clientset/versioned"
-	incidentsv1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/typed/incidents/v1alpha1"
-	fakeincidentsv1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/typed/incidents/v1alpha1/fake"
-	monitoringv1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1"
-	fakemonitoringv1alpha1 "github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/fake"
+	clientset "go.searchlight.dev/icinga-operator/client/clientset/versioned"
+	incidentsv1alpha1 "go.searchlight.dev/icinga-operator/client/clientset/versioned/typed/incidents/v1alpha1"
+	fakeincidentsv1alpha1 "go.searchlight.dev/icinga-operator/client/clientset/versioned/typed/incidents/v1alpha1/fake"
+	monitoringv1alpha1 "go.searchlight.dev/icinga-operator/client/clientset/versioned/typed/monitoring/v1alpha1"
+	fakemonitoringv1alpha1 "go.searchlight.dev/icinga-operator/client/clientset/versioned/typed/monitoring/v1alpha1/fake"
+
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"
@@ -43,7 +44,7 @@ func NewSimpleClientset(objects ...runtime.Object) *Clientset {
 		}
 	}
 
-	cs := &Clientset{}
+	cs := &Clientset{tracker: o}
 	cs.discovery = &fakediscovery.FakeDiscovery{Fake: &cs.Fake}
 	cs.AddReactor("*", "*", testing.ObjectReaction(o))
 	cs.AddWatchReactor("*", func(action testing.Action) (handled bool, ret watch.Interface, err error) {
@@ -65,10 +66,15 @@ func NewSimpleClientset(objects ...runtime.Object) *Clientset {
 type Clientset struct {
 	testing.Fake
 	discovery *fakediscovery.FakeDiscovery
+	tracker   testing.ObjectTracker
 }
 
 func (c *Clientset) Discovery() discovery.DiscoveryInterface {
 	return c.discovery
+}
+
+func (c *Clientset) Tracker() testing.ObjectTracker {
+	return c.tracker
 }
 
 var _ clientset.Interface = &Clientset{}

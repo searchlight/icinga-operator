@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -30,26 +30,25 @@ const (
 // +genclient:skipVerbs=get,list,update,patch,deleteCollection,watch
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
 type Acknowledgement struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
 
-	Request  AcknowledgementRequest  `json:"request"`
-	Response AcknowledgementResponse `json:"response,omitempty"`
+	Request  AcknowledgementRequest  `json:"request" protobuf:"bytes,2,opt,name=request"`
+	Response AcknowledgementResponse `json:"response,omitempty" protobuf:"bytes,3,opt,name=response"`
 }
 
 type AcknowledgementRequest struct {
 	// Comment by user
-	Comment string `json:"comment"`
+	Comment string `json:"comment" protobuf:"bytes,1,opt,name=comment"`
 
 	// Skip sending notification
 	// +optional
-	SkipNotify bool `json:"skipNotify,omitempty"`
+	SkipNotify bool `json:"skipNotify,omitempty" protobuf:"varint,2,opt,name=skipNotify"`
 }
 
 type AcknowledgementResponse struct {
 	// The time at which the acknowledgement was done.
 	// +optional
-	Timestamp metav1.Time `json:"timestamp,omitempty"`
+	Timestamp metav1.Time `json:"timestamp,omitempty" protobuf:"bytes,1,opt,name=timestamp"`
 }

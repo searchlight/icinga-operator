@@ -31,8 +31,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Unknwon/com"
 	"github.com/go-macaron/inject"
+	"github.com/unknwon/com"
 	"golang.org/x/crypto/pbkdf2"
 )
 
@@ -68,6 +68,7 @@ type Request struct {
 	*http.Request
 }
 
+// Body returns a RequestBody for the request
 func (r *Request) Body() *RequestBody {
 	return &RequestBody{r.Request.Body}
 }
@@ -75,6 +76,7 @@ func (r *Request) Body() *RequestBody {
 // ContextInvoker is an inject.FastInvoker wrapper of func(ctx *Context).
 type ContextInvoker func(ctx *Context)
 
+// Invoke implements inject.FastInvoker which simplifies calls of `func(ctx *Context)` function.
 func (invoke ContextInvoker) Invoke(params []interface{}) ([]reflect.Value, error) {
 	invoke(params[0].(*Context))
 	return nil, nil
@@ -97,41 +99,43 @@ type Context struct {
 	Data map[string]interface{}
 }
 
-func (c *Context) handler() Handler {
-	if c.index < len(c.handlers) {
-		return c.handlers[c.index]
+func (ctx *Context) handler() Handler {
+	if ctx.index < len(ctx.handlers) {
+		return ctx.handlers[ctx.index]
 	}
-	if c.index == len(c.handlers) {
-		return c.action
+	if ctx.index == len(ctx.handlers) {
+		return ctx.action
 	}
 	panic("invalid index for context handler")
 }
 
-func (c *Context) Next() {
-	c.index += 1
-	c.run()
+// Next runs the next handler in the context chain
+func (ctx *Context) Next() {
+	ctx.index++
+	ctx.run()
 }
 
-func (c *Context) Written() bool {
-	return c.Resp.Written()
+// Written returns whether the context response has been written to
+func (ctx *Context) Written() bool {
+	return ctx.Resp.Written()
 }
 
-func (c *Context) run() {
-	for c.index <= len(c.handlers) {
-		vals, err := c.Invoke(c.handler())
+func (ctx *Context) run() {
+	for ctx.index <= len(ctx.handlers) {
+		vals, err := ctx.Invoke(ctx.handler())
 		if err != nil {
 			panic(err)
 		}
-		c.index += 1
+		ctx.index++
 
 		// if the handler returned something, write it to the http response
 		if len(vals) > 0 {
-			ev := c.GetVal(reflect.TypeOf(ReturnHandler(nil)))
+			ev := ctx.GetVal(reflect.TypeOf(ReturnHandler(nil)))
 			handleReturn := ev.Interface().(ReturnHandler)
-			handleReturn(c, vals)
+			handleReturn(ctx, vals)
 		}
 
-		if c.Written() {
+		if ctx.Written() {
 			return
 		}
 	}
@@ -162,16 +166,17 @@ func (ctx *Context) renderHTML(status int, setName, tplName string, data ...inte
 	}
 }
 
-// HTML calls Render.HTML but allows less arguments.
+// HTML renders the HTML with default template set.
 func (ctx *Context) HTML(status int, name string, data ...interface{}) {
 	ctx.renderHTML(status, DEFAULT_TPL_SET_NAME, name, data...)
 }
 
-// HTML calls Render.HTMLSet but allows less arguments.
+// HTMLSet renders the HTML with given template set name.
 func (ctx *Context) HTMLSet(status int, setName, tplName string, data ...interface{}) {
 	ctx.renderHTML(status, setName, tplName, data...)
 }
 
+// Redirect sends a redirect response
 func (ctx *Context) Redirect(location string, status ...int) {
 	code := http.StatusFound
 	if len(status) == 1 {
@@ -181,7 +186,7 @@ func (ctx *Context) Redirect(location string, status ...int) {
 	http.Redirect(ctx.Resp, ctx.Req.Request, location, code)
 }
 
-// Maximum amount of memory to use when parsing a multipart form.
+// MaxMemory is the maximum amount of memory to use when parsing a multipart form.
 // Set this to whatever value you prefer; default is 10 MB.
 var MaxMemory = int64(1024 * 1024 * 10)
 
@@ -193,9 +198,9 @@ func (ctx *Context) parseForm() {
 	contentType := ctx.Req.Header.Get(_CONTENT_TYPE)
 	if (ctx.Req.Method == "POST" || ctx.Req.Method == "PUT") &&
 		len(contentType) > 0 && strings.Contains(contentType, "multipart/form-data") {
-		ctx.Req.ParseMultipartForm(MaxMemory)
+		_ = ctx.Req.ParseMultipartForm(MaxMemory)
 	} else {
-		ctx.Req.ParseForm()
+		_ = ctx.Req.ParseForm()
 	}
 }
 
@@ -260,9 +265,14 @@ func (ctx *Context) Params(name string) string {
 	return ctx.params[name]
 }
 
+// AllParams returns all params.
+func (ctx *Context) AllParams() Params {
+	return ctx.params
+}
+
 // SetParams sets value of param with given name.
 func (ctx *Context) SetParams(name, val string) {
-	if !strings.HasPrefix(name, ":") {
+	if name != "*" && !strings.HasPrefix(name, ":") {
 		name = ":" + name
 	}
 	ctx.params[name] = val
@@ -270,7 +280,7 @@ func (ctx *Context) SetParams(name, val string) {
 
 // ReplaceAllParams replace all current params with given params
 func (ctx *Context) ReplaceAllParams(params Params) {
-	ctx.params = params;
+	ctx.params = params
 }
 
 // ParamsEscape returns escapred params result.
@@ -336,6 +346,8 @@ func (ctx *Context) SetCookie(name string, value string, others ...interface{}) 
 			cookie.MaxAge = int(v)
 		case int32:
 			cookie.MaxAge = int(v)
+		case func(*http.Cookie):
+			v(&cookie)
 		}
 	}
 
@@ -343,12 +355,16 @@ func (ctx *Context) SetCookie(name string, value string, others ...interface{}) 
 	if len(others) > 1 {
 		if v, ok := others[1].(string); ok && len(v) > 0 {
 			cookie.Path = v
+		} else if v, ok := others[1].(func(*http.Cookie)); ok {
+			v(&cookie)
 		}
 	}
 
 	if len(others) > 2 {
 		if v, ok := others[2].(string); ok && len(v) > 0 {
 			cookie.Domain = v
+		} else if v, ok := others[1].(func(*http.Cookie)); ok {
+			v(&cookie)
 		}
 	}
 
@@ -356,6 +372,8 @@ func (ctx *Context) SetCookie(name string, value string, others ...interface{}) 
 		switch v := others[3].(type) {
 		case bool:
 			cookie.Secure = v
+		case func(*http.Cookie):
+			v(&cookie)
 		default:
 			if others[3] != nil {
 				cookie.Secure = true
@@ -366,6 +384,8 @@ func (ctx *Context) SetCookie(name string, value string, others ...interface{}) 
 	if len(others) > 4 {
 		if v, ok := others[4].(bool); ok && v {
 			cookie.HttpOnly = true
+		} else if v, ok := others[1].(func(*http.Cookie)); ok {
+			v(&cookie)
 		}
 	}
 
@@ -373,6 +393,16 @@ func (ctx *Context) SetCookie(name string, value string, others ...interface{}) 
 		if v, ok := others[5].(time.Time); ok {
 			cookie.Expires = v
 			cookie.RawExpires = v.Format(time.UnixDate)
+		} else if v, ok := others[1].(func(*http.Cookie)); ok {
+			v(&cookie)
+		}
+	}
+
+	if len(others) > 6 {
+		for _, other := range others[6:] {
+			if v, ok := other.(func(*http.Cookie)); ok {
+				v(&cookie)
+			}
 		}
 	}
 

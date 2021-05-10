@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,7 +19,10 @@ limitations under the License.
 package fake
 
 import (
-	v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"context"
+
+	v1alpha1 "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
@@ -39,7 +42,7 @@ var incidentsResource = schema.GroupVersionResource{Group: "monitoring.appscode.
 var incidentsKind = schema.GroupVersionKind{Group: "monitoring.appscode.com", Version: "v1alpha1", Kind: "Incident"}
 
 // Get takes name of the incident, and returns the corresponding incident object, and an error if there is any.
-func (c *FakeIncidents) Get(name string, options v1.GetOptions) (result *v1alpha1.Incident, err error) {
+func (c *FakeIncidents) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.Incident, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewGetAction(incidentsResource, c.ns, name), &v1alpha1.Incident{})
 
@@ -50,7 +53,7 @@ func (c *FakeIncidents) Get(name string, options v1.GetOptions) (result *v1alpha
 }
 
 // List takes label and field selectors, and returns the list of Incidents that match those selectors.
-func (c *FakeIncidents) List(opts v1.ListOptions) (result *v1alpha1.IncidentList, err error) {
+func (c *FakeIncidents) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.IncidentList, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewListAction(incidentsResource, incidentsKind, c.ns, opts), &v1alpha1.IncidentList{})
 
@@ -72,14 +75,14 @@ func (c *FakeIncidents) List(opts v1.ListOptions) (result *v1alpha1.IncidentList
 }
 
 // Watch returns a watch.Interface that watches the requested incidents.
-func (c *FakeIncidents) Watch(opts v1.ListOptions) (watch.Interface, error) {
+func (c *FakeIncidents) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
 		InvokesWatch(testing.NewWatchAction(incidentsResource, c.ns, opts))
 
 }
 
 // Create takes the representation of a incident and creates it.  Returns the server's representation of the incident, and an error, if there is any.
-func (c *FakeIncidents) Create(incident *v1alpha1.Incident) (result *v1alpha1.Incident, err error) {
+func (c *FakeIncidents) Create(ctx context.Context, incident *v1alpha1.Incident, opts v1.CreateOptions) (result *v1alpha1.Incident, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewCreateAction(incidentsResource, c.ns, incident), &v1alpha1.Incident{})
 
@@ -90,7 +93,7 @@ func (c *FakeIncidents) Create(incident *v1alpha1.Incident) (result *v1alpha1.In
 }
 
 // Update takes the representation of a incident and updates it. Returns the server's representation of the incident, and an error, if there is any.
-func (c *FakeIncidents) Update(incident *v1alpha1.Incident) (result *v1alpha1.Incident, err error) {
+func (c *FakeIncidents) Update(ctx context.Context, incident *v1alpha1.Incident, opts v1.UpdateOptions) (result *v1alpha1.Incident, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewUpdateAction(incidentsResource, c.ns, incident), &v1alpha1.Incident{})
 
@@ -102,7 +105,7 @@ func (c *FakeIncidents) Update(incident *v1alpha1.Incident) (result *v1alpha1.In
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-func (c *FakeIncidents) UpdateStatus(incident *v1alpha1.Incident) (*v1alpha1.Incident, error) {
+func (c *FakeIncidents) UpdateStatus(ctx context.Context, incident *v1alpha1.Incident, opts v1.UpdateOptions) (*v1alpha1.Incident, error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewUpdateSubresourceAction(incidentsResource, "status", c.ns, incident), &v1alpha1.Incident{})
 
@@ -113,7 +116,7 @@ func (c *FakeIncidents) UpdateStatus(incident *v1alpha1.Incident) (*v1alpha1.Inc
 }
 
 // Delete takes name of the incident and deletes it. Returns an error if one occurs.
-func (c *FakeIncidents) Delete(name string, options *v1.DeleteOptions) error {
+func (c *FakeIncidents) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	_, err := c.Fake.
 		Invokes(testing.NewDeleteAction(incidentsResource, c.ns, name), &v1alpha1.Incident{})
 
@@ -121,15 +124,15 @@ func (c *FakeIncidents) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeIncidents) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(incidentsResource, c.ns, listOptions)
+func (c *FakeIncidents) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(incidentsResource, c.ns, listOpts)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.IncidentList{})
 	return err
 }
 
 // Patch applies the patch and returns the patched incident.
-func (c *FakeIncidents) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Incident, err error) {
+func (c *FakeIncidents) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.Incident, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewPatchSubresourceAction(incidentsResource, c.ns, name, pt, data, subresources...), &v1alpha1.Incident{})
 

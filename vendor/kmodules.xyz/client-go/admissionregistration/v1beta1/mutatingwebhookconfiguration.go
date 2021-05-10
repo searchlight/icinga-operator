@@ -1,10 +1,25 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package v1beta1
 
 import (
 	"context"
 	"fmt"
 
-	"github.com/golang/glog"
 	"github.com/pkg/errors"
 	reg "k8s.io/api/admissionregistration/v1beta1"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
@@ -12,6 +27,7 @@ import (
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/strategicpatch"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/apimachinery/pkg/watch"
@@ -19,14 +35,15 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	watchtools "k8s.io/client-go/tools/watch"
+	"k8s.io/klog/v2"
 	kutil "kmodules.xyz/client-go"
 )
 
-func CreateOrPatchMutatingWebhookConfiguration(c kubernetes.Interface, name string, transform func(*reg.MutatingWebhookConfiguration) *reg.MutatingWebhookConfiguration) (*reg.MutatingWebhookConfiguration, kutil.VerbType, error) {
-	cur, err := c.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().Get(name, metav1.GetOptions{})
+func CreateOrPatchMutatingWebhookConfiguration(ctx context.Context, c kubernetes.Interface, name string, transform func(*reg.MutatingWebhookConfiguration) *reg.MutatingWebhookConfiguration, opts metav1.PatchOptions) (*reg.MutatingWebhookConfiguration, kutil.VerbType, error) {
+	cur, err := c.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().Get(ctx, name, metav1.GetOptions{})
 	if kerr.IsNotFound(err) {
-		glog.V(3).Infof("Creating MutatingWebhookConfiguration %s.", name)
-		out, err := c.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().Create(transform(&reg.MutatingWebhookConfiguration{
+		klog.V(3).Infof("Creating MutatingWebhookConfiguration %s.", name)
+		out, err := c.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().Create(ctx, transform(&reg.MutatingWebhookConfiguration{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       "MutatingWebhookConfiguration",
 				APIVersion: reg.SchemeGroupVersion.String(),
@@ -34,19 +51,22 @@ func CreateOrPatchMutatingWebhookConfiguration(c kubernetes.Interface, name stri
 			ObjectMeta: metav1.ObjectMeta{
 				Name: name,
 			},
-		}))
+		}), metav1.CreateOptions{
+			DryRun:       opts.DryRun,
+			FieldManager: opts.FieldManager,
+		})
 		return out, kutil.VerbCreated, err
 	} else if err != nil {
 		return nil, kutil.VerbUnchanged, err
 	}
-	return PatchMutatingWebhookConfiguration(c, cur, transform)
+	return PatchMutatingWebhookConfiguration(ctx, c, cur, transform, opts)
 }
 
-func PatchMutatingWebhookConfiguration(c kubernetes.Interface, cur *reg.MutatingWebhookConfiguration, transform func(*reg.MutatingWebhookConfiguration) *reg.MutatingWebhookConfiguration) (*reg.MutatingWebhookConfiguration, kutil.VerbType, error) {
-	return PatchMutatingWebhookConfigurationObject(c, cur, transform(cur.DeepCopy()))
+func PatchMutatingWebhookConfiguration(ctx context.Context, c kubernetes.Interface, cur *reg.MutatingWebhookConfiguration, transform func(*reg.MutatingWebhookConfiguration) *reg.MutatingWebhookConfiguration, opts metav1.PatchOptions) (*reg.MutatingWebhookConfiguration, kutil.VerbType, error) {
+	return PatchMutatingWebhookConfigurationObject(ctx, c, cur, transform(cur.DeepCopy()), opts)
 }
 
-func PatchMutatingWebhookConfigurationObject(c kubernetes.Interface, cur, mod *reg.MutatingWebhookConfiguration) (*reg.MutatingWebhookConfiguration, kutil.VerbType, error) {
+func PatchMutatingWebhookConfigurationObject(ctx context.Context, c kubernetes.Interface, cur, mod *reg.MutatingWebhookConfiguration, opts metav1.PatchOptions) (*reg.MutatingWebhookConfiguration, kutil.VerbType, error) {
 	curJson, err := json.Marshal(cur)
 	if err != nil {
 		return nil, kutil.VerbUnchanged, err
@@ -64,23 +84,23 @@ func PatchMutatingWebhookConfigurationObject(c kubernetes.Interface, cur, mod *r
 	if len(patch) == 0 || string(patch) == "{}" {
 		return cur, kutil.VerbUnchanged, nil
 	}
-	glog.V(3).Infof("Patching MutatingWebhookConfiguration %s with %s.", cur.Name, string(patch))
-	out, err := c.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().Patch(cur.Name, types.StrategicMergePatchType, patch)
+	klog.V(3).Infof("Patching MutatingWebhookConfiguration %s with %s.", cur.Name, string(patch))
+	out, err := c.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().Patch(ctx, cur.Name, types.StrategicMergePatchType, patch, opts)
 	return out, kutil.VerbPatched, err
 }
 
-func TryUpdateMutatingWebhookConfiguration(c kubernetes.Interface, name string, transform func(*reg.MutatingWebhookConfiguration) *reg.MutatingWebhookConfiguration) (result *reg.MutatingWebhookConfiguration, err error) {
+func TryUpdateMutatingWebhookConfiguration(ctx context.Context, c kubernetes.Interface, name string, transform func(*reg.MutatingWebhookConfiguration) *reg.MutatingWebhookConfiguration, opts metav1.UpdateOptions) (result *reg.MutatingWebhookConfiguration, err error) {
 	attempt := 0
 	err = wait.PollImmediate(kutil.RetryInterval, kutil.RetryTimeout, func() (bool, error) {
 		attempt++
-		cur, e2 := c.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().Get(name, metav1.GetOptions{})
+		cur, e2 := c.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().Get(ctx, name, metav1.GetOptions{})
 		if kerr.IsNotFound(e2) {
 			return false, e2
 		} else if e2 == nil {
-			result, e2 = c.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().Update(transform(cur.DeepCopy()))
+			result, e2 = c.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().Update(ctx, transform(cur.DeepCopy()), opts)
 			return e2 == nil, nil
 		}
-		glog.Errorf("Attempt %d failed to update MutatingWebhookConfiguration %s due to %v.", attempt, cur.Name, e2)
+		klog.Errorf("Attempt %d failed to update MutatingWebhookConfiguration %s due to %v.", attempt, cur.Name, e2)
 		return false, nil
 	})
 
@@ -104,11 +124,11 @@ func UpdateMutatingWebhookCABundle(config *rest.Config, webhookConfigName string
 	lw := &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
 			options.FieldSelector = fields.OneTermEqualSelector(kutil.ObjectNameField, webhookConfigName).String()
-			return kc.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().List(options)
+			return kc.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().List(ctx, options)
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
 			options.FieldSelector = fields.OneTermEqualSelector(kutil.ObjectNameField, webhookConfigName).String()
-			return kc.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().Watch(options)
+			return kc.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().Watch(ctx, options)
 		},
 	}
 
@@ -121,14 +141,14 @@ func UpdateMutatingWebhookCABundle(config *rest.Config, webhookConfigName string
 				return false, errors.New("error watching")
 			case watch.Added, watch.Modified:
 				cur := event.Object.(*reg.MutatingWebhookConfiguration)
-				_, _, err := PatchMutatingWebhookConfiguration(kc, cur, func(in *reg.MutatingWebhookConfiguration) *reg.MutatingWebhookConfiguration {
+				_, _, err := PatchMutatingWebhookConfiguration(context.TODO(), kc, cur, func(in *reg.MutatingWebhookConfiguration) *reg.MutatingWebhookConfiguration {
 					for i := range in.Webhooks {
 						in.Webhooks[i].ClientConfig.CABundle = config.CAData
 					}
 					return in
-				})
+				}, metav1.PatchOptions{})
 				if err != nil {
-					glog.Warning(err)
+					klog.Warning(err)
 				}
 				return err == nil, err
 			default:
@@ -159,40 +179,43 @@ func SyncMutatingWebhookCABundle(config *rest.Config, webhookConfigName string) 
 	lw := &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
 			options.FieldSelector = fields.OneTermEqualSelector(kutil.ObjectNameField, webhookConfigName).String()
-			return kc.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().List(options)
+			return kc.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().List(ctx, options)
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
 			options.FieldSelector = fields.OneTermEqualSelector(kutil.ObjectNameField, webhookConfigName).String()
-			return kc.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().Watch(options)
+			return kc.AdmissionregistrationV1beta1().MutatingWebhookConfigurations().Watch(ctx, options)
 		},
 	}
 
-	go watchtools.UntilWithSync(
-		ctx,
-		lw,
-		&reg.MutatingWebhookConfiguration{},
-		nil,
-		func(event watch.Event) (bool, error) {
-			switch event.Type {
-			case watch.Deleted:
-				return false, nil
-			case watch.Error:
-				return false, errors.New("error watching")
-			case watch.Added, watch.Modified:
-				cur := event.Object.(*reg.MutatingWebhookConfiguration)
-				_, _, err := PatchMutatingWebhookConfiguration(kc, cur, func(in *reg.MutatingWebhookConfiguration) *reg.MutatingWebhookConfiguration {
-					for i := range in.Webhooks {
-						in.Webhooks[i].ClientConfig.CABundle = config.CAData
+	go func() {
+		_, err := watchtools.UntilWithSync(
+			ctx,
+			lw,
+			&reg.MutatingWebhookConfiguration{},
+			nil,
+			func(event watch.Event) (bool, error) {
+				switch event.Type {
+				case watch.Deleted:
+					return false, nil
+				case watch.Error:
+					return false, errors.New("error watching")
+				case watch.Added, watch.Modified:
+					cur := event.Object.(*reg.MutatingWebhookConfiguration)
+					_, _, err := PatchMutatingWebhookConfiguration(context.TODO(), kc, cur, func(in *reg.MutatingWebhookConfiguration) *reg.MutatingWebhookConfiguration {
+						for i := range in.Webhooks {
+							in.Webhooks[i].ClientConfig.CABundle = config.CAData
+						}
+						return in
+					}, metav1.PatchOptions{})
+					if err != nil {
+						klog.Warning(err)
 					}
-					return in
-				})
-				if err != nil {
-					glog.Warning(err)
+					return false, nil // continue
+				default:
+					return false, fmt.Errorf("unexpected event type: %v", event.Type)
 				}
-				return false, nil // continue
-			default:
-				return false, fmt.Errorf("unexpected event type: %v", event.Type)
-			}
-		})
+			})
+		utilruntime.Must(err)
+	}()
 	return
 }

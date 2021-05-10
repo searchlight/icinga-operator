@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,10 +19,12 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"context"
 	"time"
 
-	v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	scheme "github.com/appscode/searchlight/client/clientset/versioned/scheme"
+	v1alpha1 "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+	scheme "go.searchlight.dev/icinga-operator/client/clientset/versioned/scheme"
+
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
@@ -37,15 +39,15 @@ type IncidentsGetter interface {
 
 // IncidentInterface has methods to work with Incident resources.
 type IncidentInterface interface {
-	Create(*v1alpha1.Incident) (*v1alpha1.Incident, error)
-	Update(*v1alpha1.Incident) (*v1alpha1.Incident, error)
-	UpdateStatus(*v1alpha1.Incident) (*v1alpha1.Incident, error)
-	Delete(name string, options *v1.DeleteOptions) error
-	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.Incident, error)
-	List(opts v1.ListOptions) (*v1alpha1.IncidentList, error)
-	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Incident, err error)
+	Create(ctx context.Context, incident *v1alpha1.Incident, opts v1.CreateOptions) (*v1alpha1.Incident, error)
+	Update(ctx context.Context, incident *v1alpha1.Incident, opts v1.UpdateOptions) (*v1alpha1.Incident, error)
+	UpdateStatus(ctx context.Context, incident *v1alpha1.Incident, opts v1.UpdateOptions) (*v1alpha1.Incident, error)
+	Delete(ctx context.Context, name string, opts v1.DeleteOptions) error
+	DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error
+	Get(ctx context.Context, name string, opts v1.GetOptions) (*v1alpha1.Incident, error)
+	List(ctx context.Context, opts v1.ListOptions) (*v1alpha1.IncidentList, error)
+	Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error)
+	Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.Incident, err error)
 	IncidentExpansion
 }
 
@@ -64,20 +66,20 @@ func newIncidents(c *MonitoringV1alpha1Client, namespace string) *incidents {
 }
 
 // Get takes name of the incident, and returns the corresponding incident object, and an error if there is any.
-func (c *incidents) Get(name string, options v1.GetOptions) (result *v1alpha1.Incident, err error) {
+func (c *incidents) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.Incident, err error) {
 	result = &v1alpha1.Incident{}
 	err = c.client.Get().
 		Namespace(c.ns).
 		Resource("incidents").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
 
 // List takes label and field selectors, and returns the list of Incidents that match those selectors.
-func (c *incidents) List(opts v1.ListOptions) (result *v1alpha1.IncidentList, err error) {
+func (c *incidents) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.IncidentList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
@@ -88,13 +90,13 @@ func (c *incidents) List(opts v1.ListOptions) (result *v1alpha1.IncidentList, er
 		Resource("incidents").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
 
 // Watch returns a watch.Interface that watches the requested incidents.
-func (c *incidents) Watch(opts v1.ListOptions) (watch.Interface, error) {
+func (c *incidents) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
@@ -105,87 +107,90 @@ func (c *incidents) Watch(opts v1.ListOptions) (watch.Interface, error) {
 		Resource("incidents").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Watch()
+		Watch(ctx)
 }
 
 // Create takes the representation of a incident and creates it.  Returns the server's representation of the incident, and an error, if there is any.
-func (c *incidents) Create(incident *v1alpha1.Incident) (result *v1alpha1.Incident, err error) {
+func (c *incidents) Create(ctx context.Context, incident *v1alpha1.Incident, opts v1.CreateOptions) (result *v1alpha1.Incident, err error) {
 	result = &v1alpha1.Incident{}
 	err = c.client.Post().
 		Namespace(c.ns).
 		Resource("incidents").
+		VersionedParams(&opts, scheme.ParameterCodec).
 		Body(incident).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
 
 // Update takes the representation of a incident and updates it. Returns the server's representation of the incident, and an error, if there is any.
-func (c *incidents) Update(incident *v1alpha1.Incident) (result *v1alpha1.Incident, err error) {
+func (c *incidents) Update(ctx context.Context, incident *v1alpha1.Incident, opts v1.UpdateOptions) (result *v1alpha1.Incident, err error) {
 	result = &v1alpha1.Incident{}
 	err = c.client.Put().
 		Namespace(c.ns).
 		Resource("incidents").
 		Name(incident.Name).
+		VersionedParams(&opts, scheme.ParameterCodec).
 		Body(incident).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
 
 // UpdateStatus was generated because the type contains a Status member.
 // Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-
-func (c *incidents) UpdateStatus(incident *v1alpha1.Incident) (result *v1alpha1.Incident, err error) {
+func (c *incidents) UpdateStatus(ctx context.Context, incident *v1alpha1.Incident, opts v1.UpdateOptions) (result *v1alpha1.Incident, err error) {
 	result = &v1alpha1.Incident{}
 	err = c.client.Put().
 		Namespace(c.ns).
 		Resource("incidents").
 		Name(incident.Name).
 		SubResource("status").
+		VersionedParams(&opts, scheme.ParameterCodec).
 		Body(incident).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
 
 // Delete takes name of the incident and deletes it. Returns an error if one occurs.
-func (c *incidents) Delete(name string, options *v1.DeleteOptions) error {
+func (c *incidents) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	return c.client.Delete().
 		Namespace(c.ns).
 		Resource("incidents").
 		Name(name).
-		Body(options).
-		Do().
+		Body(&opts).
+		Do(ctx).
 		Error()
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *incidents) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *incidents) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
 	var timeout time.Duration
-	if listOptions.TimeoutSeconds != nil {
-		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
+	if listOpts.TimeoutSeconds != nil {
+		timeout = time.Duration(*listOpts.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
 		Namespace(c.ns).
 		Resource("incidents").
-		VersionedParams(&listOptions, scheme.ParameterCodec).
+		VersionedParams(&listOpts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Body(options).
-		Do().
+		Body(&opts).
+		Do(ctx).
 		Error()
 }
 
 // Patch applies the patch and returns the patched incident.
-func (c *incidents) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.Incident, err error) {
+func (c *incidents) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.Incident, err error) {
 	result = &v1alpha1.Incident{}
 	err = c.client.Patch(pt).
 		Namespace(c.ns).
 		Resource("incidents").
-		SubResource(subresources...).
 		Name(name).
+		SubResource(subresources...).
+		VersionedParams(&opts, scheme.ParameterCodec).
 		Body(data).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }

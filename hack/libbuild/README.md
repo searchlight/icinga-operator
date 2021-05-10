@@ -15,7 +15,7 @@ git subtree pull --prefix hack/libbuild https://github.com/appscode/libbuild.git
 ```
 
 To learn about `git subtree`, check the following articles:
- * http://blogs.atlassian.com/2013/05/alternatives-to-git-submodule-git-subtree/
+ * http://bkglog.atlassian.com/2013/05/alternatives-to-git-submodule-git-subtree/
  * https://developer.atlassian.com/blog/2015/05/the-power-of-git-subtree/
 
 ### Using from python scripts

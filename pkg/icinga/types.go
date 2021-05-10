@@ -1,12 +1,30 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package icinga
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strings"
 
-	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	cs "github.com/appscode/searchlight/client/clientset/versioned"
+	api "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+	cs "go.searchlight.dev/icinga-operator/client/clientset/versioned"
+
 	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -49,11 +67,11 @@ func (kh IcingaHost) Name() (string, error) {
 func (kh IcingaHost) GetAlert(extClient cs.Interface, alertName string) (api.Alert, error) {
 	switch kh.Type {
 	case TypePod:
-		return extClient.MonitoringV1alpha1().PodAlerts(kh.AlertNamespace).Get(alertName, metav1.GetOptions{})
+		return extClient.MonitoringV1alpha1().PodAlerts(kh.AlertNamespace).Get(context.TODO(), alertName, metav1.GetOptions{})
 	case TypeNode:
-		return extClient.MonitoringV1alpha1().NodeAlerts(kh.AlertNamespace).Get(alertName, metav1.GetOptions{})
+		return extClient.MonitoringV1alpha1().NodeAlerts(kh.AlertNamespace).Get(context.TODO(), alertName, metav1.GetOptions{})
 	case TypeCluster:
-		return extClient.MonitoringV1alpha1().ClusterAlerts(kh.AlertNamespace).Get(alertName, metav1.GetOptions{})
+		return extClient.MonitoringV1alpha1().ClusterAlerts(kh.AlertNamespace).Get(context.TODO(), alertName, metav1.GetOptions{})
 	}
 	return nil, errors.Errorf("unknown host type %s", kh.Type)
 }

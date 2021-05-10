@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,17 +19,21 @@ limitations under the License.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	v1alpha1 "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/tools/cache"
 )
 
 // SearchlightPluginLister helps list SearchlightPlugins.
+// All objects returned here must be treated as read-only.
 type SearchlightPluginLister interface {
 	// List lists all SearchlightPlugins in the indexer.
+	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.SearchlightPlugin, err error)
 	// Get retrieves the SearchlightPlugin from the index for a given name.
+	// Objects returned here must be treated as read-only.
 	Get(name string) (*v1alpha1.SearchlightPlugin, error)
 	SearchlightPluginListerExpansion
 }

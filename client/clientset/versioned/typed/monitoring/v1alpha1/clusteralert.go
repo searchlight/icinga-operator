@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,10 +19,12 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"context"
 	"time"
 
-	v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	scheme "github.com/appscode/searchlight/client/clientset/versioned/scheme"
+	v1alpha1 "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+	scheme "go.searchlight.dev/icinga-operator/client/clientset/versioned/scheme"
+
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
@@ -37,14 +39,15 @@ type ClusterAlertsGetter interface {
 
 // ClusterAlertInterface has methods to work with ClusterAlert resources.
 type ClusterAlertInterface interface {
-	Create(*v1alpha1.ClusterAlert) (*v1alpha1.ClusterAlert, error)
-	Update(*v1alpha1.ClusterAlert) (*v1alpha1.ClusterAlert, error)
-	Delete(name string, options *v1.DeleteOptions) error
-	DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error
-	Get(name string, options v1.GetOptions) (*v1alpha1.ClusterAlert, error)
-	List(opts v1.ListOptions) (*v1alpha1.ClusterAlertList, error)
-	Watch(opts v1.ListOptions) (watch.Interface, error)
-	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ClusterAlert, err error)
+	Create(ctx context.Context, clusterAlert *v1alpha1.ClusterAlert, opts v1.CreateOptions) (*v1alpha1.ClusterAlert, error)
+	Update(ctx context.Context, clusterAlert *v1alpha1.ClusterAlert, opts v1.UpdateOptions) (*v1alpha1.ClusterAlert, error)
+	UpdateStatus(ctx context.Context, clusterAlert *v1alpha1.ClusterAlert, opts v1.UpdateOptions) (*v1alpha1.ClusterAlert, error)
+	Delete(ctx context.Context, name string, opts v1.DeleteOptions) error
+	DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error
+	Get(ctx context.Context, name string, opts v1.GetOptions) (*v1alpha1.ClusterAlert, error)
+	List(ctx context.Context, opts v1.ListOptions) (*v1alpha1.ClusterAlertList, error)
+	Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error)
+	Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.ClusterAlert, err error)
 	ClusterAlertExpansion
 }
 
@@ -63,20 +66,20 @@ func newClusterAlerts(c *MonitoringV1alpha1Client, namespace string) *clusterAle
 }
 
 // Get takes name of the clusterAlert, and returns the corresponding clusterAlert object, and an error if there is any.
-func (c *clusterAlerts) Get(name string, options v1.GetOptions) (result *v1alpha1.ClusterAlert, err error) {
+func (c *clusterAlerts) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.ClusterAlert, err error) {
 	result = &v1alpha1.ClusterAlert{}
 	err = c.client.Get().
 		Namespace(c.ns).
 		Resource("clusteralerts").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
 
 // List takes label and field selectors, and returns the list of ClusterAlerts that match those selectors.
-func (c *clusterAlerts) List(opts v1.ListOptions) (result *v1alpha1.ClusterAlertList, err error) {
+func (c *clusterAlerts) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.ClusterAlertList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
@@ -87,13 +90,13 @@ func (c *clusterAlerts) List(opts v1.ListOptions) (result *v1alpha1.ClusterAlert
 		Resource("clusteralerts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
 
 // Watch returns a watch.Interface that watches the requested clusterAlerts.
-func (c *clusterAlerts) Watch(opts v1.ListOptions) (watch.Interface, error) {
+func (c *clusterAlerts) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
@@ -104,71 +107,90 @@ func (c *clusterAlerts) Watch(opts v1.ListOptions) (watch.Interface, error) {
 		Resource("clusteralerts").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Watch()
+		Watch(ctx)
 }
 
 // Create takes the representation of a clusterAlert and creates it.  Returns the server's representation of the clusterAlert, and an error, if there is any.
-func (c *clusterAlerts) Create(clusterAlert *v1alpha1.ClusterAlert) (result *v1alpha1.ClusterAlert, err error) {
+func (c *clusterAlerts) Create(ctx context.Context, clusterAlert *v1alpha1.ClusterAlert, opts v1.CreateOptions) (result *v1alpha1.ClusterAlert, err error) {
 	result = &v1alpha1.ClusterAlert{}
 	err = c.client.Post().
 		Namespace(c.ns).
 		Resource("clusteralerts").
+		VersionedParams(&opts, scheme.ParameterCodec).
 		Body(clusterAlert).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
 
 // Update takes the representation of a clusterAlert and updates it. Returns the server's representation of the clusterAlert, and an error, if there is any.
-func (c *clusterAlerts) Update(clusterAlert *v1alpha1.ClusterAlert) (result *v1alpha1.ClusterAlert, err error) {
+func (c *clusterAlerts) Update(ctx context.Context, clusterAlert *v1alpha1.ClusterAlert, opts v1.UpdateOptions) (result *v1alpha1.ClusterAlert, err error) {
 	result = &v1alpha1.ClusterAlert{}
 	err = c.client.Put().
 		Namespace(c.ns).
 		Resource("clusteralerts").
 		Name(clusterAlert.Name).
+		VersionedParams(&opts, scheme.ParameterCodec).
 		Body(clusterAlert).
-		Do().
+		Do(ctx).
+		Into(result)
+	return
+}
+
+// UpdateStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
+func (c *clusterAlerts) UpdateStatus(ctx context.Context, clusterAlert *v1alpha1.ClusterAlert, opts v1.UpdateOptions) (result *v1alpha1.ClusterAlert, err error) {
+	result = &v1alpha1.ClusterAlert{}
+	err = c.client.Put().
+		Namespace(c.ns).
+		Resource("clusteralerts").
+		Name(clusterAlert.Name).
+		SubResource("status").
+		VersionedParams(&opts, scheme.ParameterCodec).
+		Body(clusterAlert).
+		Do(ctx).
 		Into(result)
 	return
 }
 
 // Delete takes name of the clusterAlert and deletes it. Returns an error if one occurs.
-func (c *clusterAlerts) Delete(name string, options *v1.DeleteOptions) error {
+func (c *clusterAlerts) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	return c.client.Delete().
 		Namespace(c.ns).
 		Resource("clusteralerts").
 		Name(name).
-		Body(options).
-		Do().
+		Body(&opts).
+		Do(ctx).
 		Error()
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *clusterAlerts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+func (c *clusterAlerts) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
 	var timeout time.Duration
-	if listOptions.TimeoutSeconds != nil {
-		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
+	if listOpts.TimeoutSeconds != nil {
+		timeout = time.Duration(*listOpts.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
 		Namespace(c.ns).
 		Resource("clusteralerts").
-		VersionedParams(&listOptions, scheme.ParameterCodec).
+		VersionedParams(&listOpts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Body(options).
-		Do().
+		Body(&opts).
+		Do(ctx).
 		Error()
 }
 
 // Patch applies the patch and returns the patched clusterAlert.
-func (c *clusterAlerts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ClusterAlert, err error) {
+func (c *clusterAlerts) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.ClusterAlert, err error) {
 	result = &v1alpha1.ClusterAlert{}
 	err = c.client.Patch(pt).
 		Namespace(c.ns).
 		Resource("clusteralerts").
-		SubResource(subresources...).
 		Name(name).
+		SubResource(subresources...).
+		VersionedParams(&opts, scheme.ParameterCodec).
 		Body(data).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }

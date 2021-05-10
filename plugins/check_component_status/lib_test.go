@@ -1,7 +1,26 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package check_component_status
 
 import (
-	"github.com/appscode/searchlight/pkg/icinga"
+	"context"
+
+	"go.searchlight.dev/icinga-operator/pkg/icinga"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	core "k8s.io/api/core/v1"
@@ -30,14 +49,14 @@ var _ = Describe("check_component_status", func() {
 
 	AfterEach(func() {
 		if client != nil {
-			client.Delete(component.Name, &metav1.DeleteOptions{})
+			client.Delete(context.TODO(), component.Name, metav1.DeleteOptions{})
 		}
 	})
 
 	Describe("Check component status", func() {
 		Context("with name", func() {
 			It("healthy", func() {
-				_, err := client.Create(component)
+				_, err := client.Create(context.TODO(), component, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				component.Conditions = []core.ComponentCondition{
@@ -46,14 +65,14 @@ var _ = Describe("check_component_status", func() {
 						Status: core.ConditionTrue,
 					},
 				}
-				_, err = client.Update(component)
+				_, err = client.Update(context.TODO(), component, metav1.UpdateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				state, _ := newPlugin(client, opts).Check()
 				Expect(state).Should(BeIdenticalTo(icinga.OK))
 			})
 			It("unhealthy", func() {
-				_, err := client.Create(component)
+				_, err := client.Create(context.TODO(), component, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				component.Conditions = []core.ComponentCondition{
@@ -62,7 +81,7 @@ var _ = Describe("check_component_status", func() {
 						Status: core.ConditionFalse,
 					},
 				}
-				_, err = client.Update(component)
+				_, err = client.Update(context.TODO(), component, metav1.UpdateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				state, _ := newPlugin(client, opts).Check()
@@ -86,14 +105,14 @@ var _ = Describe("check_component_status", func() {
 			})
 			AfterEach(func() {
 				if client != nil {
-					client.Delete(component2.Name, &metav1.DeleteOptions{})
+					client.Delete(context.TODO(), component2.Name, metav1.DeleteOptions{})
 				}
 			})
 			It("healthy", func() {
-				_, err := client.Create(component)
+				_, err := client.Create(context.TODO(), component, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
-				_, err = client.Create(component2)
+				_, err = client.Create(context.TODO(), component2, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				component.Conditions = []core.ComponentCondition{
@@ -102,17 +121,17 @@ var _ = Describe("check_component_status", func() {
 						Status: core.ConditionTrue,
 					},
 				}
-				_, err = client.Update(component)
+				_, err = client.Update(context.TODO(), component, metav1.UpdateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				state, _ := newPlugin(client, opts).Check()
 				Expect(state).Should(BeIdenticalTo(icinga.OK))
 			})
 			It("unhealthy", func() {
-				_, err := client.Create(component)
+				_, err := client.Create(context.TODO(), component, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
-				_, err = client.Create(component2)
+				_, err = client.Create(context.TODO(), component2, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				component.Conditions = []core.ComponentCondition{
@@ -121,7 +140,7 @@ var _ = Describe("check_component_status", func() {
 						Status: core.ConditionFalse,
 					},
 				}
-				_, err = client.Update(component)
+				_, err = client.Update(context.TODO(), component, metav1.UpdateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				state, _ := newPlugin(client, opts).Check()

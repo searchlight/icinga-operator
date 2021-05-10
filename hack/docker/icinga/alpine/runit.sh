@@ -1,28 +1,42 @@
 #!/bin/bash
 
+# Copyright AppsCode Inc. and Contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 set -x
 set -o errexit
 set -o pipefail
 
 echo "Waiting for icinga configuration ..."
 until [ -f /srv/searchlight/config.ini ] >/dev/null; do
-  echo '.'
-  sleep 5
-  cat /srv/searchlight/config.ini
+    echo '.'
+    sleep 5
+    cat /srv/searchlight/config.ini
 done
 export $(cat /srv/searchlight/config.ini | xargs)
 
 if [ ! -f "/scripts/.icingaweb2" ]; then
-  envsubst </scripts/icingaweb2/authentication.ini >/etc/icingaweb2/authentication.ini
-  envsubst </scripts/icingaweb2/config.ini >/etc/icingaweb2/config.ini
-  envsubst </scripts/icingaweb2/groups.ini >/etc/icingaweb2/groups.ini
-  envsubst </scripts/icingaweb2/resources.ini >/etc/icingaweb2/resources.ini
-  touch /scripts/.icingaweb2
+    envsubst </scripts/icingaweb2/authentication.ini >/etc/icingaweb2/authentication.ini
+    envsubst </scripts/icingaweb2/config.ini >/etc/icingaweb2/config.ini
+    envsubst </scripts/icingaweb2/groups.ini >/etc/icingaweb2/groups.ini
+    envsubst </scripts/icingaweb2/resources.ini >/etc/icingaweb2/resources.ini
+    touch /scripts/.icingaweb2
 fi
 
 if [ ! -f "$DATADIR/.lib_icinga2" ]; then
-  mv /scripts/lib $DATADIR/icinga2
-  touch $DATADIR/.lib_icinga2
+    mv /scripts/lib $DATADIR/icinga2
+    touch $DATADIR/.lib_icinga2
 fi
 chown -R icinga:icinga $DATADIR/icinga2
 rm -rf /var/lib/icinga2
@@ -71,7 +85,7 @@ EOL
 
 # Set icingaweb2 UI admin password, if provided
 if [ -n "$ICINGA_WEB_UI_PASSWORD" ]; then
-  cat >>$DATADIR/scripts/.initdb.sh <<EOL
+    cat >>$DATADIR/scripts/.initdb.sh <<EOL
 passhash=\$(openssl passwd -1 "$ICINGA_WEB_UI_PASSWORD")
 psql -U $ICINGA_WEB_USER -d $ICINGA_WEB_DB <<EOF
 INSERT INTO icingaweb_user (name, active, password_hash) VALUES ('admin', 1, '\$passhash');
@@ -92,8 +106,8 @@ chmod -R 0755 /var/run/config/appscode
 # ref: http://unix.stackexchange.com/a/5279
 echo "Waiting for postgres to become ready ..."
 until pg_isready -h 127.0.0.1 >/dev/null; do
-  echo '.'
-  sleep 5
+    echo '.'
+    sleep 5
 done
 
 # Ensure icinga plugins can read ENV cars

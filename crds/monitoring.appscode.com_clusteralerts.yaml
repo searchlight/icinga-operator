@@ -1,0 +1,105 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/name: searchlight
+  name: clusteralerts.monitoring.appscode.com
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .spec.check
+    name: CheckCommand
+    type: string
+  - JSONPath: .spec.paused
+    name: Paused
+    type: boolean
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
+  group: monitoring.appscode.com
+  names:
+    categories:
+    - monitoring
+    - appscode
+    - all
+    kind: ClusterAlert
+    listKind: ClusterAlertList
+    plural: clusteralerts
+    singular: clusteralert
+  preserveUnknownFields: false
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: 'Spec is the desired state of the ClusterAlert. More info:
+            http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#spec-and-status'
+          properties:
+            alertInterval:
+              description: How frequently notifications will be send
+              type: string
+            check:
+              description: Icinga CheckCommand name
+              type: string
+            checkInterval:
+              description: How frequently Icinga Service will be checked
+              type: string
+            notifierSecretName:
+              description: Secret containing notifier credentials
+              type: string
+            paused:
+              description: Indicates that Check is paused Icinga Services are removed
+              type: boolean
+            receivers:
+              description: NotifierParams contains information to send notifications
+                for Incident State, UserUid, Method
+              items:
+                properties:
+                  notifier:
+                    description: How this notification will be sent
+                    type: string
+                  state:
+                    description: For which state notification will be sent
+                    type: string
+                  to:
+                    description: To whom notification will be sent
+                    items:
+                      type: string
+                    type: array
+                type: object
+              type: array
+            vars:
+              additionalProperties:
+                type: string
+              description: Vars contains Icinga Service variables to be used in CheckCommand
+              type: object
+          type: object
+        status:
+          properties:
+            observedGeneration:
+              description: ObservedGeneration is the most recent generation observed
+                for this BackupBatch. It corresponds to the BackupBatch's generation,
+                which is updated on mutation by the API Server.
+              format: int64
+              type: integer
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true

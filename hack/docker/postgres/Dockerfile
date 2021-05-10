@@ -1,3 +1,4 @@
+
 FROM postgres:9.5-alpine
 
 RUN set -x \

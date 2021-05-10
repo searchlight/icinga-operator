@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@ limitations under the License.
 package install
 
 import (
-	"github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 )

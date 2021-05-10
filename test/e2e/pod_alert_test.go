@@ -1,14 +1,33 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package e2e
 
 import (
-	"github.com/appscode/go/crypto/rand"
-	"github.com/appscode/go/types"
-	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/util"
-	"github.com/appscode/searchlight/test/e2e/framework"
-	. "github.com/appscode/searchlight/test/e2e/matcher"
+	"context"
+
+	api "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+	"go.searchlight.dev/icinga-operator/client/clientset/versioned/typed/monitoring/v1alpha1/util"
+	"go.searchlight.dev/icinga-operator/test/e2e/framework"
+	. "go.searchlight.dev/icinga-operator/test/e2e/matcher"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"gomodules.xyz/pointer"
+	"gomodules.xyz/x/crypto/rand"
 	apps "k8s.io/api/apps/v1beta1"
 	core "k8s.io/api/core/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
@@ -80,10 +99,10 @@ var _ = Describe("PodAlert", func() {
 				Should(HaveIcingaObject(IcingaServiceState{OK: *rs.Spec.Replicas}))
 
 			By("Increase replica")
-			rs, _, err := ext_util.PatchReplicaSet(f.KubeClient(), rs, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
-				in.Spec.Replicas = types.Int32P(3)
+			rs, _, err := ext_util.PatchReplicaSet(context.TODO(), f.KubeClient(), rs, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
+				in.Spec.Replicas = pointer.Int32P(3)
 				return in
-			})
+			}, metav1.PatchOptions{})
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Wait for Running pods")
@@ -119,10 +138,10 @@ var _ = Describe("PodAlert", func() {
 				Should(HaveIcingaObject(IcingaServiceState{OK: *rs.Spec.Replicas}))
 
 			By("Decreate replica")
-			rs, _, err := ext_util.PatchReplicaSet(f.KubeClient(), rs, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
-				in.Spec.Replicas = types.Int32P(1)
+			rs, _, err := ext_util.PatchReplicaSet(context.TODO(), f.KubeClient(), rs, func(in *extensions.ReplicaSet) *extensions.ReplicaSet {
+				in.Spec.Replicas = pointer.Int32P(1)
 				return in
-			})
+			}, metav1.PatchOptions{})
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Check icinga services")
@@ -160,12 +179,12 @@ var _ = Describe("PodAlert", func() {
 			oldAlertSpec := alert.Spec
 
 			By("Change LabelSelector")
-			alert, _, err = util.PatchPodAlert(f.MonitoringClient(), alert, func(in *api.PodAlert) *api.PodAlert {
+			alert, _, err = util.PatchPodAlert(context.TODO(), f.MonitoringClient(), alert, func(in *api.PodAlert) *api.PodAlert {
 				in.Spec.Selector.MatchLabels = map[string]string{
 					"app": rand.WithUniqSuffix("searchlight-e2e"),
 				}
 				return in
-			})
+			}, metav1.PatchOptions{})
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Check icinga services")
@@ -294,10 +313,10 @@ var _ = Describe("PodAlert", func() {
 					Expect(err).NotTo(HaveOccurred())
 
 					By("Patch Pod: " + pod.Name)
-					_, _, err = kutil_core.PatchPod(f.KubeClient(), pod, func(in *core.Pod) *core.Pod {
+					_, _, err = kutil_core.PatchPod(context.TODO(), f.KubeClient(), pod, func(in *core.Pod) *core.Pod {
 						in.Labels["app"] = newAlert.Spec.Selector.MatchLabels["app"]
 						return in
-					})
+					}, metav1.PatchOptions{})
 					Expect(err).NotTo(HaveOccurred())
 
 					By("Check icinga services " + newAlert.Name)

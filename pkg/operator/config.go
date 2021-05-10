@@ -1,13 +1,30 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package operator
 
 import (
 	"time"
 
-	cs "github.com/appscode/searchlight/client/clientset/versioned"
-	mon_informers "github.com/appscode/searchlight/client/informers/externalversions"
-	"github.com/appscode/searchlight/pkg/eventer"
-	"github.com/appscode/searchlight/pkg/icinga"
-	crd_cs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
+	cs "go.searchlight.dev/icinga-operator/client/clientset/versioned"
+	mon_informers "go.searchlight.dev/icinga-operator/client/informers/externalversions"
+	"go.searchlight.dev/icinga-operator/pkg/eventer"
+	"go.searchlight.dev/icinga-operator/pkg/icinga"
+
+	crd_cs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -37,7 +54,7 @@ type OperatorConfig struct {
 	ClientConfig   *rest.Config
 	KubeClient     kubernetes.Interface
 	ExtClient      cs.Interface
-	CRDClient      crd_cs.ApiextensionsV1beta1Interface
+	CRDClient      crd_cs.Interface
 	IcingaClient   *icinga.Client // TODO: init
 	AdmissionHooks []hooks.AdmissionHook
 }

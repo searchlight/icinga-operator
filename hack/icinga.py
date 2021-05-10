@@ -107,7 +107,7 @@ def parse_md():
     schema = {
         'plugin': plugins
     }
-    with open(expanduser("~") + '/go/src/github.com/appscode/searchlight/data/files/icinga.gen.json', 'w') as f:
+    with open(expanduser("~") + '/go/src/go.searchlight.dev/icinga-operator/data/files/icinga.gen.json', 'w') as f:
         return json.dump(schema, f, sort_keys=True, indent=2, separators=(',', ': '))
 
 

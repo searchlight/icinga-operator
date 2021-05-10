@@ -1,0 +1,13 @@
+[
+  {
+    "op": "add",
+    "path": "/spec/validation/openAPIV3Schema/properties/metadata/properties",
+    "value": {
+      "name": {
+        "maxLength": 63,
+        "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
+        "type": "string"
+      }
+    }
+  }
+]

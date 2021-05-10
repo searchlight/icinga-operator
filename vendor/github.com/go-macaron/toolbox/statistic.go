@@ -91,9 +91,9 @@ func (m *UrlMap) GetMap(w io.Writer) {
 
 	sep := fmt.Sprintf("+%s+%s+%s+%s+%s+%s+%s+\n", strings.Repeat("-", 51), strings.Repeat("-", 12),
 		strings.Repeat("-", 18), strings.Repeat("-", 18), strings.Repeat("-", 18), strings.Repeat("-", 18), strings.Repeat("-", 18))
-	fmt.Fprintf(w, sep)
-	fmt.Fprintf(w, "| % -50s| % -10s | % -16s | % -16s | % -16s | % -16s | % -16s |\n", "Request URL", "Method", "Times", "Total Used(s)", "Max Used(μs)", "Min Used(μs)", "Avg Used(μs)")
-	fmt.Fprintf(w, sep)
+	_, _ = fmt.Fprint(w, sep)
+	_, _ = fmt.Fprintf(w, "| % -50s| % -10s | % -16s | % -16s | % -16s | % -16s | % -16s |\n", "Request URL", "Method", "Times", "Total Used(s)", "Max Used(μs)", "Min Used(μs)", "Avg Used(μs)")
+	_, _ = fmt.Fprint(w, sep)
 
 	for k, v := range m.urlmap {
 		for kk, vv := range v {
@@ -103,7 +103,7 @@ func (m *UrlMap) GetMap(w io.Writer) {
 			)
 		}
 	}
-	fmt.Fprintf(w, sep)
+	_, _ = fmt.Fprint(w, sep)
 }
 
 type URLMapInfo struct {

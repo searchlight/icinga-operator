@@ -1,8 +1,27 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package check_node_status
 
 import (
-	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/plugins"
+	"context"
+
+	"go.searchlight.dev/icinga-operator/pkg/icinga"
+	"go.searchlight.dev/icinga-operator/plugins"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/spf13/cobra"
@@ -30,14 +49,14 @@ var _ = Describe("check_node_status", func() {
 
 	AfterEach(func() {
 		if client != nil {
-			client.Delete(node.Name, &metav1.DeleteOptions{})
+			client.Delete(context.TODO(), node.Name, metav1.DeleteOptions{})
 		}
 	})
 
 	Describe("there is a ready node", func() {
 		Context("with no other problems", func() {
 			It("should be OK", func() {
-				_, err := client.Create(node)
+				_, err := client.Create(context.TODO(), node, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				node.Status.Conditions = []core.NodeCondition{
@@ -46,7 +65,7 @@ var _ = Describe("check_node_status", func() {
 						Status: core.ConditionTrue,
 					},
 				}
-				_, err = client.Update(node)
+				_, err = client.Update(context.TODO(), node, metav1.UpdateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				state, _ := newPlugin(client, opts).Check()
@@ -55,7 +74,7 @@ var _ = Describe("check_node_status", func() {
 		})
 		Context("with other problems", func() {
 			It("such as OutOfDisk", func() {
-				_, err := client.Create(node)
+				_, err := client.Create(context.TODO(), node, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				node.Status.Conditions = []core.NodeCondition{
@@ -63,28 +82,20 @@ var _ = Describe("check_node_status", func() {
 						Type:   core.NodeReady,
 						Status: core.ConditionTrue,
 					},
-					{
-						Type:   core.NodeOutOfDisk,
-						Status: core.ConditionTrue,
-					},
 				}
-				_, err = client.Update(node)
+				_, err = client.Update(context.TODO(), node, metav1.UpdateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				state, _ := newPlugin(client, opts).Check()
 				Expect(state).Should(BeIdenticalTo(icinga.Critical))
 			})
 			It("such as OutOfDisk, MemoryPressure", func() {
-				_, err := client.Create(node)
+				_, err := client.Create(context.TODO(), node, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				node.Status.Conditions = []core.NodeCondition{
 					{
 						Type:   core.NodeReady,
-						Status: core.ConditionTrue,
-					},
-					{
-						Type:   core.NodeOutOfDisk,
 						Status: core.ConditionTrue,
 					},
 					{
@@ -100,7 +111,7 @@ var _ = Describe("check_node_status", func() {
 						Status: core.ConditionTrue,
 					},
 				}
-				_, err = client.Update(node)
+				_, err = client.Update(context.TODO(), node, metav1.UpdateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				state, _ := newPlugin(client, opts).Check()
@@ -118,7 +129,7 @@ var _ = Describe("check_node_status", func() {
 		})
 		Context("with no other problems", func() {
 			It("should be Critical", func() {
-				_, err := client.Create(node)
+				_, err := client.Create(context.TODO(), node, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				node.Status.Conditions = []core.NodeCondition{
@@ -127,7 +138,7 @@ var _ = Describe("check_node_status", func() {
 						Status: core.ConditionFalse,
 					},
 				}
-				_, err = client.Update(node)
+				_, err = client.Update(context.TODO(), node, metav1.UpdateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				state, _ := newPlugin(client, opts).Check()
@@ -136,7 +147,7 @@ var _ = Describe("check_node_status", func() {
 		})
 		Context("with other problems", func() {
 			It("such as OutOfDisk", func() {
-				_, err := client.Create(node)
+				_, err := client.Create(context.TODO(), node, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				node.Status.Conditions = []core.NodeCondition{
@@ -144,19 +155,15 @@ var _ = Describe("check_node_status", func() {
 						Type:   core.NodeReady,
 						Status: core.ConditionFalse,
 					},
-					{
-						Type:   core.NodeOutOfDisk,
-						Status: core.ConditionTrue,
-					},
 				}
-				_, err = client.Update(node)
+				_, err = client.Update(context.TODO(), node, metav1.UpdateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				state, _ := newPlugin(client, opts).Check()
 				Expect(state).Should(BeIdenticalTo(icinga.Critical))
 			})
 			It("such as OutOfDisk, MemoryPressure", func() {
-				_, err := client.Create(node)
+				_, err := client.Create(context.TODO(), node, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				node.Status.Conditions = []core.NodeCondition{
@@ -165,15 +172,11 @@ var _ = Describe("check_node_status", func() {
 						Status: core.ConditionFalse,
 					},
 					{
-						Type:   core.NodeOutOfDisk,
-						Status: core.ConditionTrue,
-					},
-					{
 						Type:   core.NodeMemoryPressure,
 						Status: core.ConditionTrue,
 					},
 				}
-				_, err = client.Update(node)
+				_, err = client.Update(context.TODO(), node, metav1.UpdateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())
 
 				state, _ := newPlugin(client, opts).Check()

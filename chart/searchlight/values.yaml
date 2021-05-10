@@ -47,7 +47,7 @@ nodeSelector: {}
 logLevel: 3
 
 ## Icinga configaration
-## https://github.com/appscode/searchlight/blob/master/docs/icinga2/deployment.md#create-deployment
+## https://go.searchlight.dev/icinga-operator/blob/master/docs/icinga2/deployment.md#create-deployment
 icinga2web:
   password: changeit
 

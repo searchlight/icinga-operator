@@ -1,5 +1,9 @@
-Macaron [![Build Status](https://travis-ci.org/go-macaron/macaron.svg?branch=v1)](https://travis-ci.org/go-macaron/macaron)
-=======================
+# Macaron
+
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/go-macaron/macaron/Go?logo=github&style=for-the-badge)](https://github.com/go-macaron/macaron/actions?query=workflow%3AGo)
+[![codecov](https://img.shields.io/codecov/c/github/go-macaron/macaron/master?logo=codecov&style=for-the-badge)](https://codecov.io/gh/go-macaron/macaron)
+[![GoDoc](https://img.shields.io/badge/GoDoc-Reference-blue?style=for-the-badge&logo=go)](https://pkg.go.dev/gopkg.in/macaron.v1?tab=doc)
+[![Sourcegraph](https://img.shields.io/badge/view%20on-Sourcegraph-brightgreen.svg?style=for-the-badge&logo=sourcegraph)](https://sourcegraph.com/github.com/go-macaron/macaron)
 
 ![Macaron Logo](https://raw.githubusercontent.com/go-macaron/macaron/v1/macaronlogo.png)
 
@@ -7,7 +11,7 @@ Package macaron is a high productive and modular web framework in Go.
 
 ## Getting Started
 
-The minimum requirement of Go is **1.3**.
+The minimum requirement of Go is **1.6**.
 
 To install Macaron:
 
@@ -74,7 +78,6 @@ There are already many [middlewares](https://github.com/go-macaron) to simplify 
 - [Grafana](http://grafana.org/): The open platform for beautiful analytics and monitoring
 - [Peach](https://peachdocs.org): A modern web documentation server
 - [Go Walker](https://gowalker.org): Go online API documentation
-- [Switch](https://gopm.io): Gopm registry
 - [Critical Stack Intel](https://intel.criticalstack.com/): A 100% free intel marketplace from Critical Stack, Inc.
 
 ## Getting Help

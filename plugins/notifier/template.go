@@ -1,3 +1,19 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package notifier
 
 import (
@@ -214,7 +230,7 @@ text-decoration: none;
             <div class="footer-right" style="display: block; text-align: center; vertical-align: middle;" align="center">
                 <ul style="margin: 0; padding: 0;">
                     <li style="display: inline-block; text-align: center; margin: 0 10px; list-style: none;">
-                        <a href="https://github.com/appscode/searchlight" target="_blank"><img align="center" alt="github" src="https://cdn.appscode.com/images/sl-github.png"></a>
+                        <a href="https://go.searchlight.dev/icinga-operator" target="_blank"><img align="center" alt="github" src="https://cdn.appscode.com/images/sl-github.png"></a>
                     </li>
                     <li style="display: inline-block; text-align: center; margin: 0 10px; list-style: none;">
                         <a href="https://twitter.com/AppsCodeHQ" target="_blank"><img align="center" alt="twitter" src="https://cdn.appscode.com/images/sl-twitter.png"></a>

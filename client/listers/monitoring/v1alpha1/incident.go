@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,15 +19,18 @@ limitations under the License.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	v1alpha1 "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/tools/cache"
 )
 
 // IncidentLister helps list Incidents.
+// All objects returned here must be treated as read-only.
 type IncidentLister interface {
 	// List lists all Incidents in the indexer.
+	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.Incident, err error)
 	// Incidents returns an object that can list and get Incidents.
 	Incidents(namespace string) IncidentNamespaceLister
@@ -58,10 +61,13 @@ func (s *incidentLister) Incidents(namespace string) IncidentNamespaceLister {
 }
 
 // IncidentNamespaceLister helps list and get Incidents.
+// All objects returned here must be treated as read-only.
 type IncidentNamespaceLister interface {
 	// List lists all Incidents in the indexer for a given namespace.
+	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.Incident, err error)
 	// Get retrieves the Incident from the indexer for a given namespace and name.
+	// Objects returned here must be treated as read-only.
 	Get(name string) (*v1alpha1.Incident, error)
 	IncidentNamespaceListerExpansion
 }

@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ limitations under the License.
 package monitoring
 
 import (
-	internalinterfaces "github.com/appscode/searchlight/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/appscode/searchlight/client/informers/externalversions/monitoring/v1alpha1"
+	internalinterfaces "go.searchlight.dev/icinga-operator/client/informers/externalversions/internalinterfaces"
+	v1alpha1 "go.searchlight.dev/icinga-operator/client/informers/externalversions/monitoring/v1alpha1"
 )
 
 // Interface provides access to each of this group's versions.

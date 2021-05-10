@@ -20,7 +20,7 @@ The following steps must be done from a Linux x64 bit machine.
 - Push all the changes to remote repo.
 - Now, first build all the binaries:
 ```console
-$ cd ~/go/src/github.com/appscode/searchlight
+$ cd ~/go/src/go.searchlight.dev/icinga-operator
 $ ./hack/make.py build; env APPSCODE_ENV=prod ./hack/make.py push; ./hack/make.py push
 ```
 - Build and push searchlight docker image

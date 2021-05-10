@@ -26,7 +26,7 @@ import (
 	"gopkg.in/macaron.v1"
 )
 
-const _VERSION = "0.1.4"
+const _VERSION = "0.2.0"
 
 func Version() string {
 	return _VERSION

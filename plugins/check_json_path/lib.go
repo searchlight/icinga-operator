@@ -1,18 +1,36 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package check_json_path
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"time"
 
+	"go.searchlight.dev/icinga-operator/pkg/icinga"
+	"go.searchlight.dev/icinga-operator/plugins"
+
 	"github.com/Knetic/govaluate"
-	"github.com/appscode/go/flags"
-	"github.com/appscode/go/net/httpclient"
-	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/plugins"
 	"github.com/spf13/cobra"
 	"gomodules.xyz/envconfig"
+	"gomodules.xyz/x/flags"
+	"gomodules.xyz/x/net/httpclient"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/util/jsonpath"
@@ -99,7 +117,7 @@ func (p *plugin) getData() (interface{}, error) {
 	hc = httpclient.Default().WithBaseURL(opts.url).WithTimeout(time.Second * 10)
 
 	if opts.secretName != "" {
-		secret, err := p.client.Get(opts.secretName, metav1.GetOptions{})
+		secret, err := p.client.Get(context.TODO(), opts.secretName, metav1.GetOptions{})
 		if err != nil {
 			return "", err
 		}

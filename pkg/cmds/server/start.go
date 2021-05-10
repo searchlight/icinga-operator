@@ -1,3 +1,19 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package server
 
 import (
@@ -5,19 +21,19 @@ import (
 	"io"
 	"net"
 
-	"github.com/appscode/go/log/golog"
-	incidentsv1alpha1 "github.com/appscode/searchlight/apis/incidents/v1alpha1"
-	"github.com/appscode/searchlight/pkg/operator"
-	"github.com/appscode/searchlight/pkg/server"
+	incidentsv1alpha1 "go.searchlight.dev/icinga-operator/apis/incidents/v1alpha1"
+	"go.searchlight.dev/icinga-operator/pkg/operator"
+	"go.searchlight.dev/icinga-operator/pkg/server"
+
 	_ "github.com/go-openapi/loads"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"gomodules.xyz/kglog"
 	admissionv1beta1 "k8s.io/api/admission/v1beta1"
 	_ "k8s.io/apimachinery/pkg/apis/meta/v1"
 	openapinamer "k8s.io/apiserver/pkg/endpoints/openapi"
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	genericoptions "k8s.io/apiserver/pkg/server/options"
-	"kmodules.xyz/client-go/meta"
 	"kmodules.xyz/client-go/tools/clientcmd"
 )
 
@@ -37,7 +53,6 @@ func NewSearchlightOptions(out, errOut io.Writer) *SearchlightOptions {
 		RecommendedOptions: genericoptions.NewRecommendedOptions(
 			defaultEtcdPathPrefix,
 			server.Codecs.LegacyCodec(admissionv1beta1.SchemeGroupVersion),
-			genericoptions.NewProcessInfo("searchlight-operator", meta.Namespace()),
 		),
 		OperatorOptions: NewOperatorOptions(),
 		StdOut:          out,
@@ -59,7 +74,7 @@ func (o SearchlightOptions) Validate(args []string) error {
 }
 
 func (o *SearchlightOptions) Complete(cmd *cobra.Command) error {
-	o.OperatorOptions.verbosity = golog.ParseFlags(cmd.Flags()).Verbosity
+	o.OperatorOptions.verbosity = kglog.GetOptions(cmd.Flags()).Verbosity
 	return nil
 }
 

@@ -1,87 +1,156 @@
-module github.com/appscode/searchlight
+module go.searchlight.dev/icinga-operator
 
-go 1.12
+go 1.16
 
 require (
-	cloud.google.com/go v0.39.0 // indirect
-	contrib.go.opencensus.io/exporter/ocagent v0.5.0 // indirect
-	github.com/Azure/go-autorest v12.0.0+incompatible // indirect
-	github.com/Knetic/govaluate v3.0.0+incompatible
-	github.com/StackExchange/wmi v0.0.0-20181212234831-e0a55b97c705 // indirect
-	github.com/Unknwon/com v0.0.0-20190321035513-0fed4efef755 // indirect
-	github.com/appscode/go v0.0.0-20190523031839-1468ee3a76e8
-	github.com/codeskyblue/go-sh v0.0.0-20190412065543-76bd3d59ff27
-	github.com/emicklei/go-restful v2.9.5+incompatible // indirect
+	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible
+	github.com/StackExchange/wmi v0.0.0-20210224194228-fe8f1750fd46 // indirect
+	github.com/codeskyblue/go-sh v0.0.0-20200712050446-30169cf553fe
+	github.com/evanphx/json-patch v4.9.0+incompatible
 	github.com/ghodss/yaml v1.0.0
-	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8 // indirect
 	github.com/go-macaron/auth v0.0.0-20161228062157-884c0e6c9b92
-	github.com/go-macaron/inject v0.0.0-20160627170012-d8a0b8677191 // indirect
-	github.com/go-macaron/toolbox v0.0.0-20180818072302-a77f45a7ce90
-	github.com/go-ole/go-ole v1.2.4 // indirect
-	github.com/go-openapi/analysis v0.17.0 // indirect
-	github.com/go-openapi/errors v0.17.2 // indirect
-	github.com/go-openapi/jsonpointer v0.19.0 // indirect
-	github.com/go-openapi/jsonreference v0.19.0 // indirect
-	github.com/go-openapi/loads v0.19.0
-	github.com/go-openapi/spec v0.19.0
-	github.com/go-openapi/swag v0.19.0 // indirect
-	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
-	github.com/gophercloud/gophercloud v0.0.0-20190515011819-1992d5238d78 // indirect
-	github.com/gopherjs/gopherjs v0.0.0-20190430165422-3e4dfb77656c // indirect
-	github.com/grpc-ecosystem/grpc-gateway v1.9.0 // indirect
-	github.com/mailru/easyjson v0.0.0-20190403194419-1ea4449da983 // indirect
-	github.com/mattn/go-colorable v0.1.2 // indirect
-	github.com/onsi/ginkgo v1.8.0
-	github.com/onsi/gomega v1.5.0
-	github.com/pkg/errors v0.8.1
-	github.com/prometheus/client_golang v0.9.3
-	github.com/prometheus/common v0.4.1 // indirect
-	github.com/shirou/gopsutil v0.0.0-20180227225847-5776ff9c7c5d
-	github.com/sirupsen/logrus v1.4.2 // indirect
-	github.com/smartystreets/assertions v0.0.0-20190401211740-f487f9de1cd3 // indirect
+	github.com/go-macaron/toolbox v0.0.0-20200329073429-4401f4ce0f55
+	github.com/go-ole/go-ole v1.2.5 // indirect
+	github.com/go-openapi/loads v0.19.4
+	github.com/go-openapi/spec v0.19.5
+	github.com/gogo/protobuf v1.3.2
+	github.com/golang/glog v0.0.0-20210429001901-424d2337a529
+	github.com/onsi/ginkgo v1.11.0
+	github.com/onsi/gomega v1.8.1
+	github.com/pkg/errors v0.9.1
+	github.com/prometheus/client_golang v1.7.1
+	github.com/shirou/gopsutil v3.21.4+incompatible
 	github.com/spf13/afero v1.2.2
-	github.com/spf13/cobra v0.0.4
-	github.com/spf13/pflag v1.0.3
-	github.com/stretchr/testify v1.3.0
-	golang.org/x/crypto v0.0.0-20190530122614-20be4c3c3ed5 // indirect
-	golang.org/x/net v0.0.0-20190603091049-60506f45cf65 // indirect
-	golang.org/x/sync v0.0.0-20190423024810-112230192c58 // indirect
-	golang.org/x/sys v0.0.0-20190602015325-4c4f7f33c9ed // indirect
-	gomodules.xyz/cert v1.0.0
+	github.com/spf13/cobra v1.1.3
+	github.com/spf13/pflag v1.0.5
+	github.com/stretchr/testify v1.6.1
+	github.com/tklauser/go-sysconf v0.3.5 // indirect
+	gomodules.xyz/blobfs v0.1.7
+	gomodules.xyz/cert v1.2.0
 	gomodules.xyz/envconfig v1.3.1-0.20190308184047-426f31af0d45
-	gomodules.xyz/notify v0.0.0-20190424183923-af47cb5a07a4
-	google.golang.org/appengine v1.6.0 // indirect
-	google.golang.org/genproto v0.0.0-20190513181449-d00d292a067c // indirect
-	gopkg.in/ini.v1 v1.42.0
-	gopkg.in/macaron.v1 v1.3.1
-	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
-	k8s.io/api v0.0.0-20190515023547-db5a9d1c40eb
-	k8s.io/apiextensions-apiserver v0.0.0-20190515024537-2fd0e9006049
-	k8s.io/apimachinery v0.0.0-20190515023456-b74e4c97951f
-	k8s.io/apiserver v0.0.0-20190515064100-fc28ef5782df
-	k8s.io/cli-runtime v0.0.0-20190515024640-178667528169 // indirect
-	k8s.io/client-go v11.0.0+incompatible
-	k8s.io/component-base v0.0.0-20190515024022-2354f2393ad4 // indirect
-	k8s.io/klog v0.3.1 // indirect
-	k8s.io/kube-aggregator v0.0.0-20190515024249-81a6edcf70be // indirect
-	k8s.io/kube-openapi v0.0.0-20190510232812-a01b7d5d6c22
-	kmodules.xyz/client-go v0.0.0-20190527113919-eb165836b702
-	kmodules.xyz/webhook-runtime v0.0.0-20190508093950-b721b4eba5e5
+	gomodules.xyz/kglog v0.0.1
+	gomodules.xyz/notify v0.1.1
+	gomodules.xyz/pointer v0.0.0-20201105071923-daf60fa55209
+	gomodules.xyz/runtime v0.2.0
+	gomodules.xyz/x v0.0.4
+	gopkg.in/ini.v1 v1.51.0
+	gopkg.in/macaron.v1 v1.4.0
+	k8s.io/api v0.21.0
+	k8s.io/apiextensions-apiserver v0.21.0
+	k8s.io/apimachinery v0.21.0
+	k8s.io/apiserver v0.21.0
+	k8s.io/client-go v0.21.0
+	k8s.io/klog/v2 v2.8.0
+	k8s.io/kube-openapi v0.0.0-20210305001622-591a79e4bda7
+	kmodules.xyz/client-go v0.0.0-20210505231546-fa4fb8e1d04e
+	kmodules.xyz/webhook-runtime v0.0.0-20210504042742-3a9911e3dcdc
+	sigs.k8s.io/yaml v1.2.0
 )
 
-replace (
-	github.com/graymeta/stow => github.com/appscode/stow v0.0.0-20190506085026-ca5baa008ea3
-	gopkg.in/robfig/cron.v2 => github.com/appscode/cron v0.0.0-20170717094345-ca60c6d796d4
-	k8s.io/api => k8s.io/api v0.0.0-20190313235455-40a48860b5ab
-	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.0.0-20190315093550-53c4693659ed
-	k8s.io/apimachinery => github.com/kmodules/apimachinery v0.0.0-20190508045248-a52a97a7a2bf
-	k8s.io/apiserver => github.com/kmodules/apiserver v0.0.0-20190508082252-8397d761d4b5
-	k8s.io/cli-runtime => k8s.io/cli-runtime v0.0.0-20190314001948-2899ed30580f
-	k8s.io/cloud-provider => k8s.io/cloud-provider v0.0.0-20190314002645-c892ea32361a
-	k8s.io/component-base => k8s.io/component-base v0.0.0-20190314000054-4a91899592f4
-	k8s.io/klog => k8s.io/klog v0.3.0
-	k8s.io/kube-aggregator => k8s.io/kube-aggregator v0.0.0-20190314000639-da8327669ac5
-	k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20190228160746-b3a7cee44a30
-	k8s.io/metrics => k8s.io/metrics v0.0.0-20190314001731-1bd6a4002213
-	k8s.io/utils => k8s.io/utils v0.0.0-20190221042446-c2654d5206da
-)
+replace bitbucket.org/ww/goautoneg => gomodules.xyz/goautoneg v0.0.0-20120707110453-a547fc61f48d
+
+replace cloud.google.com/go => cloud.google.com/go v0.54.0
+
+replace cloud.google.com/go/bigquery => cloud.google.com/go/bigquery v1.4.0
+
+replace cloud.google.com/go/datastore => cloud.google.com/go/datastore v1.1.0
+
+replace cloud.google.com/go/firestore => cloud.google.com/go/firestore v1.1.0
+
+replace cloud.google.com/go/pubsub => cloud.google.com/go/pubsub v1.2.0
+
+replace cloud.google.com/go/storage => cloud.google.com/go/storage v1.6.0
+
+replace github.com/Azure/azure-sdk-for-go => github.com/Azure/azure-sdk-for-go v43.0.0+incompatible
+
+replace github.com/Azure/go-ansiterm => github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78
+
+replace github.com/Azure/go-autorest => github.com/Azure/go-autorest v14.2.0+incompatible
+
+replace github.com/Azure/go-autorest/autorest => github.com/Azure/go-autorest/autorest v0.11.12
+
+replace github.com/Azure/go-autorest/autorest/adal => github.com/Azure/go-autorest/autorest/adal v0.9.5
+
+replace github.com/Azure/go-autorest/autorest/date => github.com/Azure/go-autorest/autorest/date v0.3.0
+
+replace github.com/Azure/go-autorest/autorest/mocks => github.com/Azure/go-autorest/autorest/mocks v0.4.1
+
+replace github.com/Azure/go-autorest/autorest/to => github.com/Azure/go-autorest/autorest/to v0.2.0
+
+replace github.com/Azure/go-autorest/autorest/validation => github.com/Azure/go-autorest/autorest/validation v0.1.0
+
+replace github.com/Azure/go-autorest/logger => github.com/Azure/go-autorest/logger v0.2.0
+
+replace github.com/Azure/go-autorest/tracing => github.com/Azure/go-autorest/tracing v0.6.0
+
+replace github.com/docker/distribution => github.com/docker/distribution v0.0.0-20191216044856-a8371794149d
+
+replace github.com/docker/docker => github.com/moby/moby v17.12.0-ce-rc1.0.20200618181300-9dc6525e6118+incompatible
+
+replace github.com/go-openapi/analysis => github.com/go-openapi/analysis v0.19.5
+
+replace github.com/go-openapi/errors => github.com/go-openapi/errors v0.19.2
+
+replace github.com/go-openapi/jsonpointer => github.com/go-openapi/jsonpointer v0.19.3
+
+replace github.com/go-openapi/jsonreference => github.com/go-openapi/jsonreference v0.19.3
+
+replace github.com/go-openapi/loads => github.com/go-openapi/loads v0.19.4
+
+replace github.com/go-openapi/runtime => github.com/go-openapi/runtime v0.19.4
+
+replace github.com/go-openapi/spec => github.com/go-openapi/spec v0.19.5
+
+replace github.com/go-openapi/strfmt => github.com/go-openapi/strfmt v0.19.5
+
+replace github.com/go-openapi/swag => github.com/go-openapi/swag v0.19.5
+
+replace github.com/go-openapi/validate => github.com/gomodules/validate v0.19.8-1.16
+
+replace github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
+
+replace github.com/golang/protobuf => github.com/golang/protobuf v1.4.3
+
+replace github.com/googleapis/gnostic => github.com/googleapis/gnostic v0.4.1
+
+replace github.com/imdario/mergo => github.com/imdario/mergo v0.3.5
+
+replace github.com/jetstack/cert-manager => github.com/kmodules/cert-manager v1.3.1-0.20210429172957-c5436c14ce0e
+
+replace github.com/prometheus-operator/prometheus-operator => github.com/prometheus-operator/prometheus-operator v0.47.0
+
+replace github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring => github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.47.0
+
+replace github.com/prometheus/client_golang => github.com/prometheus/client_golang v1.10.0
+
+replace go.etcd.io/etcd => go.etcd.io/etcd v0.5.0-alpha.5.0.20200910180754-dd1b699fc489
+
+replace google.golang.org/api => google.golang.org/api v0.20.0
+
+replace google.golang.org/genproto => google.golang.org/genproto v0.0.0-20201110150050-8816d57aaa9a
+
+replace google.golang.org/grpc => google.golang.org/grpc v1.27.1
+
+replace gopkg.in/yaml.v2 => gopkg.in/yaml.v2 v2.3.0
+
+replace helm.sh/helm/v3 => github.com/kubepack/helm/v3 v3.1.0-rc.1.0.20210507022718-e7ffb4eb1d22
+
+replace k8s.io/api => k8s.io/api v0.21.0
+
+replace k8s.io/apimachinery => github.com/kmodules/apimachinery v0.21.1-rc.0.0.20210405112358-ad4c2289ba4c
+
+replace k8s.io/apiserver => github.com/kmodules/apiserver v0.21.1-0.20210427013338-53dee545b83c
+
+replace k8s.io/cli-runtime => k8s.io/cli-runtime v0.21.0
+
+replace k8s.io/client-go => k8s.io/client-go v0.21.0
+
+replace k8s.io/component-base => k8s.io/component-base v0.21.0
+
+replace k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20210305001622-591a79e4bda7
+
+replace k8s.io/kubernetes => github.com/kmodules/kubernetes v1.22.0-alpha.0.0.20210427080452-22d2e66bae50
+
+replace k8s.io/utils => k8s.io/utils v0.0.0-20201110183641-67b214c5f920
+
+replace sigs.k8s.io/application => github.com/kmodules/application v0.8.4-0.20210427030912-90eeee3bc4ad

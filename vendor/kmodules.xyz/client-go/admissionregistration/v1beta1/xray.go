@@ -1,11 +1,33 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package v1beta1
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
+	apireg_util "kmodules.xyz/client-go/apiregistration/v1beta1"
+	core_util "kmodules.xyz/client-go/core/v1"
+	"kmodules.xyz/client-go/discovery"
+	dynamic_util "kmodules.xyz/client-go/dynamic"
+	meta_util "kmodules.xyz/client-go/meta"
+
 	jsonpatch "github.com/evanphx/json-patch"
-	"github.com/golang/glog"
 	"github.com/pkg/errors"
 	"github.com/spf13/pflag"
 	"k8s.io/api/admissionregistration/v1beta1"
@@ -20,14 +42,10 @@ import (
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"k8s.io/klog/v2"
 	apiregistration "k8s.io/kube-aggregator/pkg/apis/apiregistration/v1beta1"
 	apireg_cs "k8s.io/kube-aggregator/pkg/client/clientset_generated/clientset"
 	kutil "kmodules.xyz/client-go"
-	apireg_util "kmodules.xyz/client-go/apiregistration/v1beta1"
-	core_util "kmodules.xyz/client-go/core/v1"
-	"kmodules.xyz/client-go/discovery"
-	dynamic_util "kmodules.xyz/client-go/dynamic"
-	meta_util "kmodules.xyz/client-go/meta"
 )
 
 func init() {
@@ -101,14 +119,14 @@ func retry(err error) error {
 	return err
 }
 
-func (d ValidatingWebhookXray) IsActive() error {
+func (d ValidatingWebhookXray) IsActive(ctx context.Context) error {
 	kc := kubernetes.NewForConfigOrDie(d.config)
 	apireg := apireg_cs.NewForConfigOrDie(d.config)
 
 	if bypassValidatingWebhookXray {
-		apisvc, err := apireg.ApiregistrationV1beta1().APIServices().Get(d.apisvc, metav1.GetOptions{})
+		apisvc, err := apireg.ApiregistrationV1beta1().APIServices().Get(ctx, d.apisvc, metav1.GetOptions{})
 		if err == nil {
-			d.updateAPIService(apireg, apisvc, nil)
+			_ = d.updateAPIService(ctx, apireg, apisvc, nil)
 		}
 		return nil
 	}
@@ -116,7 +134,7 @@ func (d ValidatingWebhookXray) IsActive() error {
 	attempt := 0
 	var failures []string
 	return wait.PollImmediateUntil(kutil.RetryInterval, func() (bool, error) {
-		apisvc, err := apireg.ApiregistrationV1beta1().APIServices().Get(d.apisvc, metav1.GetOptions{})
+		apisvc, err := apireg.ApiregistrationV1beta1().APIServices().Get(ctx, d.apisvc, metav1.GetOptions{})
 		if err != nil {
 			return false, retry(err)
 		}
@@ -124,12 +142,12 @@ func (d ValidatingWebhookXray) IsActive() error {
 			if cond.Type == apiregistration.Available && cond.Status == apiregistration.ConditionTrue {
 				// Kubernetes is slow to update APIService.status. So, we double check that the pods are running and ready.
 				if apisvc.Spec.Service != nil {
-					svc, err := kc.CoreV1().Services(apisvc.Spec.Service.Namespace).Get(apisvc.Spec.Service.Name, metav1.GetOptions{})
+					svc, err := kc.CoreV1().Services(apisvc.Spec.Service.Namespace).Get(ctx, apisvc.Spec.Service.Name, metav1.GetOptions{})
 					if err != nil {
 						return false, retry(err)
 					}
 
-					pods, err := kc.CoreV1().Pods(apisvc.Spec.Service.Namespace).List(metav1.ListOptions{
+					pods, err := kc.CoreV1().Pods(apisvc.Spec.Service.Namespace).List(ctx, metav1.ListOptions{
 						LabelSelector: labels.SelectorFromSet(svc.Spec.Selector).String(),
 					})
 					if err != nil {
@@ -146,18 +164,18 @@ func (d ValidatingWebhookXray) IsActive() error {
 					}
 				}
 				attempt++
-				active, err := d.check()
+				active, err := d.check(ctx)
 				if err != nil {
 					failures = append(failures, fmt.Sprintf("Attempt %d to detect ValidatingWebhook activation failed due to %s", attempt, err.Error()))
 				}
 				err = retry(err)
 				if active || err != nil {
-					d.updateAPIService(apireg, apisvc, err)
+					_ = d.updateAPIService(ctx, apireg, apisvc, err)
 				}
 				if err != nil {
 					// log failures only if xray fails, otherwise don't confuse users with intermediate failures.
 					for _, msg := range failures {
-						glog.Warningln(msg)
+						klog.Warningln(msg)
 					}
 				}
 				return active, err
@@ -167,7 +185,7 @@ func (d ValidatingWebhookXray) IsActive() error {
 	}, d.stopCh)
 }
 
-func (d ValidatingWebhookXray) updateAPIService(apireg apireg_cs.Interface, apisvc *apiregistration.APIService, err error) error {
+func (d ValidatingWebhookXray) updateAPIService(ctx context.Context, apireg apireg_cs.Interface, apisvc *apiregistration.APIService, err error) error {
 	fn := func(annotations map[string]string) map[string]string {
 		if len(annotations) == 0 {
 			annotations = map[string]string{}
@@ -182,7 +200,7 @@ func (d ValidatingWebhookXray) updateAPIService(apireg apireg_cs.Interface, apis
 		return annotations
 	}
 
-	_, _, e3 := apireg_util.PatchAPIService(apireg, apisvc, func(in *apiregistration.APIService) *apiregistration.APIService {
+	_, _, e3 := apireg_util.PatchAPIService(ctx, apireg, apisvc, func(in *apiregistration.APIService) *apiregistration.APIService {
 		data, ok := in.Annotations[meta_util.LastAppliedConfigAnnotation]
 		if ok {
 			u, e2 := runtime.Decode(unstructured.UnstructuredJSONScheme, []byte(data))
@@ -202,11 +220,11 @@ func (d ValidatingWebhookXray) updateAPIService(apireg apireg_cs.Interface, apis
 	LastAppliedConfig:
 		in.Annotations = fn(in.Annotations)
 		return in
-	})
+	}, metav1.PatchOptions{})
 	return e3
 }
 
-func (d ValidatingWebhookXray) check() (bool, error) {
+func (d ValidatingWebhookXray) check(ctx context.Context) (bool, error) {
 	kc, err := kubernetes.NewForConfig(d.config)
 	if err != nil {
 		return false, err
@@ -229,7 +247,7 @@ func (d ValidatingWebhookXray) check() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	glog.Infof("testing ValidatingWebhook using an object with GVR = %s", gvr.String())
+	klog.Infof("testing ValidatingWebhook using an object with GVR = %s", gvr.String())
 
 	accessor, err := meta.Accessor(d.testObj)
 	if err != nil {
@@ -255,18 +273,18 @@ func (d ValidatingWebhookXray) check() (bool, error) {
 	}
 
 	if d.op == v1beta1.Create {
-		_, err := ri.Create(&u, metav1.CreateOptions{})
+		_, err := ri.Create(ctx, &u, metav1.CreateOptions{})
 		if kutil.AdmissionWebhookDeniedRequest(err) {
-			glog.V(10).Infof("failed to create invalid test object as expected with error: %s", err)
+			klog.V(10).Infof("failed to create invalid test object as expected with error: %s", err)
 			return true, nil
 		} else if err != nil {
 			return false, err
 		}
 
-		dynamic_util.WaitUntilDeleted(ri, d.stopCh, accessor.GetName())
+		_ = dynamic_util.WaitUntilDeleted(ri, d.stopCh, accessor.GetName())
 		return false, ErrWebhookNotActivated
 	} else if d.op == v1beta1.Update {
-		_, err := ri.Create(&u, metav1.CreateOptions{})
+		_, err := ri.Create(ctx, &u, metav1.CreateOptions{})
 		if err != nil {
 			return false, err
 		}
@@ -283,11 +301,11 @@ func (d ValidatingWebhookXray) check() (bool, error) {
 			return false, err
 		}
 
-		_, err = ri.Patch(accessor.GetName(), types.MergePatchType, patch, metav1.PatchOptions{})
-		defer dynamic_util.WaitUntilDeleted(ri, d.stopCh, accessor.GetName())
+		_, err = ri.Patch(ctx, accessor.GetName(), types.MergePatchType, patch, metav1.PatchOptions{})
+		defer func() { _ = dynamic_util.WaitUntilDeleted(ri, d.stopCh, accessor.GetName()) }()
 
 		if kutil.AdmissionWebhookDeniedRequest(err) {
-			glog.V(10).Infof("failed to update test object as expected with error: %s", err)
+			klog.V(10).Infof("failed to update test object as expected with error: %s", err)
 			return true, nil
 		} else if err != nil {
 			return false, err
@@ -295,12 +313,12 @@ func (d ValidatingWebhookXray) check() (bool, error) {
 
 		return false, ErrWebhookNotActivated
 	} else if d.op == v1beta1.Delete {
-		_, err := ri.Create(&u, metav1.CreateOptions{})
+		_, err := ri.Create(ctx, &u, metav1.CreateOptions{})
 		if err != nil {
 			return false, err
 		}
 
-		err = ri.Delete(accessor.GetName(), &metav1.DeleteOptions{})
+		err = ri.Delete(ctx, accessor.GetName(), metav1.DeleteOptions{})
 		if kutil.AdmissionWebhookDeniedRequest(err) {
 			defer func() {
 				// update to make it valid
@@ -316,13 +334,13 @@ func (d ValidatingWebhookXray) check() (bool, error) {
 					return
 				}
 
-				ri.Patch(accessor.GetName(), types.MergePatchType, patch, metav1.PatchOptions{})
+				_, _ = ri.Patch(ctx, accessor.GetName(), types.MergePatchType, patch, metav1.PatchOptions{})
 
 				// delete
-				dynamic_util.WaitUntilDeleted(ri, d.stopCh, accessor.GetName())
+				_ = dynamic_util.WaitUntilDeleted(ri, d.stopCh, accessor.GetName())
 			}()
 
-			glog.V(10).Infof("failed to delete test object as expected with error: %s", err)
+			klog.V(10).Infof("failed to delete test object as expected with error: %s", err)
 			return true, nil
 		} else if err != nil {
 			return false, err

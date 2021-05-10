@@ -30,8 +30,8 @@ development environment, please follow [these instructions](https://golang.org/d
 #### Download Source
 
 ```console
-$ go get github.com/appscode/searchlight
-$ cd $(go env GOPATH)/src/github.com/appscode/searchlight
+$ go get go.searchlight.dev/icinga-operator
+$ cd $(go env GOPATH)/src/go.searchlight.dev/icinga-operator
 ```
 
 #### Install Dev tools

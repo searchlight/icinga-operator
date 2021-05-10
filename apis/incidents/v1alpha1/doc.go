@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,10 +15,11 @@ limitations under the License.
 */
 
 // +k8s:deepcopy-gen=package
-// +k8s:conversion-gen=github.com/appscode/searchlight/apis/incidents
+// +k8s:conversion-gen=go.searchlight.dev/icinga-operator/apis/incidents
 // +k8s:openapi-gen=true
 // +k8s:defaulter-gen=TypeMeta
 
 // Package v1alpha1 is the v1alpha1 version of the API.
 // +groupName=incidents.monitoring.appscode.com
+// +kubebuilder:skip
 package v1alpha1

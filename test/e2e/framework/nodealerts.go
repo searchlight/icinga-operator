@@ -1,13 +1,31 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package framework
 
 import (
+	"context"
 	"time"
 
-	"github.com/appscode/go/crypto/rand"
-	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/test/e2e/matcher"
+	api "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+	"go.searchlight.dev/icinga-operator/pkg/icinga"
+	"go.searchlight.dev/icinga-operator/test/e2e/matcher"
+
 	. "github.com/onsi/gomega"
+	"gomodules.xyz/x/crypto/rand"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 )
@@ -29,22 +47,23 @@ func (f *Invocation) NodeAlert() *api.NodeAlert {
 }
 
 func (f *Framework) CreateNodeAlert(obj *api.NodeAlert) error {
-	_, err := f.extClient.MonitoringV1alpha1().NodeAlerts(obj.Namespace).Create(obj)
+	_, err := f.extClient.MonitoringV1alpha1().NodeAlerts(obj.Namespace).Create(context.TODO(), obj, metav1.CreateOptions{})
 	return err
 }
 
 func (f *Framework) GetNodeAlert(meta metav1.ObjectMeta) (*api.NodeAlert, error) {
-	return f.extClient.MonitoringV1alpha1().NodeAlerts(meta.Namespace).Get(meta.Name, metav1.GetOptions{})
+	return f.extClient.MonitoringV1alpha1().NodeAlerts(meta.Namespace).Get(context.TODO(), meta.Name, metav1.GetOptions{})
 }
 
 func (f *Framework) DeleteNodeAlert(meta metav1.ObjectMeta) error {
-	return f.extClient.MonitoringV1alpha1().NodeAlerts(meta.Namespace).Delete(meta.Name, &metav1.DeleteOptions{})
+	return f.extClient.MonitoringV1alpha1().NodeAlerts(meta.Namespace).Delete(context.TODO(), meta.Name, metav1.DeleteOptions{})
 }
 
 func (f *Framework) getNodeAlertObjects(meta metav1.ObjectMeta, nodeAlertSpec api.NodeAlertSpec) ([]icinga.IcingaHost, error) {
 	names := make([]string, 0)
 	sel := labels.SelectorFromSet(nodeAlertSpec.Selector)
 	nodeList, err := f.kubeClient.CoreV1().Nodes().List(
+		context.TODO(),
 		metav1.ListOptions{
 			LabelSelector: sel.String(),
 		},
@@ -109,11 +128,11 @@ func (f *Framework) EventuallyNodeAlertIcingaService(meta metav1.ObjectMeta, nod
 }
 
 func (f *Framework) CleanNodeAlert() {
-	caList, err := f.extClient.MonitoringV1alpha1().NodeAlerts(f.namespace).List(metav1.ListOptions{})
+	caList, err := f.extClient.MonitoringV1alpha1().NodeAlerts(f.namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return
 	}
 	for _, e := range caList.Items {
-		f.extClient.MonitoringV1alpha1().NodeAlerts(f.namespace).Delete(e.Name, &metav1.DeleteOptions{})
+		f.extClient.MonitoringV1alpha1().NodeAlerts(f.namespace).Delete(context.TODO(), e.Name, metav1.DeleteOptions{})
 	}
 }

@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,7 +19,10 @@ limitations under the License.
 package fake
 
 import (
-	v1alpha1 "github.com/appscode/searchlight/apis/incidents/v1alpha1"
+	"context"
+
+	v1alpha1 "go.searchlight.dev/icinga-operator/apis/incidents/v1alpha1"
+
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	testing "k8s.io/client-go/testing"
@@ -36,7 +39,7 @@ var acknowledgementsResource = schema.GroupVersionResource{Group: "incidents.mon
 var acknowledgementsKind = schema.GroupVersionKind{Group: "incidents.monitoring.appscode.com", Version: "v1alpha1", Kind: "Acknowledgement"}
 
 // Create takes the representation of a acknowledgement and creates it.  Returns the server's representation of the acknowledgement, and an error, if there is any.
-func (c *FakeAcknowledgements) Create(acknowledgement *v1alpha1.Acknowledgement) (result *v1alpha1.Acknowledgement, err error) {
+func (c *FakeAcknowledgements) Create(ctx context.Context, acknowledgement *v1alpha1.Acknowledgement, opts v1.CreateOptions) (result *v1alpha1.Acknowledgement, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewCreateAction(acknowledgementsResource, c.ns, acknowledgement), &v1alpha1.Acknowledgement{})
 
@@ -47,7 +50,7 @@ func (c *FakeAcknowledgements) Create(acknowledgement *v1alpha1.Acknowledgement)
 }
 
 // Delete takes name of the acknowledgement and deletes it. Returns an error if one occurs.
-func (c *FakeAcknowledgements) Delete(name string, options *v1.DeleteOptions) error {
+func (c *FakeAcknowledgements) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	_, err := c.Fake.
 		Invokes(testing.NewDeleteAction(acknowledgementsResource, c.ns, name), &v1alpha1.Acknowledgement{})
 

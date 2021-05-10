@@ -1,17 +1,32 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package meta
 
 import (
+	"fmt"
 	"hash"
 	"hash/fnv"
 	"reflect"
 	"strconv"
 
-	"github.com/appscode/go/encoding/json/types"
-	"github.com/appscode/go/log"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/fatih/structs"
-	"github.com/golang/glog"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
 // ObjectHash includes all top label fields (like data, spec) except TypeMeta, ObjectMeta and Status
@@ -81,61 +96,59 @@ func DeepHashObject(hasher hash.Hash, objectToWrite interface{}) {
 	printer.Fprintf(hasher, "%#v", objectToWrite)
 }
 
-func AlreadyObserved(o interface{}, enableStatusSubresource bool) bool {
-	if !enableStatusSubresource {
-		return false
-	}
-
-	obj := o.(metav1.Object)
-	st := structs.New(o)
-
-	cur := types.NewIntHash(obj.GetGeneration(), GenerationHash(obj))
-	observed, err := types.ParseIntHash(st.Field("Status").Field("ObservedGeneration").Value())
+func MustAlreadyReconciled(o interface{}) bool {
+	reconciled, err := AlreadyReconciled(o)
 	if err != nil {
-		panic(err)
+		panic("failed to extract status.observedGeneration field due to err:" + err.Error())
 	}
-	return observed.Equal(cur)
+	return reconciled
 }
 
-func AlreadyObserved2(old, nu interface{}, enableStatusSubresource bool) bool {
-	if old == nil {
-		return nu == nil
-	}
-	if nu == nil { // && old != nil
-		return false
-	}
-	if old == nu {
-		return true
-	}
+func AlreadyReconciled(o interface{}) (bool, error) {
+	var generation, observedGeneration int64
+	var err error
 
-	oldObj := old.(metav1.Object)
-	nuObj := nu.(metav1.Object)
-
-	oldStruct := structs.New(old)
-	nuStruct := structs.New(nu)
-
-	var match bool
-
-	if enableStatusSubresource {
-		observed, err := types.ParseIntHash(nuStruct.Field("Status").Field("ObservedGeneration").Value())
-		if err != nil {
-			panic(err)
-		}
-		gen := types.NewIntHash(nuObj.GetGeneration(), GenerationHash(nuObj))
-		match = gen.Equal(observed)
-	} else {
-		match = Equal(oldStruct.Field("Spec").Value(), nuStruct.Field("Spec").Value())
-		if match {
-			match = reflect.DeepEqual(oldObj.GetLabels(), nuObj.GetLabels())
-		}
-		if match {
-			match = EqualAnnotation(oldObj.GetAnnotations(), nuObj.GetAnnotations())
-		}
+	switch obj := o.(type) {
+	case *unstructured.Unstructured:
+		generation, observedGeneration, err = extractGenerationFromUnstructured(obj)
+	case metav1.Object:
+		generation, observedGeneration, err = extractGenerationFromObject(obj)
+	default:
+		err = fmt.Errorf("unknown object type %s", reflect.TypeOf(o).String())
 	}
-
-	if !match && bool(glog.V(log.LevelDebug)) {
-		diff := Diff(old, nu)
-		glog.V(log.LevelDebug).Infof("%s %s/%s has changed. Diff: %s", GetKind(old), oldObj.GetNamespace(), oldObj.GetName(), diff)
+	if err != nil {
+		return false, err
 	}
-	return match
+	return observedGeneration == generation, nil
+}
+
+func extractGenerationFromUnstructured(obj *unstructured.Unstructured) (int64, int64, error) {
+	val, found, err := unstructured.NestedFieldNoCopy(obj.Object, "status", "observedGeneration")
+	if err != nil {
+		return -1, -1, err
+	} else if !found {
+		return obj.GetGeneration(), -1, nil
+	}
+	observedGeneration, ok := val.(int64)
+	if !ok {
+		return -1, -1, fmt.Errorf("%s %s/%s status.observedGeneration %+v is not int64", obj.GroupVersionKind(), obj.GetNamespace(), obj.GetName(), val)
+	}
+	return obj.GetGeneration(), observedGeneration, nil
+}
+
+func extractGenerationFromObject(obj metav1.Object) (int64, int64, error) {
+	st := structs.New(obj)
+	fieldStatus, found := st.FieldOk("Status")
+	if !found {
+		return obj.GetGeneration(), -1, nil
+	}
+	fieldObsGen, found := fieldStatus.FieldOk("ObservedGeneration")
+	if !found {
+		return obj.GetGeneration(), -1, nil
+	}
+	observedGeneration, ok := fieldObsGen.Value().(int64)
+	if !ok {
+		return -1, -1, fmt.Errorf("%s %s/%s status.observedGeneration %+v is not int64", reflect.TypeOf(obj).String(), obj.GetNamespace(), obj.GetName(), fieldObsGen.Value())
+	}
+	return obj.GetGeneration(), observedGeneration, nil
 }

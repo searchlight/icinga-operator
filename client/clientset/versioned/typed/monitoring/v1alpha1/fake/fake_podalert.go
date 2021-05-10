@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,7 +19,10 @@ limitations under the License.
 package fake
 
 import (
-	v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"context"
+
+	v1alpha1 "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
@@ -39,7 +42,7 @@ var podalertsResource = schema.GroupVersionResource{Group: "monitoring.appscode.
 var podalertsKind = schema.GroupVersionKind{Group: "monitoring.appscode.com", Version: "v1alpha1", Kind: "PodAlert"}
 
 // Get takes name of the podAlert, and returns the corresponding podAlert object, and an error if there is any.
-func (c *FakePodAlerts) Get(name string, options v1.GetOptions) (result *v1alpha1.PodAlert, err error) {
+func (c *FakePodAlerts) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.PodAlert, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewGetAction(podalertsResource, c.ns, name), &v1alpha1.PodAlert{})
 
@@ -50,7 +53,7 @@ func (c *FakePodAlerts) Get(name string, options v1.GetOptions) (result *v1alpha
 }
 
 // List takes label and field selectors, and returns the list of PodAlerts that match those selectors.
-func (c *FakePodAlerts) List(opts v1.ListOptions) (result *v1alpha1.PodAlertList, err error) {
+func (c *FakePodAlerts) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.PodAlertList, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewListAction(podalertsResource, podalertsKind, c.ns, opts), &v1alpha1.PodAlertList{})
 
@@ -72,14 +75,14 @@ func (c *FakePodAlerts) List(opts v1.ListOptions) (result *v1alpha1.PodAlertList
 }
 
 // Watch returns a watch.Interface that watches the requested podAlerts.
-func (c *FakePodAlerts) Watch(opts v1.ListOptions) (watch.Interface, error) {
+func (c *FakePodAlerts) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
 		InvokesWatch(testing.NewWatchAction(podalertsResource, c.ns, opts))
 
 }
 
 // Create takes the representation of a podAlert and creates it.  Returns the server's representation of the podAlert, and an error, if there is any.
-func (c *FakePodAlerts) Create(podAlert *v1alpha1.PodAlert) (result *v1alpha1.PodAlert, err error) {
+func (c *FakePodAlerts) Create(ctx context.Context, podAlert *v1alpha1.PodAlert, opts v1.CreateOptions) (result *v1alpha1.PodAlert, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewCreateAction(podalertsResource, c.ns, podAlert), &v1alpha1.PodAlert{})
 
@@ -90,7 +93,7 @@ func (c *FakePodAlerts) Create(podAlert *v1alpha1.PodAlert) (result *v1alpha1.Po
 }
 
 // Update takes the representation of a podAlert and updates it. Returns the server's representation of the podAlert, and an error, if there is any.
-func (c *FakePodAlerts) Update(podAlert *v1alpha1.PodAlert) (result *v1alpha1.PodAlert, err error) {
+func (c *FakePodAlerts) Update(ctx context.Context, podAlert *v1alpha1.PodAlert, opts v1.UpdateOptions) (result *v1alpha1.PodAlert, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewUpdateAction(podalertsResource, c.ns, podAlert), &v1alpha1.PodAlert{})
 
@@ -100,8 +103,20 @@ func (c *FakePodAlerts) Update(podAlert *v1alpha1.PodAlert) (result *v1alpha1.Po
 	return obj.(*v1alpha1.PodAlert), err
 }
 
+// UpdateStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
+func (c *FakePodAlerts) UpdateStatus(ctx context.Context, podAlert *v1alpha1.PodAlert, opts v1.UpdateOptions) (*v1alpha1.PodAlert, error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewUpdateSubresourceAction(podalertsResource, "status", c.ns, podAlert), &v1alpha1.PodAlert{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1alpha1.PodAlert), err
+}
+
 // Delete takes name of the podAlert and deletes it. Returns an error if one occurs.
-func (c *FakePodAlerts) Delete(name string, options *v1.DeleteOptions) error {
+func (c *FakePodAlerts) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	_, err := c.Fake.
 		Invokes(testing.NewDeleteAction(podalertsResource, c.ns, name), &v1alpha1.PodAlert{})
 
@@ -109,15 +124,15 @@ func (c *FakePodAlerts) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakePodAlerts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(podalertsResource, c.ns, listOptions)
+func (c *FakePodAlerts) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(podalertsResource, c.ns, listOpts)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.PodAlertList{})
 	return err
 }
 
 // Patch applies the patch and returns the patched podAlert.
-func (c *FakePodAlerts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.PodAlert, err error) {
+func (c *FakePodAlerts) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.PodAlert, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewPatchSubresourceAction(podalertsResource, c.ns, name, pt, data, subresources...), &v1alpha1.PodAlert{})
 

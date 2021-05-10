@@ -1,0 +1,110 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/name: searchlight
+  name: searchlightplugins.monitoring.appscode.com
+spec:
+  group: monitoring.appscode.com
+  names:
+    categories:
+    - monitoring
+    - appscode
+    - all
+    kind: SearchlightPlugin
+    listKind: SearchlightPluginList
+    plural: searchlightplugins
+    singular: searchlightplugin
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.command
+      name: Command
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: 'Spec is the desired state of the SearchlightPlugin. More
+              info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#spec-and-status'
+            properties:
+              alertKinds:
+                description: AlertKinds refers to supports Alert kinds for this plugin
+                items:
+                  type: string
+                type: array
+              arguments:
+                description: Supported arguments for SearchlightPlugin
+                properties:
+                  host:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  vars:
+                    properties:
+                      fields:
+                        additionalProperties:
+                          properties:
+                            description:
+                              type: string
+                            type:
+                              type: string
+                          required:
+                          - type
+                          type: object
+                        type: object
+                      required:
+                        items:
+                          type: string
+                        type: array
+                    required:
+                    - fields
+                    type: object
+                type: object
+              command:
+                description: Check Command
+                type: string
+              states:
+                description: Supported Icinga Service State
+                items:
+                  type: string
+                type: array
+              webhook:
+                description: Webhook provides a reference to the service for this
+                  SearchlightPlugin. It must communicate on port 80
+                properties:
+                  name:
+                    description: Name is the name of the service
+                    type: string
+                  namespace:
+                    description: Namespace is the namespace of the service
+                    type: string
+                required:
+                - name
+                type: object
+            required:
+            - alertKinds
+            - states
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

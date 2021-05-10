@@ -1,5 +1,5 @@
 # Searchlight
-[Searchlight by AppsCode](https://github.com/appscode/searchlight) is an alert manager for Kubernetes built around Icinga2.
+[Searchlight by AppsCode](https://go.searchlight.dev/icinga-operator) is an alert manager for Kubernetes built around Icinga2.
 
 ## TL;DR;
 
@@ -11,7 +11,7 @@ $ helm install appscode/searchlight --name searchlight-operator --namespace kube
 
 ## Introduction
 
-This chart bootstraps a [Searchlight controller](https://github.com/appscode/searchlight) deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
+This chart bootstraps a [Searchlight controller](https://go.searchlight.dev/icinga-operator) deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
 
 ## Prerequisites
 

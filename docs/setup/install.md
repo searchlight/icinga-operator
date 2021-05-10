@@ -47,7 +47,7 @@ searchlight-operator-6945bcd777-4jdv7   3/3       Running   0          2m
 
 ### Customizing Installer
 
-The installer script and associated yaml files can be found in the [/hack/deploy](https://github.com/appscode/searchlight/tree/{{< param "info.version" >}}/hack/deploy) folder. You can see the full list of flags available to installer using `-h` flag.
+The installer script and associated yaml files can be found in the [/hack/deploy](https://go.searchlight.dev/icinga-operator/tree/{{< param "info.version" >}}/hack/deploy) folder. You can see the full list of flags available to installer using `-h` flag.
 
 ```console
 $ curl -fsSL https://raw.githubusercontent.com/appscode/searchlight/{{< param "info.version" >}}/hack/deploy/searchlight.sh | bash -s -- -h
@@ -112,7 +112,7 @@ Searchlight {{< param "info.version" >}} or later releases can use status sub re
 <div class="tab-pane fade" id="helm" role="tabpanel" aria-labelledby="helm-tab">
 
 ## Using Helm
-Searchlight can be installed via [Helm](https://helm.sh/) using the [chart](https://github.com/appscode/searchlight/blob/master/chart/searchlight) from [AppsCode Charts Repository](https://github.com/appscode/charts). To install the chart with the release name `my-release`:
+Searchlight can be installed via [Helm](https://helm.sh/) using the [chart](https://go.searchlight.dev/icinga-operator/blob/master/chart/searchlight) from [AppsCode Charts Repository](https://github.com/appscode/charts). To install the chart with the release name `my-release`:
 
 ```console
 $ helm repo add appscode https://charts.appscode.com/stable/
@@ -124,7 +124,7 @@ appscode/searchlight  {{< param "info.version" >}}    {{< param "info.version" >
 $ helm install appscode/searchlight --name searchlight-operator --version {{< param "info.version" >}} --namespace kube-system
 ```
 
-To see the detailed configuration options, visit [here](https://github.com/appscode/searchlight/tree/master/chart/searchlight).
+To see the detailed configuration options, visit [here](https://go.searchlight.dev/icinga-operator/tree/master/chart/searchlight).
 
 </div>
 </div>

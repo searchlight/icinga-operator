@@ -1,214 +1,47 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package v1alpha1
 
 import (
-	apiextensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
-	crdutils "kmodules.xyz/client-go/apiextensions/v1beta1"
+	"go.searchlight.dev/icinga-operator/crds"
+
+	"kmodules.xyz/client-go/apiextensions"
 )
 
 var (
 	EnableStatusSubresource bool
 )
 
-func (a ClusterAlert) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
-	return crdutils.NewCustomResourceDefinition(crdutils.Config{
-		Group:         SchemeGroupVersion.Group,
-		Plural:        ResourcePluralClusterAlert,
-		Singular:      ResourceSingularClusterAlert,
-		Kind:          ResourceKindClusterAlert,
-		ShortNames:    []string{"ca"},
-		Categories:    []string{"monitoring", "appscode", "all"},
-		ResourceScope: string(apiextensions.NamespaceScoped),
-		Versions: []apiextensions.CustomResourceDefinitionVersion{
-			{
-				Name:    SchemeGroupVersion.Version,
-				Served:  true,
-				Storage: true,
-			},
-		},
-		Labels: crdutils.Labels{
-			LabelsMap: map[string]string{"app": "searchlight"},
-		},
-		SpecDefinitionName:      "github.com/appscode/searchlight/apis/monitoring/v1alpha1.ClusterAlert",
-		EnableValidation:        true,
-		GetOpenAPIDefinitions:   GetOpenAPIDefinitions,
-		EnableStatusSubresource: EnableStatusSubresource,
-		AdditionalPrinterColumns: []apiextensions.CustomResourceColumnDefinition{
-			{
-				Name:     "CheckCommand",
-				Type:     "string",
-				JSONPath: ".spec.check",
-			},
-			{
-				Name:     "Paused",
-				Type:     "boolean",
-				JSONPath: ".spec.paused",
-			},
-			{
-				Name:     "Age",
-				Type:     "date",
-				JSONPath: ".metadata.creationTimestamp",
-			},
-		},
-	})
+func (_ ClusterAlert) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
+	return crds.MustCustomResourceDefinition(SchemeGroupVersion.WithResource(ResourcePluralClusterAlert))
 }
 
-func (a NodeAlert) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
-	return crdutils.NewCustomResourceDefinition(crdutils.Config{
-		Group:         SchemeGroupVersion.Group,
-		Plural:        ResourcePluralNodeAlert,
-		Singular:      ResourceSingularNodeAlert,
-		Kind:          ResourceKindNodeAlert,
-		ShortNames:    []string{"noa"},
-		Categories:    []string{"monitoring", "appscode", "all"},
-		ResourceScope: string(apiextensions.NamespaceScoped),
-		Versions: []apiextensions.CustomResourceDefinitionVersion{
-			{
-				Name:    SchemeGroupVersion.Version,
-				Served:  true,
-				Storage: true,
-			},
-		},
-		Labels: crdutils.Labels{
-			LabelsMap: map[string]string{"app": "searchlight"},
-		},
-		SpecDefinitionName:      "github.com/appscode/searchlight/apis/monitoring/v1alpha1.NodeAlert",
-		EnableValidation:        true,
-		GetOpenAPIDefinitions:   GetOpenAPIDefinitions,
-		EnableStatusSubresource: EnableStatusSubresource,
-		AdditionalPrinterColumns: []apiextensions.CustomResourceColumnDefinition{
-			{
-				Name:     "CheckCommand",
-				Type:     "string",
-				JSONPath: ".spec.check",
-			},
-			{
-				Name:     "Paused",
-				Type:     "boolean",
-				JSONPath: ".spec.paused",
-			},
-			{
-				Name:     "Age",
-				Type:     "date",
-				JSONPath: ".metadata.creationTimestamp",
-			},
-		},
-	})
+func (_ NodeAlert) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
+	return crds.MustCustomResourceDefinition(SchemeGroupVersion.WithResource(ResourcePluralNodeAlert))
 }
 
-func (a PodAlert) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
-	return crdutils.NewCustomResourceDefinition(crdutils.Config{
-		Group:         SchemeGroupVersion.Group,
-		Plural:        ResourcePluralPodAlert,
-		Singular:      ResourceSingularPodAlert,
-		Kind:          ResourceKindPodAlert,
-		ShortNames:    []string{"poa"},
-		Categories:    []string{"monitoring", "appscode", "all"},
-		ResourceScope: string(apiextensions.NamespaceScoped),
-		Versions: []apiextensions.CustomResourceDefinitionVersion{
-			{
-				Name:    SchemeGroupVersion.Version,
-				Served:  true,
-				Storage: true,
-			},
-		},
-		Labels: crdutils.Labels{
-			LabelsMap: map[string]string{"app": "searchlight"},
-		},
-		SpecDefinitionName:      "github.com/appscode/searchlight/apis/monitoring/v1alpha1.PodAlert",
-		EnableValidation:        true,
-		GetOpenAPIDefinitions:   GetOpenAPIDefinitions,
-		EnableStatusSubresource: EnableStatusSubresource,
-		AdditionalPrinterColumns: []apiextensions.CustomResourceColumnDefinition{
-			{
-				Name:     "CheckCommand",
-				Type:     "string",
-				JSONPath: ".spec.check",
-			},
-			{
-				Name:     "Paused",
-				Type:     "boolean",
-				JSONPath: ".spec.paused",
-			},
-			{
-				Name:     "Age",
-				Type:     "date",
-				JSONPath: ".metadata.creationTimestamp",
-			},
-		},
-	})
+func (_ PodAlert) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
+	return crds.MustCustomResourceDefinition(SchemeGroupVersion.WithResource(ResourcePluralPodAlert))
 }
 
-func (a Incident) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
-	return crdutils.NewCustomResourceDefinition(crdutils.Config{
-		Group:         SchemeGroupVersion.Group,
-		Plural:        ResourcePluralIncident,
-		Singular:      ResourceSingularIncident,
-		Kind:          ResourceKindIncident,
-		Categories:    []string{"monitoring", "appscode", "all"},
-		ResourceScope: string(apiextensions.NamespaceScoped),
-		Versions: []apiextensions.CustomResourceDefinitionVersion{
-			{
-				Name:    SchemeGroupVersion.Version,
-				Served:  true,
-				Storage: true,
-			},
-		},
-		Labels: crdutils.Labels{
-			LabelsMap: map[string]string{"app": "searchlight"},
-		},
-		SpecDefinitionName:      "github.com/appscode/searchlight/apis/monitoring/v1alpha1.Incident",
-		EnableValidation:        true,
-		GetOpenAPIDefinitions:   GetOpenAPIDefinitions,
-		EnableStatusSubresource: EnableStatusSubresource,
-		AdditionalPrinterColumns: []apiextensions.CustomResourceColumnDefinition{
-			{
-				Name:     "LastNotification",
-				Type:     "string",
-				JSONPath: ".status.lastNotificationType",
-			},
-			{
-				Name:     "Age",
-				Type:     "date",
-				JSONPath: ".metadata.creationTimestamp",
-			},
-		},
-	})
+func (_ Incident) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
+	return crds.MustCustomResourceDefinition(SchemeGroupVersion.WithResource(ResourcePluralIncident))
 }
 
-func (a SearchlightPlugin) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
-	return crdutils.NewCustomResourceDefinition(crdutils.Config{
-		Group:         SchemeGroupVersion.Group,
-		Plural:        ResourcePluralSearchlightPlugin,
-		Singular:      ResourceSingularSearchlightPlugin,
-		Kind:          ResourceKindSearchlightPlugin,
-		ShortNames:    []string{"sp"},
-		Categories:    []string{"monitoring", "appscode", "all"},
-		ResourceScope: string(apiextensions.ClusterScoped),
-		Versions: []apiextensions.CustomResourceDefinitionVersion{
-			{
-				Name:    SchemeGroupVersion.Version,
-				Served:  true,
-				Storage: true,
-			},
-		},
-		Labels: crdutils.Labels{
-			LabelsMap: map[string]string{"app": "searchlight"},
-		},
-		SpecDefinitionName:      "github.com/appscode/searchlight/apis/monitoring/v1alpha1.SearchlightPlugin",
-		EnableValidation:        true,
-		GetOpenAPIDefinitions:   GetOpenAPIDefinitions,
-		EnableStatusSubresource: EnableStatusSubresource,
-		AdditionalPrinterColumns: []apiextensions.CustomResourceColumnDefinition{
-			{
-				Name:     "Command",
-				Type:     "string",
-				JSONPath: ".spec.command",
-			},
-			{
-				Name:     "Age",
-				Type:     "date",
-				JSONPath: ".metadata.creationTimestamp",
-			},
-		},
-	})
+func (_ SearchlightPlugin) CustomResourceDefinition() *apiextensions.CustomResourceDefinition {
+	return crds.MustCustomResourceDefinition(SchemeGroupVersion.WithResource(ResourcePluralSearchlightPlugin))
 }

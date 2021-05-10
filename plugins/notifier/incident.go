@@ -1,14 +1,33 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package notifier
 
 import (
+	"context"
 	"fmt"
 	"time"
 
-	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/util"
-	"github.com/appscode/searchlight/pkg/icinga"
+	api "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+	"go.searchlight.dev/icinga-operator/client/clientset/versioned/typed/monitoring/v1alpha1/util"
+	"go.searchlight.dev/icinga-operator/pkg/icinga"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/types"
 )
 
 func (n *notifier) appendIncidentNotification(notifications []api.IncidentNotification) []api.IncidentNotification {
@@ -95,23 +114,23 @@ func (n *notifier) reconcileIncident() error {
 		incident.Status.Notifications = notifications
 
 		if api.AlertType(opts.notificationType) == api.NotificationRecovery {
-			_, _, err = util.PatchIncident(n.extClient, incident, func(in *api.Incident) *api.Incident {
+			_, _, err = util.PatchIncident(context.TODO(), n.extClient, incident, func(in *api.Incident) *api.Incident {
 				if in.Labels == nil {
 					in.Labels = map[string]string{}
 				}
 				in.Labels[api.LabelKeyProblemRecovered] = "true"
 				return in
-			})
+			}, metav1.PatchOptions{})
 			if err != nil {
 				return err
 			}
 		}
 
-		_, err = util.UpdateIncidentStatus(n.extClient, incident, func(in *api.IncidentStatus) *api.IncidentStatus {
+		_, err = util.UpdateIncidentStatus(context.TODO(), n.extClient, incident.ObjectMeta, func(in *api.IncidentStatus) (types.UID, *api.IncidentStatus) {
 			in.LastNotificationType = api.AlertType(opts.notificationType)
 			in.Notifications = notifications
-			return in
-		}, api.EnableStatusSubresource)
+			return incident.UID, in
+		}, metav1.UpdateOptions{})
 		if err != nil {
 			return err
 		}
@@ -133,7 +152,7 @@ func (n *notifier) reconcileIncident() error {
 			},
 		}
 
-		if _, err = n.extClient.Incidents(incident.Namespace).Create(incident); err != nil {
+		if _, err = n.extClient.Incidents(incident.Namespace).Create(context.TODO(), incident, metav1.CreateOptions{}); err != nil {
 			return err
 		}
 	}
@@ -142,7 +161,7 @@ func (n *notifier) reconcileIncident() error {
 }
 
 func (n *notifier) getIncident() (*api.Incident, error) {
-	incidentList, err := n.extClient.Incidents(n.options.host.AlertNamespace).List(metav1.ListOptions{
+	incidentList, err := n.extClient.Incidents(n.options.host.AlertNamespace).List(context.TODO(), metav1.ListOptions{
 		LabelSelector: labels.SelectorFromSet(n.getLabel()).String(),
 	})
 	if err != nil {

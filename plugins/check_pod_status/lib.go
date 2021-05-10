@@ -1,13 +1,31 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package check_pod_status
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/appscode/go/flags"
-	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/plugins"
+	"go.searchlight.dev/icinga-operator/pkg/icinga"
+	"go.searchlight.dev/icinga-operator/plugins"
+
 	"github.com/spf13/cobra"
+	"gomodules.xyz/x/flags"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -76,7 +94,7 @@ func (o *options) validate() error {
 func (p *plugin) Check() (icinga.State, interface{}) {
 	opts := p.options
 
-	pod, err := p.client.Get(opts.podName, metav1.GetOptions{})
+	pod, err := p.client.Get(context.TODO(), opts.podName, metav1.GetOptions{})
 	if err != nil {
 		return icinga.Unknown, err
 	}

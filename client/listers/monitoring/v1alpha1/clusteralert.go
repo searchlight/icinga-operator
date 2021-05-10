@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,15 +19,18 @@ limitations under the License.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	v1alpha1 "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/tools/cache"
 )
 
 // ClusterAlertLister helps list ClusterAlerts.
+// All objects returned here must be treated as read-only.
 type ClusterAlertLister interface {
 	// List lists all ClusterAlerts in the indexer.
+	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.ClusterAlert, err error)
 	// ClusterAlerts returns an object that can list and get ClusterAlerts.
 	ClusterAlerts(namespace string) ClusterAlertNamespaceLister
@@ -58,10 +61,13 @@ func (s *clusterAlertLister) ClusterAlerts(namespace string) ClusterAlertNamespa
 }
 
 // ClusterAlertNamespaceLister helps list and get ClusterAlerts.
+// All objects returned here must be treated as read-only.
 type ClusterAlertNamespaceLister interface {
 	// List lists all ClusterAlerts in the indexer for a given namespace.
+	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.ClusterAlert, err error)
 	// Get retrieves the ClusterAlert from the indexer for a given namespace and name.
+	// Objects returned here must be treated as read-only.
 	Get(name string) (*v1alpha1.ClusterAlert, error)
 	ClusterAlertNamespaceListerExpansion
 }

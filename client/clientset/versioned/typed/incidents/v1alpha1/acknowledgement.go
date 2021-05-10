@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,7 +19,11 @@ limitations under the License.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/appscode/searchlight/apis/incidents/v1alpha1"
+	"context"
+
+	v1alpha1 "go.searchlight.dev/icinga-operator/apis/incidents/v1alpha1"
+	scheme "go.searchlight.dev/icinga-operator/client/clientset/versioned/scheme"
+
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	rest "k8s.io/client-go/rest"
 )
@@ -32,8 +36,8 @@ type AcknowledgementsGetter interface {
 
 // AcknowledgementInterface has methods to work with Acknowledgement resources.
 type AcknowledgementInterface interface {
-	Create(*v1alpha1.Acknowledgement) (*v1alpha1.Acknowledgement, error)
-	Delete(name string, options *v1.DeleteOptions) error
+	Create(ctx context.Context, acknowledgement *v1alpha1.Acknowledgement, opts v1.CreateOptions) (*v1alpha1.Acknowledgement, error)
+	Delete(ctx context.Context, name string, opts v1.DeleteOptions) error
 	AcknowledgementExpansion
 }
 
@@ -52,24 +56,25 @@ func newAcknowledgements(c *IncidentsV1alpha1Client, namespace string) *acknowle
 }
 
 // Create takes the representation of a acknowledgement and creates it.  Returns the server's representation of the acknowledgement, and an error, if there is any.
-func (c *acknowledgements) Create(acknowledgement *v1alpha1.Acknowledgement) (result *v1alpha1.Acknowledgement, err error) {
+func (c *acknowledgements) Create(ctx context.Context, acknowledgement *v1alpha1.Acknowledgement, opts v1.CreateOptions) (result *v1alpha1.Acknowledgement, err error) {
 	result = &v1alpha1.Acknowledgement{}
 	err = c.client.Post().
 		Namespace(c.ns).
 		Resource("acknowledgements").
+		VersionedParams(&opts, scheme.ParameterCodec).
 		Body(acknowledgement).
-		Do().
+		Do(ctx).
 		Into(result)
 	return
 }
 
 // Delete takes name of the acknowledgement and deletes it. Returns an error if one occurs.
-func (c *acknowledgements) Delete(name string, options *v1.DeleteOptions) error {
+func (c *acknowledgements) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	return c.client.Delete().
 		Namespace(c.ns).
 		Resource("acknowledgements").
 		Name(name).
-		Body(options).
-		Do().
+		Body(&opts).
+		Do(ctx).
 		Error()
 }

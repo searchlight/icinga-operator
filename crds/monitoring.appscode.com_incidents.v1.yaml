@@ -1,0 +1,93 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/name: searchlight
+  name: incidents.monitoring.appscode.com
+spec:
+  group: monitoring.appscode.com
+  names:
+    categories:
+    - monitoring
+    - appscode
+    - all
+    kind: Incident
+    listKind: IncidentList
+    plural: incidents
+    singular: incident
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.lastNotificationType
+      name: LastNotification
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          status:
+            description: Derived information about the incident.
+            properties:
+              lastNotificationType:
+                description: Type of last notification, such as problem, acknowledgement,
+                  recovery or custom
+                type: string
+              notifications:
+                description: Notifications for the incident, such as problem or acknowledgement.
+                items:
+                  properties:
+                    author:
+                      description: name of user making comment
+                      type: string
+                    checkOutput:
+                      description: brief output of check command for the incident
+                      type: string
+                    comment:
+                      description: comment made by user
+                      type: string
+                    firstTimestamp:
+                      description: The time at which this notification was first recorded.
+                        (Time of server receipt is in TypeMeta.)
+                      format: date-time
+                      type: string
+                    lastTimestamp:
+                      description: The time at which the most recent occurrence of
+                        this notification was recorded.
+                      format: date-time
+                      type: string
+                    state:
+                      description: state of incident, such as Critical, Warning, OK,
+                        Unknown
+                      type: string
+                    type:
+                      description: incident notification type.
+                      type: string
+                  required:
+                  - state
+                  - type
+                  type: object
+                type: array
+            required:
+            - lastNotificationType
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

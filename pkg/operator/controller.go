@@ -1,16 +1,32 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package operator
 
 import (
 	"fmt"
 
-	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	cs "github.com/appscode/searchlight/client/clientset/versioned"
-	mon_informers "github.com/appscode/searchlight/client/informers/externalversions"
-	mon_listers "github.com/appscode/searchlight/client/listers/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/pkg/icinga"
+	api "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+	cs "go.searchlight.dev/icinga-operator/client/clientset/versioned"
+	mon_informers "go.searchlight.dev/icinga-operator/client/informers/externalversions"
+	mon_listers "go.searchlight.dev/icinga-operator/client/listers/monitoring/v1alpha1"
+	"go.searchlight.dev/icinga-operator/pkg/icinga"
+
 	"github.com/golang/glog"
-	crd_api "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
-	ecs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
+	crd_cs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
@@ -19,7 +35,7 @@ import (
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
 	reg_util "kmodules.xyz/client-go/admissionregistration/v1beta1"
-	apiext_util "kmodules.xyz/client-go/apiextensions/v1beta1"
+	"kmodules.xyz/client-go/apiextensions"
 	"kmodules.xyz/client-go/tools/queue"
 )
 
@@ -28,7 +44,7 @@ type Operator struct {
 
 	clientConfig *rest.Config
 	kubeClient   kubernetes.Interface
-	crdClient    ecs.ApiextensionsV1beta1Interface
+	crdClient    crd_cs.Interface
 	extClient    cs.Interface
 	icingaClient *icinga.Client // TODO: init
 
@@ -76,14 +92,14 @@ type Operator struct {
 }
 
 func (op *Operator) ensureCustomResourceDefinitions() error {
-	crds := []*crd_api.CustomResourceDefinition{
+	crds := []*apiextensions.CustomResourceDefinition{
 		api.ClusterAlert{}.CustomResourceDefinition(),
 		api.NodeAlert{}.CustomResourceDefinition(),
 		api.PodAlert{}.CustomResourceDefinition(),
 		api.Incident{}.CustomResourceDefinition(),
 		api.SearchlightPlugin{}.CustomResourceDefinition(),
 	}
-	return apiext_util.RegisterCRDs(op.crdClient, crds)
+	return apiextensions.RegisterCRDs(op.crdClient, crds)
 }
 
 func (op *Operator) RunInformers(stopCh <-chan struct{}) {

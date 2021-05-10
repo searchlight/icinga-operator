@@ -304,4 +304,4 @@ Here,
 
 - Service `searchlight-plugin` in Namespace `default` will be used in SearchlightPlugin
 
-For a fully working version of this tutorial, visit [this](https://github.com/appscode/searchlight-plugin). Please note that the webhook server can be written in any programming language your prefer as long as the `Response` json format is maintained.
+For a fully working version of this tutorial, visit [this](https://go.searchlight.dev/icinga-operator-plugin). Please note that the webhook server can be written in any programming language your prefer as long as the `Response` json format is maintained.

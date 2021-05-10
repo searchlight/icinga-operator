@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,7 +19,10 @@ limitations under the License.
 package fake
 
 import (
-	v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"context"
+
+	v1alpha1 "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
@@ -38,7 +41,7 @@ var searchlightpluginsResource = schema.GroupVersionResource{Group: "monitoring.
 var searchlightpluginsKind = schema.GroupVersionKind{Group: "monitoring.appscode.com", Version: "v1alpha1", Kind: "SearchlightPlugin"}
 
 // Get takes name of the searchlightPlugin, and returns the corresponding searchlightPlugin object, and an error if there is any.
-func (c *FakeSearchlightPlugins) Get(name string, options v1.GetOptions) (result *v1alpha1.SearchlightPlugin, err error) {
+func (c *FakeSearchlightPlugins) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.SearchlightPlugin, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewRootGetAction(searchlightpluginsResource, name), &v1alpha1.SearchlightPlugin{})
 	if obj == nil {
@@ -48,7 +51,7 @@ func (c *FakeSearchlightPlugins) Get(name string, options v1.GetOptions) (result
 }
 
 // List takes label and field selectors, and returns the list of SearchlightPlugins that match those selectors.
-func (c *FakeSearchlightPlugins) List(opts v1.ListOptions) (result *v1alpha1.SearchlightPluginList, err error) {
+func (c *FakeSearchlightPlugins) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.SearchlightPluginList, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewRootListAction(searchlightpluginsResource, searchlightpluginsKind, opts), &v1alpha1.SearchlightPluginList{})
 	if obj == nil {
@@ -69,13 +72,13 @@ func (c *FakeSearchlightPlugins) List(opts v1.ListOptions) (result *v1alpha1.Sea
 }
 
 // Watch returns a watch.Interface that watches the requested searchlightPlugins.
-func (c *FakeSearchlightPlugins) Watch(opts v1.ListOptions) (watch.Interface, error) {
+func (c *FakeSearchlightPlugins) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
 		InvokesWatch(testing.NewRootWatchAction(searchlightpluginsResource, opts))
 }
 
 // Create takes the representation of a searchlightPlugin and creates it.  Returns the server's representation of the searchlightPlugin, and an error, if there is any.
-func (c *FakeSearchlightPlugins) Create(searchlightPlugin *v1alpha1.SearchlightPlugin) (result *v1alpha1.SearchlightPlugin, err error) {
+func (c *FakeSearchlightPlugins) Create(ctx context.Context, searchlightPlugin *v1alpha1.SearchlightPlugin, opts v1.CreateOptions) (result *v1alpha1.SearchlightPlugin, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewRootCreateAction(searchlightpluginsResource, searchlightPlugin), &v1alpha1.SearchlightPlugin{})
 	if obj == nil {
@@ -85,7 +88,7 @@ func (c *FakeSearchlightPlugins) Create(searchlightPlugin *v1alpha1.SearchlightP
 }
 
 // Update takes the representation of a searchlightPlugin and updates it. Returns the server's representation of the searchlightPlugin, and an error, if there is any.
-func (c *FakeSearchlightPlugins) Update(searchlightPlugin *v1alpha1.SearchlightPlugin) (result *v1alpha1.SearchlightPlugin, err error) {
+func (c *FakeSearchlightPlugins) Update(ctx context.Context, searchlightPlugin *v1alpha1.SearchlightPlugin, opts v1.UpdateOptions) (result *v1alpha1.SearchlightPlugin, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewRootUpdateAction(searchlightpluginsResource, searchlightPlugin), &v1alpha1.SearchlightPlugin{})
 	if obj == nil {
@@ -95,22 +98,22 @@ func (c *FakeSearchlightPlugins) Update(searchlightPlugin *v1alpha1.SearchlightP
 }
 
 // Delete takes name of the searchlightPlugin and deletes it. Returns an error if one occurs.
-func (c *FakeSearchlightPlugins) Delete(name string, options *v1.DeleteOptions) error {
+func (c *FakeSearchlightPlugins) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	_, err := c.Fake.
 		Invokes(testing.NewRootDeleteAction(searchlightpluginsResource, name), &v1alpha1.SearchlightPlugin{})
 	return err
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeSearchlightPlugins) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewRootDeleteCollectionAction(searchlightpluginsResource, listOptions)
+func (c *FakeSearchlightPlugins) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
+	action := testing.NewRootDeleteCollectionAction(searchlightpluginsResource, listOpts)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.SearchlightPluginList{})
 	return err
 }
 
 // Patch applies the patch and returns the patched searchlightPlugin.
-func (c *FakeSearchlightPlugins) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.SearchlightPlugin, err error) {
+func (c *FakeSearchlightPlugins) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.SearchlightPlugin, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewRootPatchSubresourceAction(searchlightpluginsResource, name, pt, data, subresources...), &v1alpha1.SearchlightPlugin{})
 	if obj == nil {

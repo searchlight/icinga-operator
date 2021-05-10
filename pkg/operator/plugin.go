@@ -1,27 +1,45 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package operator
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
 
-	"github.com/appscode/go/ioutil"
-	"github.com/appscode/go/log"
-	utilerrors "github.com/appscode/go/util/errors"
-	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/client/clientset/versioned/typed/monitoring/v1alpha1/util"
-	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/pkg/plugin"
+	api "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+	"go.searchlight.dev/icinga-operator/client/clientset/versioned/typed/monitoring/v1alpha1/util"
+	"go.searchlight.dev/icinga-operator/pkg/icinga"
+	"go.searchlight.dev/icinga-operator/pkg/plugin"
+
 	"github.com/golang/glog"
 	"github.com/pkg/errors"
+	"gomodules.xyz/x/ioutil"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	utilerrors "k8s.io/apimachinery/pkg/util/errors"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/remotecommand"
+	"k8s.io/klog/v2"
 	"kmodules.xyz/client-go/meta"
 	"kmodules.xyz/client-go/tools/queue"
 )
@@ -45,7 +63,7 @@ func (op *Operator) reconcilePlugin(key string) error {
 	}
 
 	if !exists {
-		log.Warningf("SearchlightPlugin %s does not exist anymore\n", key)
+		klog.Warningf("SearchlightPlugin %s does not exist anymore\n", key)
 
 		_, name, err := cache.SplitMetaNamespaceKey(key)
 		if err != nil {
@@ -57,7 +75,7 @@ func (op *Operator) reconcilePlugin(key string) error {
 	}
 
 	searchlightPlugin := obj.(*api.SearchlightPlugin).DeepCopy()
-	log.Infof("Sync/Add/Update for SearchlightPlugin %s\n", searchlightPlugin.GetName())
+	klog.Infof("Sync/Add/Update for SearchlightPlugin %s\n", searchlightPlugin.GetName())
 
 	return op.ensureCheckCommand(searchlightPlugin)
 }
@@ -98,11 +116,11 @@ func (op *Operator) ensureCheckCommandDeleted(name string) error {
 	{
 		// Pause all ClusterAlerts for this plugin
 		err = cache.ListAll(op.caInformer.GetIndexer(), labels.Everything(), func(obj interface{}) {
-			_, _, err = util.PatchClusterAlert(op.extClient.MonitoringV1alpha1(), obj.(*api.ClusterAlert), func(alert *api.ClusterAlert) *api.ClusterAlert {
+			_, _, err = util.PatchClusterAlert(context.TODO(), op.extClient.MonitoringV1alpha1(), obj.(*api.ClusterAlert), func(alert *api.ClusterAlert) *api.ClusterAlert {
 				pause := alert.Spec.Check == name
 				alert.Spec.Paused = pause
 				return alert
-			})
+			}, metav1.PatchOptions{})
 			if err != nil {
 				errs = append(errs, err)
 			}
@@ -114,11 +132,11 @@ func (op *Operator) ensureCheckCommandDeleted(name string) error {
 	{
 		// Pause all PodAlerts for this plugin
 		err = cache.ListAll(op.paInformer.GetIndexer(), labels.Everything(), func(obj interface{}) {
-			_, _, err = util.PatchPodAlert(op.extClient.MonitoringV1alpha1(), obj.(*api.PodAlert), func(alert *api.PodAlert) *api.PodAlert {
+			_, _, err = util.PatchPodAlert(context.TODO(), op.extClient.MonitoringV1alpha1(), obj.(*api.PodAlert), func(alert *api.PodAlert) *api.PodAlert {
 				pause := alert.Spec.Check == name
 				alert.Spec.Paused = pause
 				return alert
-			})
+			}, metav1.PatchOptions{})
 			if err != nil {
 				errs = append(errs, err)
 			}
@@ -130,11 +148,11 @@ func (op *Operator) ensureCheckCommandDeleted(name string) error {
 	{
 		// Pause all NodeAlerts for this plugin
 		err = cache.ListAll(op.naInformer.GetIndexer(), labels.Everything(), func(obj interface{}) {
-			_, _, err = util.PatchNodeAlert(op.extClient.MonitoringV1alpha1(), obj.(*api.NodeAlert), func(alert *api.NodeAlert) *api.NodeAlert {
+			_, _, err = util.PatchNodeAlert(context.TODO(), op.extClient.MonitoringV1alpha1(), obj.(*api.NodeAlert), func(alert *api.NodeAlert) *api.NodeAlert {
 				pause := alert.Spec.Check == name
 				alert.Spec.Paused = pause
 				return alert
-			})
+			}, metav1.PatchOptions{})
 			if err != nil {
 				errs = append(errs, err)
 			}
@@ -285,10 +303,10 @@ func (op *Operator) createBuiltinSearchlightPlugin() error {
 
 	var errs []error
 	for _, p := range plugins {
-		_, _, err := util.CreateOrPatchSearchlightPlugin(op.extClient.MonitoringV1alpha1(), p.ObjectMeta, func(sp *api.SearchlightPlugin) *api.SearchlightPlugin {
+		_, _, err := util.CreateOrPatchSearchlightPlugin(context.TODO(), op.extClient.MonitoringV1alpha1(), p.ObjectMeta, func(sp *api.SearchlightPlugin) *api.SearchlightPlugin {
 			sp.Spec = p.Spec
 			return sp
-		})
+		}, metav1.PatchOptions{})
 		if err != nil {
 			errs = append(errs, err)
 		}

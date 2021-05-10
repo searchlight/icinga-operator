@@ -1,3 +1,19 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package v1alpha1
 
 import (
@@ -17,19 +33,25 @@ const (
 )
 
 // +genclient
-// +genclient:skipVerbs=updateStatus
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
+// +kubebuilder:object:root=true
+// +kubebuilder:resource:path=clusteralerts,singular=clusteralert,categories={monitoring,appscode,all}
+// +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="CheckCommand",type="string",JSONPath=".spec.check"
+// +kubebuilder:printcolumn:name="Paused",type="boolean",JSONPath=".spec.paused"
+// +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
 type ClusterAlert struct {
 	metav1.TypeMeta `json:",inline"`
 	// Standard object's metadata.
 	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#metadata
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
 
 	// Spec is the desired state of the ClusterAlert.
 	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#spec-and-status
-	Spec ClusterAlertSpec `json:"spec,omitempty"`
+	Spec   ClusterAlertSpec   `json:"spec,omitempty" protobuf:"bytes,2,opt,name=spec"`
+	Status ClusterAlertStatus `json:"status,omitempty" protobuf:"bytes,3,opt,name=status"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -39,36 +61,43 @@ type ClusterAlertList struct {
 	metav1.TypeMeta `json:",inline"`
 	// Standard object's metadata.
 	// More info: http://releases.k8s.io/release-1.2/docs/devel/api-conventions.md#metadata
-	metav1.ListMeta `json:"metadata,omitempty"`
+	metav1.ListMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
 
 	// Items is the list of ClusterAlert.
-	Items []ClusterAlert `json:"items"`
+	Items []ClusterAlert `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
 
 // ClusterAlertSpec describes the ClusterAlert the user wishes to create.
 type ClusterAlertSpec struct {
 	// Icinga CheckCommand name
-	Check string `json:"check,omitempty"`
+	Check string `json:"check,omitempty" protobuf:"bytes,1,opt,name=check"`
 
 	// How frequently Icinga Service will be checked
-	CheckInterval metav1.Duration `json:"checkInterval,omitempty"`
+	CheckInterval metav1.Duration `json:"checkInterval,omitempty" protobuf:"bytes,2,opt,name=checkInterval"`
 
 	// How frequently notifications will be send
-	AlertInterval metav1.Duration `json:"alertInterval,omitempty"`
+	AlertInterval metav1.Duration `json:"alertInterval,omitempty" protobuf:"bytes,3,opt,name=alertInterval"`
 
 	// Secret containing notifier credentials
-	NotifierSecretName string `json:"notifierSecretName,omitempty"`
+	NotifierSecretName string `json:"notifierSecretName,omitempty" protobuf:"bytes,4,opt,name=notifierSecretName"`
 
 	// NotifierParams contains information to send notifications for Incident
 	// State, UserUid, Method
-	Receivers []Receiver `json:"receivers,omitempty"`
+	Receivers []Receiver `json:"receivers,omitempty" protobuf:"bytes,5,rep,name=receivers"`
 
 	// Vars contains Icinga Service variables to be used in CheckCommand
-	Vars map[string]string `json:"vars,omitempty"`
+	Vars map[string]string `json:"vars,omitempty" protobuf:"bytes,6,rep,name=vars"`
 
 	// Indicates that Check is paused
 	// Icinga Services are removed
-	Paused bool `json:"paused,omitempty"`
+	Paused bool `json:"paused,omitempty" protobuf:"varint,7,opt,name=paused"`
+}
+
+type ClusterAlertStatus struct {
+	// ObservedGeneration is the most recent generation observed for this BackupBatch. It corresponds to the
+	// BackupBatch's generation, which is updated on mutation by the API Server.
+	// +optional
+	ObservedGeneration int64 `json:"observedGeneration,omitempty" protobuf:"varint,1,opt,name=observedGeneration"`
 }
 
 var _ Alert = &ClusterAlert{}

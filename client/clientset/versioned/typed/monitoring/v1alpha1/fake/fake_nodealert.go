@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,7 +19,10 @@ limitations under the License.
 package fake
 
 import (
-	v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"context"
+
+	v1alpha1 "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
@@ -39,7 +42,7 @@ var nodealertsResource = schema.GroupVersionResource{Group: "monitoring.appscode
 var nodealertsKind = schema.GroupVersionKind{Group: "monitoring.appscode.com", Version: "v1alpha1", Kind: "NodeAlert"}
 
 // Get takes name of the nodeAlert, and returns the corresponding nodeAlert object, and an error if there is any.
-func (c *FakeNodeAlerts) Get(name string, options v1.GetOptions) (result *v1alpha1.NodeAlert, err error) {
+func (c *FakeNodeAlerts) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.NodeAlert, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewGetAction(nodealertsResource, c.ns, name), &v1alpha1.NodeAlert{})
 
@@ -50,7 +53,7 @@ func (c *FakeNodeAlerts) Get(name string, options v1.GetOptions) (result *v1alph
 }
 
 // List takes label and field selectors, and returns the list of NodeAlerts that match those selectors.
-func (c *FakeNodeAlerts) List(opts v1.ListOptions) (result *v1alpha1.NodeAlertList, err error) {
+func (c *FakeNodeAlerts) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.NodeAlertList, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewListAction(nodealertsResource, nodealertsKind, c.ns, opts), &v1alpha1.NodeAlertList{})
 
@@ -72,14 +75,14 @@ func (c *FakeNodeAlerts) List(opts v1.ListOptions) (result *v1alpha1.NodeAlertLi
 }
 
 // Watch returns a watch.Interface that watches the requested nodeAlerts.
-func (c *FakeNodeAlerts) Watch(opts v1.ListOptions) (watch.Interface, error) {
+func (c *FakeNodeAlerts) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
 		InvokesWatch(testing.NewWatchAction(nodealertsResource, c.ns, opts))
 
 }
 
 // Create takes the representation of a nodeAlert and creates it.  Returns the server's representation of the nodeAlert, and an error, if there is any.
-func (c *FakeNodeAlerts) Create(nodeAlert *v1alpha1.NodeAlert) (result *v1alpha1.NodeAlert, err error) {
+func (c *FakeNodeAlerts) Create(ctx context.Context, nodeAlert *v1alpha1.NodeAlert, opts v1.CreateOptions) (result *v1alpha1.NodeAlert, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewCreateAction(nodealertsResource, c.ns, nodeAlert), &v1alpha1.NodeAlert{})
 
@@ -90,7 +93,7 @@ func (c *FakeNodeAlerts) Create(nodeAlert *v1alpha1.NodeAlert) (result *v1alpha1
 }
 
 // Update takes the representation of a nodeAlert and updates it. Returns the server's representation of the nodeAlert, and an error, if there is any.
-func (c *FakeNodeAlerts) Update(nodeAlert *v1alpha1.NodeAlert) (result *v1alpha1.NodeAlert, err error) {
+func (c *FakeNodeAlerts) Update(ctx context.Context, nodeAlert *v1alpha1.NodeAlert, opts v1.UpdateOptions) (result *v1alpha1.NodeAlert, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewUpdateAction(nodealertsResource, c.ns, nodeAlert), &v1alpha1.NodeAlert{})
 
@@ -100,8 +103,20 @@ func (c *FakeNodeAlerts) Update(nodeAlert *v1alpha1.NodeAlert) (result *v1alpha1
 	return obj.(*v1alpha1.NodeAlert), err
 }
 
+// UpdateStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
+func (c *FakeNodeAlerts) UpdateStatus(ctx context.Context, nodeAlert *v1alpha1.NodeAlert, opts v1.UpdateOptions) (*v1alpha1.NodeAlert, error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewUpdateSubresourceAction(nodealertsResource, "status", c.ns, nodeAlert), &v1alpha1.NodeAlert{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1alpha1.NodeAlert), err
+}
+
 // Delete takes name of the nodeAlert and deletes it. Returns an error if one occurs.
-func (c *FakeNodeAlerts) Delete(name string, options *v1.DeleteOptions) error {
+func (c *FakeNodeAlerts) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	_, err := c.Fake.
 		Invokes(testing.NewDeleteAction(nodealertsResource, c.ns, name), &v1alpha1.NodeAlert{})
 
@@ -109,15 +124,15 @@ func (c *FakeNodeAlerts) Delete(name string, options *v1.DeleteOptions) error {
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeNodeAlerts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(nodealertsResource, c.ns, listOptions)
+func (c *FakeNodeAlerts) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(nodealertsResource, c.ns, listOpts)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.NodeAlertList{})
 	return err
 }
 
 // Patch applies the patch and returns the patched nodeAlert.
-func (c *FakeNodeAlerts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NodeAlert, err error) {
+func (c *FakeNodeAlerts) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.NodeAlert, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewPatchSubresourceAction(nodealertsResource, c.ns, name, pt, data, subresources...), &v1alpha1.NodeAlert{})
 

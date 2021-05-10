@@ -1,17 +1,34 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package cmds
 
 import (
 	"flag"
 	"fmt"
-	"log"
 
-	v "github.com/appscode/go/version"
-	"github.com/appscode/searchlight/client/clientset/versioned/scheme"
-	"github.com/appscode/searchlight/pkg/hostfacts"
+	"go.searchlight.dev/icinga-operator/client/clientset/versioned/scheme"
+	"go.searchlight.dev/icinga-operator/pkg/hostfacts"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"gomodules.xyz/kglog"
+	v "gomodules.xyz/x/version"
 	clientsetscheme "k8s.io/client-go/kubernetes/scheme"
-	"kmodules.xyz/client-go/logs"
+	"k8s.io/klog/v2"
 	"kmodules.xyz/client-go/tools/cli"
 )
 
@@ -21,7 +38,7 @@ func NewCmdHostfacts() *cobra.Command {
 		Short: `Hostfacts by AppsCode - Expose node metrics`,
 		PersistentPreRun: func(c *cobra.Command, args []string) {
 			c.Flags().VisitAll(func(flag *pflag.Flag) {
-				log.Printf("FLAG: --%s=%q", flag.Name, flag.Value)
+				klog.Infof("FLAG: --%s=%q", flag.Name, flag.Value)
 			})
 			cli.SendAnalytics(c, v.Version.Version)
 
@@ -29,7 +46,7 @@ func NewCmdHostfacts() *cobra.Command {
 		},
 	}
 	cmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
-	logs.ParseFlags()
+	kglog.ParseFlags()
 	cmd.PersistentFlags().BoolVar(&cli.EnableAnalytics, "enable-analytics", cli.EnableAnalytics, "send usage events to Google Analytics")
 
 	cmd.AddCommand(NewCmdServer())

@@ -1,20 +1,37 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package main
 
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 
-	"github.com/appscode/go/runtime"
-	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/pkg/plugin"
+	api "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+	"go.searchlight.dev/icinga-operator/pkg/plugin"
+
+	"gomodules.xyz/runtime"
+	"k8s.io/klog/v2"
 )
 
 func main() {
-	pluginFolder := runtime.GOPath() + "/src/github.com/appscode/searchlight/hack/deploy"
-	checkCommandFolder := runtime.GOPath() + "/src/github.com/appscode/searchlight/docs/examples/plugins/check-command"
+	pluginFolder := runtime.GOPath() + "/src/go.searchlight.dev/icinga-operator/hack/deploy"
+	checkCommandFolder := runtime.GOPath() + "/src/go.searchlight.dev/icinga-operator/docs/examples/plugins/check-command"
 
 	plugins := []*api.SearchlightPlugin{
 		plugin.GetComponentStatusPlugin(),
@@ -33,7 +50,7 @@ func main() {
 
 	f, err := os.OpenFile(filepath.Join(pluginFolder, "plugins.yaml"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
-		log.Fatal(err)
+		klog.Fatal(err)
 	}
 	defer f.Close()
 

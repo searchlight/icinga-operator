@@ -1,14 +1,31 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package operator
 
 import (
 	"reflect"
 	"strings"
 
-	"github.com/appscode/go/log"
-	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	api "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+
 	"github.com/golang/glog"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/tools/cache"
+	"k8s.io/klog/v2"
 	"kmodules.xyz/client-go/tools/queue"
 )
 
@@ -48,7 +65,7 @@ func (op *Operator) reconcileNodeAlert(key string) error {
 	}
 
 	if !exists {
-		log.Warningf("NodeAlert %s does not exist anymore\n", key)
+		klog.Warningf("NodeAlert %s does not exist anymore\n", key)
 
 		namespace, name, err := cache.SplitMetaNamespaceKey(key)
 		if err != nil {
@@ -58,7 +75,7 @@ func (op *Operator) reconcileNodeAlert(key string) error {
 	}
 
 	alert := obj.(*api.NodeAlert).DeepCopy()
-	log.Infof("Sync/Add/Update for NodeAlert %s\n", key)
+	klog.Infof("Sync/Add/Update for NodeAlert %s\n", key)
 
 	op.ensureNodeAlert(alert)
 	op.ensureNodeAlertDeleted(alert.Namespace, alert.Name)

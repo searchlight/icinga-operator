@@ -1,14 +1,32 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package discovery
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/golang/glog"
 	"github.com/pkg/errors"
 	"gomodules.xyz/version"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/klog/v2"
 )
 
 func GetVersion(client discovery.DiscoveryInterface) (string, error) {
@@ -21,6 +39,19 @@ func GetVersion(client discovery.DiscoveryInterface) (string, error) {
 		return "", err
 	}
 	return gv.ToMutator().ResetMetadata().ResetPrerelease().String(), nil
+}
+
+func GetVersionInfo(client discovery.DiscoveryInterface) (int64, int64, int64, string, string, error) {
+	info, err := client.ServerVersion()
+	if err != nil {
+		return -1, -1, -1, "", "", err
+	}
+	gv, err := version.NewVersion(info.GitVersion)
+	if err != nil {
+		return -1, -1, -1, "", "", err
+	}
+	v := gv.ToMutator().ResetMetadata().ResetPrerelease()
+	return v.Major(), v.Minor(), v.Patch(), v.Prerelease(), v.Metadata(), nil
 }
 
 func GetBaseVersion(client discovery.DiscoveryInterface) (string, error) {
@@ -52,6 +83,10 @@ func CheckAPIVersion(client discovery.DiscoveryInterface, constraint string) (bo
 }
 
 func IsPreferredAPIResource(client discovery.DiscoveryInterface, groupVersion, kind string) bool {
+	return ExistsGroupVersionKind(client, groupVersion, kind)
+}
+
+func ExistsGroupVersionKind(client discovery.DiscoveryInterface, groupVersion, kind string) bool {
 	if resourceList, err := client.ServerPreferredResources(); discovery.IsGroupDiscoveryFailedError(err) || err == nil {
 		for _, resources := range resourceList {
 			if resources.GroupVersion != groupVersion {
@@ -67,6 +102,59 @@ func IsPreferredAPIResource(client discovery.DiscoveryInterface, groupVersion, k
 	return false
 }
 
+func ExistsGroupKind(client discovery.DiscoveryInterface, group, kind string) bool {
+	if resourceList, err := client.ServerPreferredResources(); discovery.IsGroupDiscoveryFailedError(err) || err == nil {
+		for _, resources := range resourceList {
+			gv, err := schema.ParseGroupVersion(resources.GroupVersion)
+			if err != nil {
+				return false
+			}
+			if gv.Group != group {
+				continue
+			}
+			for _, resource := range resources.APIResources {
+				if resource.Kind == kind {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func ExistsGroupKinds(client discovery.DiscoveryInterface, gk schema.GroupKind, otherGks ...schema.GroupKind) bool {
+	desired := make(map[schema.GroupKind]bool, 1+len(otherGks))
+	desired[gk] = false
+	for _, other := range otherGks {
+		desired[other] = false
+	}
+
+	if resourceList, err := client.ServerPreferredResources(); discovery.IsGroupDiscoveryFailedError(err) || err == nil {
+		for _, resources := range resourceList {
+			gv, err := schema.ParseGroupVersion(resources.GroupVersion)
+			if err != nil {
+				return false
+			}
+			for _, resource := range resources.APIResources {
+				x := schema.GroupKind{
+					Group: gv.Group,
+					Kind:  resource.Kind,
+				}
+				if _, found := desired[x]; found {
+					desired[x] = true
+				}
+			}
+		}
+	}
+
+	for _, found := range desired {
+		if !found {
+			return false
+		}
+	}
+	return true
+}
+
 type KnownBug struct {
 	URL string
 	Fix string
@@ -78,10 +166,14 @@ func (e *KnownBug) Error() string {
 
 var err62649_K1_9 = &KnownBug{URL: "https://github.com/kubernetes/kubernetes/pull/62649", Fix: "upgrade to Kubernetes 1.9.8 or later."}
 var err62649_K1_10 = &KnownBug{URL: "https://github.com/kubernetes/kubernetes/pull/62649", Fix: "upgrade to Kubernetes 1.10.2 or later."}
+var err83778_K1_16 = &KnownBug{URL: "https://github.com/kubernetes/kubernetes/pull/83787", Fix: "upgrade to Kubernetes 1.16.2 or later."}
 
 var (
-	DefaultConstraint                     = ">= 1.9.0"
-	DefaultBlackListedVersions            map[string]error
+	DefaultConstraint          = ">= 1.11.0"
+	DefaultBlackListedVersions = map[string]error{
+		"1.16.0": err83778_K1_16,
+		"1.16.1": err83778_K1_16,
+	}
 	DefaultBlackListedMultiMasterVersions = map[string]error{
 		"1.9.0":  err62649_K1_9,
 		"1.9.1":  err62649_K1_9,
@@ -109,7 +201,7 @@ func IsSupportedVersion(kc kubernetes.Interface, constraint string, blackListedV
 	if err != nil {
 		return err
 	}
-	glog.Infof("Kubernetes version: %#v\n", info)
+	klog.Infof("Kubernetes version: %#v\n", info)
 
 	gv, err := version.NewVersion(info.GitVersion)
 	if err != nil {
@@ -117,7 +209,7 @@ func IsSupportedVersion(kc kubernetes.Interface, constraint string, blackListedV
 	}
 	v := gv.ToMutator().ResetMetadata().ResetPrerelease().Done()
 
-	nodes, err := kc.CoreV1().Nodes().List(metav1.ListOptions{
+	nodes, err := kc.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{
 		LabelSelector: "node-role.kubernetes.io/master",
 	})
 	if err != nil {

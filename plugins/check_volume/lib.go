@@ -1,16 +1,34 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package check_volume
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
 
-	"github.com/appscode/go/flags"
-	"github.com/appscode/go/net/httpclient"
-	"github.com/appscode/searchlight/pkg/icinga"
-	"github.com/appscode/searchlight/plugins"
+	"go.searchlight.dev/icinga-operator/pkg/icinga"
+	"go.searchlight.dev/icinga-operator/plugins"
+
 	"github.com/spf13/cobra"
 	"gomodules.xyz/envconfig"
+	"gomodules.xyz/x/flags"
+	"gomodules.xyz/x/net/httpclient"
 	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -216,7 +234,7 @@ func (p *plugin) getAuthInfo() (*AuthInfo, error) {
 		return &AuthInfo{Port: 56977}, nil
 	}
 
-	secret, err := p.client.CoreV1().Secrets(host.AlertNamespace).Get(opts.secretName, metav1.GetOptions{})
+	secret, err := p.client.CoreV1().Secrets(host.AlertNamespace).Get(context.TODO(), opts.secretName, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -283,7 +301,7 @@ func (p *plugin) checkVolume(ip, path string) (icinga.State, interface{}) {
 }
 
 func (p *plugin) checkNodeVolume() (icinga.State, interface{}) {
-	node, err := p.client.CoreV1().Nodes().Get(p.options.host.ObjectName, metav1.GetOptions{})
+	node, err := p.client.CoreV1().Nodes().Get(context.TODO(), p.options.host.ObjectName, metav1.GetOptions{})
 	if err != nil {
 		return icinga.Unknown, err
 	}
@@ -309,7 +327,7 @@ func (p *plugin) checkPodVolume() (icinga.State, interface{}) {
 	opts := p.options
 	host := opts.host
 
-	pod, err := p.client.CoreV1().Pods(host.AlertNamespace).Get(host.ObjectName, metav1.GetOptions{})
+	pod, err := p.client.CoreV1().Pods(host.AlertNamespace).Get(context.TODO(), host.ObjectName, metav1.GetOptions{})
 	if err != nil {
 		return icinga.Unknown, err
 	}
@@ -317,18 +335,18 @@ func (p *plugin) checkPodVolume() (icinga.State, interface{}) {
 	for _, volume := range pod.Spec.Volumes {
 		if volume.Name == opts.volumeName {
 			if volume.PersistentVolumeClaim != nil {
-				claim, err := p.client.CoreV1().PersistentVolumeClaims(host.AlertNamespace).Get(volume.PersistentVolumeClaim.ClaimName, metav1.GetOptions{})
+				claim, err := p.client.CoreV1().PersistentVolumeClaims(host.AlertNamespace).Get(context.TODO(), volume.PersistentVolumeClaim.ClaimName, metav1.GetOptions{})
 				if err != nil {
 					return icinga.Unknown, err
 				}
-				volume, err := p.client.CoreV1().PersistentVolumes().Get(claim.Spec.VolumeName, metav1.GetOptions{})
+				volume, err := p.client.CoreV1().PersistentVolumes().Get(context.TODO(), claim.Spec.VolumeName, metav1.GetOptions{})
 				if err != nil {
 					return icinga.Unknown, err
 				}
 				volumePluginName := getPersistentVolumePluginName(&volume.Spec.PersistentVolumeSource)
 				if volumePluginName == hostPathPluginName {
 					if claim.Spec.StorageClassName != nil {
-						class, err := p.client.StorageV1beta1().StorageClasses().Get(*claim.Spec.StorageClassName, metav1.GetOptions{})
+						class, err := p.client.StorageV1beta1().StorageClasses().Get(context.TODO(), *claim.Spec.StorageClassName, metav1.GetOptions{})
 						if err != nil {
 							return icinga.Unknown, err
 						}

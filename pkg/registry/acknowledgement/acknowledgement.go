@@ -1,3 +1,19 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package acknowledgement
 
 import (
@@ -5,12 +21,12 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/appscode/go/log"
-	"github.com/appscode/searchlight/apis/incidents"
-	"github.com/appscode/searchlight/apis/incidents/v1alpha1"
-	monitoring "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	"github.com/appscode/searchlight/client/clientset/versioned"
-	"github.com/appscode/searchlight/pkg/icinga"
+	"go.searchlight.dev/icinga-operator/apis/incidents"
+	"go.searchlight.dev/icinga-operator/apis/incidents/v1alpha1"
+	monitoring "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+	"go.searchlight.dev/icinga-operator/client/clientset/versioned"
+	"go.searchlight.dev/icinga-operator/pkg/icinga"
+
 	"github.com/pkg/errors"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
@@ -21,6 +37,7 @@ import (
 	apirequest "k8s.io/apiserver/pkg/endpoints/request"
 	"k8s.io/apiserver/pkg/registry/rest"
 	restconfig "k8s.io/client-go/rest"
+	"k8s.io/klog/v2"
 )
 
 type REST struct {
@@ -101,7 +118,7 @@ func (r *REST) Create(ctx context.Context, obj runtime.Object, _ rest.ValidateOb
 }
 
 func validate(o *incidents.Acknowledgement) field.ErrorList {
-	log.Infof("Validating fields for Acknowledgement %s\n", o.Name)
+	klog.Infof("Validating fields for Acknowledgement %s\n", o.Name)
 	errs := field.ErrorList{}
 
 	if o.Request.Comment == "" {
@@ -113,7 +130,7 @@ func validate(o *incidents.Acknowledgement) field.ErrorList {
 	return errs
 }
 
-func (r *REST) Delete(ctx context.Context, name string, options *metav1.DeleteOptions) (runtime.Object, bool, error) {
+func (r *REST) Delete(ctx context.Context, name string, deleteValidation rest.ValidateObjectFunc, options *metav1.DeleteOptions) (runtime.Object, bool, error) {
 	namespace, ok := apirequest.NamespaceFrom(ctx)
 	if !ok {
 		return nil, false, apierrors.NewBadRequest("namespace missing")
@@ -159,7 +176,7 @@ func (r *REST) Delete(ctx context.Context, name string, options *metav1.DeleteOp
 }
 
 func (r *REST) getIcingaObjects(namespace, name string) (host string, service string, err error) {
-	incident, err := r.client.MonitoringV1alpha1().Incidents(namespace).Get(name, metav1.GetOptions{})
+	incident, err := r.client.MonitoringV1alpha1().Incidents(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		if kerr.IsNotFound(err) {
 			return "", "", errors.Errorf("incident %s/%s not found", namespace, name)

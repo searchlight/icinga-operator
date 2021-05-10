@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,9 +23,10 @@ import (
 	sync "sync"
 	time "time"
 
-	versioned "github.com/appscode/searchlight/client/clientset/versioned"
-	internalinterfaces "github.com/appscode/searchlight/client/informers/externalversions/internalinterfaces"
-	monitoring "github.com/appscode/searchlight/client/informers/externalversions/monitoring"
+	versioned "go.searchlight.dev/icinga-operator/client/clientset/versioned"
+	internalinterfaces "go.searchlight.dev/icinga-operator/client/informers/externalversions/internalinterfaces"
+	monitoring "go.searchlight.dev/icinga-operator/client/informers/externalversions/monitoring"
+
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"

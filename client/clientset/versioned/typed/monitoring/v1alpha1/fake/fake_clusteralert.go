@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Searchlight Authors.
+Copyright AppsCode Inc. and Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,7 +19,10 @@ limitations under the License.
 package fake
 
 import (
-	v1alpha1 "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
+	"context"
+
+	v1alpha1 "go.searchlight.dev/icinga-operator/apis/monitoring/v1alpha1"
+
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
@@ -39,7 +42,7 @@ var clusteralertsResource = schema.GroupVersionResource{Group: "monitoring.appsc
 var clusteralertsKind = schema.GroupVersionKind{Group: "monitoring.appscode.com", Version: "v1alpha1", Kind: "ClusterAlert"}
 
 // Get takes name of the clusterAlert, and returns the corresponding clusterAlert object, and an error if there is any.
-func (c *FakeClusterAlerts) Get(name string, options v1.GetOptions) (result *v1alpha1.ClusterAlert, err error) {
+func (c *FakeClusterAlerts) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.ClusterAlert, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewGetAction(clusteralertsResource, c.ns, name), &v1alpha1.ClusterAlert{})
 
@@ -50,7 +53,7 @@ func (c *FakeClusterAlerts) Get(name string, options v1.GetOptions) (result *v1a
 }
 
 // List takes label and field selectors, and returns the list of ClusterAlerts that match those selectors.
-func (c *FakeClusterAlerts) List(opts v1.ListOptions) (result *v1alpha1.ClusterAlertList, err error) {
+func (c *FakeClusterAlerts) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.ClusterAlertList, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewListAction(clusteralertsResource, clusteralertsKind, c.ns, opts), &v1alpha1.ClusterAlertList{})
 
@@ -72,14 +75,14 @@ func (c *FakeClusterAlerts) List(opts v1.ListOptions) (result *v1alpha1.ClusterA
 }
 
 // Watch returns a watch.Interface that watches the requested clusterAlerts.
-func (c *FakeClusterAlerts) Watch(opts v1.ListOptions) (watch.Interface, error) {
+func (c *FakeClusterAlerts) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
 		InvokesWatch(testing.NewWatchAction(clusteralertsResource, c.ns, opts))
 
 }
 
 // Create takes the representation of a clusterAlert and creates it.  Returns the server's representation of the clusterAlert, and an error, if there is any.
-func (c *FakeClusterAlerts) Create(clusterAlert *v1alpha1.ClusterAlert) (result *v1alpha1.ClusterAlert, err error) {
+func (c *FakeClusterAlerts) Create(ctx context.Context, clusterAlert *v1alpha1.ClusterAlert, opts v1.CreateOptions) (result *v1alpha1.ClusterAlert, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewCreateAction(clusteralertsResource, c.ns, clusterAlert), &v1alpha1.ClusterAlert{})
 
@@ -90,7 +93,7 @@ func (c *FakeClusterAlerts) Create(clusterAlert *v1alpha1.ClusterAlert) (result 
 }
 
 // Update takes the representation of a clusterAlert and updates it. Returns the server's representation of the clusterAlert, and an error, if there is any.
-func (c *FakeClusterAlerts) Update(clusterAlert *v1alpha1.ClusterAlert) (result *v1alpha1.ClusterAlert, err error) {
+func (c *FakeClusterAlerts) Update(ctx context.Context, clusterAlert *v1alpha1.ClusterAlert, opts v1.UpdateOptions) (result *v1alpha1.ClusterAlert, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewUpdateAction(clusteralertsResource, c.ns, clusterAlert), &v1alpha1.ClusterAlert{})
 
@@ -100,8 +103,20 @@ func (c *FakeClusterAlerts) Update(clusterAlert *v1alpha1.ClusterAlert) (result 
 	return obj.(*v1alpha1.ClusterAlert), err
 }
 
+// UpdateStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
+func (c *FakeClusterAlerts) UpdateStatus(ctx context.Context, clusterAlert *v1alpha1.ClusterAlert, opts v1.UpdateOptions) (*v1alpha1.ClusterAlert, error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewUpdateSubresourceAction(clusteralertsResource, "status", c.ns, clusterAlert), &v1alpha1.ClusterAlert{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1alpha1.ClusterAlert), err
+}
+
 // Delete takes name of the clusterAlert and deletes it. Returns an error if one occurs.
-func (c *FakeClusterAlerts) Delete(name string, options *v1.DeleteOptions) error {
+func (c *FakeClusterAlerts) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	_, err := c.Fake.
 		Invokes(testing.NewDeleteAction(clusteralertsResource, c.ns, name), &v1alpha1.ClusterAlert{})
 
@@ -109,15 +124,15 @@ func (c *FakeClusterAlerts) Delete(name string, options *v1.DeleteOptions) error
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeClusterAlerts) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(clusteralertsResource, c.ns, listOptions)
+func (c *FakeClusterAlerts) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(clusteralertsResource, c.ns, listOpts)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.ClusterAlertList{})
 	return err
 }
 
 // Patch applies the patch and returns the patched clusterAlert.
-func (c *FakeClusterAlerts) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.ClusterAlert, err error) {
+func (c *FakeClusterAlerts) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.ClusterAlert, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewPatchSubresourceAction(clusteralertsResource, c.ns, name, pt, data, subresources...), &v1alpha1.ClusterAlert{})
 

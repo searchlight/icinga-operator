@@ -27,7 +27,7 @@ import (
 	"runtime/pprof"
 	"time"
 
-	"github.com/Unknwon/com"
+	"github.com/unknwon/com"
 	"gopkg.in/macaron.v1"
 )
 
@@ -45,13 +45,17 @@ func StartCPUProfile() error {
 	}
 	inCPUProfile = true
 
-	os.MkdirAll(profilePath, os.ModePerm)
+	err := os.MkdirAll(profilePath, os.ModePerm)
+	if err != nil {
+		return err
+	}
+
 	f, err := os.Create(path.Join(profilePath, "cpu-"+com.ToStr(pid)+".pprof"))
 	if err != nil {
 		panic("fail to record CPU profile: " + err.Error())
 	}
-	pprof.StartCPUProfile(f)
-	return nil
+
+	return pprof.StartCPUProfile(f)
 }
 
 // StopCPUProfile stops CPU profile monitor.
@@ -70,11 +74,11 @@ func init() {
 
 // DumpMemProf dumps memory profile in pprof.
 func DumpMemProf(w io.Writer) {
-	pprof.WriteHeapProfile(w)
+	_ = pprof.WriteHeapProfile(w)
 }
 
 func dumpMemProf() {
-	os.MkdirAll(profilePath, os.ModePerm)
+	_ = os.MkdirAll(profilePath, os.ModePerm)
 	f, err := os.Create(path.Join(profilePath, "mem-"+com.ToStr(pid)+".memprof"))
 	if err != nil {
 		panic("fail to record memory profile: " + err.Error())
@@ -96,7 +100,7 @@ func dumpGC(memStats *runtime.MemStats, gcstats *debug.GCStats, w io.Writer) {
 
 	if gcstats.NumGC > 0 {
 		lastPause := gcstats.Pause[0]
-		elapsed := time.Now().Sub(startTime)
+		elapsed := time.Since(startTime)
 		overhead := float64(gcstats.PauseTotal) / float64(elapsed) * 100
 		allocatedRate := float64(memStats.TotalAlloc) / elapsed.Seconds()
 
@@ -113,7 +117,7 @@ func dumpGC(memStats *runtime.MemStats, gcstats *debug.GCStats, w io.Writer) {
 			com.ToStr(gcstats.PauseQuantiles[99]))
 	} else {
 		// while GC has disabled
-		elapsed := time.Now().Sub(startTime)
+		elapsed := time.Since(startTime)
 		allocatedRate := float64(memStats.TotalAlloc) / elapsed.Seconds()
 
 		fmt.Fprintf(w, "Alloc:%s Sys:%s Alloc(Rate):%s/s\n",
@@ -148,7 +152,7 @@ func handleProfile(ctx *macaron.Context) string {
 	case "gc":
 		var buf bytes.Buffer
 		DumpGCSummary(&buf)
-		return string(buf.Bytes())
+		return buf.String()
 	default:
 		return fmt.Sprintf(`<p>Available operations:</p>
 <ol>

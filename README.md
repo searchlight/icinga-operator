@@ -1,4 +1,4 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/appscode/searchlight)](https://goreportcard.com/report/github.com/appscode/searchlight)
+[![Go Report Card](https://goreportcard.com/badge/go.searchlight.dev/icinga-operator)](https://goreportcard.com/report/go.searchlight.dev/icinga-operator)
 [![Build Status](https://travis-ci.org/searchlight/searchlight.svg?branch=master)](https://travis-ci.org/searchlight/searchlight)
 [![codecov](https://codecov.io/gh/searchlight/searchlight/branch/master/graph/badge.svg)](https://codecov.io/gh/searchlight/searchlight)
 [![Docker Pulls](https://img.shields.io/docker/pulls/appscode/searchlight.svg)](https://hub.docker.com/r/appscode/searchlight/)
@@ -22,10 +22,10 @@ Please pick a version of Searchlight that matches your Kubernetes installation.
 
 | Searchlight Version                                                                      | Docs                                                                       | Kubernetes Version |
 |------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|--------------------|
-| [8.0.0](https://github.com/appscode/searchlight/releases/tag/8.0.0) (uses CRD) | [User Guide](https://appscode.com/products/searchlight/8.0.0/welcome/)| 1.9.x+ (test/qa clusters) |
-| [7.0.0](https://github.com/appscode/searchlight/releases/tag/7.0.0) (uses CRD)           | [User Guide](https://appscode.com/products/searchlight/7.0.0/welcome/)     | 1.8.x              |
-| [5.1.1](https://github.com/appscode/searchlight/releases/tag/5.1.1) (uses CRD)           | [User Guide](https://appscode.com/products/searchlight/5.1.1/welcome/)     | 1.7.x+             |
-| [3.0.1](https://github.com/appscode/searchlight/releases/tag/3.0.1) (uses TPR)           | [User Guide](https://github.com/appscode/searchlight/tree/3.0.1/docs)      | 1.5.x - 1.7.x      |
+| [8.0.0](https://go.searchlight.dev/icinga-operator/releases/tag/8.0.0) (uses CRD) | [User Guide](https://appscode.com/products/searchlight/8.0.0/welcome/)| 1.9.x+ (test/qa clusters) |
+| [7.0.0](https://go.searchlight.dev/icinga-operator/releases/tag/7.0.0) (uses CRD)           | [User Guide](https://appscode.com/products/searchlight/7.0.0/welcome/)     | 1.8.x              |
+| [5.1.1](https://go.searchlight.dev/icinga-operator/releases/tag/5.1.1) (uses CRD)           | [User Guide](https://appscode.com/products/searchlight/5.1.1/welcome/)     | 1.7.x+             |
+| [3.0.1](https://go.searchlight.dev/icinga-operator/releases/tag/3.0.1) (uses TPR)           | [User Guide](https://go.searchlight.dev/icinga-operator/tree/3.0.1/docs)      | 1.5.x - 1.7.x      |
 
 ## Installation
 To install Searchlight, please follow the guide [here](https://appscode.com/products/searchlight/8.0.0/setup/install).
@@ -36,7 +36,7 @@ Want to learn how to use Searchlight? Please start [here](https://appscode.com/p
 ## Searchlight API Clients
 You can use Searchlight api clients to programmatically access its CRD objects. Here are the supported clients:
 
-- Go: [https://github.com/appscode/searchlight](/client/clientset/versioned)
+- Go: [https://go.searchlight.dev/icinga-operator](/client/clientset/versioned)
 - Java: https://github.com/searchlight-client/java
 
 ## Contribution guidelines
@@ -55,5 +55,5 @@ how we can improve it. To disable stats collection, run the operator with the fl
 ## Support
 We use Slack for public discussions. To chit chat with us or the rest of the community, join us in the [AppsCode Slack team](https://appscode.slack.com/messages/C8M7LT2QK/details/) channel `#searchlight_`. To sign up, use our [Slack inviter](https://slack.appscode.com/).
 
-If you have found a bug with Searchlight or want to request for new features, please [file an issue](https://github.com/appscode/searchlight/issues/new).
+If you have found a bug with Searchlight or want to request for new features, please [file an issue](https://go.searchlight.dev/icinga-operator/issues/new).
 

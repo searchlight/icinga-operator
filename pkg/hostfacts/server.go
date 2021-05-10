@@ -1,10 +1,25 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package hostfacts
 
 import (
 	"crypto/tls"
 	"crypto/x509"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"time"
 
@@ -16,6 +31,7 @@ import (
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
 	macaron "gopkg.in/macaron.v1"
+	"k8s.io/klog/v2"
 )
 
 type Server struct {
@@ -81,7 +97,7 @@ func (s Server) ListenAndServe() {
 	m.Get("/metrics", promhttp.Handler().ServeHTTP)
 
 	macaron.Env = macaron.PROD
-	log.Printf("listening on %s (%s)\n", s.Address, macaron.Env)
+	klog.Infof("listening on %s (%s)\n", s.Address, macaron.Env)
 
 	srv := &http.Server{
 		Addr:         s.Address,
@@ -90,7 +106,7 @@ func (s Server) ListenAndServe() {
 		Handler:      m,
 	}
 	if s.CACertFile == "" && s.CertFile == "" && s.KeyFile == "" {
-		log.Fatalln(srv.ListenAndServe())
+		klog.Fatalln(srv.ListenAndServe())
 	} else {
 		/*
 			Ref:
@@ -116,7 +132,7 @@ func (s Server) ListenAndServe() {
 		if s.CACertFile != "" {
 			caCert, err := ioutil.ReadFile(s.CACertFile)
 			if err != nil {
-				log.Fatal(err)
+				klog.Fatal(err)
 			}
 			caCertPool := x509.NewCertPool()
 			caCertPool.AppendCertsFromPEM(caCert)
@@ -125,6 +141,6 @@ func (s Server) ListenAndServe() {
 		tlsConfig.BuildNameToCertificate()
 
 		srv.TLSConfig = tlsConfig
-		log.Fatalln(srv.ListenAndServeTLS(s.CertFile, s.KeyFile))
+		klog.Fatalln(srv.ListenAndServeTLS(s.CertFile, s.KeyFile))
 	}
 }

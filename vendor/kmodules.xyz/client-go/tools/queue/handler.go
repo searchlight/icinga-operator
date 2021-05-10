@@ -1,15 +1,38 @@
+/*
+Copyright AppsCode Inc. and Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package queue
 
 import (
-	"github.com/golang/glog"
+	"fmt"
+	"reflect"
+	"time"
+
+	meta_util "kmodules.xyz/client-go/meta"
+
+	"github.com/fatih/structs"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
-	meta_util "kmodules.xyz/client-go/meta"
+	"k8s.io/klog/v2"
 )
 
 // QueueingEventHandler queues the key for the object on add and update events
@@ -22,7 +45,7 @@ type QueueingEventHandler struct {
 
 var _ cache.ResourceEventHandler = &QueueingEventHandler{}
 
-func DefaultEventHandler(queue workqueue.RateLimitingInterface) *QueueingEventHandler {
+func DefaultEventHandler(queue workqueue.RateLimitingInterface) cache.ResourceEventHandler {
 	return &QueueingEventHandler{
 		queue:         queue,
 		enqueueAdd:    nil,
@@ -31,7 +54,7 @@ func DefaultEventHandler(queue workqueue.RateLimitingInterface) *QueueingEventHa
 	}
 }
 
-func NewEventHandler(queue workqueue.RateLimitingInterface, enqueueUpdate func(oldObj, newObj interface{}) bool) *QueueingEventHandler {
+func NewEventHandler(queue workqueue.RateLimitingInterface, enqueueUpdate func(oldObj, newObj interface{}) bool) cache.ResourceEventHandler {
 	return &QueueingEventHandler{
 		queue:         queue,
 		enqueueAdd:    nil,
@@ -40,7 +63,7 @@ func NewEventHandler(queue workqueue.RateLimitingInterface, enqueueUpdate func(o
 	}
 }
 
-func NewUpsertHandler(queue workqueue.RateLimitingInterface) *QueueingEventHandler {
+func NewUpsertHandler(queue workqueue.RateLimitingInterface) cache.ResourceEventHandler {
 	return &QueueingEventHandler{
 		queue:         queue,
 		enqueueAdd:    nil,
@@ -49,7 +72,7 @@ func NewUpsertHandler(queue workqueue.RateLimitingInterface) *QueueingEventHandl
 	}
 }
 
-func NewDeleteHandler(queue workqueue.RateLimitingInterface) *QueueingEventHandler {
+func NewDeleteHandler(queue workqueue.RateLimitingInterface) cache.ResourceEventHandler {
 	return &QueueingEventHandler{
 		queue:         queue,
 		enqueueAdd:    func(_ interface{}) bool { return false },
@@ -58,27 +81,45 @@ func NewDeleteHandler(queue workqueue.RateLimitingInterface) *QueueingEventHandl
 	}
 }
 
-func NewObservableHandler(queue workqueue.RateLimitingInterface, enableStatusSubresource bool) *QueueingEventHandler {
+func NewReconcilableHandler(queue workqueue.RateLimitingInterface) cache.ResourceEventHandler {
 	return &QueueingEventHandler{
 		queue: queue,
 		enqueueAdd: func(o interface{}) bool {
-			return !meta_util.AlreadyObserved(o, enableStatusSubresource)
+			return !meta_util.MustAlreadyReconciled(o)
 		},
 		enqueueUpdate: func(old, nu interface{}) bool {
-			return (nu.(metav1.Object)).GetDeletionTimestamp() != nil ||
-				!meta_util.AlreadyObserved2(old, nu, enableStatusSubresource)
+			return (nu.(metav1.Object)).GetDeletionTimestamp() != nil || !meta_util.MustAlreadyReconciled(nu)
 		},
 		enqueueDelete: true,
 	}
 }
 
-func NewObservableUpdateHandler(queue workqueue.RateLimitingInterface, enableStatusSubresource bool) *QueueingEventHandler {
+func NewChangeHandler(queue workqueue.RateLimitingInterface) cache.ResourceEventHandler {
 	return &QueueingEventHandler{
 		queue:      queue,
 		enqueueAdd: nil,
 		enqueueUpdate: func(old, nu interface{}) bool {
-			return (nu.(metav1.Object)).GetDeletionTimestamp() != nil ||
-				!meta_util.AlreadyObserved2(old, nu, enableStatusSubresource)
+			oldObj := old.(metav1.Object)
+			nuObj := nu.(metav1.Object)
+			return nuObj.GetDeletionTimestamp() != nil ||
+				!meta_util.MustAlreadyReconciled(nu) ||
+				!reflect.DeepEqual(oldObj.GetLabels(), nuObj.GetLabels()) ||
+				!reflect.DeepEqual(oldObj.GetAnnotations(), nuObj.GetAnnotations()) ||
+				!statusEqual(old, nu)
+		},
+		enqueueDelete: true,
+	}
+}
+
+func NewSpecStatusChangeHandler(queue workqueue.RateLimitingInterface) cache.ResourceEventHandler {
+	return &QueueingEventHandler{
+		queue:      queue,
+		enqueueAdd: nil,
+		enqueueUpdate: func(old, nu interface{}) bool {
+			nuObj := nu.(metav1.Object)
+			return nuObj.GetDeletionTimestamp() != nil ||
+				!meta_util.MustAlreadyReconciled(nu) ||
+				!statusEqual(old, nu)
 		},
 		enqueueDelete: true,
 	}
@@ -87,28 +128,37 @@ func NewObservableUpdateHandler(queue workqueue.RateLimitingInterface, enableSta
 func Enqueue(queue workqueue.RateLimitingInterface, obj interface{}) {
 	key, err := cache.DeletionHandlingMetaNamespaceKeyFunc(obj)
 	if err != nil {
-		glog.Errorf("Couldn't get key for object %+v: %v", obj, err)
+		klog.Errorf("Couldn't get key for object %+v: %v", obj, err)
 		return
 	}
 	queue.Add(key)
 }
 
+func EnqueueAfter(queue workqueue.RateLimitingInterface, obj interface{}, duration time.Duration) {
+	key, err := cache.DeletionHandlingMetaNamespaceKeyFunc(obj)
+	if err != nil {
+		klog.Errorf("Couldn't get key for object %+v: %v", obj, err)
+		return
+	}
+	queue.AddAfter(key, duration)
+}
+
 func (h *QueueingEventHandler) OnAdd(obj interface{}) {
-	glog.V(6).Infof("Add event for %+v\n", obj)
+	klog.V(6).Infof("Add event for %+v\n", obj)
 	if h.enqueueAdd == nil || h.enqueueAdd(obj) {
 		Enqueue(h.queue, obj)
 	}
 }
 
 func (h *QueueingEventHandler) OnUpdate(oldObj, newObj interface{}) {
-	glog.V(6).Infof("Update event for %+v\n", newObj)
+	klog.V(6).Infof("Update event for %+v\n", newObj)
 	if h.enqueueUpdate == nil || h.enqueueUpdate(oldObj, newObj) {
 		Enqueue(h.queue, newObj)
 	}
 }
 
 func (h *QueueingEventHandler) OnDelete(obj interface{}) {
-	glog.V(6).Infof("Delete event for %+v\n", obj)
+	klog.V(6).Infof("Delete event for %+v\n", obj)
 	if h.enqueueDelete {
 		Enqueue(h.queue, obj)
 	}
@@ -178,4 +228,29 @@ func (w filteredEventHandler) OnDelete(obj interface{}) {
 	if w.matches(obj) {
 		w.inner.OnDelete(obj)
 	}
+}
+
+func statusEqual(old, new interface{}) bool {
+	oldStatus, oldExists := extractStatusFromObject(old)
+	newStatus, newExists := extractStatusFromObject(new)
+	if oldExists && newExists {
+		return reflect.DeepEqual(oldStatus, newStatus)
+	}
+	return !oldExists && !newExists
+}
+
+func extractStatusFromObject(o interface{}) (interface{}, bool) {
+	switch obj := o.(type) {
+	case *unstructured.Unstructured:
+		v, ok, _ := unstructured.NestedFieldNoCopy(obj.Object, "status")
+		return v, ok
+	case metav1.Object:
+		st := structs.New(obj)
+		field, ok := st.FieldOk("Status")
+		if !ok {
+			return nil, ok
+		}
+		return field.Value(), true
+	}
+	panic(fmt.Errorf("unknown object %v", reflect.TypeOf(o)))
 }
