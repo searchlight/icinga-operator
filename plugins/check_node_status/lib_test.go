@@ -73,22 +73,6 @@ var _ = Describe("check_node_status", func() {
 			})
 		})
 		Context("with other problems", func() {
-			It("such as OutOfDisk", func() {
-				_, err := client.Create(context.TODO(), node, metav1.CreateOptions{})
-				Expect(err).ShouldNot(HaveOccurred())
-
-				node.Status.Conditions = []core.NodeCondition{
-					{
-						Type:   core.NodeReady,
-						Status: core.ConditionTrue,
-					},
-				}
-				_, err = client.Update(context.TODO(), node, metav1.UpdateOptions{})
-				Expect(err).ShouldNot(HaveOccurred())
-
-				state, _ := newPlugin(client, opts).Check()
-				Expect(state).Should(BeIdenticalTo(icinga.Critical))
-			})
 			It("such as OutOfDisk, MemoryPressure", func() {
 				_, err := client.Create(context.TODO(), node, metav1.CreateOptions{})
 				Expect(err).ShouldNot(HaveOccurred())

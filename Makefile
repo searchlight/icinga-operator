@@ -537,7 +537,7 @@ check-license:
 		ltag -t "./hack/license" --excludes "vendor contrib" --check -v
 
 .PHONY: ci
-ci: check-license lint build unit-tests #cover verify
+ci: check-license build unit-tests #lint cover verify
 
 .PHONY: qa
 qa:
