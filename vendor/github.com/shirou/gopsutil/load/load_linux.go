@@ -17,7 +17,7 @@ func Avg() (*AvgStat, error) {
 
 func AvgWithContext(ctx context.Context) (*AvgStat, error) {
 	filename := common.HostProc("loadavg")
-	line, err := ioutil.ReadFile(filename)
+	line, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func Misc() (*MiscStat, error) {
 
 func MiscWithContext(ctx context.Context) (*MiscStat, error) {
 	filename := common.HostProc("stat")
-	out, err := ioutil.ReadFile(filename)
+	out, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}

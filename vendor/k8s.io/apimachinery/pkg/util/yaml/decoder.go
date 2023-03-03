@@ -226,7 +226,7 @@ func (d *YAMLOrJSONDecoder) Decode(into interface{}) error {
 	err := d.decoder.Decode(into)
 	if jsonDecoder, ok := d.decoder.(*json.Decoder); ok {
 		if syntax, ok := err.(*json.SyntaxError); ok {
-			data, readErr := ioutil.ReadAll(jsonDecoder.Buffered())
+			data, readErr := io.ReadAll(jsonDecoder.Buffered())
 			if readErr != nil {
 				klog.V(4).Infof("reading stream failed: %v", readErr)
 			}

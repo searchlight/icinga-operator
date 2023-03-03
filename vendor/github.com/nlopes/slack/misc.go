@@ -77,7 +77,7 @@ func fileUploadReq(ctx context.Context, path string, values url.Values, r io.Rea
 }
 
 func parseResponseBody(body io.ReadCloser, intf interface{}, d debug) error {
-	response, err := ioutil.ReadAll(body)
+	response, err := io.ReadAll(body)
 	if err != nil {
 		return err
 	}

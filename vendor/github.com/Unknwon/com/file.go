@@ -124,7 +124,7 @@ func Copy(src, dest string) error {
 // and its upper level paths.
 func WriteFile(filename string, data []byte) error {
 	os.MkdirAll(path.Dir(filename), os.ModePerm)
-	return ioutil.WriteFile(filename, data, 0655)
+	return os.WriteFile(filename, data, 0655)
 }
 
 // IsFile returns true if given path is a file,

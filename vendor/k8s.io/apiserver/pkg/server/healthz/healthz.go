@@ -273,7 +273,7 @@ func (c certChecker) Check(_ *http.Request) error {
 }
 
 func calculateHash(certFile string) (string, error) {
-	crtBytes, err := ioutil.ReadFile(certFile)
+	crtBytes, err := os.ReadFile(certFile)
 	if err != nil {
 		return "", fmt.Errorf("failed to read certificate `%s`. Reason: %v", certFile, err)
 	}

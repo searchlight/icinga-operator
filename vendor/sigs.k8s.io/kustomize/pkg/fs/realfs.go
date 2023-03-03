@@ -113,10 +113,10 @@ func (realFS) IsDir(name string) bool {
 	return info.IsDir()
 }
 
-// ReadFile delegates to ioutil.ReadFile.
-func (realFS) ReadFile(name string) ([]byte, error) { return ioutil.ReadFile(name) }
+// ReadFile delegates to os.ReadFile.
+func (realFS) ReadFile(name string) ([]byte, error) { return os.ReadFile(name) }
 
-// WriteFile delegates to ioutil.WriteFile with read/write permissions.
+// WriteFile delegates to os.WriteFile with read/write permissions.
 func (realFS) WriteFile(name string, c []byte) error {
-	return ioutil.WriteFile(name, c, 0666)
+	return os.WriteFile(name, c, 0666)
 }

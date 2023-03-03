@@ -120,7 +120,7 @@ func (p Proc) CmdLine() ([]string, error) {
 	}
 	defer f.Close()
 
-	data, err := ioutil.ReadAll(f)
+	data, err := io.ReadAll(f)
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +140,7 @@ func (p Proc) Comm() (string, error) {
 	}
 	defer f.Close()
 
-	data, err := ioutil.ReadAll(f)
+	data, err := io.ReadAll(f)
 	if err != nil {
 		return "", err
 	}

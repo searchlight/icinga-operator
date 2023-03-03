@@ -266,7 +266,7 @@ func (fl fileLogger) WriteRequest(req *http.Request, filter Filter) {
 	}
 	if fl.shouldLogBody(req.Header, req.Body) {
 		// dump body
-		body, err := ioutil.ReadAll(req.Body)
+		body, err := io.ReadAll(req.Body)
 		if err == nil {
 			fmt.Fprintln(b, string(filter.processBody(body)))
 			if nc, ok := req.Body.(io.Seeker); ok {
@@ -301,7 +301,7 @@ func (fl fileLogger) WriteResponse(resp *http.Response, filter Filter) {
 	if fl.shouldLogBody(resp.Header, resp.Body) {
 		// dump body
 		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err == nil {
 			fmt.Fprintln(b, string(filter.processBody(body)))
 			resp.Body = ioutil.NopCloser(bytes.NewReader(body))

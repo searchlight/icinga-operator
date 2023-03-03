@@ -41,7 +41,7 @@ func (rr *RetriableRequest) prepareFromByteReader() (err error) {
 			return err
 		}
 	} else {
-		b, err = ioutil.ReadAll(rr.req.Body)
+		b, err = io.ReadAll(rr.req.Body)
 		if err != nil {
 			return err
 		}

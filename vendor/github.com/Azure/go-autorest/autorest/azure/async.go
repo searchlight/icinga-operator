@@ -393,7 +393,7 @@ func (pt *pollingTrackerBase) updateRawBody() error {
 	pt.rawBody = map[string]interface{}{}
 	if pt.resp.ContentLength != 0 {
 		defer pt.resp.Body.Close()
-		b, err := ioutil.ReadAll(pt.resp.Body)
+		b, err := io.ReadAll(pt.resp.Body)
 		if err != nil {
 			return autorest.NewErrorWithError(err, "pollingTrackerBase", "updateRawBody", nil, "failed to read response body")
 		}
@@ -445,7 +445,7 @@ func (pt *pollingTrackerBase) updateErrorFromResponse() {
 		re := respErr{}
 		defer pt.resp.Body.Close()
 		var b []byte
-		if b, err = ioutil.ReadAll(pt.resp.Body); err != nil || len(b) == 0 {
+		if b, err = io.ReadAll(pt.resp.Body); err != nil || len(b) == 0 {
 			goto Default
 		}
 		if err = json.Unmarshal(b, &re); err != nil {

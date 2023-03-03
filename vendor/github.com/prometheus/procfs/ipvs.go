@@ -92,7 +92,7 @@ func parseIPVSStats(file io.Reader) (IPVSStats, error) {
 		stats       IPVSStats
 	)
 
-	statContent, err := ioutil.ReadAll(file)
+	statContent, err := io.ReadAll(file)
 	if err != nil {
 		return IPVSStats{}, err
 	}

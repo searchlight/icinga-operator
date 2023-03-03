@@ -38,7 +38,7 @@ func main() {
 	defer f.Close()
 
 	for _, p := range plugins {
-		ioutil.WriteFile(filepath.Join(checkCommandFolder, fmt.Sprintf("%s.conf", p.Name)), []byte(plugin.GenerateCheckCommand(p)), 0666)
+		os.WriteFile(filepath.Join(checkCommandFolder, fmt.Sprintf("%s.conf", p.Name)), []byte(plugin.GenerateCheckCommand(p)), 0666)
 		plugin.MarshallPlugin(f, p, "yaml")
 	}
 }

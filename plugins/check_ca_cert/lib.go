@@ -37,7 +37,7 @@ func (o *options) validate() error {
 
 func (p *plugin) loadCACert() ([]*x509.Certificate, error) {
 	caCert := "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-	data, err := ioutil.ReadFile(caCert)
+	data, err := os.ReadFile(caCert)
 	if err != nil {
 		return nil, err
 	}

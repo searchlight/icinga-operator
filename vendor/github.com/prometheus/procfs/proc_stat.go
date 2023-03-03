@@ -112,7 +112,7 @@ func (p Proc) NewStat() (ProcStat, error) {
 	}
 	defer f.Close()
 
-	data, err := ioutil.ReadAll(f)
+	data, err := io.ReadAll(f)
 	if err != nil {
 		return ProcStat{}, err
 	}

@@ -114,7 +114,7 @@ func (s Server) ListenAndServe() {
 			NextProtos: []string{"h2", "http/1.1"},
 		}
 		if s.CACertFile != "" {
-			caCert, err := ioutil.ReadFile(s.CACertFile)
+			caCert, err := os.ReadFile(s.CACertFile)
 			if err != nil {
 				log.Fatal(err)
 			}

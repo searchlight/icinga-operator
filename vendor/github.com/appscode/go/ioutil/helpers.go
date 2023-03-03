@@ -11,7 +11,7 @@ import (
 )
 
 func ReadFile(path string) (string, error) {
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
 	}
@@ -19,7 +19,7 @@ func ReadFile(path string) (string, error) {
 }
 
 func ReadFileAs(path string, obj interface{}) error {
-	d, err := ioutil.ReadFile(path)
+	d, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}
@@ -66,7 +66,7 @@ func WriteJson(path string, obj interface{}) error {
 		return err
 	}
 	EnsureDirectory(path)
-	err = ioutil.WriteFile(path, d, os.ModePerm)
+	err = os.WriteFile(path, d, os.ModePerm)
 	if err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func WriteJson(path string, obj interface{}) error {
 
 func WriteString(path string, data string) bool {
 	EnsureDirectory(path)
-	err := ioutil.WriteFile(path, []byte(data), os.ModePerm)
+	err := os.WriteFile(path, []byte(data), os.ModePerm)
 
 	if err != nil {
 		return false
@@ -86,7 +86,7 @@ func WriteString(path string, data string) bool {
 func AppendToFile(path string, values string) error {
 	EnsureDirectory(path)
 	if _, err := os.Stat(path); err != nil {
-		ioutil.WriteFile(path, []byte(""), os.ModePerm)
+		os.WriteFile(path, []byte(""), os.ModePerm)
 	}
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0666)
 	if err != nil {

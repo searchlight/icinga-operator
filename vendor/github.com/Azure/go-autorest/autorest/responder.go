@@ -160,7 +160,7 @@ func ByUnmarshallingJSON(v interface{}) RespondDecorator {
 		return ResponderFunc(func(resp *http.Response) error {
 			err := r.Respond(resp)
 			if err == nil {
-				b, errInner := ioutil.ReadAll(resp.Body)
+				b, errInner := io.ReadAll(resp.Body)
 				// Some responses might include a BOM, remove for successful unmarshalling
 				b = bytes.TrimPrefix(b, []byte("\xef\xbb\xbf"))
 				if errInner != nil {
@@ -184,7 +184,7 @@ func ByUnmarshallingXML(v interface{}) RespondDecorator {
 		return ResponderFunc(func(resp *http.Response) error {
 			err := r.Respond(resp)
 			if err == nil {
-				b, errInner := ioutil.ReadAll(resp.Body)
+				b, errInner := io.ReadAll(resp.Body)
 				if errInner != nil {
 					err = fmt.Errorf("Error occurred reading http.Response#Body - Error = '%v'", errInner)
 				} else {
@@ -213,7 +213,7 @@ func WithErrorUnlessStatusCode(codes ...int) RespondDecorator {
 					resp.Status)
 				if resp.Body != nil {
 					defer resp.Body.Close()
-					b, _ := ioutil.ReadAll(resp.Body)
+					b, _ := io.ReadAll(resp.Body)
 					derr.ServiceError = b
 					resp.Body = ioutil.NopCloser(bytes.NewReader(b))
 				}

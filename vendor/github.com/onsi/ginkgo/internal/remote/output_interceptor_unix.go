@@ -30,7 +30,7 @@ func (interceptor *outputInterceptor) StartInterceptingOutput() error {
 
 	var err error
 
-	interceptor.redirectFile, err = ioutil.TempFile("", "ginkgo-output")
+	interceptor.redirectFile, err = os.CreateTemp("", "ginkgo-output")
 	if err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (interceptor *outputInterceptor) StopInterceptingAndReturnOutput() (string,
 	}
 
 	interceptor.redirectFile.Close()
-	output, err := ioutil.ReadFile(interceptor.redirectFile.Name())
+	output, err := os.ReadFile(interceptor.redirectFile.Name())
 	os.Remove(interceptor.redirectFile.Name())
 
 	interceptor.intercepting = false

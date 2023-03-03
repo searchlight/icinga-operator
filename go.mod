@@ -29,8 +29,10 @@ require (
 	github.com/gophercloud/gophercloud v0.0.0-20190515011819-1992d5238d78 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20190430165422-3e4dfb77656c // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.9.0 // indirect
+	github.com/json-iterator/go v1.1.12
 	github.com/mailru/easyjson v0.0.0-20190403194419-1ea4449da983 // indirect
 	github.com/mattn/go-colorable v0.1.2 // indirect
+	github.com/modern-go/reflect2 v1.0.2
 	github.com/onsi/ginkgo v1.8.0
 	github.com/onsi/gomega v1.5.0
 	github.com/pkg/errors v0.8.1
@@ -43,8 +45,8 @@ require (
 	github.com/spf13/cobra v0.0.4
 	github.com/spf13/pflag v1.0.3
 	github.com/stretchr/testify v1.3.0
-	golang.org/x/crypto v0.0.0-20190530122614-20be4c3c3ed5 // indirect
-	golang.org/x/net v0.0.0-20190603091049-60506f45cf65 // indirect
+	golang.org/x/crypto v0.6.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58 // indirect
 	golang.org/x/sys v0.0.0-20190602015325-4c4f7f33c9ed // indirect
 	gomodules.xyz/cert v1.0.0
@@ -66,6 +68,7 @@ require (
 	k8s.io/kube-aggregator v0.0.0-20190515024249-81a6edcf70be // indirect
 	k8s.io/kube-openapi v0.0.0-20190510232812-a01b7d5d6c22
 	kmodules.xyz/client-go v0.0.0-20190527113919-eb165836b702
+	kmodules.xyz/resource-metadata v0.15.0
 	kmodules.xyz/webhook-runtime v0.0.0-20190508093950-b721b4eba5e5
 )
 

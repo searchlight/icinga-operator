@@ -26,7 +26,7 @@ func CleanBom(b []byte) []byte {
 
 // NewReaderWithoutBom returns an io.Reader that will skip over initial UTF-8 byte order marks.
 func NewReaderWithoutBom(r io.Reader) (io.Reader, error) {
-	bs, err := ioutil.ReadAll(r)
+	bs, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
 	}

@@ -261,7 +261,7 @@ func (r *httpRequest) makeRequest(method string, payload payload) (*httpResponse
 	}
 
 	defer resp.Body.Close()
-	responseBody, err := ioutil.ReadAll(resp.Body)
+	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}

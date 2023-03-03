@@ -363,7 +363,7 @@ again:
 		return ErrFrameTooLarge
 	}
 	payloadType := frame.PayloadType()
-	data, err := ioutil.ReadAll(frame)
+	data, err := io.ReadAll(frame)
 	if err != nil {
 		return err
 	}

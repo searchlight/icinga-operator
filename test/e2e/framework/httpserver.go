@@ -22,7 +22,7 @@ func StartServer() *httptest.Server {
 		case "GET":
 			w.Write([]byte(msg.Body))
 		case "POST":
-			data, err := ioutil.ReadAll(r.Body)
+			data, err := io.ReadAll(r.Body)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
@@ -41,7 +41,7 @@ func (f *Framework) EventuallyHTTPServerResponse(serverURL string) GomegaAsyncAs
 		func() string {
 			resp, err := http.Get(serverURL)
 			Expect(err).NotTo(HaveOccurred())
-			data, err := ioutil.ReadAll(resp.Body)
+			data, err := io.ReadAll(resp.Body)
 			Expect(err).NotTo(HaveOccurred())
 
 			return string(data)

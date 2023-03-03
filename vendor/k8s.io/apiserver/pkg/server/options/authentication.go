@@ -307,11 +307,11 @@ func inClusterClientCA(authConfigMap *v1.ConfigMap) (*ClientCertAuthenticationOp
 		return nil, nil
 	}
 
-	f, err := ioutil.TempFile("", "client-ca-file")
+	f, err := os.CreateTemp("", "client-ca-file")
 	if err != nil {
 		return nil, err
 	}
-	if err := ioutil.WriteFile(f.Name(), []byte(clientCA), 0600); err != nil {
+	if err := os.WriteFile(f.Name(), []byte(clientCA), 0600); err != nil {
 		return nil, err
 	}
 	return &ClientCertAuthenticationOptions{ClientCA: f.Name()}, nil
@@ -324,11 +324,11 @@ func inClusterRequestHeader(authConfigMap *v1.ConfigMap) (*RequestHeaderAuthenti
 		return nil, nil
 	}
 
-	f, err := ioutil.TempFile("", "requestheader-client-ca-file")
+	f, err := os.CreateTemp("", "requestheader-client-ca-file")
 	if err != nil {
 		return nil, err
 	}
-	if err := ioutil.WriteFile(f.Name(), []byte(requestHeaderCA), 0600); err != nil {
+	if err := os.WriteFile(f.Name(), []byte(requestHeaderCA), 0600); err != nil {
 		return nil, err
 	}
 	usernameHeaders, err := deserializeStrings(authConfigMap.Data["requestheader-username-headers"])

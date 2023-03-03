@@ -224,7 +224,7 @@ func NewTemplateFileSystem(opt RenderOptions, omitData bool) TplFileSystem {
 						continue
 					}
 
-					data, err = ioutil.ReadFile(path)
+					data, err = os.ReadFile(path)
 					if err != nil {
 						return err
 					}

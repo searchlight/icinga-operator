@@ -245,7 +245,7 @@ func CurrentModule() (string, error) {
 	if !Mods() {
 		return CurrentPackage(), nil
 	}
-	moddata, err := ioutil.ReadFile("go.mod")
+	moddata, err := os.ReadFile("go.mod")
 	if err != nil {
 		return "", errors.New("go.mod cannot be read or does not exist while go module is enabled")
 	}

@@ -62,7 +62,7 @@ func fetchFile(URL string) io.Reader {
 	resp, err := http.Get(URL)
 	checkErr(err)
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	checkErr(err)
 	return strings.NewReader(string(body))
 }

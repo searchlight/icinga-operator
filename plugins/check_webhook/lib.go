@@ -161,7 +161,7 @@ func (p *plugin) Check() (icinga.State, interface{}) {
 		return stateUnknown, fmt.Sprintf("status code: %d", resp.StatusCode)
 	}
 
-	respDataByte, err := ioutil.ReadAll(resp.Body)
+	respDataByte, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return stateUnknown, err
 	}

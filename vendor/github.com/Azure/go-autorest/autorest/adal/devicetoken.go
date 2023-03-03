@@ -123,7 +123,7 @@ func InitiateDeviceAuth(sender Sender, oauthConfig OAuthConfig, clientID, resour
 	}
 	defer resp.Body.Close()
 
-	rb, err := ioutil.ReadAll(resp.Body)
+	rb, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%s %s: %s", logPrefix, errCodeHandlingFails, err.Error())
 	}
@@ -175,7 +175,7 @@ func CheckForUserCompletion(sender Sender, code *DeviceCode) (*Token, error) {
 	}
 	defer resp.Body.Close()
 
-	rb, err := ioutil.ReadAll(resp.Body)
+	rb, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%s %s: %s", logPrefix, errTokenHandlingFails, err.Error())
 	}

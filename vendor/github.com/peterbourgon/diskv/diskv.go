@@ -128,7 +128,7 @@ func (d *Diskv) createKeyFileWithLock(key string) (*os.File, error) {
 		if err := os.MkdirAll(d.TempDir, d.PathPerm); err != nil {
 			return nil, fmt.Errorf("temp mkdir: %s", err)
 		}
-		f, err := ioutil.TempFile(d.TempDir, "")
+		f, err := os.CreateTemp(d.TempDir, "")
 		if err != nil {
 			return nil, fmt.Errorf("temp file: %s", err)
 		}
@@ -263,7 +263,7 @@ func (d *Diskv) Read(key string) ([]byte, error) {
 		return []byte{}, err
 	}
 	defer rc.Close()
-	return ioutil.ReadAll(rc)
+	return io.ReadAll(rc)
 }
 
 // ReadStream reads the key and returns the value (data) as an io.ReadCloser.

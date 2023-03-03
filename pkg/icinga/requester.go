@@ -32,7 +32,7 @@ func (ic *APIRequest) Do() *APIResponse {
 	}
 
 	ic.Status = ic.resp.StatusCode
-	ic.ResponseBody, ic.Err = ioutil.ReadAll(ic.resp.Body)
+	ic.ResponseBody, ic.Err = io.ReadAll(ic.resp.Body)
 	if ic.Err != nil {
 		return &APIResponse{
 			Err: ic.Err,

@@ -76,7 +76,7 @@ func (fs FS) NewPSIStatsForResource(resource string) (PSIStats, error) {
 // parsePSIStats parses the specified file for pressure stall information
 func parsePSIStats(resource string, file io.Reader) (PSIStats, error) {
 	psiStats := PSIStats{}
-	stats, err := ioutil.ReadAll(file)
+	stats, err := io.ReadAll(file)
 	if err != nil {
 		return psiStats, fmt.Errorf("psi_stats: unable to read data for %s", resource)
 	}

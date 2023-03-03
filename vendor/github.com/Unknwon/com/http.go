@@ -109,7 +109,7 @@ func HttpGetBytes(client *http.Client, url string, header http.Header) ([]byte, 
 		return nil, err
 	}
 	defer rc.Close()
-	return ioutil.ReadAll(rc)
+	return io.ReadAll(rc)
 }
 
 // HttpGetJSON gets the specified resource and mapping to struct.

@@ -18,16 +18,16 @@ import (
 )
 
 func main() {
-	in1, err := ioutil.ReadFile("syscall_darwin.go")
+	in1, err := os.ReadFile("syscall_darwin.go")
 	if err != nil {
 		log.Fatalf("can't open syscall_darwin.go: %s", err)
 	}
 	arch := os.Args[1]
-	in2, err := ioutil.ReadFile(fmt.Sprintf("syscall_darwin_%s.go", arch))
+	in2, err := os.ReadFile(fmt.Sprintf("syscall_darwin_%s.go", arch))
 	if err != nil {
 		log.Fatalf("can't open syscall_darwin_%s.go: %s", arch, err)
 	}
-	in3, err := ioutil.ReadFile(fmt.Sprintf("zsyscall_darwin_%s.go", arch))
+	in3, err := os.ReadFile(fmt.Sprintf("zsyscall_darwin_%s.go", arch))
 	if err != nil {
 		log.Fatalf("can't open zsyscall_darwin_%s.go: %s", arch, err)
 	}
@@ -54,7 +54,7 @@ func main() {
 			fmt.Fprintf(&out, "\tJMP\t%s(SB)\n", fn)
 		}
 	}
-	err = ioutil.WriteFile(fmt.Sprintf("zsyscall_darwin_%s.s", arch), out.Bytes(), 0644)
+	err = os.WriteFile(fmt.Sprintf("zsyscall_darwin_%s.s", arch), out.Bytes(), 0644)
 	if err != nil {
 		log.Fatalf("can't write zsyscall_darwin_%s.s: %s", arch, err)
 	}

@@ -79,7 +79,7 @@ func (i FakeInvoke) Command(name string, arg ...string) ([]byte, error) {
 		fpath += "_" + i.Suffix
 	}
 	if PathExists(fpath) {
-		return ioutil.ReadFile(fpath)
+		return os.ReadFile(fpath)
 	}
 	return []byte{}, fmt.Errorf("could not find testdata: %s", fpath)
 }

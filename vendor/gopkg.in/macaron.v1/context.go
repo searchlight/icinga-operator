@@ -49,7 +49,7 @@ type RequestBody struct {
 
 // Bytes reads and returns content of request body in bytes.
 func (rb *RequestBody) Bytes() ([]byte, error) {
-	return ioutil.ReadAll(rb.reader)
+	return io.ReadAll(rb.reader)
 }
 
 // String reads and returns content of request body in string.

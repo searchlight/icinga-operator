@@ -99,7 +99,7 @@ func generateSwaggerJson() {
 	if err != nil {
 		glog.Fatal(err)
 	}
-	err = ioutil.WriteFile(filename, []byte(apispec), 0644)
+	err = os.WriteFile(filename, []byte(apispec), 0644)
 	if err != nil {
 		glog.Fatal(err)
 	}

@@ -49,7 +49,7 @@ func SaveToken(path string, mode os.FileMode, token Token) error {
 		return fmt.Errorf("failed to create directory (%s) to store token in: %v", dir, err)
 	}
 
-	newFile, err := ioutil.TempFile(dir, "token")
+	newFile, err := os.CreateTemp(dir, "token")
 	if err != nil {
 		return fmt.Errorf("failed to create the temp file to write the token: %v", err)
 	}
